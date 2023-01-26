@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card v-if="data.length > 0" v-for="item in data" :key="item.id">
+    <el-card v-if="addresses.length > 0" v-for="item in addresses" :key="item.id">
       <template #header>
         <div class="card-header">{{ item.name }}</div>
       </template>
@@ -8,7 +8,7 @@
       <p>{{ item.description }}</p>
 
     </el-card>
-    <el-alert v-else type="error" title="No data to display"></el-alert>
+    <el-alert v-else type="error" title="Error: {{error}}"></el-alert>
   </div>
 </template>
 
@@ -19,14 +19,22 @@ import {defineComponent, computed, onMounted} from 'vue';
 const AddressList = defineComponent({
   name: 'AddressList',
   props: {
-    data: {
+    error: {
+      type: String,
+      default: ''
+    },
+    addresses: {
       type: Array,
-      required: true
+      default: () => [],
+      required: true,
+      items: {
+        type: Object
+      }
     }
   },
   setup(props) {
-    const {data} = props;
-    return {data};
+    const {addresses} = props;
+    return {addresses};
   }
 });
 
