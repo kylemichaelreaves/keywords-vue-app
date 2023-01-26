@@ -7,14 +7,21 @@
   </h2>
   <p>this form sends a request based on its inputs to an AWS Lambda</p>
   <p>Based on what is returned, another component will be populated with its data, or an alert will display</p>
-  <el-form :model="formData" :rules="rules" ref="form" label-width="120px" label-position="left">
+  <el-form
+      :model="formData"
+      :rules="rules"
+      ref="form"
+      label-width="120px"
+      label-position="left"
+      @keyup.enter="submitForm"
+  >
     <div v-for="field in formFields" :key="field.label">
       <el-form-item :label="field.label" :prop="field.prop">
         <el-input v-model="formData[field.prop]" :placeholder="field.placeholder"></el-input>
       </el-form-item>
     </div>
     <el-button
-        v-bind:type="formIsValid ? 'primary' : 'danger'"
+        v-bind:type="formIsValid ? 'primary' : 'warning'"
         @click="submitForm"
         :loading="isFetching"
         :disabled="!formIsValid">
@@ -22,7 +29,7 @@
     </el-button>
   </el-form>
   <!--    if data…rendering it in the AddressesList-->
-  <AddressList v-if="data" :data="data"/>
+  <AddressList v-if="!isError && data" :addresses="data.addresses"/>
 
 </template>
 
@@ -62,7 +69,6 @@ const AddressGeocoder = defineComponent({
       {label: 'State', prop: 'state', placeholder: 'Enter state'},
       {label: 'Zip Code', prop: 'zipCode', placeholder: 'Enter zip code'}];
 
-
     const rules = {
       streetAddress: [
         {
@@ -87,28 +93,37 @@ const AddressGeocoder = defineComponent({
       ]
     }
 
-    watch(() => formData.value, (newValue, oldValue) => {
+
+    // const fullAddress = computed(() => {
+    //   return `${formData.value.streetAddress} ${formData.value.aptNum
+    //       ? formData.value.aptNum
+    //       : ""}, ${formData.value.city}, ${formData.value.state} ${formData.value.zipCode
+    //       ? formData.value.zipCode
+    //       : ""}`
+    // })
+
+    watch([
+      () => formData.value
+    ], (newValue, oldValue) => {
       console.log(`Object updated:`, oldValue, '=>', newValue)
     }, {deep: true})
 
-    const fullAddress = computed(() => {
-      return `${formData.value.streetAddress} ${formData.value.aptNum
-          ? formData.value.aptNum
-          : ""}, ${formData.value.city}, ${formData.value.state} ${formData.value.zipCode
-          ? formData.value.zipCode
-          : ""}`
-    })
 
     const formIsValid = computed(() => {
       return formData.value.streetAddress && formData.value.city && formData.value.state
     })
 
-    const URL = import.meta.env.VITE_APIGATEWAY_URl as string;
+    const URL = import.meta.env.VITE_APIGATEWAY_URL as string;
+    console.log(`URL: ${URL}`)
 
-    const geocodeAddress = (address: string | undefined): Promise<any> => {
+
+    // TODO handle onEnter keypress
+
+
+    const geocodeAddress = async (address: FormData | undefined): Promise<any> => {
       return typeof address === "undefined"
           ? Promise.reject(new Error("Address is undefined"))
-          : axios.get(`${URL}/geocoder?address=${address}`)
+          : await axios.get(`${URL}/address-geocoder?${address}`)
               .then((response) => {
                 console.log(`response: ${JSON.stringify(response)}`)
                 return response.data
@@ -118,22 +133,22 @@ const AddressGeocoder = defineComponent({
                 return error
               })
     }
-
-    const submitForm = (event: Event) => {
-      event.preventDefault();
-      console.log(`submitting form: ${fullAddress.value}`)
-      router.push({path: '/address-geocoder' , query: {address: fullAddress.value}})
-      refetch()
-    }
     const {isLoading, isFetching, isError, data, error, refetch} = useQuery(
-        // fullAddress should be a computed property of all the elements provided on the form, whatever they are
-        ['address', fullAddress.value],
-        () => geocodeAddress(fullAddress.value), {
+        ['address', formData.value],
+        () => geocodeAddress(formData.value), {
           enabled: false
         }
     )
+
+    const submitForm = (event: Event) => {
+      event.preventDefault();
+      console.log(`fullAddress.value: ${JSON.stringify(formData.value)}`)
+      console.log(`formData.value: ${JSON.stringify(formData.value)}`)
+      // router.push({path: '/address-geocoder', params: {address: formData.value}})
+      refetch()
+    }
+
     return {
-      fullAddress,
       isLoading,
       isFetching,
       isError,

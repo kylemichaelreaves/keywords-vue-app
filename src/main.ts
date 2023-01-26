@@ -9,12 +9,11 @@ import Home from "./components/Home.vue";
 import Navbar from "./components/Navbar.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-import AddressGeocoder from "./components/AddressGeocoder.vue";
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 const pinia = createPinia()
 
-const routes =  [
+const routes = [
     {
         path: '/',
         name: 'home',
@@ -28,7 +27,7 @@ const routes =  [
     {
         path: '/address-geocoder',
         name: 'address-geocoder',
-        component: AddressGeocoder
+        component: () => import('./components/AddressGeocoder.vue')
     },
 ]
 

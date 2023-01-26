@@ -6,7 +6,7 @@
           <el-icon style="vertical-align: middle">
             <component :is="routeIcon(route).value"/>
           </el-icon>
-          <span>{{" " + route.name}}</span>
+          <span>{{ " " + route.name }}</span>
         </span>
       </template>
     </el-tab-pane>
@@ -48,6 +48,7 @@ const Navbar = defineComponent({
       router.push({path: routes[tab.index].path});
       activeTab.value = tab.index;
     }
+
     return {routes, route, activeTab, handleClick, routeIcon};
   }
 });
