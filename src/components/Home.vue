@@ -1,5 +1,5 @@
 <template>
-  <h2><el-icon size="large"><HomeFilled /></el-icon> Home</h2>
+  <h2><el-icon style="vertical-align: top"><HomeFilled /></el-icon> Home</h2>
   <p>In this demonstration of immense innovation and skill</p>
   <p>I will be sketching out extremely sophisticated and mesmerizing UIs for my Lambdas and what they return.</p>
 </template>

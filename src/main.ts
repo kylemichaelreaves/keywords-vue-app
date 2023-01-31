@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import BudgetVisualizer from "./components/BudgetVisualizer.vue";
 
 const pinia = createPinia()
 
@@ -29,6 +30,11 @@ const routes = [
         name: 'address-geocoder',
         component: () => import('./components/AddressGeocoder.vue')
     },
+    {
+        path: '/budget-visualizer',
+        name: 'budget-visualizer',
+        component: BudgetVisualizer
+    }
 ]
 
 export const router = createRouter({

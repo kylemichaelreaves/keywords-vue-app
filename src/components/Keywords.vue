@@ -1,6 +1,6 @@
 <template>
   <h2>
-    <el-icon><Key /></el-icon>
+    <el-icon style="vertical-align: middle"><Key /></el-icon>
     Keywords
   </h2>
 
