@@ -39,6 +39,8 @@ const Navbar = defineComponent({
           return 'LocationFilled'
         case 'keywords':
           return 'Key'
+        case 'budget-visualizer':
+          return 'TrendCharts'
         default:
           return ''
       }

@@ -1,6 +1,6 @@
 <template>
   <h2>
-    <el-icon size="large">
+    <el-icon style="vertical-align: middle">
       <Location/>
     </el-icon>
     Geocoding Form
@@ -29,7 +29,14 @@
     </el-button>
   </el-form>
   <!--    if data…rendering it in the AddressesList-->
-  <AddressList v-if="!isError && data" :addresses="data.addresses"/>
+  <!--  <AddressList v-if="!isError && data" :addresses="data.addresses"/>-->
+
+  <!--    if error…rendering it in the Alert-->
+  <el-alert v-if="error" type="error" title="Error: {{data.code}}">
+    <div slot="description">
+      {{ data.name }}:{{ data.message }}
+    </div>
+  </el-alert>
 
 </template>
 
@@ -94,14 +101,6 @@ const AddressGeocoder = defineComponent({
     }
 
 
-    // const fullAddress = computed(() => {
-    //   return `${formData.value.streetAddress} ${formData.value.aptNum
-    //       ? formData.value.aptNum
-    //       : ""}, ${formData.value.city}, ${formData.value.state} ${formData.value.zipCode
-    //       ? formData.value.zipCode
-    //       : ""}`
-    // })
-
     watch([
       () => formData.value
     ], (newValue, oldValue) => {
@@ -114,22 +113,19 @@ const AddressGeocoder = defineComponent({
     })
 
     const URL = import.meta.env.VITE_APIGATEWAY_URL as string;
-    console.log(`URL: ${URL}`)
-
-
-    // TODO handle onEnter keypress
-
 
     const geocodeAddress = async (address: FormData | undefined): Promise<any> => {
       return typeof address === "undefined"
           ? Promise.reject(new Error("Address is undefined"))
-          : await axios.get(`${URL}/address-geocoder?${address}`)
+          : await axios.get(`${URL}/address-geocoder`, {
+            params: {
+              address: JSON.stringify(address)
+            }
+          })
               .then((response) => {
-                console.log(`response: ${JSON.stringify(response)}`)
                 return response.data
               })
               .catch((error) => {
-                console.log(`error: ${JSON.stringify(error)}`)
                 return error
               })
     }
