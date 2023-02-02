@@ -7,6 +7,12 @@
   </h2>
   <p>this form sends a request based on its inputs to an AWS Lambda</p>
   <p>Based on what is returned, another component will be populated with its data, or an alert will display</p>
+  <!--    if error…rendering it in the Alert-->
+  <el-alert v-if="data && data.code.name === 'AxiosError'" type="error" title="{{data.name}}">
+    <h2>
+      {{ data.name }}:{{ data.message }}
+    </h2>
+  </el-alert>
   <el-form
       :model="formData"
       :rules="rules"
@@ -31,12 +37,6 @@
   <!--    if data…rendering it in the AddressesList-->
   <!--  <AddressList v-if="!isError && data" :addresses="data.addresses"/>-->
 
-  <!--    if error…rendering it in the Alert-->
-  <el-alert v-if="error" type="error" title="Error: {{data.code}}">
-    <div slot="description">
-      {{ data.name }}:{{ data.message }}
-    </div>
-  </el-alert>
 
 </template>
 
@@ -164,4 +164,7 @@ export default AddressGeocoder;
 </script>
 
 <style scoped>
+.alert {
+  margin-bottom: 10px;
+}
 </style>
