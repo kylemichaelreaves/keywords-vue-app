@@ -7,26 +7,37 @@
   </h2>
   <p>This component will do many things, including:</p>
   <!-- display a list of things this component should do in a list  -->
-  <el-card class="box-card">
-    <ul v-for="item in toDoList" :key="item">
-      <li>{{ item }}</li>
-    </ul>
-  </el-card>
+  <ToDoList :initialTodos="toDoList"/>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
+import ToDoList from "./ToDoList.vue";
+import {useQuery} from "@tanstack/vue-query";
+import axios, {AxiosError} from "axios";
 
 const BudgetVisualizer = defineComponent({
-  name: "BudgetVisualizer.vue",
+  name: "BudgetVisualizer",
+  components: {
+    ToDoList
+  },
+  // TODO: add to the toDoList structure subtasks for each of the items
   setup() {
-    const toDoList: Array<string> = [
-      'Load the csv from AWS S3',
-      'Display a piechart of the budget',
-      'Display a bar chart of the budget',
-      'Display a line chart of the budget',
-      'Toggle between monthly, yearly, and all time',
+    const toDoList = [
+      {text: 'Load the csv from AWS S3', done: false},
+      {text: 'Display a piechart of the budget', done: false},
+      {text: 'Display a bar chart of the budget', done: false},
+      {text: 'Display a line chart of the budget', done: false},
+      {text: 'Toggle between monthly, yearly, and all time', done: false},
     ]
+
+    const {data, error, isLoading} = useQuery({
+      queryKey: ['transactions'],
+      queryFn: async () => await axios.get(
+          'https://tanstack.s3.amazonaws.com/budget.csv'
+      ),
+    })
+
     return {toDoList};
   }
 })
