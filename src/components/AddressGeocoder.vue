@@ -47,6 +47,7 @@ import {useQuery} from "@tanstack/vue-query";
 import axios from "axios";
 import {router} from "../main";
 import AddressResults from "./AddressResults.vue";
+import {API_GATEWAY_URL} from "../constants";
 
 interface FormData {
   streetAddress: string;
@@ -114,12 +115,11 @@ const AddressGeocoder = defineComponent({
       return formData.value.streetAddress && formData.value.city && formData.value.state
     })
 
-    const URL = import.meta.env.VITE_APIGATEWAY_URL as string;
 
     const geocodeAddress = async (address: FormData | undefined): Promise<any> => {
       return typeof address === "undefined"
           ? Promise.reject(new Error("Address is undefined"))
-          : await axios.get(`${URL}/address-geocoder`, {
+          : await axios.get(`${API_GATEWAY_URL}/address-geocoder`, {
             params: {
               address: JSON.stringify(address)
             }

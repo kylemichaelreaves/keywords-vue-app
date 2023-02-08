@@ -15,6 +15,7 @@ import {defineComponent} from "vue";
 import ToDoList from "./ToDoList.vue";
 import {useQuery} from "@tanstack/vue-query";
 import axios, {AxiosError} from "axios";
+import {API_GATEWAY_URL} from "../constants";
 
 const BudgetVisualizer = defineComponent({
   name: "BudgetVisualizer",
@@ -34,8 +35,8 @@ const BudgetVisualizer = defineComponent({
     const {data, error, isLoading} = useQuery({
       queryKey: ['transactions'],
       queryFn: async () => await axios.get(
-          'https://tanstack.s3.amazonaws.com/budget.csv'
-      ),
+          `${API_GATEWAY_URL}/transactions`
+      ).then(res => res.data),
     })
 
     return {toDoList};
