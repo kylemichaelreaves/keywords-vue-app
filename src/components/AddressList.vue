@@ -26,7 +26,7 @@ const AddressList = defineComponent({
     },
     addresses: {
       type: Array,
-      default: () => [],
+      default: [{}],
       required: true,
       items: {
         type: Object

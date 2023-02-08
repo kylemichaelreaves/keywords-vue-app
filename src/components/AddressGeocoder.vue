@@ -8,11 +8,14 @@
   <p>this form sends a request based on its inputs to an AWS Lambda</p>
   <p>Based on what is returned, another component will be populated with its data, or an alert will display</p>
   <!--    if error…rendering it in the Alert-->
-  <el-alert v-if="data && data.code.name === 'AxiosError'" type="error" title="{{data.name}}">
+  <el-alert v-if="data && data.code && data.code.name === 'AxiosError'" type="error" :title="'Error: ' + data.code">
     <h2>
       {{ data.name }}:{{ data.message }}
     </h2>
   </el-alert>
+  <!-- TODO    abstract this block like in NavBar -->
+  <AddressResults v-if="data" :message="data"/>
+
   <el-form
       :model="formData"
       :rules="rules"
@@ -34,9 +37,6 @@
       Submit
     </el-button>
   </el-form>
-  <!--    if data…rendering it in the AddressesList-->
-  <!--  <AddressList v-if="!isError && data" :addresses="data.addresses"/>-->
-
 
 </template>
 
@@ -46,6 +46,8 @@ import AddressList from "./AddressList.vue";
 import {useQuery} from "@tanstack/vue-query";
 import axios from "axios";
 import {router} from "../main";
+import AddressResults from "./AddressResults.vue";
+import {API_GATEWAY_URL} from "../constants";
 
 interface FormData {
   streetAddress: string;
@@ -58,7 +60,8 @@ interface FormData {
 const AddressGeocoder = defineComponent({
   name: 'AddressGeocoder',
   components: {
-    AddressList
+    AddressList,
+    AddressResults
   },
   setup() {
     const formData = ref<FormData>({
@@ -112,12 +115,11 @@ const AddressGeocoder = defineComponent({
       return formData.value.streetAddress && formData.value.city && formData.value.state
     })
 
-    const URL = import.meta.env.VITE_APIGATEWAY_URL as string;
 
     const geocodeAddress = async (address: FormData | undefined): Promise<any> => {
       return typeof address === "undefined"
           ? Promise.reject(new Error("Address is undefined"))
-          : await axios.get(`${URL}/address-geocoder`, {
+          : await axios.get(`${API_GATEWAY_URL}/address-geocoder`, {
             params: {
               address: JSON.stringify(address)
             }
@@ -132,15 +134,14 @@ const AddressGeocoder = defineComponent({
     const {isLoading, isFetching, isError, data, error, refetch} = useQuery(
         ['address', formData.value],
         () => geocodeAddress(formData.value), {
-          enabled: false
+          enabled: false,
+          staleTime: 1000 * 60 * 60 * 24,
         }
     )
 
     const submitForm = (event: Event) => {
       event.preventDefault();
-      console.log(`fullAddress.value: ${JSON.stringify(formData.value)}`)
-      console.log(`formData.value: ${JSON.stringify(formData.value)}`)
-      // router.push({path: '/address-geocoder', params: {address: formData.value}})
+      router.push({path: '/address-geocoder', query: {address: encodeURIComponent(JSON.stringify(formData.value))}})
       refetch()
     }
 
