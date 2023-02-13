@@ -6,7 +6,7 @@
         <el-switch v-model="toDo.done" :model-value="toDo.done" @change="updateToDo(index)" class="todo-switch"/>
       </li>
     </ul>
-    <el-input v-model="newToDo" @keyup.enter="addToDo"/>
+    <!--    <el-input v-model="newToDo" @keyup.enter="addToDo"/>-->
   </div>
 </template>
 
@@ -45,6 +45,7 @@ export default ToDoList;
 li {
   margin-bottom: 5px; /* or padding-bottom: 10px; */
 }
+
 .todo-switch {
   margin-left: 10px;
 }

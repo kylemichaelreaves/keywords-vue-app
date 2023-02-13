@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, onMounted} from 'vue';
+import {defineComponent} from 'vue';
 
 
 const AddressList = defineComponent({
