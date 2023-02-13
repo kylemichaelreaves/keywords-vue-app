@@ -12,6 +12,7 @@ import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import BudgetVisualizer from "./components/BudgetVisualizer.vue";
 
+
 const pinia = createPinia()
 
 const routes = [
