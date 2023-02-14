@@ -62,11 +62,13 @@ const TransactionsTable = defineComponent({
         },
         handleMonthChange: {
           type: Function,
-          default: () => {}
+          default: () => {
+          }
         },
         handleMemoChange: {
           type: Function,
-          default: () => {}
+          default: () => {
+          }
         },
       } as const,
       setup(props) {
@@ -80,7 +82,16 @@ const TransactionsTable = defineComponent({
         const selectedMemo = props.selectedMemo;
         const selectedMonth = props.selectedMonth;
 
-        return {data, displayData, uniqueMemoObject, uniqueMonthsObject, handleMonthChange, handleMemoChange};
+        return {
+          data,
+          displayData,
+          uniqueMemoObject,
+          uniqueMonthsObject,
+          handleMonthChange,
+          handleMemoChange,
+          selectedMemo,
+          selectedMonth
+        };
       }
     },
 );
