@@ -16,9 +16,10 @@
   <ToDoList :initialTodos="toDoList"/>
   <br/>
 
+  <!--  do I really need the v-if=data ??? -->
   <TransactionsTable
       v-if="data" :data="[data]"
-      :displayData="displayData"
+      :displayData="displayData.data"
       :uniqueMemoObject="uniqueMemoObject"
       :uniqueMonthsObject="uniqueMonthsObject"
       :selectedMemo="selectedMemo"
@@ -28,24 +29,26 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref, watchEffect} from "vue";
+import {computed, defineComponent, reactive, ref, watch, watchEffect} from "vue";
 import ToDoList from "./ToDoList.vue";
 import TransactionsTable from "./TransactionsTable.vue";
 import {useQuery} from "@tanstack/vue-query";
-import Papa from 'papaparse';
 import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import * as d3 from 'd3';
 
 type Transaction = {
-  "Transaction Number": string;
+  "Transaction Number"?: string;
   Date: string;
   Description: string;
   Memo: string;
   "Amount Debit": string;
-  "Amount Credit": string;
-  Balance: string;
-  "Check Number": string;
-  Fees: string;
+  "Amount Credit"?: string;
+  Balance?: string;
+  "Check Number"?: string;
+  Fees?: string;
 };
+
+type TransactionsList = { data: Array<Transaction> };
 
 
 const BudgetVisualizer = defineComponent({
@@ -56,16 +59,10 @@ const BudgetVisualizer = defineComponent({
   },
   // TODO: add to the toDoList structure subtasks for each of the items
   setup() {
-    let headers: Array<string> = reactive([]);
-    let displayData: Array<Transaction> = reactive([]);
-    const uniqueMonthsArray: Set<string> = reactive(new Set());
-    const numberOfMonths = ref(0)
-    const uniqueMonthsObject: Array<{ value: string, label: string }> = reactive([]);
-
+    const headers = ref([]);
+    let displayData: TransactionsList = reactive({data: []});
     const selectedMonth = ref('')
     const selectedMemo = ref('')
-    const uniqueMemoArray: Array<string> = reactive([]);
-    const uniqueMemoObject: Array<{ value: string, label: string }> = reactive([]);
 
     const toDoList = [
       {text: 'Load the csv from AWS S3', done: true},
@@ -77,7 +74,8 @@ const BudgetVisualizer = defineComponent({
       {text: 'Toggle between monthly, yearly, and all time', done: false},
     ]
 
-    const fetchTransactionsS3Client = async () => {
+
+    async function fetchTransactionsS3Client(): Promise<Transaction[]> {
       const s3Client = new S3Client({
         region: 'us-east-1',
         credentials: {
@@ -93,16 +91,22 @@ const BudgetVisualizer = defineComponent({
         const data = await s3Client.send(new GetObjectCommand(bucketParams));
         if (data.Body) {
           const csvString = await data.Body.transformToString();
-          return Papa.parse(csvString, {headers: true});
-          // return await data.Body.transformToString()
+          return d3.dsvFormat(';').parse(csvString).map(row => ({
+            Date: row.Date ?? '',
+            Description: row.Description ?? '',
+            Memo: row.Memo ?? '',
+            'Amount Debit': row['Amount Debit'] ?? ''
+          }));
         } else {
           console.log('Data body is undefined');
-          return;
+          return [];
         }
       } catch (error) {
         console.log(error)
+        return [];
       }
     }
+
 
     // handleMonthChange sets the monthSelected state to the value of the selected month
     const handleMonthChange = (value: string) => {
@@ -113,11 +117,48 @@ const BudgetVisualizer = defineComponent({
       selectedMemo.value = value
     }
 
-
     const {data, error, isLoading, isFetching} = useQuery({
       queryKey: ['transactions'],
       queryFn: fetchTransactionsS3Client
     })
+
+    const uniqueMonthsArray = computed(() => {
+      return new Set(
+          displayData.data.map((d: Transaction) => d.Date.split('/')[0] + '/' + d.Date.split('/')[2])
+      );
+    });
+
+    const numberOfMonths = computed(() => {
+      return uniqueMonthsArray.value.size;
+    });
+
+    // Memos corresponds to Vendors, Retailers, etc.
+    const numberOfUniqueMemos = computed(() => {
+      return uniqueMemoArray.value.length;
+    });
+
+    const uniqueMonthsObject = computed(() => {
+      return Array.from(uniqueMonthsArray.value).map((month: string) => {
+        return {
+          value: month,
+          label: month
+        };
+      });
+    });
+
+    const uniqueMemoArray = computed(() => {
+      // remove blank and undefined values
+      return [...new Set(displayData.data.map((d) => d.Memo))].filter((memo) => memo);
+    });
+
+    const uniqueMemoObject = computed(() => {
+      return uniqueMemoArray.value.map((memo) => {
+        return {
+          value: memo,
+          label: memo
+        };
+      });
+    });
 
     const transactionTableColumns = [
       {
@@ -141,6 +182,29 @@ const BudgetVisualizer = defineComponent({
         key: 'Amount Credit',
       },
     ];
+
+    watch(
+        selectedMonth,
+        (newMonth) => {
+          if (newMonth) {
+            displayData.data = displayData.data.filter(
+                (d: Transaction) => `${d.Date.split('/')[0]}/${d.Date.split('/')[2]}` === newMonth
+            )
+          }
+        }
+    )
+
+    watch(
+        selectedMemo,
+        (newMemo) => {
+          if (newMemo) {
+            displayData.data = displayData.data.filter(
+                (d: Transaction) => d.Memo === newMemo
+            )
+          }
+        }
+    )
+
 
     watchEffect(() => {
       console.log(`uniqueMonthsArray: ${(uniqueMonthsArray)}`)
@@ -167,53 +231,6 @@ const BudgetVisualizer = defineComponent({
       uniqueMonthsObject,
       uniqueMemoObject
     };
-  },
-  watch: {
-    data: {
-      immediate: true,
-      handler(data) {
-        if (data?.data) {
-          this.headers = data.data[0];
-
-          this.displayData = data.data.slice(1).map((row: Array<string>) => {
-            return this.headers.reduce((object: { [key: string]: string }, header: string, index: number) => {
-              object[header] = row[index];
-              return object;
-            }, {});
-          })
-
-          this.uniqueMonthsArray = new Set(this.displayData.map(
-              (d: Transaction) => d.Date.split("/")[0] + "/" + d.Date.split("/")[2]));
-
-          this.uniqueMonthsObject = Array.from(this.uniqueMonthsArray).map((month: string) => {
-            return {
-              value: month,
-              label: month,
-            }
-          });
-
-          this.numberOfMonths = this.uniqueMonthsArray.size;
-
-          this.uniqueMemoArray = [...new Set(this.displayData.map(d => d.Memo))];
-
-          this.uniqueMemoObject = this.uniqueMemoArray.map(memo => ({
-            value: memo,
-            label: memo
-          }));
-        }
-      },
-    },
-    selectedMonth: {
-      immediate: true,
-      handler(selectedMonth) {
-        if (selectedMonth) {
-          console.log(`selectedMonth: ${selectedMonth}`)
-          this.displayData = this.displayData.filter(
-              (d: Transaction) => d.Date.split("/")[0] + "/" + d.Date.split("/")[2] === selectedMonth
-          )
-        }
-      }
-    }
   },
 });
 export default BudgetVisualizer;
