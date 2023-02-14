@@ -91,13 +91,12 @@ const BudgetVisualizer = defineComponent({
         const data = await s3Client.send(new GetObjectCommand(bucketParams));
         if (data.Body) {
           const csvString = await data.Body.transformToString();
-          const transactionsList = d3.dsvFormat(';').parse(csvString).map(row => ({
+          return d3.dsvFormat(';').parse(csvString).map(row => ({
             Date: row.Date ?? '',
             Description: row.Description ?? '',
             Memo: row.Memo ?? '',
             'Amount Debit': row['Amount Debit'] ?? ''
           }));
-          return transactionsList;
         } else {
           console.log('Data body is undefined');
           return [];
@@ -195,42 +194,16 @@ const BudgetVisualizer = defineComponent({
         }
     )
 
-    // watchEffect(() => {
-    //   if (data.value?.data) {
-    //     // TS2740: Type 'TransactionsList' is missing the following properties from type 'never[]': length, pop, push, concat, and 29 more.
-    //     headers.value = data.value.data[0];
-    //     displayData.data = data.value.data
-    //         .slice(1)
-    //         // TS2345: Argument of type '(row: Array<string>) => Transaction' is not assignable to parameter of type '(value: TransactionsList, index: number, array: TransactionsList[]) => Transaction'.   Types of parameters 'row' and 'value' are incompatible.     Type 'TransactionsList' is missing the following properties from type 'string[]': length, pop, push, concat, and 29 more.
-    //         .map((row: Array<string>) => {
-    //           return headers.value.reduce(
-    //               (object: { [key: string]: string }, header: string, index: number) => {
-    //                 object[header] = row[index];
-    //                 return object;
-    //               },
-    //               {} as { [key: string]: string }
-    //           ) as Transaction;
-    //         });
-    //     uniqueMonthsArray = new Set(
-    //
-    //         displayData.data.map((d: Transaction) => d.Date.split("/")[0] + "/" + d.Date.split("/")[2])
-    //     );
-    //     // TS2322: Type '{ value: string; label: string; }[]' is not assignable to type '() => IterableIterator<{ value: string; label: string; }>'.   Type '{ value: string; label: string; }[]' provides no match for the signature '(): IterableIterator<{ value: string; label: string; }>'.
-    //     uniqueMonthsObject.values = Array.from(uniqueMonthsArray).map((month: string) => {
-    //       return {
-    //         value: month,
-    //         label: month,
-    //       };
-    //     });
-    //     numberOfMonths.value = uniqueMonthsArray.size;
-    //     uniqueMemoArray = [...new Set(displayData.data.map((d) => d.Memo))];
-    //     // TS2322: Type '{ value: string; label: string; }[]' is not assignable to type '() => IterableIterator<{ value: string; label: string; }>'.   Type '{ value: string; label: string; }[]' provides no match for the signature '(): IterableIterator<{ value: string; label: string; }>
-    //     uniqueMemoObject.values = uniqueMemoArray.map((memo) => ({
-    //       value: memo,
-    //       label: memo,
-    //     }));
-    //   }
-    // });
+    watch(
+        selectedMemo,
+        (newMemo) => {
+          if (newMemo) {
+            displayData.data = displayData.data.filter(
+                (d: Transaction) => d.Memo === newMemo
+            )
+          }
+        }
+    )
 
 
     watchEffect(() => {
@@ -259,53 +232,6 @@ const BudgetVisualizer = defineComponent({
       uniqueMemoObject
     };
   },
-  // watch: {
-  //   data: {
-  //     immediate: true,
-  //     handler(data) {
-  //       if (data?.data) {
-  //         this.headers = data.data[0];
-  //
-  //         this.displayData = data.data.slice(1).map((row: Array<string>) => {
-  //           return this.headers.reduce((object: { [key: string]: string }, header: string, index: number) => {
-  //             object[header] = row[index];
-  //             return object;
-  //           }, {});
-  //         })
-  //
-  //         this.uniqueMonthsArray = new Set(this.displayData.data.map(
-  //             (d: Transaction) => d.Date.split("/")[0] + "/" + d.Date.split("/")[2]));
-  //
-  //         this.uniqueMonthsObject = Array.from(this.uniqueMonthsArray).map((month: string) => {
-  //           return {
-  //             value: month,
-  //             label: month,
-  //           }
-  //         });
-  //
-  //         this.numberOfMonths = this.uniqueMonthsArray.size;
-  //
-  //         this.uniqueMemoArray = [...new Set(this.displayData.data.map(d => d.Memo))];
-  //
-  //         this.uniqueMemoObject = this.uniqueMemoArray.map(memo => ({
-  //           value: memo,
-  //           label: memo
-  //         }));
-  //       }
-  //     },
-  //   },
-  //   // selectedMonth: {
-  //   //   immediate: true,
-  //   //   handler(selectedMonth) {
-  //   //     if (selectedMonth) {
-  //   //       console.log(`selectedMonth: ${selectedMonth}`)
-  //   //       this.displayData.data = this.displayData.data.filter(
-  //   //           (d: Transaction) => d.Date.split("/")[0] + "/" + d.Date.split("/")[2] === selectedMonth
-  //   //       )
-  //   //     }
-  //   //   }
-  //   // }
-  // },
 });
 export default BudgetVisualizer;
 </script>
