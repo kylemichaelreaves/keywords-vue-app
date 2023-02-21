@@ -1,8 +1,7 @@
 <template>
-
 </template>
 
-<script>
+<script lang="ts">
 import {defineComponent} from "vue";
 const Transactions = defineComponent( {
   name: "Transactions",
@@ -14,5 +13,4 @@ export default Transactions
 </script>
 
 <style scoped>
-
 </style>
