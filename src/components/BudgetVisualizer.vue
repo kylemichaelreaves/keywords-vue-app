@@ -43,20 +43,6 @@ import TimelineChart from "./charts/TimelineChart.vue";
 import LineChart from "./charts/LineChart.vue";
 import {fetchTransactionsS3Client} from "../api";
 
-const toDoList = [
-  {text: "When there's a selected month, Display a BarChart of the budget", done: false},
-  {text: "When there's a selected month, display a PieChart", done: false},
-  {text: "Display a LineChart of the budget", done: false},
-  {text: 'Toggle between monthly, yearly, and all time', done: false},
-  {text: 'A select for filter by year', done: false},
-  {text: 'Load the csv from AWS S3', done: true},
-  {text: 'Display the csv as a table', done: true},
-  {text: 'Paginate the table by month', done: true},
-  {text: 'Select filters can be reset', done: true},
-  {text: 'The Date select should filter the table showing only those transactions', done: true},
-  {text: 'The Memo select should be filtered by a selectedMonth, if there is a selectedMonth', done: true},
-]
-
 const BudgetVisualizer = defineComponent({
   name: "BudgetVisualizer",
   components: {
@@ -247,7 +233,6 @@ const BudgetVisualizer = defineComponent({
       memosByDate,
       selectedMonth,
       selectedMemo,
-      toDoList,
       uniqueMonthsArray,
       uniqueMemoArray,
       uniqueMonthsObject,
