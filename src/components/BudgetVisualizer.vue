@@ -5,27 +5,27 @@
     </el-icon>
     Budget Visualizer
   </h2>
-  <!--  if there's an error, display an error -->
+
+  <el-row :gutter="20">
+    <!--  TODO Fix misleading name of this component, it's a barchart, not a line -->
+    <el-col :span="20">
+      <TimelineChart v-if="debitsByMonth" :data="debitsByMonth"/>
+      <LineChart v-if="debitsByDay" :debitsByDay="debitsByDay"/>
+    </el-col>
+  </el-row>
   <el-alert v-if="error" type="error" :title="'Error: ' + error">
     <h2>
       {{ error }}
     </h2>
   </el-alert>
-  <p>This component will do many things, including:</p>
-  <!-- display a list of things this component should do in a list  -->
-  <ToDoList :initialTodos="toDoList"/>
   <br/>
 
   <TransactionsTable
       :displayData="displayData.data"
       :uniqueMemoObject="uniqueMemoObject"
       :uniqueMonthsObject="uniqueMonthsObject"
-      :filteredMemoObject="filteredMemoObject"
       :selectedMemo="selectedMemo"
       :selectedMonth="selectedMonth"
-      :columns="columns"
-      :handle-memo-change="handleMemoChange"
-      :handle-month-change="handleMonthChange"
       @update:selectedMemo="selectedMemo = $event"
       @update:selectedMonth="selectedMonth = $event"
   />
@@ -35,88 +35,44 @@
 <script lang="ts">
 import {computed, defineComponent, reactive, ref, watch, watchEffect} from "vue";
 import ToDoList from "./ToDoList.vue";
-import TransactionsTable from "./TransactionsTable.vue";
+import TransactionsTable from "./transactions/TransactionsTable.vue";
 import {useQuery} from "@tanstack/vue-query";
-import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
-import * as d3 from 'd3';
-import {Transaction, TransactionsList} from "../types";
+import {Transaction} from "../types";
+import PieChart from "./charts/PieChart.vue";
+import TimelineChart from "./charts/TimelineChart.vue";
+import LineChart from "./charts/LineChart.vue";
+import {fetchTransactionsS3Client} from "../api";
 
+const toDoList = [
+  {text: "When there's a selected month, Display a BarChart of the budget", done: false},
+  {text: "When there's a selected month, display a PieChart", done: false},
+  {text: "Display a LineChart of the budget", done: false},
+  {text: 'Toggle between monthly, yearly, and all time', done: false},
+  {text: 'A select for filter by year', done: false},
+  {text: 'Load the csv from AWS S3', done: true},
+  {text: 'Display the csv as a table', done: true},
+  {text: 'Paginate the table by month', done: true},
+  {text: 'Select filters can be reset', done: true},
+  {text: 'The Date select should filter the table showing only those transactions', done: true},
+  {text: 'The Memo select should be filtered by a selectedMonth, if there is a selectedMonth', done: true},
+]
 
 const BudgetVisualizer = defineComponent({
   name: "BudgetVisualizer",
   components: {
     ToDoList,
-    TransactionsTable
+    TransactionsTable,
+    TimelineChart,
+    PieChart,
+    LineChart,
   },
   // TODO: add to the toDoList structure subtasks for each of the items
   setup() {
     const headers = ref([]);
-    const displayData = reactive({
-      data: ref<Transaction[]>([])
-    });
+    const displayData = reactive({data: ref<Transaction[]>([])});
     const selectedMonth = ref('')
     const selectedMemo = ref('')
 
-    const toDoList = [
-      {text: 'Load the csv from AWS S3', done: true},
-      {text: 'Display the csv as a table', done: true},
-      {text: 'Paginate the table by month', done: true},
-      {text: 'Select filters can be reset', done: false},
-      {text: 'Display a piechart of the budget', done: false},
-      {text: 'Display a bar chart of the budget', done: false},
-      {text: 'Display a line chart of the budget', done: false},
-      {text: 'Toggle between monthly, yearly, and all time', done: false},
-      {text: 'The Date select should filter the table showing only those transactions', done: false},
-      {text: 'The Memo select should be filtered by a selectedMonth, if there is a selectedMonth', done: false},
-    ]
-
-    function parseData(data: string): TransactionsList['data'] {
-      return d3.dsvFormat(',').parse(data).map(row => ({
-        Date: row.Date ?? '',
-        Description: row.Description ?? '',
-        Memo: row.Memo ?? '',
-        'Amount Debit': row['Amount Debit'] ?? '',
-        'Amount Credit': row['Amount Credit'] ?? '',
-      }));
-    }
-
-    async function fetchTransactionsS3Client(): Promise<TransactionsList['data']> {
-      const s3Client = new S3Client({
-        region: 'us-east-1',
-        credentials: {
-          accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
-          secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY
-        }
-      });
-      const bucketParams = {
-        Bucket: import.meta.env.VITE_S3_BUCKET,
-        Key: 'transactions.csv'
-      }
-      try {
-        const data = await s3Client.send(new GetObjectCommand(bucketParams));
-        if (data.Body) {
-          const csvString = await data.Body.transformToString();
-          return parseData(csvString);
-        } else {
-          console.log('Data body is undefined');
-          return [];
-        }
-      } catch (error) {
-        console.log(error)
-        return [];
-      }
-    }
-
-    // handleMonthChange sets the monthSelected state to the value of the selected month
-    const handleMonthChange = (value: string) => {
-      console.log(`handleMonthChange: ${value}`)
-      // selectedMonth.value = value
-    }
-
-    const handleMemoChange = (value: string) => {
-      console.log(`handleMemoChange: ${value}`)
-      // selectedMemo.value = value
-    }
 
     const {data, error, isLoading, isFetching} = useQuery(
         ['transactions'],
@@ -171,15 +127,7 @@ const BudgetVisualizer = defineComponent({
       return [...new Set(filteredData.map((d: Transaction) => d.Memo))].filter((memo) => memo);
     });
 
-    const filteredMemoObject = computed(() => {
-      return Array.from(filteredMemos.value).map((memo) => {
-        return {
-          value: memo,
-          label: memo
-        };
-      });
-    });
-
+    // builds the options of the Memo select
     const uniqueMemoObject = computed(() => {
       return [...new Set(filteredMemos.value.map((d: Transaction) => d.Memo))]
           .filter((memo) => memo)
@@ -191,82 +139,119 @@ const BudgetVisualizer = defineComponent({
           });
     });
 
-    const transactionTableColumns = [
-      {
-        title: 'Date',
-        key: 'Date',
-      },
-      {
-        title: 'Description',
-        key: 'Description',
-      },
-      {
-        title: 'Memo',
-        key: 'Memo',
-      },
-      {
-        title: 'Amount Debit',
-        key: 'Amount Debit',
-      },
-      {
-        title: 'Amount Credit',
-        key: 'Amount Credit',
-      },
-    ];
-
-    watchEffect(() => {
-
-      if (selectedMonth.value && data.value) {
-        const filteredData = data.value.filter((d: Transaction) =>
+    const filterData = computed(() => {
+      let filteredData = data.value || [];
+      if (selectedMonth.value && selectedMemo.value) {
+        filteredData = filteredData.filter((d: Transaction) =>
+            `${d.Date.split('/')[0]}/${d.Date.split('/')[2]}` === selectedMonth.value && d.Memo === selectedMemo.value
+        );
+      } else if (selectedMonth.value) {
+        filteredData = filteredData.filter((d: Transaction) =>
             `${d.Date.split('/')[0]}/${d.Date.split('/')[2]}` === selectedMonth.value
         );
-        displayData.data = filteredData;
-
-      } else if (selectedMemo.value && data.value) {
-        const filteredData = data.value.filter((d: Transaction) => d.Memo === selectedMemo.value);
-        displayData.data = filteredData;
-
-
-      } else if (selectedMonth.value && selectedMemo.value && data.value) {
-        // TODO the selectedMemo.value should be filtered by the selectedMonth.value
-        displayData.data = data.value.filter((d: Transaction) =>
-            `${d.Date.split('/')[0]}/${d.Date.split('/')[2]}` === selectedMonth.value
-        ).filter((d: Transaction) => d.Memo === selectedMemo.value);
-
-      } else if (data.value) {
-        displayData.data = [...data.value];
+      } else if (selectedMemo.value) {
+        filteredData = filteredData.filter((d: Transaction) => d.Memo === selectedMemo.value);
       }
+      return filteredData;
+    });
+
+    function sumDebitsByMonth(data: Transaction[]): Record<string, number> {
+      return data.reduce((acc: Record<string, number>, cur) => {
+        const [month, day, year] = cur.Date.split('/');
+        const paddedMonth = month.length === 1 ? `0${month}` : month;
+        const key = `${paddedMonth}/${year}`;
+        const amount = parseFloat(cur['Amount Debit']) || 0;
+        acc[key] = (acc[key] || 0) + amount;
+        return acc;
+      }, {});
+    }
+
+    const debitsByMonth = computed(() => {
+      const data = filterData.value;
+      const debitsObj = sumDebitsByMonth(data);
+      return Object.keys(debitsObj).map((date) => ({date, amount: debitsObj[date]}));
+    });
+
+    function sumDebitsByDay(data: Transaction[]): Record<string, number> {
+      return data.reduce((acc: Record<string, number>, cur) => {
+        const date = cur.Date;
+        const amount = parseFloat(cur['Amount Debit']) || 0;
+        acc[date] = (acc[date] || 0) + amount;
+        return acc;
+      }, {});
+    }
+
+    const debitsByDay = computed(() => {
+      const data = filterData.value;
+      const debitsObj = sumDebitsByDay(data);
+      return Object.keys(debitsObj).map((date) => ({date, amount: debitsObj[date]}));
+    });
+
+    /**
+     * Returns an array of objects, each with a date and a list of memos for that date.
+     * Each memo has an amount value that is the total of all transactions with the same memo and date.
+     *
+     * @returns {ComputedRef<Array<{date: string, memos: Array<{memo: string, amount: number}>}>>}
+     */
+    const memosByDate = computed(() => {
+      // Get the data from the filterData ref
+      const data = filterData.value;
+      // Create an object that groups memos by date
+      const memoGroups: Record<string, { memo: string, amount: number }[]> = data.reduce((acc, cur) => {
+        const date = cur.Date;
+        // If the date key doesn't exist in the accumulator, create it and set its value to an empty array
+        if (!acc[date]) {
+          acc[date] = [];
+        }
+        // Check that memo is not an empty string before processing
+        const memo = cur.Memo;
+        if (memo !== '') {
+          const amount = parseFloat(cur['Amount Debit']) || 0;
+          const memoIndex = acc[date].findIndex((m) => m.memo === memo);
+          // If the memo does not exist in the array, add a new object with memo and amount
+          if (memoIndex === -1) {
+            acc[date].push({memo, amount});
+          } else { // Otherwise, add the amount to the existing memo object
+            acc[date][memoIndex].amount += amount;
+          }
+        }
+        return acc;
+      }, {} as Record<string, { memo: string, amount: number }[]>);
+      // Map the memoGroups object to an array of objects with date and memos keys
+      return Object.keys(memoGroups).map((date) => ({
+        date,
+        memos: memoGroups[date],
+      }));
     });
 
     watchEffect(() => {
-      console.log('uniqueMemoObject length:', uniqueMemoObject.value.length);
-      console.log('uniqueMemoObject:', JSON.stringify(uniqueMemoObject.value));
+      displayData.data = filterData.value;
+
+      console.log('memosByDate', memosByDate.value);
     });
 
-    watch(() => selectedMonth.value, (newValue, oldValue) => {
+    watch(() => [selectedMonth.value, selectedMemo.value], (newValue, oldValue) => {
       console.log('Selected month changed from', oldValue, 'to', newValue);
     });
 
-
     return {
-      columns: transactionTableColumns,
-      data,
+      debitsByMonth,
+      debitsByDay,
       displayData,
       error,
+      filterData,
       headers,
-      handleMonthChange,
-      handleMemoChange,
       isLoading,
       isFetching,
       numberOfMonths,
-      toDoList,
+      memosByDate,
       selectedMonth,
       selectedMemo,
+      toDoList,
       uniqueMonthsArray,
       uniqueMemoArray,
       uniqueMonthsObject,
       uniqueMemoObject,
-      filteredMemoObject,
     };
   },
 });

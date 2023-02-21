@@ -43,7 +43,11 @@ export default ToDoList;
 
 <style scoped>
 li {
-  margin-bottom: 5px; /* or padding-bottom: 10px; */
+  font-size: 11pt;
+  margin-bottom: 0.1em;
+}
+ul {
+  padding-left: 40px;
 }
 
 .todo-switch {
