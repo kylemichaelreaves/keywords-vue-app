@@ -45,9 +45,9 @@ import {ref, computed, defineComponent, watch} from 'vue';
 import AddressList from "./AddressList.vue";
 import {useQuery} from "@tanstack/vue-query";
 import axios from "axios";
-import {router} from "../main";
+import {router} from "../../main";
 import AddressResults from "./AddressResults.vue";
-import {API_GATEWAY_URL} from "../constants";
+import {API_GATEWAY_URL} from "../../constants";
 
 interface FormData {
   streetAddress: string;

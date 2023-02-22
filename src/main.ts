@@ -1,5 +1,5 @@
 import {createApp} from 'vue'
-import {createRouter, createWebHistory} from "vue-router";
+import {createRouter, createWebHistory, RouterLink} from "vue-router";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createPinia} from 'pinia'
 import './style.css'
@@ -10,7 +10,9 @@ import Navbar from "./components/Navbar.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import BudgetVisualizer from "./components/BudgetVisualizer.vue";
+import Transactions from "./components/transactions/Transactions.vue";
+import TransactionsByMonth from "./components/transactions/TransactionsByMonth.vue";
+import TransactionsByMemo from "./components/transactions/TransactionsByMemo.vue";
 
 
 const pinia = createPinia()
@@ -29,14 +31,34 @@ const routes = [
     {
         path: '/address-geocoder',
         name: 'address-geocoder',
-        component: () => import('./components/AddressGeocoder.vue')
+        component: () => import('./components/address/AddressGeocoder.vue')
     },
     {
         path: '/budget-visualizer',
         name: 'budget-visualizer',
-        component: BudgetVisualizer
+        component: () => import('./components/BudgetVisualizer.vue'),
+        children: [
+            {
+                path: 'transactions',
+                name: 'transactions',
+                component: Transactions,
+                children: [
+                    {
+                        path: 'by-month/:month',
+                        name: 'TransactionsByMonth',
+                        component: TransactionsByMonth
+                    },
+                    {
+                        path: 'by-memo/:memo',
+                        name: 'TransactionsByMemo',
+                        component: TransactionsByMemo
+                    }
+                ]
+            }
+        ]
     }
 ]
+
 
 export const router = createRouter({
     history: createWebHistory(),
@@ -49,6 +71,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 
+
+
 app
     .use(router)
     .use(VueQueryPlugin)
@@ -57,3 +81,5 @@ app
     .mount('#app')
 
 app.component('Navbar', Navbar)
+
+

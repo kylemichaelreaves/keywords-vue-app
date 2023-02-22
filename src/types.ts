@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 type Transaction = {
     "Transaction Number"?: string;
     Date: string;
@@ -12,4 +14,16 @@ type Transaction = {
 
 type TransactionsList = { data: Array<Transaction> };
 
-export type { Transaction, TransactionsList };
+
+type ArcDataObject<T> = d3.DefaultArcObject & { data: PieChartData };
+
+interface PieChartData {
+    label: string;
+    value: number;
+}
+
+interface TimelineChartProps {
+    debitsByMonth: { [key: string]: number };
+}
+
+export type { Transaction, TransactionsList, PieChartData, ArcDataObject, TimelineChartProps };
