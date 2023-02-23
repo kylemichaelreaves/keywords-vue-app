@@ -12,6 +12,11 @@ type Transaction = {
     Fees?: string;
 };
 
+interface TransactionData {
+    [key: string]: string;
+}
+
+
 type TransactionsList = { data: Array<Transaction> };
 
 
@@ -26,4 +31,4 @@ interface TimelineChartProps {
     debitsByMonth: { [key: string]: number };
 }
 
-export type { Transaction, TransactionsList, PieChartData, ArcDataObject, TimelineChartProps };
+export type {Transaction, TransactionData, TransactionsList, PieChartData, ArcDataObject, TimelineChartProps};

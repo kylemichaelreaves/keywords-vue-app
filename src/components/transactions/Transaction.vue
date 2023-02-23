@@ -1,34 +1,39 @@
 <template>
+  <el-table :data="displayData" style="width: 100%" border>
+    <el-table-column
+        v-for="(value, key) in transaction"
+        :key="key"
+        :prop="key"
+        :label="key"
+    />
+  </el-table>
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
-const Transaction = defineComponent( {
-  name: "Transaction",
+import {defineComponent, watchEffect} from "vue";
+import {TransactionData} from "../../types"
+
+
+export default defineComponent({
+  name: "TransactionTable",
   props: {
-    id: {
-      type: String,
-      default: ""
-    },
-    date: {
-      type: String,
-      default: ""
-    },
-    memo: {
-      type: String,
-      default: ""
-    },
-    amount: {
-      type: String,
-      default: ""
+    transaction: {
+      type: Object as () => TransactionData,
+      required: true,
     },
   },
-  setup() {
-    return {}
-  }
-});
-export default Transaction;
-</script>
+  setup(props) {
+    const displayData = [props.transaction];
 
-<style scoped>
+    // watch for changes to the transaction prop
+    // and update the displayData
+    watchEffect(() => {
+      displayData[0] = props.transaction;
+    });
+
+    return {displayData};
+  },
+});
+</script>
+<style>
 </style>

@@ -67,7 +67,9 @@ const BudgetVisualizer = defineComponent({
 
     const uniqueMonthsArray = computed(() => {
       return new Set(
-          displayData.data.map((d: Transaction) => d.Date.split('/')[0] + '/' + d.Date.split('/')[2])
+          displayData.data.map((d: Transaction) =>
+              d.Date.split('/')[0] + '/' + d.Date.split('/')[2]
+          )
       );
     });
 

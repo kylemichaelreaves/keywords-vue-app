@@ -38,9 +38,7 @@
       <!-- If the columns name is Date or Memo, render a link to the page    -->
       <template #default="{row}">
         <div v-if="column.key === 'Date' || column.key === 'Memo'">
-          <router-link :to="{name: 'Transaction', params: {id: row.id}}">
-            {{ row[column.key] }}
-          </router-link>
+          <router-link :to="`/transaction/${row['Transaction Number']}`">{{ row[column.key] }}</router-link>
         </div>
         <div v-else>
           {{ row[column.key] }}
@@ -53,14 +51,9 @@
 
 <script lang="ts">
 import {defineComponent, watchEffect, ref} from "vue";
-import {useRouter} from "vue-router";
-import RouterLinkColumn from "./RouterLinkColumn.vue";
 
 const TransactionsTable = defineComponent({
   name: "TransactionsTable",
-  components: {
-    RouterLinkColumn
-  },
   emits: ["update:selectedMemo", "update:selectedMonth"],
   props: {
     displayData: {
@@ -84,16 +77,19 @@ const TransactionsTable = defineComponent({
       default: ""
     }
   } as const,
-  setup(props) {
+  setup(props)
+  {
     const displayData = ref(props.displayData);
     const uniqueMemoObject = ref(props.uniqueMemoObject);
     const uniqueMonthsObject = props.uniqueMonthsObject;
     const selectedMemo = props.selectedMemo;
     const selectedMonth = props.selectedMonth;
 
-    const router = useRouter();
-
     const tableColumns = [
+      {
+        title: 'Transaction Number',
+        key: 'Transaction Number',
+      },
       {
         title: 'Date',
         key: 'Date',
@@ -116,45 +112,9 @@ const TransactionsTable = defineComponent({
       },
     ];
 
-    function formatColumn(column: string, value: string | number | Date) {
-      if (column === 'Date') {
-        return `<router-link :to="{ name: 'TransactionsByMonth', params: { month: formatDate('${value}') } }">${formatDate(value)}</router-link>`;
-      } else if (column === 'Memo') {
-        return `<router-link :to="{ name: 'TransactionsByMemo', params: { memo: '${value}' } }">${value}</router-link>`;
-      } else {
-        return value;
-      }
-    }
-
-
-    function formatValue(key: string, value: string) {
-      if (key === 'Date') {
-        return formatDate(value);
-      } else if (key === 'Memo') {
-        return formatMemo(value);
-      } else {
-        return value;
-      }
-    }
-
-    function formatDate(dateString: string | number | Date) {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'});
-    }
-
-    function formatMemo(memo: string) {
-      // replace underscores with spaces and capitalize each word
-      return memo.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    }
-
-
-    function goToPage(page: string) {
-      console.log('navigating to:', page);
-      router.push(page);
-    }
-
     watchEffect(() => {
       displayData.value = props.displayData;
+      console.log('displayData.value', displayData.value)
     });
 
     watchEffect(() => {
@@ -163,8 +123,6 @@ const TransactionsTable = defineComponent({
 
     return {
       displayData,
-      formatValue,
-      formatColumn,
       uniqueMemoObject,
       uniqueMonthsObject,
       selectedMemo,
@@ -172,6 +130,8 @@ const TransactionsTable = defineComponent({
       tableColumns
     };
   }
+
+
 });
 
 export default TransactionsTable;
