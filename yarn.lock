@@ -110,14 +110,14 @@
   dependencies:
     tslib "^2.3.1"
 
-"@aws-sdk/client-cognito-identity@3.272.0":
-  version "3.272.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity/-/client-cognito-identity-3.272.0.tgz#00d29dde42ce5bd31eb1e05b6d8a6de1d06bc028"
-  integrity sha512-uMjRWcNvX7SoGaVn0mXWD43+Z1awPahQwGW3riDLfXHZdOgw2oFDhD3Jg5jQ8OzQLUfDvArhE3WyZwlS4muMuQ==
+"@aws-sdk/client-cognito-identity@3.276.0":
+  version "3.276.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity/-/client-cognito-identity-3.276.0.tgz#db885b34ad0f3aa2f1d378a0da5b3124a051d558"
+  integrity sha512-haFxr8QKNxoRLIWyawc4EfEN6ep4yrWv5e5KWzbulJaw6QwLKmTCLyv09mScbk1FUgpn1MaIy2mJiijiu2RJJQ==
   dependencies:
     "@aws-crypto/sha256-browser" "3.0.0"
     "@aws-crypto/sha256-js" "3.0.0"
-    "@aws-sdk/client-sts" "3.272.0"
+    "@aws-sdk/client-sts" "3.276.0"
     "@aws-sdk/config-resolver" "3.272.0"
     "@aws-sdk/credential-provider-node" "3.272.0"
     "@aws-sdk/fetch-http-handler" "3.272.0"
@@ -152,14 +152,14 @@
     tslib "^2.3.1"
 
 "@aws-sdk/client-s3@^3.267.0":
-  version "3.272.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-s3/-/client-s3-3.272.0.tgz#cdac76a2ef2fa417ff6624bfbb2a3697631d7a38"
-  integrity sha512-KxlVhTHfmcm3HlAP5+vY1cuQt60AaYOISp1ccYOPsww7Ly7fbDnbov0AV9bcwlLLVcfZFWQYJqH+Gvk2SpyXFQ==
+  version "3.276.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-s3/-/client-s3-3.276.0.tgz#0b2c34acb46833054c57218d116fc11b7cd44c5f"
+  integrity sha512-9cwrYeMTx9a9MUWSxBr2i87NACEw3Vc8ALnDYZSvhps8UivdgZ1v3zN8c0v/g/3RrJJNco2HCs9je+lOPRvq3w==
   dependencies:
     "@aws-crypto/sha1-browser" "3.0.0"
     "@aws-crypto/sha256-browser" "3.0.0"
     "@aws-crypto/sha256-js" "3.0.0"
-    "@aws-sdk/client-sts" "3.272.0"
+    "@aws-sdk/client-sts" "3.276.0"
     "@aws-sdk/config-resolver" "3.272.0"
     "@aws-sdk/credential-provider-node" "3.272.0"
     "@aws-sdk/eventstream-serde-browser" "3.272.0"
@@ -208,7 +208,7 @@
     "@aws-sdk/util-utf8" "3.254.0"
     "@aws-sdk/util-waiter" "3.272.0"
     "@aws-sdk/xml-builder" "3.201.0"
-    fast-xml-parser "4.0.11"
+    fast-xml-parser "4.1.2"
     tslib "^2.3.1"
 
 "@aws-sdk/client-sso-oidc@3.272.0":
@@ -287,10 +287,10 @@
     "@aws-sdk/util-utf8" "3.254.0"
     tslib "^2.3.1"
 
-"@aws-sdk/client-sts@3.272.0":
-  version "3.272.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-sts/-/client-sts-3.272.0.tgz#a63993d53ca7243f8dadc715b539afdcfa482abf"
-  integrity sha512-kigxCxURp3WupufGaL/LABMb7UQfzAQkKcj9royizL3ItJ0vw5kW/JFrPje5IW1mfLgdPF7PI9ShOjE0fCLTqA==
+"@aws-sdk/client-sts@3.276.0":
+  version "3.276.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-sts/-/client-sts-3.276.0.tgz#89bc73cfb92807fffac824a3aafe15cf218f2385"
+  integrity sha512-J6FR4tYa/WdDdwWAKhw/mXQXKWUaZZQpMiyFEbFPQyURSWu3u17nv97NUdvVOgCth48H6Wb6a4ksssYy4K9tFQ==
   dependencies:
     "@aws-crypto/sha256-browser" "3.0.0"
     "@aws-crypto/sha256-js" "3.0.0"
@@ -326,7 +326,7 @@
     "@aws-sdk/util-user-agent-browser" "3.272.0"
     "@aws-sdk/util-user-agent-node" "3.272.0"
     "@aws-sdk/util-utf8" "3.254.0"
-    fast-xml-parser "4.0.11"
+    fast-xml-parser "4.1.2"
     tslib "^2.3.1"
 
 "@aws-sdk/config-resolver@3.272.0":
@@ -340,12 +340,12 @@
     "@aws-sdk/util-middleware" "3.272.0"
     tslib "^2.3.1"
 
-"@aws-sdk/credential-provider-cognito-identity@3.272.0":
-  version "3.272.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/credential-provider-cognito-identity/-/credential-provider-cognito-identity-3.272.0.tgz#65c4bf671f60ea47294fcb41f55dcb5d846d4a15"
-  integrity sha512-rVx0rtQjbiYCM0nah2rB/2ut2YJYPpRr1AbW/Hd4r/PI+yiusrmXAwuT4HIW2yr34zsQMPi1jZ3WHN9Rn9mzlg==
+"@aws-sdk/credential-provider-cognito-identity@3.276.0":
+  version "3.276.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/credential-provider-cognito-identity/-/credential-provider-cognito-identity-3.276.0.tgz#b49d5981b3fd9a9f091b2a4ab5344663f83bb5af"
+  integrity sha512-LaIQNt2F+XWvX031MzYNoHWuqjpyomsdI+1y6KaeC/9z51Y+usmB/ay1jYK/kUmXl/NcBmZR5gPELZu7P6WtaQ==
   dependencies:
-    "@aws-sdk/client-cognito-identity" "3.272.0"
+    "@aws-sdk/client-cognito-identity" "3.276.0"
     "@aws-sdk/property-provider" "3.272.0"
     "@aws-sdk/types" "3.272.0"
     tslib "^2.3.1"
@@ -433,14 +433,14 @@
     tslib "^2.3.1"
 
 "@aws-sdk/credential-providers@^3.267.0":
-  version "3.272.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/credential-providers/-/credential-providers-3.272.0.tgz#fc606aedfaf0d11850f1b3158b2f876ec2b58d1a"
-  integrity sha512-ucd6Xq6aBMf+nM4uz5zkjL11mwaE5BV1Q4hkulaGu2v1dRA8n6zhLJk/sb4hOJ7leelqMJMErlbQ2T3MkYvlJQ==
+  version "3.276.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/credential-providers/-/credential-providers-3.276.0.tgz#1fee8ee02d1831c5781627ccea737ead524b6480"
+  integrity sha512-pgKP0dRMP48eDfXIcGENKzi6CIA7IVUAqFdWLY1bonq7DGSLveBvD7hkxu1ZXVp6HlucLiGtncgGrRKBmtK6Jg==
   dependencies:
-    "@aws-sdk/client-cognito-identity" "3.272.0"
+    "@aws-sdk/client-cognito-identity" "3.276.0"
     "@aws-sdk/client-sso" "3.272.0"
-    "@aws-sdk/client-sts" "3.272.0"
-    "@aws-sdk/credential-provider-cognito-identity" "3.272.0"
+    "@aws-sdk/client-sts" "3.276.0"
+    "@aws-sdk/credential-provider-cognito-identity" "3.276.0"
     "@aws-sdk/credential-provider-env" "3.272.0"
     "@aws-sdk/credential-provider-imds" "3.272.0"
     "@aws-sdk/credential-provider-ini" "3.272.0"
@@ -1545,18 +1545,18 @@
   dependencies:
     remove-accents "0.4.2"
 
-"@tanstack/query-core@4.24.9":
-  version "4.24.9"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.24.9.tgz#52a5981d46f48e85630bcf5a645318e405493ce1"
-  integrity sha512-pZQ2NpdaHzx8gPPkAPh06d6zRkjfonUzILSYBXrdHDapP2eaBbGsx5L4/dMF+fyAglFzQZdDDzZgAykbM20QVw==
+"@tanstack/query-core@4.24.10":
+  version "4.24.10"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.24.10.tgz#758e1f5b2d7faf7316d299facd272a9f64c26299"
+  integrity sha512-2QywqXEAGBIUoTdgn1lAB4/C8QEqwXHj2jrCLeYTk2xVGtLiPEUD8jcMoeB2noclbiW2mMt4+Fq7fZStuz3wAQ==
 
 "@tanstack/vue-query@^4.22.0":
-  version "4.24.9"
-  resolved "https://registry.yarnpkg.com/@tanstack/vue-query/-/vue-query-4.24.9.tgz#26f73f66f33637d1efb8b6c468a6a9ecc6d996c5"
-  integrity sha512-qN2SRu5DHrTYo4TgoQG59s7GEWjvP6kJ+pCe4g7ww5WYTIQz14DSXRd5Sr87SUpcp6M9RZx9R07zpf16hV+/5Q==
+  version "4.24.10"
+  resolved "https://registry.yarnpkg.com/@tanstack/vue-query/-/vue-query-4.24.10.tgz#8cfd695318d00102d80e51691d8f6fcfa2e6bf92"
+  integrity sha512-K9mtij3WpQquySsaNhyN5ZQT3oO6Y69J+OT2/NYQYvYCI1AL1S5/sQ1n2FtpyslgrJn9khSerFB7icbYcbcubA==
   dependencies:
     "@tanstack/match-sorter-utils" "^8.1.1"
-    "@tanstack/query-core" "4.24.9"
+    "@tanstack/query-core" "4.24.10"
     "@vue/devtools-api" "^6.4.2"
     vue-demi "^0.13.11"
 
@@ -1798,9 +1798,9 @@
   integrity sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==
 
 "@types/node@^18.13.0":
-  version "18.14.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.14.0.tgz#94c47b9217bbac49d4a67a967fdcdeed89ebb7d0"
-  integrity sha512-5EWrvLmglK+imbCJY0+INViFWUHg1AHel1sq4ZVSfdcNqGy9Edv3UB9IIzzg+xPaUcAgZYcfVs2fBcwDeZzU0A==
+  version "18.14.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.14.1.tgz#90dad8476f1e42797c49d6f8b69aaf9f876fc69f"
+  integrity sha512-QH+37Qds3E0eDlReeboBxfHbX9omAcBCXEzswCu6jySP642jiM3cYSIkU/REqwhCUqXdonHFuBfJDiAJxMNhaQ==
 
 "@types/papaparse@^5.3.7":
   version "5.3.7"
@@ -2010,34 +2010,34 @@
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-vue/-/plugin-vue-4.0.0.tgz#93815beffd23db46288c787352a8ea31a0c03e5e"
   integrity sha512-e0X4jErIxAB5oLtDqbHvHpJe/uWNkdpYV83AOG2xo2tEVSzCzewgJMtREZM30wXnM5ls90hxiOtAuVU6H5JgbA==
 
-"@volar/language-core@1.2.0-alpha.17":
-  version "1.2.0-alpha.17"
-  resolved "https://registry.yarnpkg.com/@volar/language-core/-/language-core-1.2.0-alpha.17.tgz#3e9fd2b7a3936e59c86d823d8d5f10fb72baf049"
-  integrity sha512-nTJfag+EsjWPaefp7JxQ3uJIe0pLdTEfR1ZmaJgn4yKA2FkturuLdlHk3Nj3HjhAhoRDfF7S1BZFDnMjZCAegw==
+"@volar/language-core@1.2.0-alpha.19":
+  version "1.2.0-alpha.19"
+  resolved "https://registry.yarnpkg.com/@volar/language-core/-/language-core-1.2.0-alpha.19.tgz#6534780e4888441800c371cbe5b1b4be1dfb10eb"
+  integrity sha512-l/QsncqY3aV4CwJtw3r88tmUGO9yoTwcTXqKUfMwU2RC7X97xe6yAaB2medK7T+Azx6Xpv2yh9g5V0immyMWcA==
   dependencies:
-    "@volar/source-map" "1.2.0-alpha.17"
+    "@volar/source-map" "1.2.0-alpha.19"
 
-"@volar/source-map@1.2.0-alpha.17":
-  version "1.2.0-alpha.17"
-  resolved "https://registry.yarnpkg.com/@volar/source-map/-/source-map-1.2.0-alpha.17.tgz#2c482438657afb6f281659e8d818cc0cf49f90a7"
-  integrity sha512-g0NO3HWSo5PaY4Vv8MuQ9qhIwyxCWFWI69b0fuwdXsHo9gJ4Ngf9BKgg7U0h3b9XtmNnj1efIpgIK1rtwC+nyw==
+"@volar/source-map@1.2.0-alpha.19":
+  version "1.2.0-alpha.19"
+  resolved "https://registry.yarnpkg.com/@volar/source-map/-/source-map-1.2.0-alpha.19.tgz#758f7d0ed384cb596c403b83e39b1f03f32e42b1"
+  integrity sha512-pkMPiP28r3zHvyoSh29q4/MY2T+UGtsEN5ASu6N0/JEI0Wl4KKk0+nKP2Fge1JtIx9ZLjpGQxPr1eHBFvHxLAg==
   dependencies:
     muggle-string "^0.2.2"
 
-"@volar/typescript@1.2.0-alpha.17":
-  version "1.2.0-alpha.17"
-  resolved "https://registry.yarnpkg.com/@volar/typescript/-/typescript-1.2.0-alpha.17.tgz#756c509ef6f6a8eada2f8cf6c59a746f3d8f3a2a"
-  integrity sha512-1bJnlwfew0f738eqLjIoXEgNCFBAstzorn84GB96MLcdGPpEf2upQ/7FGSpgaJaFi9LTJBggkqBhuegxjqOQKg==
+"@volar/typescript@1.2.0-alpha.19":
+  version "1.2.0-alpha.19"
+  resolved "https://registry.yarnpkg.com/@volar/typescript/-/typescript-1.2.0-alpha.19.tgz#01b84dce3a38c772b8c7eeb515e0b30fdaf017bb"
+  integrity sha512-KRObKfbQ5930m1nIWBsV3I8uJAaJpqkM76ArsG3cOURuJ1dQSkFm3820Ge/9Ps8Wgf/NDpLPiy21CWDXP1KjnA==
   dependencies:
-    "@volar/language-core" "1.2.0-alpha.17"
+    "@volar/language-core" "1.2.0-alpha.19"
 
-"@volar/vue-language-core@1.1.5":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@volar/vue-language-core/-/vue-language-core-1.1.5.tgz#8c1f0fed82a0a0508a00c04ea07339959d7f3a57"
-  integrity sha512-HpouTNZuwVX+DicGik6y+g9m2fI0Xvng9K9Wh8xZCXzMFEhvjsxsbtWVmLSgnSV6mgyF8YTM3R6n/buR6kYBWA==
+"@volar/vue-language-core@1.1.7":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@volar/vue-language-core/-/vue-language-core-1.1.7.tgz#0bcfda136cac4a13d29fd561fd0b37ba9590df48"
+  integrity sha512-oEgMfbbU5kk6X+xs0U37KGdvHwq5xgQL7IhXLb0RUQVagVVnAzlkZs9m+Fv+XOioGwH75MeH2NQzk4+KVSCuEQ==
   dependencies:
-    "@volar/language-core" "1.2.0-alpha.17"
-    "@volar/source-map" "1.2.0-alpha.17"
+    "@volar/language-core" "1.2.0-alpha.19"
+    "@volar/source-map" "1.2.0-alpha.19"
     "@vue/compiler-dom" "^3.2.47"
     "@vue/compiler-sfc" "^3.2.47"
     "@vue/reactivity" "^3.2.47"
@@ -2046,13 +2046,13 @@
     muggle-string "^0.2.2"
     vue-template-compiler "^2.7.14"
 
-"@volar/vue-typescript@1.1.5":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@volar/vue-typescript/-/vue-typescript-1.1.5.tgz#bbe5b5d56d1b43370a159cf487558295e588b844"
-  integrity sha512-X8q2YJ/1bH36ZCvdYIc46O0QcWI3T6Uk+Uju5+ssiuscQ6Ie7v+gUXW9w/18a+Ms35DcEOOQBzE7Ex3A9KQzjQ==
+"@volar/vue-typescript@1.1.7":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@volar/vue-typescript/-/vue-typescript-1.1.7.tgz#f3226fd81777881ed3fabe5ed79431ea77400c24"
+  integrity sha512-JGHz+XUUS1MAgnBaDFsk2dBmMumMDYXJ40nH4EFzXUHyKOsinmuFsHaQJScZDOoM0NPeWK9jWaNOEozjygXXeQ==
   dependencies:
-    "@volar/typescript" "1.2.0-alpha.17"
-    "@volar/vue-language-core" "1.1.5"
+    "@volar/typescript" "1.2.0-alpha.19"
+    "@volar/vue-language-core" "1.1.7"
 
 "@vue/babel-helper-vue-transform-on@^1.0.2":
   version "1.0.2"
@@ -2273,9 +2273,9 @@ available-typed-arrays@^1.0.5:
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
 aws-sdk@^2.1313.0:
-  version "2.1319.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1319.0.tgz#be1d91fcac13262fa106f0f0a15ee07c023972fd"
-  integrity sha512-/gPCVsCARitph9FmBTXZmzjX0Br8LwBfu2MTNPGjVCiZkEUSoUWAAigIWkvrjTWOXCI7TSElRwtCzlsVHdv5VA==
+  version "2.1321.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1321.0.tgz#8284143facf5e7ac1b4f23f86f3594c939d7ea5a"
+  integrity sha512-VBNsTl13/JWYpvo7H9BgAUMZam4BxKNhlt7GlsuVdK30MdirIEsB0ZeqGeAO9KXRBLCv/FUnF/nV73+97qLKWw==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -2289,9 +2289,9 @@ aws-sdk@^2.1313.0:
     xml2js "0.4.19"
 
 axios@^1.2.3:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.3.3.tgz#e7011384ba839b885007c9c9fae1ff23dceb295b"
-  integrity sha512-eYq77dYIFS77AQlhzEL937yUBSepBfPIe8FcgEDN35vMNZKMrs81pgnyrQpwfy4NF4b4XWX1Zgx7yX+25w8QJA==
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.3.4.tgz#f5760cefd9cfb51fd2481acf88c05f67c4523024"
+  integrity sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
@@ -3024,10 +3024,10 @@ fast-levenshtein@^2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==
 
-fast-xml-parser@4.0.11:
-  version "4.0.11"
-  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.0.11.tgz#42332a9aca544520631c8919e6ea871c0185a985"
-  integrity sha512-4aUg3aNRR/WjQAcpceODG1C3x3lFANXRo8+1biqfieHmg9pyMt7qB4lQV/Ta6sJCTbA5vfD8fnA8S54JATiFUA==
+fast-xml-parser@4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.1.2.tgz#5a98c18238d28a57bbdfa9fe4cda01211fff8f4a"
+  integrity sha512-CDYeykkle1LiA/uqQyNwYpFbyF6Axec6YapmpUP+/RHWIoR1zKjocdvNaTsxCxZzQ6v9MLXaSYm9Qq0thv0DHg==
   dependencies:
     strnum "^1.0.5"
 
@@ -4017,9 +4017,9 @@ uuid@^8.3.2:
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
 vite@^4.0.0:
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-4.1.3.tgz#001a038c3a7757d532787c0de429b8368136ded5"
-  integrity sha512-0Zqo4/Fr/swSOBmbl+HAAhOjrqNwju+yTtoe4hQX9UsARdcuc9njyOdr6xU0DDnV7YP0RT6mgTTOiRtZgxfCxA==
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-4.1.4.tgz#170d93bcff97e0ebc09764c053eebe130bfe6ca0"
+  integrity sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==
   dependencies:
     esbuild "^0.16.14"
     postcss "^8.4.21"
@@ -4062,12 +4062,12 @@ vue-template-compiler@^2.7.14:
     he "^1.2.0"
 
 vue-tsc@^1.0.11:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/vue-tsc/-/vue-tsc-1.1.5.tgz#49f132f68f1c1abc83d5d784964c7892fbf9569b"
-  integrity sha512-DVAbFGP/AcoQGfo7T1iRz6TNDeLGzvTbpqH5KCgNb6EuLLnbFP9Ki9KYHMkYs+hLlNVlw9Kp5WXm7I/Ur70mhA==
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/vue-tsc/-/vue-tsc-1.1.7.tgz#fa6a56be15067357f30862e717644921fbd9e6a3"
+  integrity sha512-TYuWJMQmwaV9kC1oWvw6fSHlymJpsD1ad4GaYqvUloph7E2QiVEXZyZe+lf0pHHayyltZp0Z+ZqcLuXoru8lzA==
   dependencies:
-    "@volar/vue-language-core" "1.1.5"
-    "@volar/vue-typescript" "1.1.5"
+    "@volar/vue-language-core" "1.1.7"
+    "@volar/vue-typescript" "1.1.7"
 
 vue@^3.2.45:
   version "3.2.47"
