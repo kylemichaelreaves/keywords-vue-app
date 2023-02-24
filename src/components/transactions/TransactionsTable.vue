@@ -15,6 +15,7 @@
     />
   </el-select>
 
+
   <el-select
       v-if="uniqueMemoObject && uniqueMemoObject.length"
       v-model="selectedMemo"
@@ -77,8 +78,7 @@ const TransactionsTable = defineComponent({
       default: ""
     }
   } as const,
-  setup(props)
-  {
+  setup(props) {
     const displayData = ref(props.displayData);
     const uniqueMemoObject = ref(props.uniqueMemoObject);
     const uniqueMonthsObject = props.uniqueMonthsObject;
