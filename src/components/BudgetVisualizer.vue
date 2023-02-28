@@ -87,7 +87,7 @@ const BudgetVisualizer = defineComponent({
     PieChart,
     LineChart,
   },
-  // TODO: add to the toDoList structure subtasks for each of the items
+
   setup() {
     const headers = ref([]);
     const displayData = reactive({data: ref<Transaction[]>([])});
