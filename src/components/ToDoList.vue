@@ -10,6 +10,8 @@
   </div>
 </template>
 
+// TODO: add to the toDoList structure subtasks for each of the items
+
 <script lang="ts">
 import {ref, defineComponent, reactive} from "vue";
 
