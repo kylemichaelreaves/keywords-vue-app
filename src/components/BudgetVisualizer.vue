@@ -7,10 +7,12 @@
   </h2>
 
   <el-row :gutter="20">
-    <!--  TODO Fix misleading name of this component, it's a barchart, not a line -->
-    <el-col :span="20">
-      <TimelineChart v-if="debitsByMonth" :data="debitsByMonth"/>
+    <el-col :span="17">
+      <TimelineBarChart v-if="debitsByMonth" :data="debitsByMonth" :selectedMonth="selectedMonth"/>
       <LineChart v-if="debitsByDay" :debitsByDay="debitsByDay"/>
+    </el-col>
+    <el-col :span="4">
+      <TransactionUploader/>
     </el-col>
   </el-row>
   <el-alert v-if="error" type="error" :title="'Error: ' + error">
@@ -36,10 +38,11 @@
 import {computed, defineComponent, reactive, ref, watchEffect} from "vue";
 import ToDoList from "./ToDoList.vue";
 import TransactionsTable from "./transactions/TransactionsTable.vue";
+import TransactionUploader from "./transactions/TransactionUploader.vue";
 import {useQuery} from "@tanstack/vue-query";
 import {Transaction} from "../types";
 import PieChart from "./charts/PieChart.vue";
-import TimelineChart from "./charts/TimelineChart.vue";
+import TimelineBarChart from "./charts/TimelineBarChart.vue";
 import LineChart from "./charts/LineChart.vue";
 import {fetchTransactionsS3Client} from "../api";
 
@@ -72,12 +75,15 @@ function filterDataByMemo(data: Transaction[], selectedMemo: string): Transactio
   }
 }
 
+
+
 const BudgetVisualizer = defineComponent({
   name: "BudgetVisualizer",
   components: {
     ToDoList,
     TransactionsTable,
-    TimelineChart,
+    TransactionUploader,
+    TimelineBarChart,
     PieChart,
     LineChart,
   },
@@ -177,14 +183,14 @@ const BudgetVisualizer = defineComponent({
 
 
     const debitsByMonth = computed(() => {
-      const data = filterData.value;
+      const data = transactionsFilteredByMonthAndMemo.value;
       const debitsObj = sumDebits(data, 'month');
       return Object.keys(debitsObj).map((date) => ({date, amount: debitsObj[date]}));
     });
 
 
     const debitsByDay = computed(() => {
-      const data = filterData.value;
+      const data = transactionsFilteredByMonthAndMemo.value;
       const debitsObj = sumDebits(data, 'day');
       return Object.keys(debitsObj).map((date) => ({date, amount: debitsObj[date]}));
     });

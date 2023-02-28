@@ -3,33 +3,43 @@
 </template>
 
 <script lang="ts">
-import {ref, onMounted, defineComponent, watch} from 'vue';
+import {ref, onMounted, defineComponent, watch, watchEffect, computed} from 'vue';
 import * as d3 from 'd3';
 // TODO fix — this isn't a line, it's a bar chart
-const TimelineChart = defineComponent({
-  name: 'TimelineChart',
+const TimelineBarChart = defineComponent({
+  name: 'TimelineBarChart',
   props: {
     data: {
       type: Array as () => { date: string, amount: number }[],
       default: () => [],
     },
+    selectedMonth: {
+      type: String,
+      default: ''
+    }
   },
-  setup(props: { data: { date: string, amount: number }[] }) {
+  setup(props) {
     const svg = ref<SVGSVGElement | null>(null);
+    const data = ref(props.data);
+    const selectedMonth = ref(props.selectedMonth);
 
-    onMounted(() => {
-      const data = props.data;
+    const redrawChart = () => {
 
       const margin = {top: 30, right: 30, bottom: 45, left: 40};
       const width = 900 - margin.left - margin.right;
       const height = 430 - margin.top - margin.bottom;
 
+      const filteredData = computed(() => {
+        return data.value.filter((d) =>
+            `${d.date.split('/')[0]}/${d.date.split('/')[1]}` === selectedMonth.value
+        );
+      });
 
       const x = d3.scaleBand()
           .range([0, width])
-          .domain(data.map((d) => d.date));
+          .domain(filteredData.value.map((d) => d.date));
 
-      const [minAmount, maxAmount] = d3.extent(data, (d) => d.amount) as [number, number];
+      const [minAmount, maxAmount] = d3.extent(filteredData.value, (d) => d.amount) as [number, number];
 
       const y = d3.scaleLinear()
           .range([height, 0])
@@ -58,7 +68,7 @@ const TimelineChart = defineComponent({
           .call(yAxis);
 
       svgElement.selectAll('rect')
-          .data(data)
+          .data(filteredData.value)
           .enter().append('rect')
           .attr('x', (d) => x(d.date)!)
           .attr('y', (d) => y(d.amount))
@@ -74,11 +84,22 @@ const TimelineChart = defineComponent({
           .attr('font-weight', 'bold')
           .attr('fill', 'white')
           .text('Monthly Spending Timeline Chart');
-    });
+    }
+
+    watch(() =>
+        props.selectedMonth, redrawChart
+    );
+
+    watchEffect(() =>
+        console.log('selectedMonth', props.selectedMonth)
+    );
+
+
+    onMounted(redrawChart);
     return {svg};
   },
 })
-export default TimelineChart;
+export default TimelineBarChart;
 </script>
 
 <style>
