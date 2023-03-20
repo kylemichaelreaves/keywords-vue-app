@@ -1,6 +1,8 @@
-import { TransactionsList } from "./types";
+import {TransactionsList} from "./types";
 import * as d3 from 'd3';
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import axios from "axios";
+import {API_GATEWAY_URL, LAMBDA_DEV_URL} from "./constants";
 
 export function parseData(data: string): TransactionsList['data'] {
     return d3.dsvFormat(',').parse(data).map(row => ({
@@ -36,6 +38,22 @@ export async function fetchTransactionsS3Client(): Promise<TransactionsList['dat
         }
     } catch (error) {
         console.log(error)
+        return [];
+    }
+}
+
+export async function fetchTransactionsRDS(limit: number, offset: number): Promise<TransactionsList['data']> {
+    try {
+        const response = await axios.get(`${API_GATEWAY_URL}/transactions/get-transactions`, {
+            params: {
+                limit,
+                offset,
+            },
+        });
+        console.log('response:', response.data);
+        return response.data;
+    } catch (error: any) {
+        console.log('error', error.message);
         return [];
     }
 }

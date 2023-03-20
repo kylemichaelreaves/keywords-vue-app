@@ -1,5 +1,4 @@
 <template>
-  <!--  TODO Add selectable links for Memos and Dates columns-->
   <el-select
       v-if="uniqueMonthsObject && uniqueMonthsObject.length"
       v-model="selectedMonth"
@@ -14,7 +13,6 @@
         :value="month.value"
     />
   </el-select>
-
 
   <el-select
       v-if="uniqueMemoObject && uniqueMemoObject.length"
@@ -34,7 +32,7 @@
   </el-select>
 
 
-  <el-table v-if="displayData" :data="displayData" style="width: 100%" table-layout="auto" height="auto" border>
+  <el-table v-loading="isFetching" v-if="displayData" :data="displayData" style="width: 100%" table-layout="auto" height="auto" border>
     <el-table-column v-for="column in tableColumns" :key="column.title" :prop="column.key" :label="column.title">
       <!-- If the columns name is Date or Memo, render a link to the page    -->
       <template #default="{row}">
@@ -51,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, watchEffect, ref} from "vue";
+import {defineComponent, watchEffect, ref, watch} from "vue";
 
 const TransactionsTable = defineComponent({
   name: "TransactionsTable",
@@ -76,6 +74,14 @@ const TransactionsTable = defineComponent({
     selectedMonth: {
       type: String,
       default: ""
+    },
+    incrementOffset: {
+      type: Function,
+      required: true
+    },
+    isFetching: {
+      type: Boolean,
+      required: true
     }
   } as const,
   setup(props) {
@@ -84,6 +90,7 @@ const TransactionsTable = defineComponent({
     const uniqueMonthsObject = props.uniqueMonthsObject;
     const selectedMemo = props.selectedMemo;
     const selectedMonth = props.selectedMonth;
+    const isFetching = ref(props.isFetching);
 
     const tableColumns = [
       {
@@ -121,8 +128,16 @@ const TransactionsTable = defineComponent({
       uniqueMemoObject.value = props.uniqueMemoObject;
     });
 
+    watch(
+        () => props.isFetching,
+        (newValue) => {
+          isFetching.value = newValue;
+        },
+    );
+
     return {
       displayData,
+      isFetching,
       uniqueMemoObject,
       uniqueMonthsObject,
       selectedMemo,
