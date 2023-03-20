@@ -3,9 +3,9 @@
 </template>
 
 <script lang="ts">
-import {ref, onMounted, defineComponent, watch, watchEffect, computed} from 'vue';
+import {ref, onMounted, defineComponent, watch, watchEffect} from 'vue';
 import * as d3 from 'd3';
-// TODO fix — this isn't a line, it's a bar chart
+
 const TimelineBarChart = defineComponent({
   name: 'TimelineBarChart',
   props: {
@@ -29,17 +29,14 @@ const TimelineBarChart = defineComponent({
       const width = 900 - margin.left - margin.right;
       const height = 430 - margin.top - margin.bottom;
 
-      const filteredData = computed(() => {
-        return data.value.filter((d) =>
-            `${d.date.split('/')[0]}/${d.date.split('/')[1]}` === selectedMonth.value
-        );
-      });
 
       const x = d3.scaleBand()
           .range([0, width])
-          .domain(filteredData.value.map((d) => d.date));
+          .domain(data.value.map((d) => d.date));
 
-      const [minAmount, maxAmount] = d3.extent(filteredData.value, (d) => d.amount) as [number, number];
+      console.log('x', x)
+
+      const [minAmount, maxAmount] = d3.extent(data.value, (d) => d.amount) as [number, number];
 
       const y = d3.scaleLinear()
           .range([height, 0])
@@ -68,7 +65,7 @@ const TimelineBarChart = defineComponent({
           .call(yAxis);
 
       svgElement.selectAll('rect')
-          .data(filteredData.value)
+          .data(data.value)
           .enter().append('rect')
           .attr('x', (d) => x(d.date)!)
           .attr('y', (d) => y(d.amount))
@@ -86,18 +83,21 @@ const TimelineBarChart = defineComponent({
           .text('Monthly Spending Timeline Chart');
     }
 
-    watch(() =>
-        props.selectedMonth, redrawChart
-    );
 
-    watchEffect(() =>
-        console.log('selectedMonth', props.selectedMonth)
-    );
+    watch(() => selectedMonth, (newVal, oldVal) => {
+      data.value = props.data.filter((d) =>
+          `${d.date.split('/')[0]}/${d.date.split('/')[1]}` === newVal.value
+      );
+    });
 
+    watchEffect(() => {
+      console.log('data', data.value);
+    })
 
     onMounted(redrawChart);
     return {svg};
-  },
+  }
+,
 })
 export default TimelineBarChart;
 </script>

@@ -7,13 +7,16 @@
   </h2>
 
   <el-row :gutter="20">
-    <el-col :span="17">
-      <TimelineBarChart v-if="debitsByMonth" :data="debitsByMonth" :selectedMonth="selectedMonth"/>
-      <LineChart v-if="debitsByDay" :debitsByDay="debitsByDay"/>
-    </el-col>
+    <!--    <el-col :span="17">-->
+    <!--      <TimelineBarChart v-if="debitsByMonth" :data="debitsByMonth" :selectedMonth="selectedMonth"/>-->
+    <!--      <LineChart v-if="debitsByDay" :debitsByDay="debitsByDay"/>-->
+    <!--    </el-col>-->
     <el-col :span="4">
       <TransactionUploader/>
     </el-col>
+    <!--    <el-col :span="16">-->
+    <!--    <Calendar/>-->
+    <!--    </el-col>-->
   </el-row>
   <el-alert v-if="error" type="error" :title="'Error: ' + error">
     <h2>
@@ -23,13 +26,15 @@
   <br/>
 
   <TransactionsTable
-      :displayData="displayData.data"
+      :displayData="displayData.rows"
       :uniqueMemoObject="uniqueMemoObject"
       :uniqueMonthsObject="uniqueMonthsObject"
       :selectedMemo="selectedMemo"
       :selectedMonth="selectedMonth"
       @update:selectedMemo="selectedMemo = $event"
       @update:selectedMonth="selectedMonth = $event"
+      :incrementOffset="incrementOffset"
+      :isFetching="isFetching"
   />
 
 </template>
@@ -37,6 +42,7 @@
 <script lang="ts">
 import {computed, defineComponent, reactive, ref, watchEffect} from "vue";
 import ToDoList from "./ToDoList.vue";
+import Calendar from "./Calendar.vue";
 import TransactionsTable from "./transactions/TransactionsTable.vue";
 import TransactionUploader from "./transactions/TransactionUploader.vue";
 import {useQuery} from "@tanstack/vue-query";
@@ -44,42 +50,13 @@ import {Transaction} from "../types";
 import PieChart from "./charts/PieChart.vue";
 import TimelineBarChart from "./charts/TimelineBarChart.vue";
 import LineChart from "./charts/LineChart.vue";
-import {fetchTransactionsS3Client} from "../api";
-
-function filterDataByMonth(data: Transaction[], selectedMonth: string): Transaction[] {
-  if (selectedMonth) {
-    return data.filter((d: Transaction) =>
-        `${d.Date.split('/')[0]}/${d.Date.split('/')[2]}` === selectedMonth
-    );
-  } else {
-    return data;
-  }
-}
-
-function sumDebits(data: Transaction[], groupBy: 'month' | 'day'): Record<string, number> {
-  return data.reduce((acc: Record<string, number>, cur) => {
-    const [month, day, year] = cur.Date.split('/');
-    const paddedMonth = month.length === 1 ? `0${month}` : month;
-    const key = groupBy === 'month' ? `${paddedMonth}/${year}` : cur.Date;
-    const amount = parseFloat(cur['Amount Debit']) || 0;
-    acc[key] = (acc[key] || 0) + amount;
-    return acc;
-  }, {});
-}
-
-function filterDataByMemo(data: Transaction[], selectedMemo: string): Transaction[] {
-  if (selectedMemo) {
-    return data.filter((d: Transaction) => d.Memo === selectedMemo);
-  } else {
-    return data;
-  }
-}
-
-
+import {fetchTransactionsRDS} from "../api";
+import {filterDataByMonth, sumDebits, filterDataByMemo} from '../dataUtils';
 
 const BudgetVisualizer = defineComponent({
   name: "BudgetVisualizer",
   components: {
+    Calendar,
     ToDoList,
     TransactionsTable,
     TransactionUploader,
@@ -90,14 +67,33 @@ const BudgetVisualizer = defineComponent({
 
   setup() {
     const headers = ref([]);
-    const displayData = reactive({data: ref<Transaction[]>([])});
+    const displayData = reactive({rows: ref<Transaction[]>([])});
     const selectedMonth = ref('')
     const selectedMemo = ref('')
 
+    // variables for paginating query
+    const LIMIT = 100;
+    const OFFSET = ref(0);
+
+    function incrementOffset() {
+      OFFSET.value += LIMIT;
+    }
+
     const {data, error, isLoading, isFetching} = useQuery(
-        ['transactions'],
-        fetchTransactionsS3Client
+        ['transactions', LIMIT, OFFSET],
+        // fetchTransactionsS3Client
+        () => fetchTransactionsRDS(LIMIT, OFFSET.value),
+        {
+          keepPreviousData: true,
+          refetchOnWindowFocus: false,
+        }
     )
+
+    // unique dates array, not by month but by day
+    // Use computed to create a new array of unique dates
+    const uniqueDatesArray = computed(() => {
+      return [...new Set(filterData.value.map(item => item.Date))];
+    });
 
     const uniqueMonthsArray = computed(() => {
       return new Set(
@@ -107,15 +103,7 @@ const BudgetVisualizer = defineComponent({
       );
     });
 
-    const numberOfMonths = computed(() => {
-      return uniqueMonthsArray.value.size;
-    });
-
-    // Memos corresponds to Vendors, Retailers, etc.
-    const numberOfUniqueMemos = computed(() => {
-      return uniqueMemoArray.value.length;
-    });
-
+    // the options for the Date dropdown
     const uniqueMonthsObject = computed(() => {
       return Array.from(uniqueMonthsArray.value).map((month: string) => {
         return {
@@ -134,12 +122,12 @@ const BudgetVisualizer = defineComponent({
 
     // the Memos are filtered by the selectedMonth if there is one
     const transactionsFilteredByMonth = computed(() => {
-      if (selectedMonth.value && displayData.data) {
-        return displayData.data.filter((d: Transaction) =>
+      if (selectedMonth.value && displayData.rows) {
+        return displayData.rows.filter((d: Transaction) =>
             `${d.Date.split('/')[0]}/${d.Date.split('/')[2]}` === selectedMonth.value
         );
       } else {
-        return displayData.data;
+        return displayData.rows;
       }
     });
 
@@ -182,14 +170,14 @@ const BudgetVisualizer = defineComponent({
     });
 
 
-    const debitsByMonth = computed(() => {
+    const sumDebitsByMonth = computed(() => {
       const data = transactionsFilteredByMonthAndMemo.value;
       const debitsObj = sumDebits(data, 'month');
       return Object.keys(debitsObj).map((date) => ({date, amount: debitsObj[date]}));
     });
 
 
-    const debitsByDay = computed(() => {
+    const sumDebitsByDay = computed(() => {
       const data = transactionsFilteredByMonthAndMemo.value;
       const debitsObj = sumDebits(data, 'day');
       return Object.keys(debitsObj).map((date) => ({date, amount: debitsObj[date]}));
@@ -225,27 +213,44 @@ const BudgetVisualizer = defineComponent({
         }
         return acc;
       }, {} as Record<string, { memo: string, amount: number }[]>);
-      // Map the memoGroups object to an array of objects with date and memos keys
-      return Object.keys(memoGroups).map((date) => ({
-        date,
-        memos: memoGroups[date],
-      }));
+      return memoGroups;
+    });
+
+    const memosByDateSorted = computed(() => {
+      const dates = Object.keys(memosByDate.value);
+      dates.sort((a, b) => {
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+        return dateA.getTime() - dateB.getTime();
+      });
+
+      const memoGroups: Record<string, { memo: string, amount: number }[]> = {};
+      dates.forEach((date) => {
+        memoGroups[date] = memosByDate.value[date];
+      });
+
+      return memoGroups;
+    });
+
+
+    watchEffect(() => {
+      displayData.rows = filterData.value;
     });
 
     watchEffect(() => {
-      displayData.data = filterData.value;
-    });
+      console.log('uniqueMonthsObject', uniqueMonthsObject.value)
+    })
 
     return {
-      debitsByMonth,
-      debitsByDay,
+      sumDebitsByMonth,
+      sumDebitsByDay,
       displayData,
       error,
       filterData,
       headers,
+      incrementOffset,
       isLoading,
       isFetching,
-      numberOfMonths,
       memosByDate,
       selectedMonth,
       selectedMemo,

@@ -22,6 +22,11 @@ type TransactionsList = { data: Array<Transaction> };
 
 type ArcDataObject<T> = d3.DefaultArcObject & { data: PieChartData };
 
+interface MemoGroup {
+    date: string;
+    memos: { memo: string, amount: number }[];
+}
+
 interface PieChartData {
     label: string;
     value: number;
@@ -31,4 +36,4 @@ interface TimelineChartProps {
     debitsByMonth: { [key: string]: number };
 }
 
-export type {Transaction, TransactionData, TransactionsList, PieChartData, ArcDataObject, TimelineChartProps};
+export type {Transaction, TransactionData, TransactionsList, MemoGroup, PieChartData, ArcDataObject, TimelineChartProps};
