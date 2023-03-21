@@ -1,12 +1,18 @@
+/// <reference types="vitest" />
+
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import {resolve} from 'path'
 import mkcert from 'vite-plugin-mkcert'
-import tsconfigPaths from "vite-tsconfig-paths/dist";
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [vue(), mkcert(), tsconfigPaths()],
+    test: {
+        globals: true,
+        environment: 'happy-dom',
+    },
     build: {
         target: 'esnext',
     },
