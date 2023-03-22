@@ -51,6 +51,7 @@ const Navbar = defineComponent({
       activeTab.value = tab.index;
     }
 
+
     return {routes, route, activeTab, handleClick, routeIcon};
   }
 });

@@ -1,21 +1,15 @@
 <template>
-  <div>
-    <el-card v-if="addresses.length > 0" v-for="item in addresses" :key="item.id">
-      <template #header>
-        <div class="card-header">{{ item.name }}</div>
-      </template>
-
-      <p>{{ item.description }}</p>
-
-    </el-card>
-    <el-alert v-else type="error" title="Error: {{error}}"></el-alert>
-
-  </div>
+  <el-card v-if="addresses.length > 0" v-for="item in addresses" :key="item.id">
+    <template #header>
+      <div class="card-header">{{ item.name }}</div>
+    </template>
+    <p>{{ item.description }}</p>
+  </el-card>
+  <el-alert v-else type="error" title="Error: {{error}}"></el-alert>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
-
+import {defineComponent} from "vue";
 
 const AddressList = defineComponent({
   name: 'AddressList',
@@ -38,6 +32,6 @@ const AddressList = defineComponent({
     return {addresses};
   }
 });
-
 export default AddressList;
+
 </script>

@@ -1,5 +1,5 @@
 import {createApp} from 'vue'
-import {createRouter, createWebHistory, RouterLink} from "vue-router";
+import {createRouter, createWebHistory} from "vue-router";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createPinia} from 'pinia'
 import './style.css'
@@ -7,6 +7,7 @@ import App from './App.vue'
 import Keywords from "./components/Keywords.vue";
 import Home from "./components/Home.vue";
 import Navbar from "./components/Navbar.vue";
+import AddressGeocder from "./components/address/AddressGeocoder.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
@@ -14,11 +15,12 @@ import Transactions from "./components/transactions/Transactions.vue";
 import TransactionsByMonth from "./components/transactions/TransactionsByMonth.vue";
 import TransactionsByMemo from "./components/transactions/TransactionsByMemo.vue";
 import Transaction from "./components/transactions/Transaction.vue";
+import BudgetVisualizer from "./components/BudgetVisualizer.vue";
 
 
 const pinia = createPinia()
 
-const routes = [
+export const routes = [
     {
         path: '/',
         name: 'home',
@@ -32,12 +34,12 @@ const routes = [
     {
         path: '/address-geocoder',
         name: 'address-geocoder',
-        component: () => import('./components/address/AddressGeocoder.vue')
+        component: AddressGeocder
     },
     {
         path: '/budget-visualizer',
         name: 'budget-visualizer',
-        component: () => import('./components/BudgetVisualizer.vue'),
+        component: BudgetVisualizer,
         children: [
             {
                 path: 'transactions',

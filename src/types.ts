@@ -3,7 +3,7 @@ import * as d3 from "d3";
 type Transaction = {
     "Transaction Number"?: string;
     Date: string;
-    Description: string;
+    Description?: string;
     Memo: string;
     "Amount Debit": string;
     "Amount Credit"?: string;
