@@ -31,7 +31,6 @@
     />
   </el-select>
 
-
   <el-table v-loading="isFetching" v-if="displayData" :data="displayData" style="width: 100%" table-layout="auto" height="auto" border>
     <el-table-column v-for="column in tableColumns" :key="column.title" :prop="column.key" :label="column.title">
       <!-- If the columns name is Date or Memo, render a link to the page    -->

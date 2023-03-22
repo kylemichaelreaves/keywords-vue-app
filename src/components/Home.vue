@@ -11,11 +11,11 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-
+import {HomeFilled} from "@element-plus/icons-vue";
 
 const Home = defineComponent({
   name: "Home",
-  components: {},
+  components: {HomeFilled},
   setup() {
     return {};
   }
