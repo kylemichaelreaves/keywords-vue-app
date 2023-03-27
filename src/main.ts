@@ -17,7 +17,6 @@ import TransactionsByMemo from "./components/transactions/TransactionsByMemo.vue
 import Transaction from "./components/transactions/Transaction.vue";
 import BudgetVisualizer from "./components/BudgetVisualizer.vue";
 
-
 const pinia = createPinia()
 
 export const routes = [
