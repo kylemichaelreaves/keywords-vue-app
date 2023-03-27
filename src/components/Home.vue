@@ -14,7 +14,6 @@ import {defineComponent} from "vue";
 import {HomeFilled} from "@element-plus/icons-vue";
 
 const Home = defineComponent({
-  name: "Home",
   components: {HomeFilled},
   setup() {
     return {};
