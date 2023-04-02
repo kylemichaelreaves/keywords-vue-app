@@ -50,7 +50,7 @@ import {Transaction} from "../types";
 import PieChart from "./charts/PieChart.vue";
 import TimelineBarChart from "./charts/TimelineBarChart.vue";
 import LineChart from "./charts/LineChart.vue";
-import {fetchTransactionsRDS} from "../api";
+import {fetchTransactionsRDS} from "../api/transactions/fetchTransactionsRDS";
 import {filterDataByMonth, sumDebits, filterDataByMemo} from '../dataUtils';
 
 const BudgetVisualizer = defineComponent({

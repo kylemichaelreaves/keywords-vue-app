@@ -18,7 +18,6 @@ import {computed, defineComponent, ref} from "vue";
 import {RouteRecordRaw, useRoute, useRouter} from "vue-router";
 
 const Navbar = defineComponent({
-  name: "Navbar",
   setup() {
     const router = useRouter();
     const routes = router.options.routes;
@@ -50,7 +49,6 @@ const Navbar = defineComponent({
       router.push({path: routes[tab.index].path});
       activeTab.value = tab.index;
     }
-
 
     return {routes, route, activeTab, handleClick, routeIcon};
   }
