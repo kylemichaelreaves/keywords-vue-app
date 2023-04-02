@@ -1,5 +1,13 @@
 import * as d3 from "d3";
 
+interface AddressFields {
+    streetAddress: string;
+    unitOrAptNum?: string;
+    municipality: string;
+    state: string;
+    zipcode?: string;
+}
+
 type Transaction = {
     "Transaction Number"?: string;
     Date: string;
@@ -14,6 +22,33 @@ type Transaction = {
 
 interface TransactionData {
     [key: string]: string;
+}
+
+interface AddressResponse {
+    osm_type: string;
+    osm_id: number;
+    licence: string;
+    boundingbox: string[];
+    address: {
+        country: string;
+        country_code: string;
+        town?: string;
+        road: string;
+        "ISO3166-2-lvl4": string;
+        county: string;
+        neighbourhood?: string;
+        village?: string;
+        postcode: string;
+        house_number: string;
+        state: string
+    };
+    importance: number;
+    lon: string;
+    display_name: string;
+    type: string;
+    class: string;
+    place_id: number;
+    lat: string
 }
 
 
@@ -36,4 +71,14 @@ interface TimelineChartProps {
     debitsByMonth: { [key: string]: number };
 }
 
-export type {Transaction, TransactionData, TransactionsList, MemoGroup, PieChartData, ArcDataObject, TimelineChartProps};
+export type {
+    AddressFields,
+    AddressResponse,
+    Transaction,
+    TransactionData,
+    TransactionsList,
+    MemoGroup,
+    PieChartData,
+    ArcDataObject,
+    TimelineChartProps
+};

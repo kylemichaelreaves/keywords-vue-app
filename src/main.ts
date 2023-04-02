@@ -12,8 +12,6 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import Transactions from "./components/transactions/Transactions.vue";
-import TransactionsByMonth from "./components/transactions/TransactionsByMonth.vue";
-import TransactionsByMemo from "./components/transactions/TransactionsByMemo.vue";
 import Transaction from "./components/transactions/Transaction.vue";
 import BudgetVisualizer from "./components/BudgetVisualizer.vue";
 
@@ -45,16 +43,6 @@ export const routes = [
                 name: 'transactions',
                 component: Transactions,
                 children: [
-                    {
-                        path: 'by-month/:month',
-                        name: 'TransactionsByMonth',
-                        component: TransactionsByMonth
-                    },
-                    {
-                        path: 'by-memo/:memo',
-                        name: 'TransactionsByMemo',
-                        component: TransactionsByMemo
-                    },
                     {
                         path: '/transaction/:transactionNumber',
                         name: 'Transaction',

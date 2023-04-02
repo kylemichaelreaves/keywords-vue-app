@@ -7,36 +7,35 @@
   </h2>
   <p>this form sends a request based on its inputs to an AWS Lambda</p>
   <p>Based on what is returned, another component will be populated with its data, or an alert will display</p>
-  <!--    if error…rendering it in the Alert-->
-  <el-alert v-if="data && data.code && data.code.name === 'AxiosError'" type="error" :title="'Error: ' + data.code">
+  <el-alert v-if="error" type="error" title="Error">
     <h2>
-      {{ data.name }}:{{ data.message }}
+      {{ error.message }}
     </h2>
   </el-alert>
-  <!-- TODO    abstract this block like in NavBar -->
   <AddressResults v-if="data" :message="data"/>
-
-  <el-form
-      :model="formData"
-      :rules="rules"
-      ref="form"
-      label-width="120px"
-      label-position="left"
-      @keyup.enter="submitForm"
-  >
-    <div v-for="field in formFields" :key="field.label">
-      <el-form-item :label="field.label" :prop="field.prop">
-        <el-input v-model="formData[field.prop]" :placeholder="field.placeholder"></el-input>
-      </el-form-item>
-    </div>
-    <el-button
-        v-bind:type="formIsValid ? 'primary' : 'warning'"
-        @click="submitForm"
-        :loading="isFetching"
-        :disabled="!formIsValid">
-      Submit
-    </el-button>
-  </el-form>
+  <form @submit.prevent="submitForm" novalidate>
+    <el-form
+        :model="formData"
+        :rules="rules"
+        ref="form"
+        label-width="120px"
+        label-position="left"
+        @keyup.enter="submitForm"
+    >
+      <div v-for="field in formFields" :key="field.label">
+        <el-form-item :label="field.label" :prop="field.prop">
+          <el-input v-model="formData[field.prop]" :placeholder="field.placeholder"></el-input>
+        </el-form-item>
+      </div>
+      <el-button
+          v-bind:type="formIsValid ? 'primary' : 'warning'"
+          @click="submitForm"
+          :loading="isFetching"
+          :disabled="!formIsValid">
+        Submit
+      </el-button>
+    </el-form>
+  </form>
 
 </template>
 
@@ -45,9 +44,11 @@ import {ref, computed, defineComponent, watch} from 'vue';
 import AddressList from "./AddressList.vue";
 import {useQuery} from "@tanstack/vue-query";
 import axios from "axios";
+import {fetchAddress} from "../../api/address/fetchAddress";
 import {router} from "../../main";
 import AddressResults from "./AddressResults.vue";
 import {API_GATEWAY_URL} from "../../constants";
+import {AddressResponse} from "../../types";
 
 interface FormData {
   streetAddress: string;
@@ -116,24 +117,10 @@ const AddressGeocoder = defineComponent({
     })
 
 
-    const geocodeAddress = async (address: FormData | undefined): Promise<any> => {
-      return typeof address === "undefined"
-          ? Promise.reject(new Error("Address is undefined"))
-          : await axios.get(`${API_GATEWAY_URL}/address-geocoder`, {
-            params: {
-              address: JSON.stringify(address)
-            }
-          })
-              .then((response) => {
-                return response.data
-              })
-              .catch((error) => {
-                return error
-              })
-    }
-    const {isLoading, isFetching, isError, data, error, refetch} = useQuery(
+    const {isLoading, isFetching, isError, data, error, refetch} = useQuery<AddressResponse[]>(
         ['address', formData.value],
-        () => geocodeAddress(formData.value), {
+        // TS2345: Argument of type '{ streetAddress: string; aptNum?: string | undefined; city: string; state: string; zipCode?: string | undefined; }' is not assignable to parameter of type 'FormData'.   Type '{ streetAddress: string; aptNum?: string | undefined; city: string; state: string; zipCode?: string | undefined; }' is missing the following properties from type 'FormData': append, delete, get, getAll, and 3 more.
+        () => fetchAddress(formData.value), {
           enabled: false,
           staleTime: 1000 * 60 * 60 * 24,
         }

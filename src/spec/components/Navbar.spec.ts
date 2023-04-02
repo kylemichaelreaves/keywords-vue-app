@@ -1,6 +1,6 @@
 import {mount} from '@vue/test-utils'
-import Navbar from '../components/Navbar.vue'
-import {routes} from "../main";
+import Navbar from '../../components/Navbar.vue'
+import {routes} from "../../main";
 import {createRouter, createWebHistory} from "vue-router";
 import {ElTabPane, ElTabs} from "element-plus";
 

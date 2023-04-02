@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import Keywords from '../components/Keywords.vue';
-import ElementPlus, {ElIcon, ElInput} from 'element-plus';
+import Keywords from '../../components/Keywords.vue';
+import ElementPlus, {ElInput} from 'element-plus';
 
 describe('Keywords.vue', () => {
     let wrapper: any;
