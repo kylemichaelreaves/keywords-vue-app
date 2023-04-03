@@ -8,8 +8,8 @@ export function parseData(data: string): TransactionsList['data'] {
         Date: row.Date ?? '',
         Description: row.Description ?? '',
         Memo: row.Memo ?? '',
-        'Amount Debit': row['Amount Debit'] ?? '',
-        'Amount Credit': row['Amount Credit'] ?? '',
+        'amountDebit': row['Amount Debit'] ?? '',
+        'amountCredit': row['Amount Credit'] ?? '',
     }));
 }
 

@@ -1,151 +1,68 @@
 <template>
-  <el-select
-      v-if="uniqueMonthsObject && uniqueMonthsObject.length"
-      v-model="selectedMonth"
-      placeholder="Select a month"
-      @change="$emit('update:selectedMonth', selectedMonth)"
-      clearable
-  >
-    <el-option
-        v-for="month in uniqueMonthsObject"
-        :key="month.value"
-        :label="month.label"
-        :value="month.value"
-    />
-  </el-select>
-
-  <el-select
-      v-if="uniqueMemoObject && uniqueMemoObject.length"
-      v-model="selectedMemo"
-      placeholder="Select a unique memo"
-      style="width: 300px;"
-      @change="$emit('update:selectedMemo', selectedMemo)"
-      clearable
-      filterable
-  >
-    <el-option
-        v-for="memo in uniqueMemoObject"
-        :key="memo.value"
-        :label="memo.label"
-        :value="memo.value"
-    />
-  </el-select>
-
-  <el-table v-loading="isFetching" v-if="displayData" :data="displayData" style="width: 100%" table-layout="auto" height="auto" border>
-    <el-table-column v-for="column in tableColumns" :key="column.title" :prop="column.key" :label="column.title">
-      <!-- If the columns name is Date or Memo, render a link to the page    -->
-      <template #default="{row}">
-        <div v-if="column.key === 'Date' || column.key === 'Memo'">
-          <router-link :to="`/transaction/${row['Transaction Number']}`">{{ row[column.key] }}</router-link>
-        </div>
-        <div v-else>
-          {{ row[column.key] }}
-        </div>
-      </template>
-    </el-table-column>
-  </el-table>
-
+    <el-table
+        :row-key="row => row.transactionNumber"
+        :loading="isFetching"
+        v-if="displayData"
+        :data="displayData.rows"
+        style="width: 100%"
+        table-layout="auto"
+        height="auto"
+        border
+    >
+        <el-table-column
+            v-for="columnKey in columnKeys"
+            :key="columnKey"
+            :prop="columnKey"
+            :label="columnKey"
+        >
+            <template v-if="linkedColumns.includes(columnKey)" #default="scope">
+                <router-link :to="`/transactions/${scope[columnKey]}`">{{ scope[columnKey] }}</router-link>
+            </template>
+            <template v-else #default="scope">
+                {{ scope[columnKey] }}
+            </template>
+        </el-table-column>
+    </el-table>
 </template>
 
 <script lang="ts">
-import {defineComponent, watchEffect, ref, watch} from "vue";
+import { defineComponent, computed } from "vue";
+import { Transaction } from "../../types";
 
-const TransactionsTable = defineComponent({
-  name: "TransactionsTable",
-  emits: ["update:selectedMemo", "update:selectedMonth"],
-  props: {
+const transactionsTableProps = {
     displayData: {
-      type: Array,
-      default: () => []
-    },
-    uniqueMemoObject: {
-      type: Array,
-      default: () => []
-    },
-    uniqueMonthsObject: {
-      type: Array,
-      default: () => []
-    },
-    selectedMemo: {
-      type: String,
-      default: ""
-    },
-    selectedMonth: {
-      type: String,
-      default: ""
-    },
-    incrementOffset: {
-      type: Function,
-      required: true
+        type: Object as () => { rows: Array<Transaction> },
+        default: () => ({ rows: [] }),
     },
     isFetching: {
-      type: Boolean,
-      required: true
-    }
-  } as const,
-  setup(props) {
-    const displayData = ref(props.displayData);
-    const uniqueMemoObject = ref(props.uniqueMemoObject);
-    const uniqueMonthsObject = props.uniqueMonthsObject;
-    const selectedMemo = props.selectedMemo;
-    const selectedMonth = props.selectedMonth;
-    const isFetching = ref(props.isFetching);
+        type: Boolean,
+        required: true,
+    },
+    linkedColumns: {
+        type: Array,
+        required: true,
+        default: () => [],
+    },
+} as const;
 
-    const tableColumns = [
-      {
-        title: 'Transaction Number',
-        key: 'Transaction Number',
-      },
-      {
-        title: 'Date',
-        key: 'Date',
-      },
-      {
-        title: 'Description',
-        key: 'Description',
-      },
-      {
-        title: 'Memo',
-        key: 'Memo',
-      },
-      {
-        title: 'Amount Debit',
-        key: 'Amount Debit',
-      },
-      {
-        title: 'Amount Credit',
-        key: 'Amount Credit',
-      },
-    ];
+const TransactionsTable = defineComponent({
+    props: transactionsTableProps,
+    setup(props) {
+        const columnKeys = computed(() => {
+            if (props.displayData.rows.length > 0) {
+                return Object.keys(props.displayData.rows[0]);
+            } else {
+                return [];
+            }
+        });
 
-    watchEffect(() => {
-      displayData.value = props.displayData;
-      console.log('displayData.value', displayData.value)
-    });
-
-    watchEffect(() => {
-      uniqueMemoObject.value = props.uniqueMemoObject;
-    });
-
-    watch(
-        () => props.isFetching,
-        (newValue) => {
-          isFetching.value = newValue;
-        },
-    );
-
-    return {
-      displayData,
-      isFetching,
-      uniqueMemoObject,
-      uniqueMonthsObject,
-      selectedMemo,
-      selectedMonth,
-      tableColumns
-    };
-  }
-
-
+        return {
+            columnKeys,
+            isFetching: props.isFetching,
+            linkedColumns: props.linkedColumns,
+            displayData: props.displayData,
+        };
+    },
 });
 
 export default TransactionsTable;

@@ -43,34 +43,25 @@
 import {ref, computed, defineComponent, watch} from 'vue';
 import AddressList from "./AddressList.vue";
 import {useQuery} from "@tanstack/vue-query";
-import axios from "axios";
 import {fetchAddress} from "../../api/address/fetchAddress";
 import {router} from "../../main";
 import AddressResults from "./AddressResults.vue";
-import {API_GATEWAY_URL} from "../../constants";
-import {AddressResponse} from "../../types";
-
-interface FormData {
-  streetAddress: string;
-  aptNum?: string;
-  city: string;
-  state: string;
-  zipCode?: string;
-}
+import {AddressFields, AddressResponse} from "../../types";
+import {Location} from "@element-plus/icons-vue";
 
 const AddressGeocoder = defineComponent({
-  name: 'AddressGeocoder',
   components: {
+      Location,
     AddressList,
     AddressResults
   },
   setup() {
-    const formData = ref<FormData>({
+    const formData = ref<AddressFields>({
       streetAddress: '',
-      aptNum: '',
-      city: '',
+      unitOrAptNum: '',
+      municipality: '',
       state: '',
-      zipCode: ''
+      zipcode: ''
     })
 
     const formFields = [
@@ -113,13 +104,12 @@ const AddressGeocoder = defineComponent({
 
 
     const formIsValid = computed(() => {
-      return formData.value.streetAddress && formData.value.city && formData.value.state
+      return formData.value.streetAddress && formData.value.municipality && formData.value.state
     })
 
 
     const {isLoading, isFetching, isError, data, error, refetch} = useQuery<AddressResponse[]>(
         ['address', formData.value],
-        // TS2345: Argument of type '{ streetAddress: string; aptNum?: string | undefined; city: string; state: string; zipCode?: string | undefined; }' is not assignable to parameter of type 'FormData'.   Type '{ streetAddress: string; aptNum?: string | undefined; city: string; state: string; zipCode?: string | undefined; }' is missing the following properties from type 'FormData': append, delete, get, getAll, and 3 more.
         () => fetchAddress(formData.value), {
           enabled: false,
           staleTime: 1000 * 60 * 60 * 24,
