@@ -2,7 +2,7 @@
   <h3>Transaction Uploader</h3>
   <el-upload
       v-model:file-list="fileList"
-      :action="LOCAL_DEV_URL"
+      :action="API_GATEWAY_URL"
       :on-remove="handleRemove"
       :on-preview="handlePreview"
       :on-exceed="handleExceed"
@@ -23,10 +23,8 @@ import {defineComponent, ref} from "vue";
 import {UploadProps, UploadUserFile} from 'element-plus'
 
 const API_GATEWAY_URL: string = import.meta.env.VITE_APIGATEWAY_URL + '/transactions/upload-csv';
-const LOCAL_DEV_URL: string = 'http://127.0.0.1:3001/transactions/upload-csv'
 
 const TransactionUploader = defineComponent({
-  name: "TransactionUploader",
   setup() {
 
     const fileList = ref<UploadUserFile[]>([])
@@ -68,8 +66,7 @@ const TransactionUploader = defineComponent({
       handlePreview,
       handleExceed,
       beforeRemove,
-      API_GATEWAY_URL,
-      LOCAL_DEV_URL
+      API_GATEWAY_URL
     }
   }
 })

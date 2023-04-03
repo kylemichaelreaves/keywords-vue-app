@@ -9,15 +9,15 @@ interface AddressFields {
 }
 
 type Transaction = {
-    "Transaction Number"?: string;
-    Date: string;
-    Description?: string;
-    Memo: string;
-    "Amount Debit": string;
-    "Amount Credit"?: string;
-    Balance?: string;
-    "Check Number"?: string;
-    Fees?: string;
+    transactionNumber: string;
+    date: string;
+    description?: string;
+    memo: string;
+    amountDebit: string;
+    amountCredit?: string;
+    balance?: string;
+    checkNumber?: string;
+    fees?: string;
 };
 
 interface TransactionData {

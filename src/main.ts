@@ -11,9 +11,9 @@ import AddressGeocder from "./components/address/AddressGeocoder.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import Transactions from "./components/transactions/Transactions.vue";
 import Transaction from "./components/transactions/Transaction.vue";
 import BudgetVisualizer from "./components/BudgetVisualizer.vue";
+import TransactionsTable from "./components/transactions/TransactionsTable.vue";
 
 const pinia = createPinia()
 
@@ -41,10 +41,10 @@ export const routes = [
             {
                 path: 'transactions',
                 name: 'transactions',
-                component: Transactions,
+                component: TransactionsTable,
                 children: [
                     {
-                        path: '/transaction/:transactionNumber',
+                        path: '/transactions/:transactionNumber',
                         name: 'Transaction',
                         component: Transaction,
                         props: true,
