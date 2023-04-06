@@ -38,7 +38,7 @@
 
     <TransactionsTable
             :tableColumns="transactionTableColumns"
-            :displayData="displayData"
+            :displayData="displayData.rows"
             :uniqueMemoObject="uniqueMemoObject"
             :uniqueMonthsObject="uniqueMonthsObject"
             :selectedMemo="selectedMemo"
@@ -60,7 +60,7 @@ import {Transaction} from "../types";
 import {fetchTransactionsRDS} from "../api/transactions/fetchTransactionsRDS";
 import {filterDataByMonth, sumDebits, filterDataByMemo} from '../dataUtils';
 import {TrendCharts} from "@element-plus/icons-vue";
-import {useMemosByDate} from "./transactions/hooks/useMemosByDate";
+import {useMemosByDate} from "../api/transactions/hooks/useMemosByDate";
 import DateAndMemoFilter from "./address/DateAndMemoFilter.vue";
 import CustomSelect from "./shared/CustomSelect.vue";
 import {transactionTableColumns} from "./transactions/transactionsTableColumns";

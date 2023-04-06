@@ -19,7 +19,7 @@
                 <router-link :to="`/transactions/${scope[columnKey]}`">{{ scope[columnKey] }}</router-link>
             </template>
             <template v-else #default="scope">
-                {{ scope[columnKey] }}
+                {{ scope }}
             </template>
         </el-table-column>
     </el-table>

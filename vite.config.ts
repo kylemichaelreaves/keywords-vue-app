@@ -12,7 +12,8 @@ export default defineConfig({
     test: {
         globals: true,
         environment: 'happy-dom',
-        setupFiles: ['./src/spec/test-setup.ts']
+        setupFiles: ['./src/test/test-setup.ts'],
+        include: ['**/**.{test,spec}.{ts, tsx, jsx, js}'],
     },
     build: {
         target: 'esnext',

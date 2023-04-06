@@ -1,23 +1,23 @@
 import axios from "axios";
-import { API_GATEWAY_URL } from "../../constants";
-import {AddressFields, AddressResponse} from "../../types";
+import {isValidURL} from "../helpers/isValidURL";
 
-export const fetchAddress = async (address: AddressFields): Promise<AddressResponse[]> => {
-    const queryStringParams = new URLSearchParams(Object.entries(address));
+export async function fetchAddress(id: string, fetchURL?: string) {
+    if (!fetchURL) {
+        if (!import.meta.env.VITE_APIGATEWAY_URL) {
+            throw Error('VITE_APIGATEWAY_URL is not defined');
+        } else {
+            fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
+        }
+    }
 
-    return typeof address === "undefined"
-        ? Promise.reject(new Error("address is undefined"))
-        : await axios
-            .get(`${API_GATEWAY_URL}/address-geocoder`, {
-                params: {
-                    address: queryStringParams,
-                },
-            })
-            .then((response) => {
-                return response.data;
-            })
-            .catch((error) => {
-                // Throw the error or return a rejected promise
-                return Promise.reject(error);
-            });
-};
+    if (!isValidURL(fetchURL)) {
+        throw Error('url is not valid');
+    }
+
+    return await axios.get(`${fetchURL}/address-geocoder/${id}`)
+        .then(res => res.data)
+        .catch(err => {
+            console.log('err:', err);
+            throw new Error(err);
+        });
+}
