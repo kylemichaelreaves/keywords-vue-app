@@ -1,9 +1,9 @@
 import {test} from 'vitest';
-import {fetchTransactionsRDS} from "../../api/transactions/fetchTransactionsRDS";
-import {Transaction, TransactionsList} from "../../types";
-import {transactionsMock} from "../mock/transaction";
+import {fetchTransactionsRDS} from "../../../../api/transactions/fetchTransactionsRDS";
+import {Transaction, TransactionsList} from "../../../../types";
+import {transactionsMock} from "../../../mock/transaction";
 import {rest} from "msw";
-import {server} from "../test-setup";
+import {server} from "../../../test-setup";
 
 describe('fetchTransactionsRDS', () => {
     afterEach(() => {
@@ -15,8 +15,6 @@ describe('fetchTransactionsRDS', () => {
         const limit = 10;
         const offset = 0;
         const transactions: TransactionsList['data'] = transactionsMock;
-
-        // vi.mock('axios');
 
         const result = await fetchTransactionsRDS(limit, offset, API_GATEWAY_URL);
 

@@ -43,7 +43,7 @@
 import {ref, computed, defineComponent, watch} from 'vue';
 import AddressList from "./AddressList.vue";
 import {useQuery} from "@tanstack/vue-query";
-import {fetchAddress} from "../../api/address/fetchAddress";
+import {geocodeAddress} from "../../api/address/geocodeAddress";
 import {router} from "../../main";
 import AddressResults from "./AddressResults.vue";
 import {AddressFields, AddressResponse} from "../../types";
@@ -110,7 +110,7 @@ const AddressGeocoder = defineComponent({
 
     const {isLoading, isFetching, isError, data, error, refetch} = useQuery<AddressResponse[]>(
         ['address', formData.value],
-        () => fetchAddress(formData.value), {
+        () => geocodeAddress(formData.value), {
           enabled: false,
           staleTime: 1000 * 60 * 60 * 24,
         }
