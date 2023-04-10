@@ -1,4 +1,4 @@
-import {filterDataByMonth, sumDebits} from '../dataUtils'
+import {filterDataByMonth, sumDebits, parseDateMMYYYY, formatDate} from '../dataUtils'
 import {Transaction} from '../types';
 
 describe('filterDataByMonth', () => {
@@ -44,5 +44,62 @@ describe('sumDebits', () => {
     it('returns an empty object for empty input', () => {
         const result = sumDebits([], 'month');
         expect(result).toEqual({});
+    });
+});
+
+describe('parseDateMMYYYY', () => {
+    test('returns a Date object for valid input', () => {
+        const input = '04/2023';
+        const result = parseDateMMYYYY(input);
+        expect(result).toBeInstanceOf(Date);
+        expect(result?.getFullYear()).toBe(2023);
+        expect(result?.getMonth()).toBe(3);
+    });
+
+    test('returns null for invalid input', () => {
+        const input = 'invalid';
+        const result = parseDateMMYYYY(input);
+        expect(result).toBeNull();
+    });
+
+    test('returns null for invalid months', () => {
+        const invalidMonths = ['00/2023', '13/2023'];
+
+        invalidMonths.forEach((input) => {
+            const result = parseDateMMYYYY(input);
+            expect(result).toBeNull();
+        });
+    });
+
+});
+
+describe('formatDate', () => {
+    test('formats a valid date string', () => {
+        const input = '2023-07-31T01:00:00.000Z';
+        const expected = '2023-07-31';
+        const result = formatDate(input);
+        expect(result).toBe(expected);
+    });
+
+    test('handles different date inputs', () => {
+        const inputs = [
+            { input: '2021-12-25T18:30:00.000Z', expected: '2021-12-25' },
+            { input: '2020-02-29T12:00:00.000Z', expected: '2020-02-29' },
+            { input: '2010-07-04T04:45:00.000Z', expected: '2010-07-04' },
+        ];
+
+        inputs.forEach(({ input, expected }) => {
+            const result = formatDate(input);
+            expect(result).toBe(expected);
+        });
+    });
+
+    test('returns "Invalid date" for invalid date strings', () => {
+        const invalidInputs = ['invalid', '2021-13-01', '2021-02-34'];
+
+        invalidInputs.forEach((input) => {
+            const result = formatDate(input);
+            expect(result).toBe('Invalid date');
+        });
     });
 });

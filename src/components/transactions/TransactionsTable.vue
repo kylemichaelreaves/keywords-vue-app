@@ -1,66 +1,77 @@
 <template>
     <el-table
-        :row-key="row => row.transactionNumber"
-        :loading="isFetching"
-        v-if="displayData"
-        :data="displayData.rows"
-        style="width: 100%"
-        table-layout="auto"
-        height="auto"
-        border
+            :row-key="row => row['Transaction Number']"
+            v-if="data"
+            :isFetching="isFetching"
+            :data="data"
+            style="width: 100%"
+            table-layout="auto"
+            height="auto"
+            border
     >
         <el-table-column
-            v-for="columnKey in columnKeys"
-            :key="columnKey"
-            :prop="columnKey"
-            :label="columnKey"
+                v-for="columnKey in columnKeys"
+                :key="columnKey"
+                :prop="columnKey"
+                :label="columnKey"
         >
-            <template v-if="linkedColumns.includes(columnKey)" #default="scope">
-                <router-link :to="`/transactions/${scope[columnKey]}`">{{ scope[columnKey] }}</router-link>
+            <template v-if="columnKey === 'Transaction Number'" #default="scope">
+                <router-link :to="`/transactions/${scope.row[columnKey]}`">
+                    {{ scope.row[columnKey] }}
+                </router-link>
             </template>
             <template v-else #default="scope">
-                {{ scope }}
+                {{ scope.row[columnKey] }}
             </template>
         </el-table-column>
     </el-table>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
-import { Transaction } from "../../types";
+import {defineComponent} from "vue";
+import {Transaction} from "../../types";
 
 const transactionsTableProps = {
-    displayData: {
-        type: Object as () => { rows: Array<Transaction> },
-        default: () => ({ rows: [] }),
+    data: {
+        type: Object as () => Array<Transaction>,
+        required: true,
+        default: () => []
+    },
+    LIMIT: {
+        type: Number,
+        required: true,
+        default: 100
+    },
+    OFFSET: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    columnKeys: {
+        type: Array,
+        required: false,
+        default: () => []
     },
     isFetching: {
         type: Boolean,
         required: true,
-    },
-    linkedColumns: {
-        type: Array,
-        required: true,
-        default: () => [],
-    },
+        default: false
+    }
 } as const;
 
 const TransactionsTable = defineComponent({
     props: transactionsTableProps,
     setup(props) {
-        const columnKeys = computed(() => {
-            if (props.displayData.rows.length > 0) {
-                return Object.keys(props.displayData.rows[0]);
-            } else {
-                return [];
-            }
-        });
+
+        const {data, LIMIT, OFFSET, columnKeys, isFetching} = props;
 
         return {
+            data,
+            LIMIT,
+            OFFSET,
             columnKeys,
-            isFetching: props.isFetching,
-            linkedColumns: props.linkedColumns,
-            displayData: props.displayData,
+            isFetching
+
         };
     },
 });

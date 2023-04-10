@@ -1,7 +1,7 @@
 import {rest} from 'msw'
-import {AddressResponse, Transaction, TransactionsList} from "../../types";
+import {AddressResponse, MonthYear, Transaction, TransactionsList} from "../../types";
 import {addressesMock} from "../mock/address";
-import {transactionsMock} from "../mock/transaction";
+import {monthsMock, transactionsMock} from "../mock/transaction";
 
 export const handlers = [
     rest.get('*/address-geocoder', (req, res, ctx) => {
@@ -10,6 +10,10 @@ export const handlers = [
 
     rest.get("*/transactions/get-transactions", (req, res, ctx) => {
         return res(ctx.status(200), ctx.json<Transaction[]>(transactionsMock));
+    }),
+
+    rest.get("*/transactions/get-months", (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json<MonthYear[]>(monthsMock));
     }),
 
     rest.get('*', (req, res, ctx) => {

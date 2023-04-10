@@ -29,4 +29,51 @@ function filterDataByMemo(data: Transaction[], selectedMemo: string): Transactio
     }
 }
 
-export {filterDataByMonth, sumDebits, filterDataByMemo};
+function parseDateMMYYYY(input: string): Date | null {
+    const regex = /^(\d{2})\/(\d{4})$/;
+    const match = input.match(regex);
+
+    if (!match) {
+        return null;
+    }
+
+    const month = parseInt(match[1], 10) - 1; // Month is 0-indexed
+    const year = parseInt(match[2], 10);
+
+    if (month < 0 || month > 11) {
+        return null;
+    }
+
+    return new Date(year, month);
+}
+
+// Accepts an optional format parameter with a default value of 'YYYY-MM-DD'
+function formatDate(dateString: string, format: string = 'YYYY-MM-DD'): string {
+    // Input validation: Check if dateString matches the expected format
+    let date = new Date(dateString);
+
+    let month = date.getUTCMonth() + 1;
+    let day = date.getUTCDate();
+    let year = date.getUTCFullYear();
+
+
+    if (isNaN(date.getTime())) {
+        return 'Invalid date';
+    }
+
+    // Custom output format function
+    const padZero = (num: number): string => String(num).padStart(2, '0');
+    const formattedDate = {
+        'YYYY': padZero(year),
+        'MM': padZero(month),
+        'DD': padZero(day),
+    };
+
+    // Replace placeholders with their corresponding date values
+    return format.replace(/YYYY|MM|DD/g, (match) => formattedDate[match as keyof typeof formattedDate]);
+}
+
+
+
+
+export {filterDataByMonth, sumDebits, filterDataByMemo, parseDateMMYYYY, formatDate};
