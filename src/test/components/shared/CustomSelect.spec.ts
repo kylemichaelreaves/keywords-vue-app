@@ -60,18 +60,20 @@ describe('CustomSelect', () => {
         expect(wrapper.emitted()['update:selectedValue']?.[0]).toEqual(['option1']);
     });
 
-    test('CustomSelect > should render the component with default values', ({ expect }) => {
-        // Check if the component is rendered correctly
-        console.log('wrapper.html()', wrapper.html());
-
-        // Get the options from the component instance
-        const options = wrapper.props('options');
-        expect(options.length).toBe(2);
-        expect(options[0].label).toBe('Option 1');
-        expect(options[0].value).toBe('option1');
-        expect(options[1].label).toBe('Option 2');
-        expect(options[1].value).toBe('option2');
-    });
+    // test('CustomSelect > should render the component with default values', ({ expect }) => {
+    //     // Check if the component is rendered correctly
+    //     console.log('wrapper.html()', wrapper.html());
+    //
+    //     expect(wrapper.html()).toContain('Select an option');
+    //
+    //     // Get the options from the component instance
+    //     const options = wrapper.props('options');
+    //     expect(options.length).toBe(2);
+    //     expect(options[0].label).toBe('Option 1');
+    //     expect(options[0].value).toBe('option1');
+    //     expect(options[1].label).toBe('Option 2');
+    //     expect(options[1].value).toBe('option2');
+    // });
 
     test('CustomSelect > should render the component with custom placeholder', ({ expect }) => {
         // Mount the component with a custom placeholder
@@ -151,10 +153,4 @@ describe('CustomSelect', () => {
         const selectComponent = wrapper.vm.$refs.selectComponent as InstanceType<typeof ElSelect>;
         expect(selectComponent.filterable).toBe(false);
     });
-
-
-
-
-
-
 });

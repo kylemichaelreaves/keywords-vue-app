@@ -52,7 +52,7 @@ interface AddressResponse {
 }
 
 
-type TransactionsList = { data: Array<Transaction> };
+type TransactionsList = { rows: Array<Transaction> };
 
 
 type ArcDataObject<T> = d3.DefaultArcObject & { data: PieChartData };
@@ -71,13 +71,23 @@ interface TimelineChartProps {
     debitsByMonth: { [key: string]: number };
 }
 
+interface Memo {
+    Memo: string
+}
+
+interface MonthYear {
+    month_year: string;
+}
+
 export type {
     AddressFields,
     AddressResponse,
     Transaction,
     TransactionData,
     TransactionsList,
+    Memo,
     MemoGroup,
+    MonthYear,
     PieChartData,
     ArcDataObject,
     TimelineChartProps
