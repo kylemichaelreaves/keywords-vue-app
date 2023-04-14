@@ -1,13 +1,8 @@
 import {defineStore} from 'pinia'
-import {Transaction} from "../types";
 
 export const useTransactionsStore = defineStore('transactions', {
 
     state: () => ({
-        transactions: [] as Transaction[],
-        LIMIT: 100,
-        OFFSET: 0,
-        date: '',
         selectedMonth: '',
         selectedMemo: '',
     }),
@@ -20,9 +15,6 @@ export const useTransactionsStore = defineStore('transactions', {
         }
     },
     actions: {
-        setTransactions(transactions: Transaction[]) {
-            this.transactions = transactions
-        },
         setSelectedMonth(selectedMonth: string) {
             this.selectedMonth = selectedMonth
         },
