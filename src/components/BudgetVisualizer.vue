@@ -94,13 +94,7 @@ const BudgetVisualizer = defineComponent({
 
         watch(() => store.selectedMonth, (newMonth: string) => {
             store.setSelectedMonth(newMonth);
-            console.log("selectedMonth changed to: ", newMonth);
-            console.log("refetching data");
             refetch();
-        });
-
-        watchEffect(() => {
-            console.log("BudgetVisualizer data updated:", data.value);
         });
 
         return {
