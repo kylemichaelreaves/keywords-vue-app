@@ -1,17 +1,18 @@
 <template>
     <el-select
-        ref="selectComponent"
-        v-model="selectedMonth"
-        placeholder="select month"
-        @update:model-value="$emit('update:selectedMonth', $event)"
-        clearable
-        filterable
+            ref="selectComponent"
+            v-model="selectedMonth"
+            placeholder="select month"
+            @update:model-value="updateSelectedMonth"
+            clearable
+            filterable
     >
         <el-option
-            v-for="option in transformedData"
-            :key="option.value"
-            :label="option.label"
-            :value="option.value"
+                v-for="option in transformedData"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+                data-testid="month-option"
         />
     </el-select>
 </template>
@@ -21,11 +22,11 @@ import {computed, defineComponent, ref} from 'vue'
 import {useMonths} from "../../api/hooks/transactions/useMonths";
 import {ElOption, ElSelect} from "element-plus";
 import {MonthYear} from "../../types";
+import {useTransactionsStore} from "../../stores/transactionsStore";
 
 export default defineComponent({
     name: "MonthSelect",
     components: {ElSelect, ElOption},
-    emits: ['update:selectedMonth'],
     props: {
         selectedMonth: {
             type: String,
@@ -34,7 +35,9 @@ export default defineComponent({
     },
     setup(props) {
 
-        const selectedMonth = props.selectedMonth
+        const transactionsStore = useTransactionsStore()
+
+        const selectedMonth = transactionsStore.getSelectedMonth
 
         const {data, isFetching, isLoading, isError, error} = useMonths()
 
@@ -48,6 +51,10 @@ export default defineComponent({
             }));
         });
 
+        const updateSelectedMonth = (month: string) => {
+            transactionsStore.setSelectedMonth(month)
+        }
+
         return {
             data,
             transformedData,
@@ -55,7 +62,8 @@ export default defineComponent({
             isLoading,
             isError,
             error,
-            selectedMonth
+            selectedMonth,
+            updateSelectedMonth
         }
     }
 })

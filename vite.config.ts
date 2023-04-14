@@ -11,9 +11,9 @@ export default defineConfig({
     plugins: [vue(), mkcert(), tsconfigPaths()],
     test: {
         globals: true,
-        environment: 'happy-dom',
+        environment: 'jsdom',
         setupFiles: ['./src/test/test-setup.ts'],
-        include: ['**/**.{test, spec}.{ts, tsx, jsx, js}'],
+        include: ['**/**.{test,spec}.{ts, tsx, jsx, js}'],
         reporters: ['default', 'html'],
     },
     build: {

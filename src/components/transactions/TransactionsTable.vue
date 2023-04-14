@@ -1,9 +1,10 @@
 <template>
     <el-table
             :row-key="row => row['Transaction Number']"
-            v-if="data"
+            v-if="reactiveTableData"
+            :loading="isFetching"
             :isFetching="isFetching"
-            :data="data"
+            :data="reactiveTableData"
             style="width: 100%"
             table-layout="auto"
             height="auto"
@@ -20,6 +21,11 @@
                     {{ scope.row[columnKey] }}
                 </router-link>
             </template>
+            <template v-else-if="columnKey === 'Date'" #default="scope">
+                <div>
+                    {{ formatDate(scope.row[columnKey]) }}
+                </div>
+            </template>
             <template v-else #default="scope">
                 {{ scope.row[columnKey] }}
             </template>
@@ -28,12 +34,13 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import {computed, defineComponent, defineProps, watchEffect} from "vue";
 import {Transaction} from "../../types";
+import {formatDate, isDateSameAsPrevious} from "../../dataUtils";
 
 const transactionsTableProps = {
-    data: {
-        type: Object as () => Array<Transaction>,
+    tableData: {
+        type: Object as () => Transaction[],
         required: true,
         default: () => []
     },
@@ -48,30 +55,32 @@ const transactionsTableProps = {
         default: 0
     },
     columnKeys: {
-        type: Array,
+        type: Array as () => string[],
         required: false,
         default: () => []
     },
     isFetching: {
         type: Boolean,
-        required: true,
+        required: false,
         default: false
     }
 } as const;
 
 const TransactionsTable = defineComponent({
+    methods: {isDateSameAsPrevious, formatDate},
     props: transactionsTableProps,
     setup(props) {
 
-        const {data, LIMIT, OFFSET, columnKeys, isFetching} = props;
+        const { LIMIT, OFFSET, columnKeys, isFetching} = props;
+
+        const reactiveTableData = computed(() => props.tableData);
 
         return {
-            data,
+            reactiveTableData,
             LIMIT,
             OFFSET,
             columnKeys,
             isFetching
-
         };
     },
 });

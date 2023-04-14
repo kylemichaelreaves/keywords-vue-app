@@ -47,6 +47,13 @@ function parseDateMMYYYY(input: string): Date | null {
     return new Date(year, month);
 }
 
+const isDateSameAsPrevious = (currentDate: string, index: number, tableData: Transaction[]) => {
+    if (index === 0) return false;
+    const previousDate = tableData[index - 1].date;
+    return formatDate(currentDate) === formatDate(previousDate);
+};
+
+
 // Accepts an optional format parameter with a default value of 'YYYY-MM-DD'
 function formatDate(dateString: string, format: string = 'YYYY-MM-DD'): string {
     // Input validation: Check if dateString matches the expected format
@@ -74,6 +81,4 @@ function formatDate(dateString: string, format: string = 'YYYY-MM-DD'): string {
 }
 
 
-
-
-export {filterDataByMonth, sumDebits, filterDataByMemo, parseDateMMYYYY, formatDate};
+export {filterDataByMonth, sumDebits, isDateSameAsPrevious, filterDataByMemo, parseDateMMYYYY, formatDate};
