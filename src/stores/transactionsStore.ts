@@ -1,6 +1,5 @@
 import {defineStore} from 'pinia'
 import {Transaction} from "../types";
-import {fetchTransactions} from "../api/transactions/fetchTransactions";
 
 export const useTransactionsStore = defineStore('transactions', {
 
@@ -13,15 +12,6 @@ export const useTransactionsStore = defineStore('transactions', {
         selectedMemo: '',
     }),
     getters: {
-        getTransactions: async (state) => {
-            await fetchTransactions(state.LIMIT, state.OFFSET, state.date)
-                .then(response => {
-                    console.log('response:', response)
-                    state.transactions = response
-                }).catch(err => {
-                    throw err
-                })
-        },
         getSelectedMonth: (state) => {
             return state.selectedMonth
         },
