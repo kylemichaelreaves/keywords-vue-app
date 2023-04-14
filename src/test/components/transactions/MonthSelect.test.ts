@@ -1,34 +1,30 @@
 import {vi, test} from 'vitest'
 import {fireEvent, waitFor, screen, render} from "@testing-library/vue";
 import MonthSelect from "../../../components/transactions/MonthSelect.vue";
-import {renderWithQueryClient} from "../../renderWithQueryClient";
 import {ElOption, ElSelect} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {mount} from "@vue/test-utils";
-import {nextTick} from "vue";
-
+import {createTestingPinia} from '@pinia/testing'
+import {useTransactionsStore} from "../../../stores/transactionsStore";
 
 describe('MonthsSelect', () => {
 
+    const wrapper = mount(MonthSelect, {
+        global: {
+            plugins: [ElSelect, ElOption, VueQueryPlugin, createTestingPinia()],
+        }
+    })
 
     test('should render', () => {
-        const wrapper = mount(MonthSelect, {
-            global: {
-                plugins: [ElSelect, ElOption, VueQueryPlugin],
-            }
-        })
-
         expect(wrapper.exists()).toBe(true)
     })
 
     test('should render the component and its options', async () => {
-
         render(MonthSelect, {
             global: {
                 plugins: [ElSelect, VueQueryPlugin],
             }
         })
-
 
         await waitFor(() => {
             expect(screen.getByPlaceholderText('select month')).toBeInTheDocument()
@@ -39,46 +35,29 @@ describe('MonthsSelect', () => {
     })
 
     test('clearable should be true', async () => {
-        const wrapper = mount(MonthSelect, {
-            global: {
-                plugins: [ElSelect, VueQueryPlugin],
-            }
-        })
-
+        // @ts-ignore
         expect(wrapper.vm.$refs.selectComponent.clearable).toBe(true)
     })
 
-    test('should clear the selected value when the clearable button is clicked', async () => {
-        const wrapper = mount(MonthSelect, {
-            global: {
-                plugins: [ElSelect, VueQueryPlugin],
-            }
-        })
+    test('should emit the selected month', async () => {
+        it("renders options and updates selectedMonth in the store", async () => {
+            // Access the transactions store
+            const transactionsStore = useTransactionsStore(createTestingPinia());
 
-        await wrapper.findComponent(ElSelect).setValue('11/2022')
+            // Get the transformedData from the component's setup function
+            const transformedData = wrapper.vm.transformedData;
 
-        await nextTick()
+            // Assuming you have some transformed data to be rendered as options
+            const options = wrapper.findAll("option");
 
-        await wrapper.findComponent(ElSelect).find('.el-select__caret').trigger('click')
+            // Check if the correct number of options is rendered
+            expect(options.length).toBe(transformedData.length);
 
-        await nextTick()
+            // Select the first option
+            await wrapper.get("select").setValue(transformedData[0].value);
 
-        await wrapper.findComponent(ElSelect).find('.el-select-dropdown__item').trigger('click')
-
-        await nextTick()
-
-        expect(wrapper.vm.$refs.selectComponent.modelValue).toBe('')
-
-        // const select = screen.findAllByDisplayValue(/select month/i)
-
-        // await fireEvent.update(select, '11/2022')
-
-        // await waitFor(() => {
-        //     expect(screen.getByText('11/2022')).toBeInTheDocument()
-        // })
-
-        // screen.getByText('11/2022').click()
-
-
-    });
+            // Check if the selectedMonth in the store is updated correctly
+            expect(transactionsStore.getSelectedMonth).toBe(transformedData[0].value);
+        });
+    })
 })

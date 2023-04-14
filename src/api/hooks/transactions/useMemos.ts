@@ -5,6 +5,8 @@ import {Memo} from "../../../types";
 export default function useMemos() {
     return useQuery<Array<Memo>>({
         queryKey: ['memos'],
-        queryFn: () => fetchMemos()
+        queryFn: () => fetchMemos(),
+        keepPreviousData: true,
+        refetchOnWindowFocus: false,
     })
 }

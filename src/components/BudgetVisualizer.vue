@@ -19,19 +19,17 @@
     <br/>
 
     <MonthSelect
-            :model="selectedMonth"
-            @update:selectedMonth="selectedMonth = $event"
+            @update:selectedMonth="updateSelectedMonth($event)"
             :selected-value="selectedMonth"
     />
 
     <MemoSelect
-            :model="selectedMemo"
-            @update:selected-memo="selectedMemo = $event"
+            @update:selected-memo="updateSelectedMemo($event)"
             :selected-value="selectedMemo"
     />
 
     <TransactionsTable
-            :data="data"
+            :tableData="data"
             :columnKeys="columnKeys"
             :isFetching="isFetching"
             :LIMIT="LIMIT"
@@ -41,13 +39,14 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, watch} from "vue";
+import {computed, defineComponent, ref, watch, watchEffect} from "vue";
 import TransactionsTable from "./transactions/TransactionsTable.vue";
 import TransactionUploader from "./transactions/TransactionUploader.vue";
 import useTransactions from "../api/hooks/transactions/useTransactions";
 import MonthSelect from "./transactions/MonthSelect.vue";
 import MemoSelect from "./transactions/MemoSelect.vue";
 import {TrendCharts} from "@element-plus/icons-vue";
+import {useTransactionsStore} from "../stores/transactionsStore";
 
 const BudgetVisualizer = defineComponent({
     components: {
@@ -59,8 +58,15 @@ const BudgetVisualizer = defineComponent({
     },
 
     setup() {
-        const selectedMonth = ref('')
-        const selectedMemo = ref('')
+        const store = useTransactionsStore();
+
+        const updateSelectedMonth = (newMonth: string) => {
+            store.setSelectedMonth(newMonth);
+        };
+
+        const updateSelectedMemo = (newMemo: string) => {
+            store.setSelectedMemo(newMemo);
+        };
 
         // variables for paginating query
         const LIMIT = 100;
@@ -70,7 +76,13 @@ const BudgetVisualizer = defineComponent({
             OFFSET.value += LIMIT;
         }
 
-        const {data, error, isLoading, isFetching, refetch} = useTransactions(LIMIT, OFFSET.value, selectedMonth)
+        const {
+            data,
+            error,
+            isLoading,
+            isFetching,
+            refetch
+        } = useTransactions(LIMIT, OFFSET.value)
 
         const columnKeys = computed(() => {
             if (data.value && data.value.length > 0) {
@@ -80,12 +92,10 @@ const BudgetVisualizer = defineComponent({
             }
         });
 
-        watch(selectedMonth, (newMonth) => {
-            selectedMonth.value = newMonth;
-            console.log('selectedMonth changed to: ' + selectedMonth.value);
-            console.log('refetching data');
+        watch(() => store.selectedMonth, (newMonth: string) => {
+            store.setSelectedMonth(newMonth);
             refetch();
-        })
+        });
 
         return {
             data,
@@ -93,11 +103,13 @@ const BudgetVisualizer = defineComponent({
             incrementOffset,
             isLoading,
             isFetching,
-            selectedMonth,
-            selectedMemo,
+            selectedMonth: computed(() => store.getSelectedMonth),
+            selectedMemo: computed(() => store.getSelectedMemo),
             LIMIT,
             OFFSET,
             columnKeys,
+            updateSelectedMonth,
+            updateSelectedMemo,
         };
     },
 });

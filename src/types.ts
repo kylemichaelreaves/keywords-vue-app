@@ -30,17 +30,17 @@ interface AddressResponse {
     licence: string;
     boundingbox: string[];
     address: {
+        house_number: string;
+        road: string;
+        town?: string;
+        village?: string;
+        neighbourhood?: string;
+        county: string;
+        state: string
+        postcode: string;
         country: string;
         country_code: string;
-        town?: string;
-        road: string;
         "ISO3166-2-lvl4": string;
-        county: string;
-        neighbourhood?: string;
-        village?: string;
-        postcode: string;
-        house_number: string;
-        state: string
     };
     importance: number;
     lon: string;

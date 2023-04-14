@@ -1,4 +1,4 @@
-import {MonthYear, Transaction} from "../../../types";
+import {Memo, MonthYear, Transaction} from "../../../types";
 
 export const transactionsMock: Transaction[] = [
     {
@@ -25,3 +25,16 @@ export const monthsMock: MonthYear[] = [
     {
         month_year: '01/2023',
     }]
+
+
+export const memosMock: Memo[] = [
+    {
+        Memo: 'Test Memo 1',
+    },
+    {
+        Memo: 'Test Memo 2',
+    },
+    {
+        Memo: 'Test Memo 3',
+    }
+]
