@@ -12,7 +12,7 @@
     <el-button type="primary">Click to upload</el-button>
     <template #tip>
       <div class="el-upload__tip">
-        upload a csv file to its s3 bucket
+        upload a csv file; insert into the Transactions table
       </div>
     </template>
   </el-upload>
@@ -75,5 +75,4 @@ export default TransactionUploader
 </script>
 
 <style scoped>
-
 </style>

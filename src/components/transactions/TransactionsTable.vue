@@ -34,13 +34,13 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, defineProps, watchEffect} from "vue";
+import {computed, defineComponent} from "vue";
 import {Transaction} from "../../types";
 import {formatDate, isDateSameAsPrevious} from "../../dataUtils";
 
 const transactionsTableProps = {
     tableData: {
-        type: Object as () => Transaction[],
+        type: Array as () => Transaction[],
         required: true,
         default: () => []
     },

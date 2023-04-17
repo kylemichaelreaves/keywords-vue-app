@@ -33,7 +33,7 @@ export default defineComponent({
             default: ''
         }
     },
-    setup(props) {
+    setup() {
 
         const transactionsStore = useTransactionsStore()
 
