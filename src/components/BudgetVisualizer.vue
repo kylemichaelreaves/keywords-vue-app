@@ -82,6 +82,7 @@ const BudgetVisualizer = defineComponent({
             isLoading,
             isFetching,
             refetch
+        //     since we're storing the selectedMonth, we don't need to pass it as a variable
         } = useTransactions(LIMIT, OFFSET.value)
 
         const columnKeys = computed(() => {
@@ -94,6 +95,11 @@ const BudgetVisualizer = defineComponent({
 
         watch(() => store.selectedMonth, (newMonth: string) => {
             store.setSelectedMonth(newMonth);
+            refetch();
+        });
+
+        watch(() => store.selectedMemo, (newMemo: string) => {
+            store.setSelectedMemo(newMemo);
             refetch();
         });
 

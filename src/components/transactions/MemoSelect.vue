@@ -3,7 +3,7 @@
         ref="selectComponent"
         v-model="selectedMemo"
         placeholder="select Memo"
-        @update:model-value="$emit('update:selectedMemo', $event)"
+        @update:model-value="updateSelectedMemo"
         clearable
         filterable
     >
@@ -17,9 +17,10 @@
 </template>
 
 <script lang='ts'>
-import {computed, defineComponent, ref} from 'vue'
+import {computed, defineComponent, watch} from 'vue'
 import useMemos from "../../api/hooks/transactions/useMemos";
 import {ElOption, ElSelect} from "element-plus";
+import {useTransactionsStore} from "../../stores/transactionsStore";
 
 export default defineComponent({
     name: "MemoSelect",
@@ -30,11 +31,16 @@ export default defineComponent({
             default: ''
         }
     },
-    emits: ['update:selectedMemo'],
     setup() {
-        const {data, isLoading, isFetching, isError, error} = useMemos()
 
-        const selectedMemo = ref('');
+        const transactionsStore = useTransactionsStore()
+        // TODO - allow for optional selectedMonth prop; get it from the store
+
+        const selectedMemo = transactionsStore.getSelectedMemo;
+
+        const selectedMonth = computed(() => transactionsStore.getSelectedMonth);
+
+        const {data, isLoading, isFetching, isError, error, refetch} = useMemos()
 
         const memoOptions = computed(() => {
             if (!data.value) {
@@ -46,6 +52,14 @@ export default defineComponent({
             }));
         });
 
+        const updateSelectedMemo = (memo: string) => {
+            transactionsStore.setSelectedMemo(memo)
+        }
+
+        watch(selectedMonth, (newMonth) => {
+            refetch()
+        })
+
         return {
             data,
             memoOptions,
@@ -53,7 +67,8 @@ export default defineComponent({
             isFetching,
             isError,
             error,
-            selectedMemo
+            selectedMemo,
+            updateSelectedMemo
         }
     }
 })
