@@ -9,6 +9,7 @@
             table-layout="auto"
             height="auto"
             border
+
     >
         <el-table-column
                 v-for="columnKey in columnKeys"
