@@ -7,15 +7,6 @@ interface AddressFields {
     state: string;
     zipcode?: string;
 }
-
-export interface FieldConfig {
-    streetAddress: { label: string, required: boolean },
-    unitOrAptNum: { label: string, required: boolean },
-    municipality: { label: string, required: boolean },
-    state: { label: string, required: boolean },
-    zipcode: { label: string, required: boolean }
-}
-
 type Transaction = {
     transactionNumber: string;
     date: string;
