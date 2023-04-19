@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, watch, watchEffect} from "vue";
+import {computed, defineComponent, ref, watch} from "vue";
 import TransactionsTable from "./transactions/TransactionsTable.vue";
 import TransactionUploader from "./transactions/TransactionUploader.vue";
 import useTransactions from "../api/hooks/transactions/useTransactions";
@@ -87,7 +87,7 @@ const BudgetVisualizer = defineComponent({
 
         const columnKeys = computed(() => {
             if (data.value && data.value.length > 0) {
-                return Object.keys(data.value[0]);
+                return Object.keys(data.value[0]).filter(key => key !== 'Check Number' && key !== 'Fees');
             } else {
                 return [];
             }
