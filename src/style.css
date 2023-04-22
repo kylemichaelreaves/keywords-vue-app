@@ -61,7 +61,7 @@ button:focus-visible {
 }
 
 #app {
-  max-width: 100%;
+  max-width: 1080px;
   margin: 0 0;
   padding: 2rem;
   text-align: left;

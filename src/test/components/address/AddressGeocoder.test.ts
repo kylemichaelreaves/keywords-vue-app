@@ -1,7 +1,7 @@
 import {test} from 'vitest'
 import {mount} from '@vue/test-utils'
-import AddressGeocoder from "../../components/address/AddressGeocoder.vue";
-import {ElButton, ElInput, ElOption, ElSelect} from "element-plus";
+import AddressGeocoder from "../../../components/address/AddressGeocoder.vue";
+import {ElButton, ElInput} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from "@pinia/testing";
 

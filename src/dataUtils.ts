@@ -46,6 +46,16 @@ function parseDateMMYYYY(input: string): Date | null {
 
     return new Date(year, month);
 }
+function formatKey(key: string): string {
+    if (!key) return "";
+
+    const words = key.replace(/_/g, " ").split(" ");
+    const capitalizedWords = words.map(
+        word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    );
+    return capitalizedWords.join(" ");
+}
+
 
 const isDateSameAsPrevious = (currentDate: string, index: number, tableData: Transaction[]) => {
     if (index === 0) return false;
@@ -81,4 +91,4 @@ function formatDate(dateString: string, format: string = 'YYYY-MM-DD'): string {
 }
 
 
-export {filterDataByMonth, sumDebits, isDateSameAsPrevious, filterDataByMemo, parseDateMMYYYY, formatDate};
+export {filterDataByMonth, formatKey, sumDebits, isDateSameAsPrevious, filterDataByMemo, parseDateMMYYYY, formatDate};

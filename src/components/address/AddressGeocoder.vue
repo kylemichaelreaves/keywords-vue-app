@@ -49,7 +49,8 @@ import AddressResults from "./AddressResults.vue";
 import {AddressFields} from "../../types";
 import {Location} from "@element-plus/icons-vue";
 
-const AddressGeocoder = defineComponent({
+export default defineComponent({
+    name: 'AddressGeocoder',
     components: {
         Location,
         AddressList,
@@ -101,15 +102,6 @@ const AddressGeocoder = defineComponent({
             ]
         }
 
-
-        watch([
-            () => formData.value
-        ], (newValue, oldValue) => {
-            console.log(`Object updated:`, oldValue, '=>', newValue)
-        }, {deep: true})
-
-
-
         const {isLoading, isFetching, isError, data, error, refetch} = useGeocodeAddress(formData.value)
 
 
@@ -137,8 +129,6 @@ const AddressGeocoder = defineComponent({
         }
     }
 })
-
-export default AddressGeocoder;
 </script>
 
 <style scoped>
