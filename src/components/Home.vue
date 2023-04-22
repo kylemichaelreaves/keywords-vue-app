@@ -13,13 +13,13 @@
 import {defineComponent} from "vue";
 import {HomeFilled} from "@element-plus/icons-vue";
 
-const Home = defineComponent({
+export default defineComponent({
+  name: "Home",
   components: {HomeFilled},
   setup() {
     return {};
   }
 })
-export default Home;
 </script>
 
 <style scoped>
