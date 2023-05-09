@@ -5,6 +5,7 @@ export const useTransactionsStore = defineStore('transactions', {
     state: () => ({
         selectedMonth: '',
         selectedMemo: '',
+        selectedWeek: ''
     }),
     getters: {
         getSelectedMonth: (state) => {
@@ -12,6 +13,9 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         getSelectedMemo: (state) => {
             return state.selectedMemo
+        },
+        getSelectedWeek: (state) => {
+            return state.selectedWeek
         }
     },
     actions: {
@@ -20,6 +24,9 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         setSelectedMemo(selectedMemo: string) {
             this.selectedMemo = selectedMemo
+        },
+        setSelectedWeek(selectedWeek: string) {
+            this.selectedWeek = selectedWeek
         }
     }
 })

@@ -78,6 +78,20 @@ interface MonthYear {
     month_year: string;
 }
 
+interface WeekSummary {
+    memo: string;
+    weekly_amount_debit: number;
+}
+
+interface MonthSummary {
+    memo: string;
+    monthly_amount_debit: number;
+}
+
+interface Week {
+    week: string;
+}
+
 export type {
     AddressFields,
     AddressResponse,
@@ -89,5 +103,8 @@ export type {
     MonthYear,
     PieChartData,
     ArcDataObject,
-    TimelineChartProps
+    TimelineChartProps,
+    WeekSummary,
+    MonthSummary,
+    Week
 };

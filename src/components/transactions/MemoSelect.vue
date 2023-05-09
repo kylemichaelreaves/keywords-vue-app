@@ -34,7 +34,6 @@ export default defineComponent({
     setup() {
 
         const transactionsStore = useTransactionsStore()
-        // TODO - allow for optional selectedMonth prop; get it from the store
 
         const selectedMemo = transactionsStore.getSelectedMemo;
 
