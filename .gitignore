@@ -25,3 +25,6 @@ dist-ssr
 
 # don't commit the .env file
 .env
+
+# don't commit the .nvmrc file
+.nvmrc
