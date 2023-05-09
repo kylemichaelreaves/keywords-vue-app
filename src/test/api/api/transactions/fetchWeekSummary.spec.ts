@@ -3,16 +3,25 @@ import {weekSummaryMock} from "../../../mock/transaction";
 import {server} from "../../../test-setup";
 import {rest} from "msw";
 
+
 describe('fetchWeekSummary', () => {
     test('fetchWeekSummary should fetch data correctly', async () => {
         const week = '52-2021';
+
+        // try {
+        //     await fetchWeekSummary(week);
+        // } catch (error) {
+        //     expect(error).toBeDefined()
+        //     expect((error as Error).message).toBe('Request failed with status code 500');
+        // }
+
         const result = await fetchWeekSummary(week);
         expect(result).toEqual(weekSummaryMock);
     });
 
     test('fetchWeekSummary should throw an error if the request fails', async () => {
         server.use(
-            rest.get('*/transactions/get-weekly-summary', (req, res, ctx) => {
+            rest.get('*/transactions/get-week-summary', (req, res, ctx) => {
                 return res(ctx.status(500));
             })
         );

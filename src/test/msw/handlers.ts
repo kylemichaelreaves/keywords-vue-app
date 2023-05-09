@@ -20,7 +20,7 @@ export const handlers = [
         return res(ctx.status(200), ctx.json<Memo[]>(memosMock));
     }),
 
-    rest.get("*/transactions/get-weekly-summary", (req, res, ctx) => {
+    rest.get("*/transactions/get-week-summary", (req, res, ctx) => {
         return res(ctx.status(200), ctx.json<WeekSummary[]>(weekSummaryMock));
     }),
 
