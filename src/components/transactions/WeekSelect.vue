@@ -4,6 +4,7 @@
     v-model="selectedWeek"
     placeholder="select a week"
     @update:model-value="updateSelectedWeek"
+    :disabled="selectedMonth.value !== ''"
     clearable
     filterable
     >
@@ -36,7 +37,9 @@ export default defineComponent({
     setup() {
         const store = useTransactionsStore();
 
-        const selectedWeek = store.getSelectedMemo;
+        const selectedWeek = computed(() => store.getSelectedMemo);
+
+        const selectedMonth = computed(() => store.getSelectedMonth)
 
         const {data, isLoading, isFetching, isError, error} = useWeeks();
 
@@ -56,6 +59,7 @@ export default defineComponent({
 
         return {
             selectedWeek,
+            selectedMonth,
             weekOptions,
             updateSelectedWeek,
             isLoading,

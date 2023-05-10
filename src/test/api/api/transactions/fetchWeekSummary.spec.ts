@@ -12,7 +12,7 @@ describe('fetchWeekSummary', () => {
 
     test('fetchWeekSummary should throw an error if the request fails', async () => {
         server.use(
-            rest.get('*/transactions/get-weekly-summary', (req, res, ctx) => {
+            rest.get('*/transactions/get-week-summary', (req, res, ctx) => {
                 return res(ctx.status(500));
             })
         );
