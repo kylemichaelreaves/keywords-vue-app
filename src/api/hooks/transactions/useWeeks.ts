@@ -1,9 +1,9 @@
 import {useQuery} from "@tanstack/vue-query";
 import {fetchWeeks} from "../../transactions/fetchWeeks";
-import {Week} from "../../../types";
+import {WeekYear} from "../../../types";
 
 export default function useWeeks() {
-    return useQuery<Array<Week>>({
+    return useQuery<Array<WeekYear>>({
         queryKey: ['weeks'],
         queryFn: () => fetchWeeks(),
         keepPreviousData: true,

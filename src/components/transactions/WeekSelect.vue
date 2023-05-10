@@ -21,11 +21,10 @@ import {computed, defineComponent} from "vue";
 import useWeeks from "../../api/hooks/transactions/useWeeks"
 import {ElOption, ElSelect} from "element-plus"
 import {useTransactionsStore} from "../../stores/transactionsStore";
-import {select} from "d3";
+import {WeekYear} from "../../types";
 
 export default defineComponent({
     name: 'WeekSelect',
-    methods: {select},
     components: {ElOption, ElSelect},
     props: {
         selectedWeek: {
@@ -36,7 +35,7 @@ export default defineComponent({
     setup() {
         const store = useTransactionsStore();
 
-        const selectedWeek = store.getSelectedMemo;
+        const selectedWeek = computed(() => store.getSelectedWeek);
 
         const {data, isLoading, isFetching, isError, error} = useWeeks();
 
@@ -44,9 +43,9 @@ export default defineComponent({
             if (!data.value) {
                 return []
             }
-            return data.value.map(item => ({
-                value: item.week,
-                label: item.week
+            return data.value.map((item: WeekYear) => ({
+                value: item.week_year,
+                label: item.week_year
             }));
         })
 

@@ -2,6 +2,7 @@ import axios from "axios";
 import {Transaction} from "../../types";
 import {isValidURL} from "../helpers/isValidURL";
 import {parseDateMMYYYY} from "../../dataUtils";
+import {parseDateIWIYYY} from "../helpers/parseDateIWIYYY";
 
 export const fetchTransactions = async (
     limit?: number,
@@ -28,8 +29,14 @@ export const fetchTransactions = async (
         throw Error('url is not valid');
     }
 
-    // Convert the date string to a Date object
-    const dateObj = date ? parseDateMMYYYY(date) : null;
+    // Check if the date string contains a dash or a slash and call the appropriate parser function
+    const dateObj = date
+        ? date.includes('-')
+            ? parseDateIWIYYY(date)
+            : date.includes('/')
+                ? parseDateMMYYYY(date)
+                : null
+        : null;
 
     console.log('dateObj sent to Lambda:', dateObj)
 

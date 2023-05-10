@@ -1,7 +1,7 @@
 import {rest} from 'msw'
-import {AddressResponse, Memo, MonthYear, Transaction, TransactionsList, WeekSummary} from "../../types";
+import {AddressResponse, Memo, MonthYear, Transaction, TransactionsList, WeekYear, WeekSummary} from "../../types";
 import {addressesMock} from "../mock/address";
-import {memosMock, monthsMock, transactionsMock, weekSummaryMock} from "../mock/transaction";
+import {memosMock, monthsMock, transactionsMock, weeksMock, weekSummaryMock} from "../mock/transaction";
 
 export const handlers = [
     rest.get('*/address-geocoder', (req, res, ctx) => {
@@ -22,6 +22,10 @@ export const handlers = [
 
     rest.get("*/transactions/get-week-summary", (req, res, ctx) => {
         return res(ctx.status(200), ctx.json<WeekSummary[]>(weekSummaryMock));
+    }),
+
+    rest.get('*/transactions/get-weeks', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json<WeekYear[]>(weeksMock));
     }),
 
     rest.get('*', (req, res, ctx) => {

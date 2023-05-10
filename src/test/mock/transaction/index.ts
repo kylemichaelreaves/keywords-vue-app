@@ -1,4 +1,4 @@
-import {Memo, MonthYear, Transaction, WeekSummary} from "../../../types";
+import {Memo, MonthYear, Transaction, WeekYear, WeekSummary} from "../../../types";
 
 export const transactionsMock: Transaction[] = [
     {
@@ -47,5 +47,17 @@ export const weekSummaryMock: WeekSummary[] = [
     {
         memo: 'Gas Station',
         weekly_amount_debit: -50
+    }
+]
+
+export const weeksMock: WeekYear[] = [
+    {
+        week_year: '01-2023',
+    },
+    {
+        week_year: '02-2023',
+    },
+    {
+        week_year: '03-2023',
     }
 ]

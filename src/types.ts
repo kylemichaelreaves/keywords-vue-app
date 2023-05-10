@@ -88,8 +88,8 @@ interface MonthSummary {
     monthly_amount_debit: number;
 }
 
-interface Week {
-    week: string;
+interface WeekYear {
+    week_year: string;
 }
 
 export type {
@@ -106,5 +106,5 @@ export type {
     TimelineChartProps,
     WeekSummary,
     MonthSummary,
-    Week
+    WeekYear
 };
