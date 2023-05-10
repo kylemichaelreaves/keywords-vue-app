@@ -60,4 +60,22 @@ describe('MonthsSelect', () => {
             expect(transactionsStore.getSelectedMonth).toBe(transformedData[0].value);
         });
     })
+
+    test('should disable the select when there is a selectedWeek in the store', async () => {
+        // Set up a store with a selectedWeek value
+        const storeWithSelectedWeek = createTestingPinia();
+        const transactionsStore = useTransactionsStore(storeWithSelectedWeek);
+        transactionsStore.setSelectedWeek('02-2023');
+
+        // Mount the component with the updated store
+        const wrapperWithSelectedWeek = mount(MonthSelect, {
+            global: {
+                plugins: [ElSelect, ElOption, VueQueryPlugin, storeWithSelectedWeek],
+            },
+        });
+
+        // Check if the select is disabled
+        const select = wrapperWithSelectedWeek.findComponent(ElSelect);
+        expect(select.props("disabled")).toBe(true);
+    });
 })

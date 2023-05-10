@@ -4,6 +4,7 @@
             v-model="selectedMonth"
             placeholder="select month"
             @update:model-value="updateSelectedMonth"
+            :disabled="selectedWeek.value !== ''"
             clearable
             filterable
     >
@@ -37,7 +38,9 @@ export default defineComponent({
 
         const transactionsStore = useTransactionsStore()
 
-        const selectedMonth = transactionsStore.getSelectedMonth
+
+        const selectedMonth = computed(() => transactionsStore.getSelectedMonth)
+        const selectedWeek = computed(() => transactionsStore.getSelectedWeek)
 
         const {data, isFetching, isLoading, isError, error} = useMonths()
 
@@ -63,6 +66,7 @@ export default defineComponent({
             isError,
             error,
             selectedMonth,
+            selectedWeek,
             updateSelectedMonth
         }
     }
