@@ -9,7 +9,6 @@
             table-layout="auto"
             height="auto"
             border
-
     >
         <el-table-column
                 v-for="columnKey in columnKeys"
@@ -18,7 +17,7 @@
                 :label="columnKey"
         >
             <template v-if="columnKey === 'Transaction Number'" #default="scope">
-                <router-link :to="`/transactions/${scope.row[columnKey]}`">
+                <router-link :to="`budget-visualizer/transactions/${scope.row[columnKey]}`">
                     {{ scope.row[columnKey] }}
                 </router-link>
             </template>
@@ -26,6 +25,11 @@
                 <div>
                     {{ formatDate(scope.row[columnKey]) }}
                 </div>
+            </template>
+            <template v-else-if="columnKey === 'Memo'" #default="scope">
+                <router-link :to="`budget-visualizer/memos/${encodeURIComponent(scope.row[columnKey])}`">
+                    {{ scope.row[columnKey] }}
+                </router-link>
             </template>
             <template v-else #default="scope">
                 {{ scope.row[columnKey] }}
@@ -37,7 +41,7 @@
 <script lang="ts">
 import {computed, defineComponent} from "vue";
 import {Transaction} from "../../types";
-import {formatDate, isDateSameAsPrevious} from "../../dataUtils";
+import {formatDate} from "../../api/helpers/dataUtils";
 
 const transactionsTableProps = {
     tableData: {
@@ -68,11 +72,11 @@ const transactionsTableProps = {
 } as const;
 
 const TransactionsTable = defineComponent({
-    methods: {isDateSameAsPrevious, formatDate},
+    methods: {formatDate},
     props: transactionsTableProps,
     setup(props) {
 
-        const { LIMIT, OFFSET, columnKeys, isFetching} = props;
+        const {LIMIT, OFFSET, columnKeys, isFetching} = props;
 
         const reactiveTableData = computed(() => props.tableData);
 

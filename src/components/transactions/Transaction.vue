@@ -15,7 +15,7 @@ import {TransactionData} from "../../types"
 
 
 export default defineComponent({
-  name: "TransactionTable",
+  name: "Transaction",
   props: {
     transaction: {
       type: Object as () => TransactionData,

@@ -5,7 +5,9 @@ import {useTransactionsStore} from "../../../stores/transactionsStore";
 import {mount} from "@vue/test-utils";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {test} from "vitest";
+
 describe('WeekSelect', () => {
+
     const wrapper = mount(WeekSelect, {
         global: {
             plugins: [ElSelect, ElOption, VueQueryPlugin, createTestingPinia()],
@@ -28,6 +30,7 @@ describe('WeekSelect', () => {
             const transactionsStore = useTransactionsStore(createTestingPinia());
 
             // Get the transformedData from the component's setup function
+            // @ts-ignore
             const transformedData = wrapper.vm.transformedData;
 
             // Assuming you have some transformed data to be rendered as options

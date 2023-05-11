@@ -23,6 +23,21 @@ interface TransactionData {
     [key: string]: string;
 }
 
+interface MemoSummary {
+    sum_amount_debit: number;
+    transactions_count: number;
+}
+
+interface WeekSummary {
+    memo: string;
+    weekly_amount_debit: number;
+}
+
+interface MonthSummary {
+    memo: string;
+    monthly_amount_debit: number;
+}
+
 interface AddressResponse {
     osm_type: string;
     osm_id: number;
@@ -78,16 +93,6 @@ interface MonthYear {
     month_year: string;
 }
 
-interface WeekSummary {
-    memo: string;
-    weekly_amount_debit: number;
-}
-
-interface MonthSummary {
-    memo: string;
-    monthly_amount_debit: number;
-}
-
 interface WeekYear {
     week_year: string;
 }
@@ -100,11 +105,12 @@ export type {
     TransactionsList,
     Memo,
     MemoGroup,
+    MemoSummary,
     MonthYear,
     PieChartData,
     ArcDataObject,
     TimelineChartProps,
+    WeekYear,
     WeekSummary,
-    MonthSummary,
-    WeekYear
+    MonthSummary
 };

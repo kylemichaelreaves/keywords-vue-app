@@ -10,6 +10,9 @@
         <el-col :span="4">
             <TransactionUploader/>
         </el-col>
+        <el-col :span="10">
+            <MemoSummaryTable v-if="selectedMemo"/>
+        </el-col>
     </el-row>
     <el-alert v-if="error" type="error" :title="'Error: ' + error">
         <h2>
@@ -17,11 +20,6 @@
         </h2>
     </el-alert>
     <br/>
-
-    <WeekSelect
-            @update:selected-week="updateSelectedWeek($event)"
-            :selected-value="selectedWeek"
-    />
 
     <MonthSelect
             @update:selectedMonth="updateSelectedMonth($event)"
@@ -52,11 +50,11 @@ import MonthSelect from "./transactions/MonthSelect.vue";
 import MemoSelect from "./transactions/MemoSelect.vue";
 import {TrendCharts} from "@element-plus/icons-vue";
 import {useTransactionsStore} from "../stores/transactionsStore";
-import WeekSelect from "./transactions/WeekSelect.vue";
+import MemoSummaryTable from "./transactions/MemoSummaryTable.vue";
 
 const BudgetVisualizer = defineComponent({
     components: {
-        WeekSelect,
+        MemoSummaryTable,
         TrendCharts,
         MemoSelect,
         MonthSelect,
@@ -73,10 +71,6 @@ const BudgetVisualizer = defineComponent({
 
         const updateSelectedMemo = (newMemo: string) => {
             store.setSelectedMemo(newMemo);
-        };
-
-        const updateSelectedWeek = (newWeek: string) => {
-            store.setSelectedWeek(newWeek);
         };
 
         // variables for paginating query
@@ -105,27 +99,12 @@ const BudgetVisualizer = defineComponent({
         });
 
         watch(() => store.selectedMonth, (newMonth: string) => {
-            // if there's a selectedWeek, reset it
-            if (store.selectedWeek) {
-                store.setSelectedWeek('');
-            }
             store.setSelectedMonth(newMonth);
             refetch();
         });
 
         watch(() => store.selectedMemo, (newMemo: string) => {
             store.setSelectedMemo(newMemo);
-            refetch();
-        });
-
-        watch(() => store.selectedWeek, (newWeek: string) => {
-            // If there's a selectedWeek, the selectedMonth needs to be reset
-            // first check if there's a selectedMonth
-            if (store.selectedMonth) {
-                store.setSelectedMonth('');
-            }
-            store.setSelectedMonth('');
-            store.setSelectedWeek(newWeek);
             refetch();
         });
 
@@ -137,13 +116,11 @@ const BudgetVisualizer = defineComponent({
             isFetching,
             selectedMonth: computed(() => store.getSelectedMonth),
             selectedMemo: computed(() => store.getSelectedMemo),
-            selectedWeek: computed(() => store.getSelectedWeek),
             LIMIT,
             OFFSET,
             columnKeys,
             updateSelectedMonth,
             updateSelectedMemo,
-            updateSelectedWeek,
         };
     },
 });

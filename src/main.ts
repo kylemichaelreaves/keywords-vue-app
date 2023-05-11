@@ -7,13 +7,14 @@ import App from './App.vue'
 import Keywords from "./components/Keywords.vue";
 import Home from "./components/Home.vue";
 import Navbar from "./components/Navbar.vue";
-import AddressGeocder from "./components/address/AddressGeocoder.vue";
+import AddressGeocoderForm from "./components/address/AddressGeocoderForm.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import Transaction from "./components/transactions/Transaction.vue";
 import BudgetVisualizer from "./components/BudgetVisualizer.vue";
 import TransactionsTable from "./components/transactions/TransactionsTable.vue";
+import MemoSummaryTable from "./components/transactions/MemoSummaryTable.vue";
 
 const pinia = createPinia()
 
@@ -31,7 +32,7 @@ export const routes = [
     {
         path: '/address-geocoder',
         name: 'address-geocoder',
-        component: AddressGeocder
+        component: AddressGeocoderForm
     },
     {
         path: '/budget-visualizer',
@@ -44,14 +45,19 @@ export const routes = [
                 component: TransactionsTable,
                 children: [
                     {
-                        path: '/transactions/:transactionNumber',
+                        path: ':transactionNumber',
                         name: 'Transaction',
                         component: Transaction,
                         props: true,
                     },
-
                 ]
-            }
+            },
+            {
+                path: 'memos/:memo',
+                name: 'MemoSummaryTable',
+                component: MemoSummaryTable,
+                props: true,
+            },
         ]
     }
 ]

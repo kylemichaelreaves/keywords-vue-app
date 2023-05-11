@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import {computed, defineComponent} from "vue";
-import useWeeks from "../../api/hooks/transactions/useWeeks"
+import {useWeeks} from "../../api/hooks/transactions/useWeeks"
 import {ElOption, ElSelect} from "element-plus"
 import {useTransactionsStore} from "../../stores/transactionsStore";
 import {select} from "d3";
@@ -48,8 +48,8 @@ export default defineComponent({
                 return []
             }
             return data.value.map(item => ({
-                value: item.week,
-                label: item.week
+                value: item.week_year,
+                label: item.week_year
             }));
         })
 

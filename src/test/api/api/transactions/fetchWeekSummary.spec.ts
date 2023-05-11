@@ -8,13 +8,6 @@ describe('fetchWeekSummary', () => {
     test('fetchWeekSummary should fetch data correctly', async () => {
         const week = '52-2021';
 
-        // try {
-        //     await fetchWeekSummary(week);
-        // } catch (error) {
-        //     expect(error).toBeDefined()
-        //     expect((error as Error).message).toBe('Request failed with status code 500');
-        // }
-
         const result = await fetchWeekSummary(week);
         expect(result).toEqual(weekSummaryMock);
     });

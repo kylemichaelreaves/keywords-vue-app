@@ -1,18 +1,23 @@
 import axios from "axios";
 import {isValidURL} from "../helpers/isValidURL";
-import {WeekYear} from "../../types";
+import {MemoSummary} from "../../types";
 
-export async function fetchWeeks(): Promise<Array<WeekYear>> {
+export async function fetchMemoSummary(memo: string): Promise<MemoSummary> {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
     if (!isValidURL(fetchURL)) {
         throw Error('url is not valid');
     }
 
-    return await axios.get(`${fetchURL}/transactions/get-weeks`)
+    return await axios.get(`${fetchURL}/transactions/get-memo-summary`, {
+        params: {
+            memo
+        }
+    })
         .then(res => res.data)
         .catch(err => {
             console.log('err:', err);
             throw err;
         });
+
 }

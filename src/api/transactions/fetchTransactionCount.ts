@@ -1,18 +1,17 @@
 import axios from "axios";
-import {isValidURL} from "../helpers/isValidURL";
-import {WeekYear} from "../../types";
+import { isValidURL } from "../helpers/isValidURL";
 
-export async function fetchWeeks(): Promise<Array<WeekYear>> {
+export async function fetchTransactionCount() {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
     if (!isValidURL(fetchURL)) {
         throw Error('url is not valid');
     }
 
-    return await axios.get(`${fetchURL}/transactions/get-weeks`)
+    return await axios.get(`${fetchURL}/transactions/get-transaction-count`)
         .then(res => res.data)
         .catch(err => {
             console.log('err:', err);
-            throw err;
+            throw new Error(err);
         });
 }

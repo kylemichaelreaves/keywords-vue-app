@@ -1,4 +1,4 @@
-import {Transaction} from "./types";
+import {Transaction} from "../../types";
 
 function filterDataByMonth(data: Transaction[], selectedMonth: string): Transaction[] {
     if (selectedMonth) {
@@ -64,7 +64,6 @@ const isDateSameAsPrevious = (currentDate: string, index: number, tableData: Tra
 };
 
 
-// Accepts an optional format parameter with a default value of 'YYYY-MM-DD'
 function formatDate(dateString: string, format: string = 'YYYY-MM-DD'): string {
     // Input validation: Check if dateString matches the expected format
     let date = new Date(dateString);

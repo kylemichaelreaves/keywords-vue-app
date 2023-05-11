@@ -1,13 +1,13 @@
 import {test} from 'vitest'
 import {mount} from '@vue/test-utils'
-import AddressGeocoder from "../../../components/address/AddressGeocoder.vue";
+import AddressGeocoderForm from "../../../components/address/AddressGeocoderForm.vue";
 import {ElButton, ElInput} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from "@pinia/testing";
 
-describe('AddressGeocoder', () => {
+describe('AddressGeocoderForm', () => {
 
-    const wrapper = mount(AddressGeocoder, {
+    const wrapper = mount(AddressGeocoderForm, {
         global: {
             plugins: [ElInput, ElButton, VueQueryPlugin, createTestingPinia()],
         }
