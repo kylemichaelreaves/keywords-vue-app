@@ -6,13 +6,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { ElTable, ElTableColumn } from 'element-plus';
 
 
 interface Coordinate {
-    latitude: string;
-    longitude: string;
+    latitude: number;
+    longitude: number;
 }
 
 export default defineComponent({
@@ -23,7 +23,7 @@ export default defineComponent({
     },
     props: {
         coordinates: {
-            type: Object as () => Coordinate,
+            type: Object as PropType<Coordinate>,
             required: true,
         },
     },

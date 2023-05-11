@@ -15,14 +15,15 @@
 </template>
 
 <script lang="ts">
-import {ref, defineComponent, onMounted, computed} from 'vue'
+import {ref, defineComponent, computed} from 'vue'
 import AddressResultFieldsTable from "./AddressResultFieldsTable.vue";
 import CoordinatesTable from "./CoordinatesTable.vue";
 
-interface Address {
+interface AddressResult {
     house_number: string;
     road: string;
-    town: string;
+    town?: string;
+    village?: string;
     county: string;
     state: string;
     'ISO3166-2-lvl4': string;

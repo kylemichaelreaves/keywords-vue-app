@@ -1,7 +1,7 @@
 import axios from "axios";
 import {Transaction} from "../../types";
 import {isValidURL} from "../helpers/isValidURL";
-import {parseDateMMYYYY} from "../../dataUtils";
+import {parseDateMMYYYY} from "../helpers/dataUtils";
 
 export const fetchTransactions = async (
     limit?: number,
@@ -9,18 +9,6 @@ export const fetchTransactions = async (
     date?: string,
     memo?: string
 ): Promise<Array<Transaction>> => {
-
-    if (date) {
-        console.log('date passed to fetchTransactions:', date)
-    } else if (!date) {
-        console.log('date was not passed to fetchTransactions')
-    }
-
-    if (memo) {
-        console.log('memo passed to fetchTransactions:', memo)
-    } else if (!memo) {
-        console.log('memo was not passed to fetchTransactions')
-    }
 
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
@@ -30,8 +18,6 @@ export const fetchTransactions = async (
 
     // Convert the date string to a Date object
     const dateObj = date ? parseDateMMYYYY(date) : null;
-
-    console.log('dateObj sent to Lambda:', dateObj)
 
     return await axios
         .get(`${fetchURL}/transactions/get-transactions`, {

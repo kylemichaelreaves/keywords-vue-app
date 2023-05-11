@@ -10,6 +10,9 @@
         <el-col :span="4">
             <TransactionUploader/>
         </el-col>
+        <el-col :span="10">
+            <MemoSummaryTable v-if="selectedMemo"/>
+        </el-col>
     </el-row>
     <el-alert v-if="error" type="error" :title="'Error: ' + error">
         <h2>
@@ -47,9 +50,11 @@ import MonthSelect from "./transactions/MonthSelect.vue";
 import MemoSelect from "./transactions/MemoSelect.vue";
 import {TrendCharts} from "@element-plus/icons-vue";
 import {useTransactionsStore} from "../stores/transactionsStore";
+import MemoSummaryTable from "./transactions/MemoSummaryTable.vue";
 
 const BudgetVisualizer = defineComponent({
     components: {
+        MemoSummaryTable,
         TrendCharts,
         MemoSelect,
         MonthSelect,

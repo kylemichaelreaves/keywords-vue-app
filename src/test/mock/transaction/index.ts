@@ -1,4 +1,4 @@
-import {Memo, MonthYear, Transaction, WeekSummary} from "../../../types";
+import {Memo, MemoSummary, MonthSummary, MonthYear, Transaction, WeekSummary} from "../../../types";
 
 export const transactionsMock: Transaction[] = [
     {
@@ -39,13 +39,25 @@ export const memosMock: Memo[] = [
     }
 ]
 
-export const weekSummaryMock: WeekSummary[] = [
+export const memoSummaryMock: MemoSummary =
     {
-        memo: 'Grocery Store',
-        weekly_amount_debit: -100
-    },
-    {
-        memo: 'Gas Station',
-        weekly_amount_debit: -50
+        sum_amount_debit: 100,
+        transactions_count: 1,
     }
-]
+
+export const weekSummaryMock: WeekSummary[] = [{
+    weekly_amount_debit: -100,
+    memo: 'Test Memo 1',
+}, {
+    weekly_amount_debit: -300,
+    memo: 'Test Memo 2',
+}]
+
+export const monthSummaryMock: MonthSummary[] =
+    [{
+        monthly_amount_debit: -100,
+        memo: 'Test Memo 1',
+    }, {
+        monthly_amount_debit: -300,
+        memo: 'Test Memo 2',
+    }]

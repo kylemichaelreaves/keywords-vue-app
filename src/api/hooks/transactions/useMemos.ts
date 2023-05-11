@@ -9,18 +9,10 @@ export default function useMemos() {
 
     const selectedMonth = computed(() => store.getSelectedMonth)
 
-    if (!selectedMonth.value) {
-        console.log('selectedMonth was not passed to useMemos')
-    } else if (selectedMonth.value) {
-        console.log('selectedMonth passed to useMemos:', selectedMonth.value)
-    }
-
     const queryKeyText = computed(() => ['memos', selectedMonth.value])
 
-    console.log('queryKeyText:', queryKeyText.value)
-
     return useQuery<Array<Memo>>({
-        queryKey: ['memos', queryKeyText],
+        queryKey: ['memos', queryKeyText.value],
         queryFn: () => fetchMemos(selectedMonth.value),
         keepPreviousData: true,
         refetchOnWindowFocus: false,

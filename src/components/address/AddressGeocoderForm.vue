@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import {ref, computed, defineComponent, watch} from 'vue';
+import {ref, computed, defineComponent} from 'vue';
 import AddressList from "./AddressList.vue";
 import useGeocodeAddress from "../..//api/hooks/addresses/useGeocodeAddress";
 import {router} from "../../main";
@@ -50,7 +50,7 @@ import {AddressFields} from "../../types";
 import {Location} from "@element-plus/icons-vue";
 
 export default defineComponent({
-    name: 'AddressGeocoder',
+    name: 'AddressGeocoderForm',
     components: {
         Location,
         AddressList,
