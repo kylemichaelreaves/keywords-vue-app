@@ -1,5 +1,5 @@
 import {mount} from '@vue/test-utils';
-import MonthlySummaryTable from "../../../components/transactions/MonthlySummaryTable.vue";
+import MonthSummaryTable from "../../../components/transactions/MonthSummaryTable.vue";
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
@@ -7,7 +7,7 @@ import {useTransactionsStore} from "../../../stores/transactionsStore";
 
 describe('MonthlySummaryTable', function () {
     test('renders the MonthlySummaryTable with the correct fields', async () => {
-        const wrapper = mount(MonthlySummaryTable, {
+        const wrapper = mount(MonthSummaryTable, {
             global: {
                 components: {
                     ElTable,
