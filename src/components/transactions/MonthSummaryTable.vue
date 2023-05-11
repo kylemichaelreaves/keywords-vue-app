@@ -1,12 +1,12 @@
 <template>
     <el-card>
-        <el-table :data="[monthSummaryData]" table-layout="auto" :loading="isFetching">
+        <el-table v-if="monthSummaryData" :data="[monthSummaryData]" table-layout="auto" :loading="isFetching">
             <el-table-column v-for="column in columns" :key="column.prop" :prop="column.prop" :label="column.label">
                 <template v-if="column.prop === 'memo'" #default="scope">
-                    <el-statistic :title="column.label" :value="scope.row.memo" data-testid="memo-month-summary"/>
+                    <el-statistic :title="column.label" :value="scope.row ? scope.row[column.prop] : ''" data-testid="memo-month-summary"/>
                 </template>
                 <template v-if="column.prop === 'monthlyAmountDebit'" #default="scope">
-                    <el-statistic :title="column.label" :value="scope.row.monthly_amount_debit" data-testid="monthly-amount-debit"/>
+                    <el-statistic :title="column.label" :value="scope.row ? scope.row.monthly_amount_debit : ''" data-testid="monthly-amount-debit"/>
                 </template>
             </el-table-column>
         </el-table>

@@ -1,6 +1,6 @@
 <template>
     <el-card>
-        <el-table :data="[data]" table-layout="auto" :loading="isFetching">
+        <el-table v-if="memoTableData" :data="[memoTableData]" table-layout="auto" :loading="isFetching">
             <el-table-column v-for="column in columns" :key="column.prop" :prop="column.prop" :label="column.label">
                 <template v-if="column.prop === 'sumAmountDebit'" #default="scope">
                     <el-statistic title="Sum Amount Debit" :value="scope.row.sum_amount_debit" data-testid="sum-amount-debit"/>
@@ -31,7 +31,7 @@ export default defineComponent({
 
         const store = useTransactionsStore();
 
-        const {data, refetch, isFetching} = useMemoSummary();
+        const {data: memoTableData, refetch, isFetching} = useMemoSummary();
 
         const columns = [
             {prop: 'sumAmountDebit', label: 'Sum Amount Debit'},
@@ -43,7 +43,7 @@ export default defineComponent({
         });
 
 
-        return {data, columns, isFetching};
+        return {memoTableData, columns, isFetching};
     }
 })
 </script>

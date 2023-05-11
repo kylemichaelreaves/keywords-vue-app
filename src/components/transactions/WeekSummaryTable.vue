@@ -1,12 +1,13 @@
 <template>
     <el-card>
-        <el-table :data="[weekSummaryData]" table-layout="auto" :loading="isFetching">
+        <el-table v-i='weekSummaryData' :data="[weekSummaryData]" table-layout="auto" :loading="isFetching">
             <el-table-column v-for="column in columns" :key="column.prop" :prop="column.prop" :label="column.label">
                 <template v-if="column.prop === 'memo'" #default="scope">
                     <el-statistic :title="column.label" :value="scope.row.memo" data-testid="memo-week-summary"/>
                 </template>
                 <template v-if="column.prop === 'weeklyAmountDebit'" #default="scope">
-                    <el-statistic :title="column.label" :value="scope.row.weekly_amount_debit" data-testid="weekly-amount-debit"/>
+                    <el-statistic :title="column.label" :value="scope.row.weekly_amount_debit"
+                                  data-testid="weekly-amount-debit"/>
                 </template>
             </el-table-column>
         </el-table>
@@ -22,9 +23,10 @@ import useWeekSummary from "../../api/hooks/transactions/useWeekSummary";
 export default defineComponent({
     name: "WeekSummaryTable",
     components: {
-        ElCard, ElStatistic,
-      ElTable,
-      ElTableColumn
+        ElCard,
+        ElStatistic,
+        ElTable,
+        ElTableColumn
     },
     setup() {
 
