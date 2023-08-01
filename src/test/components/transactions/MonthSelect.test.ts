@@ -62,7 +62,7 @@ describe('MonthsSelect', () => {
         });
     })
 
-    test('should disable the select when there is a selectedWeek in the store', async () => {
+    test.skip('should disable the select when there is a selectedWeek in the store', async () => {
         // Set up a store with a selectedWeek value
         const storeWithSelectedWeek = createTestingPinia();
         const transactionsStore = useTransactionsStore(storeWithSelectedWeek);

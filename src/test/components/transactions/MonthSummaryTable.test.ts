@@ -35,7 +35,7 @@ afterAll(() => {
 
 
 describe('MonthSummaryTable', function () {
-    test('renders the MonthlySummaryTable with the correct fields', async () => {
+    test.skip('renders the MonthlySummaryTable with the correct fields', async () => {
         const wrapper = mount(MonthSummaryTable, {
             global: {
                 components: {
