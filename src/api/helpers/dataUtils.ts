@@ -89,5 +89,10 @@ function formatDate(dateString: string, format: string = 'YYYY-MM-DD'): string {
     return format.replace(/YYYY|MM|DD/g, (match) => formattedDate[match as keyof typeof formattedDate]);
 }
 
+function getDateNumberKey(dateType: 'month' | 'week'): 'month_number' | 'week_number' {
+    return `${dateType}_number` as 'month_number' | 'week_number';
+}
 
-export {filterDataByMonth, formatKey, sumDebits, isDateSameAsPrevious, filterDataByMemo, parseDateMMYYYY, formatDate};
+
+
+export {filterDataByMonth, formatKey, sumDebits, isDateSameAsPrevious, filterDataByMemo, parseDateMMYYYY, formatDate, getDateNumberKey};

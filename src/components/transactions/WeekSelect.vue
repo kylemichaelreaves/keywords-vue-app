@@ -1,32 +1,30 @@
 <template>
-  <el-select
-    ref="selectComponent"
-    v-model="selectedWeek"
-    placeholder="select a week"
-    @update:model-value="updateSelectedWeek"
-    :disabled="selectedMonth.value !== ''"
-    clearable
-    filterable
+    <el-select
+            ref="selectComponent"
+            :model-value="selectedWeek"
+            placeholder="select a week"
+            @update:model-value="updateSelectedWeek($event)"
+            :disabled="!!selectedMonth.value"
+            clearable
+            filterable
     >
-      <el-option
-              v-for="option in weekOptions"
-              :key="option.value"
-              :label="option.label"
-              :value="option.value"
-          />
-  </el-select>
+        <el-option
+                v-for="option in weekOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+        />
+    </el-select>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent} from "vue";
+import {computed, defineComponent, onMounted} from "vue";
 import {useWeeks} from "../../api/hooks/transactions/useWeeks"
 import {ElOption, ElSelect} from "element-plus"
 import {useTransactionsStore} from "../../stores/transactionsStore";
-import {select} from "d3";
 
 export default defineComponent({
     name: 'WeekSelect',
-    methods: {select},
     components: {ElOption, ElSelect},
     props: {
         selectedWeek: {
@@ -37,8 +35,7 @@ export default defineComponent({
     setup() {
         const store = useTransactionsStore();
 
-        const selectedWeek = computed(() => store.getSelectedMemo);
-
+        const selectedWeek = computed(() => store.getSelectedWeek);
         const selectedMonth = computed(() => store.getSelectedMonth)
 
         const {data, isLoading, isFetching, isError, error} = useWeeks();
@@ -54,10 +51,17 @@ export default defineComponent({
         })
 
         const updateSelectedWeek = (week: string) => {
-                store.setSelectedWeek(week)
+            store.setSelectedWeek(week)
         }
 
+      onMounted(() => {
+        if (data.value) {
+          store.setWeeks(data.value)
+        }
+      })
+
         return {
+            data,
             selectedWeek,
             selectedMonth,
             weekOptions,

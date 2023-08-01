@@ -5,6 +5,10 @@ import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
 import {useTransactionsStore} from "../../../stores/transactionsStore";
 import {ref} from "vue";
+import useMonthSummary from "../../mock/hooks/useMonthSummary.mock";
+import {monthSummaryMock} from "../../mock/transaction";
+import {server} from "../../test-setup";
+import {waitFor, waitForElementToBeRemoved} from "@testing-library/vue";
 
 // Add this to the beginning of your test file or a test setup file
 global.requestAnimationFrame = (cb) => {
@@ -14,9 +18,24 @@ global.cancelAnimationFrame = (id) => {
     clearTimeout(id);
 };
 
+// Start the msw server before running the tests
+beforeAll(() => {
+    server.listen();
+});
+
+// Reset any runtime request handlers
+afterEach(() => {
+    server.resetHandlers();
+});
+
+// Clean up once the tests are done
+afterAll(() => {
+    server.close();
+});
+
 
 describe('MonthSummaryTable', function () {
-    test.skip('renders the MonthlySummaryTable with the correct fields', async () => {
+    test('renders the MonthlySummaryTable with the correct fields', async () => {
         const wrapper = mount(MonthSummaryTable, {
             global: {
                 components: {
@@ -26,24 +45,23 @@ describe('MonthSummaryTable', function () {
                     ElCard,
                 },
                 plugins: [VueQueryPlugin, createTestingPinia()],
-            },
-            provide: {
-                monthSummaryData: [
-                    {
-                        memo: 'Memo: Test 1',
-                        monthlyAmountDebit: -300,
-                    },
-                    {
-                        memo: 'Memo: Test 2',
-                        monthlyAmountDebit: -100,
-                    },
-                ],
-        }});
+            }
+        });
+
+        console.log('wrapper', wrapper);
+
+        // // Wait for the query to finish loading data
+        // await waitFor(() => {
+        //     expect(wrapper.vm.isLoading).toBe(false);
+        // });
 
         const store = useTransactionsStore();
 
         store.selectedMonth = '01/2023';
         // Wait for the component to finish loading data
+        // Wait for the loading state to be removed
+        // wrapper.vm.isLoading = false;
+        wrapper.vm.monthSummaryData = monthSummaryMock;
         await wrapper.vm.$nextTick();
 
         const table = wrapper.findComponent(ElTable);
@@ -58,8 +76,12 @@ describe('MonthSummaryTable', function () {
         // Check if the correct column labels are rendered
         expect(columns[0].props('label')).toBe('Memo');
 
-        const memo = wrapper.find('[data-testid="memo-monthly-summary"]');
-        const monthlyAmountDebit = wrapper.find('[data-testid="monthly-amount-debit"]');
+        // Check if the mocked data is displayed in the component
+        const memoValue = wrapper.find('[data-testid="memo-monthly-summary"]').text();
+        expect(memoValue).toBe(monthSummaryMock[0].memo);
+
+        const debitValue = wrapper.find('[data-testid="monthly-amount-debit"]').text();
+        expect(debitValue).toBe(monthSummaryMock[0].monthly_amount_debit.toString());
 
 
     });

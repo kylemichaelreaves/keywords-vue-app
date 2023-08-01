@@ -7,7 +7,7 @@ import {
     MonthYear,
     Transaction,
     TransactionsList,
-    WeekSummary
+    WeekSummary, WeekYear
 } from "../../types";
 import {addressesMock} from "../mock/address";
 import {
@@ -15,7 +15,7 @@ import {
     memoSummaryMock,
     monthsMock,
     monthSummaryMock,
-    transactionsMock,
+    transactionsMock, weeksMock,
     weekSummaryMock
 } from "../mock/transaction";
 
@@ -30,6 +30,10 @@ export const handlers = [
 
     rest.get("*/transactions/get-months", (req, res, ctx) => {
         return res(ctx.status(200), ctx.json<MonthYear[]>(monthsMock));
+    }),
+
+    rest.get("*/transactions/get-weeks", (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json<WeekYear[]>(weeksMock));
     }),
 
     rest.get("*/transactions/get-memos", (req, res, ctx) => {

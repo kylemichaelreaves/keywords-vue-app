@@ -1,17 +1,17 @@
 <template>
     <el-select
-        ref="selectComponent"
-        v-model="selectedMemo"
-        placeholder="select Memo"
-        @update:model-value="updateSelectedMemo"
-        clearable
-        filterable
+            ref="selectComponent"
+            :model-value="selectedMemo"
+            placeholder="select Memo"
+            @update:model-value="updateSelectedMemo($event)"
+            clearable
+            filterable
     >
         <el-option
-            v-for="option in memoOptions"
-            :key="option.value"
-            :label="option.label"
-            :value="option.value"
+                v-for="option in memoOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
         />
     </el-select>
 </template>
@@ -35,7 +35,7 @@ export default defineComponent({
 
         const transactionsStore = useTransactionsStore()
 
-        const selectedMemo = transactionsStore.getSelectedMemo;
+        const selectedMemo = computed(() => transactionsStore.getSelectedMemo);
 
         const selectedMonth = computed(() => transactionsStore.getSelectedMonth);
 

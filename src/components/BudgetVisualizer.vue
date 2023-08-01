@@ -1,48 +1,70 @@
 <template>
-    <h2>
+  <el-card class="dark">
+    <template #header>
+      <h2>
         <el-icon style="vertical-align: middle">
-            <TrendCharts/>
+          <TrendCharts/>
         </el-icon>
         Budget Visualizer
-    </h2>
+      </h2>
+    </template>
 
-    <el-row :gutter="20">
-        <el-col :span="4">
-            <TransactionUploader/>
-        </el-col>
-        <el-col :span="10">
-            <MemoSummaryTable v-if="selectedMemo"/>
-        </el-col>
+    <el-row style="justify-content: space-between">
+      <el-col>
+        <MemoSummaryTable v-if="selectedMemo"/>
+      </el-col>
+      <el-col>
+        <Suspense>
+          <MonthSummaryTable v-if="selectedMonth"/>
+        </Suspense>
+      </el-col>
+      <el-col>
+        <WeekSummaryTable v-if="selectedWeek"/>
+      </el-col>
     </el-row>
     <el-alert v-if="error" type="error" :title="'Error: ' + error">
-        <h2>
-            {{ error }}
-        </h2>
+      <h2>
+        {{ error }}
+      </h2>
     </el-alert>
     <br/>
 
-    <MonthSelect
-            @update:selectedMonth="updateSelectedMonth($event)"
+    <el-row style="justify-content: space-between">
+      <el-col :span="15">
+        <WeekSelect
+            @update:selected-week="updateSelectedWeek($event)"
+            :selected-value="selectedWeek"
+        />
+        <MonthSelect
+            @update:selected-month="updateSelectedMonth($event)"
             :selected-value="selectedMonth"
-    />
-
-    <MemoSelect
+        />
+        <MemoSelect
             @update:selected-memo="updateSelectedMemo($event)"
             :selected-value="selectedMemo"
-    />
+        />
+      </el-col>
+
+    </el-row>
+
 
     <TransactionsTable
-            :tableData="data"
-            :columnKeys="columnKeys"
-            :isFetching="isFetching"
-            :LIMIT="LIMIT"
-            :OFFSET="OFFSET"
-            :incrementOffset="incrementOffset"
+        v-if="data"
+        :tableData="data"
+        :columnKeys="columnKeys"
+        :isFetching="isFetching"
+        :LIMIT="LIMIT"
+        :OFFSET="OFFSET"
+        :incrementOffset="incrementOffset"
+        :loading="isFetching || isLoading"
     />
+  </el-card>
+
+  <router-view :key="$route.fullPath"></router-view>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, watch} from "vue";
+import {computed, defineComponent, onMounted, ref, watch} from "vue";
 import TransactionsTable from "./transactions/TransactionsTable.vue";
 import TransactionUploader from "./transactions/TransactionUploader.vue";
 import useTransactions from "../api/hooks/transactions/useTransactions";
@@ -51,81 +73,106 @@ import MemoSelect from "./transactions/MemoSelect.vue";
 import {TrendCharts} from "@element-plus/icons-vue";
 import {useTransactionsStore} from "../stores/transactionsStore";
 import MemoSummaryTable from "./transactions/MemoSummaryTable.vue";
+import WeekSelect from "./transactions/WeekSelect.vue";
+import WeekSummaryTable from "./transactions/WeekSummaryTable.vue";
+import MonthSummaryTable from "./transactions/MonthSummaryTable.vue";
+import TransactionTypeToggle from "./transactions/TransactionTypeToggle.vue";
 
-const BudgetVisualizer = defineComponent({
-    components: {
-        MemoSummaryTable,
-        TrendCharts,
-        MemoSelect,
-        MonthSelect,
-        TransactionsTable,
-        TransactionUploader,
-    },
+export default defineComponent({
+  name: "BudgetVisualizer",
+  components: {
+    MemoSummaryTable,
+    MonthSummaryTable,
+    WeekSummaryTable,
+    TrendCharts,
+    MemoSelect,
+    MonthSelect,
+    WeekSelect,
+    TransactionsTable,
+    TransactionUploader,
+    TransactionTypeToggle
+  },
 
-    setup() {
-        const store = useTransactionsStore();
+  setup() {
+    const store = useTransactionsStore();
+    const LIMIT = 100;
+    const OFFSET = ref(0);
+    const {
+      data,
+      error,
+      isLoading,
+      isFetching,
+      refetch
+    } = useTransactions(LIMIT, OFFSET.value);
 
-        const updateSelectedMonth = (newMonth: string) => {
-            store.setSelectedMonth(newMonth);
-        };
+    const updateSelectedMonth = (newMonth: string) => {
+      store.setSelectedMonth(newMonth);
+      refetch()
+    };
 
-        const updateSelectedMemo = (newMemo: string) => {
-            store.setSelectedMemo(newMemo);
-        };
+    const updateSelectedMemo = (newMemo: string) => {
+      store.setSelectedMemo(newMemo);
+      refetch();
+    };
 
-        // variables for paginating query
-        const LIMIT = 100;
-        const OFFSET = ref(0);
+    const updateSelectedWeek = (newWeek: string) => {
+      store.setSelectedWeek(newWeek);
+      refetch();
+    };
 
-        function incrementOffset() {
-            OFFSET.value += LIMIT;
-        }
+    function incrementOffset() {
+      OFFSET.value += LIMIT;
+      refetch();
+    }
 
-        const {
-            data,
-            error,
-            isLoading,
-            isFetching,
-            refetch
-        //     since we're storing the selectedMonth, we don't need to pass it as a variable
-        } = useTransactions(LIMIT, OFFSET.value)
+    const columnKeys = computed(() => {
+      if (data?.value && data?.value.length > 0) {
+        console.log("Column keys: ", Object.keys(data?.value[0]))
+        return Object.keys(data?.value[0]).filter(key => key !== 'Check Number' && key !== 'Fees');
+      } else {
+        return [];
+      }
+    });
 
-        const columnKeys = computed(() => {
-            if (data.value && data.value.length > 0) {
-                return Object.keys(data.value[0]).filter(key => key !== 'Check Number' && key !== 'Fees');
-            } else {
-                return [];
-            }
-        });
+    watch(() => store.selectedMemo, () => {
+      refetch();
+    });
 
-        watch(() => store.selectedMonth, (newMonth: string) => {
-            store.setSelectedMonth(newMonth);
-            refetch();
-        });
+    watch(() => store.selectedMonth, () => {
+      refetch();
+    });
 
-        watch(() => store.selectedMemo, (newMemo: string) => {
-            store.setSelectedMemo(newMemo);
-            refetch();
-        });
+    watch(() => store.selectedWeek, () => {
+      refetch();
+    });
 
-        return {
-            data,
-            error,
-            incrementOffset,
-            isLoading,
-            isFetching,
-            selectedMonth: computed(() => store.getSelectedMonth),
-            selectedMemo: computed(() => store.getSelectedMemo),
-            LIMIT,
-            OFFSET,
-            columnKeys,
-            updateSelectedMonth,
-            updateSelectedMemo,
-        };
-    },
+    onMounted(() => {
+      refetch();
+    });
+
+    return {
+      data,
+      error,
+      incrementOffset,
+      isLoading,
+      isFetching,
+      selectedWeek: computed(() => store.getSelectedWeek),
+      selectedMonth: computed(() => store.getSelectedMonth),
+      selectedMemo: computed(() => store.getSelectedMemo),
+      LIMIT,
+      OFFSET,
+      columnKeys,
+      updateSelectedMonth,
+      updateSelectedMemo,
+      updateSelectedWeek,
+    };
+  },
 });
-export default BudgetVisualizer;
 </script>
 
 <style scoped>
+.dark {
+  background-color: #383838;
+  color: #ecf0f1;
+}
 </style>

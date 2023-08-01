@@ -52,7 +52,7 @@ describe('WeekSelect', () => {
         // Set up a store with a selectedMonth value
         const storeWithSelectedMonth = createTestingPinia();
         const transactionsStore = useTransactionsStore(storeWithSelectedMonth);
-        transactionsStore.setSelectedMonth('11-2022');
+        transactionsStore.setSelectedMonth('11/2022');
 
         // Mount the component with the updated store
         const wrapperWithSelectedMonth = mount(WeekSelect, {

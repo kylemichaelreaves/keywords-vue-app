@@ -1,7 +1,6 @@
 import axios from 'axios'
 import {isValidURL} from "../helpers/isValidURL";
 import {WeekSummary} from "../../types";
-import {parseDateIWIYYY} from "../helpers/parseDateIWIYYY";
 
 export const fetchWeekSummary = async (
     week: string
@@ -13,14 +12,11 @@ export const fetchWeekSummary = async (
         throw Error('url is not valid')
     }
 
-    const weekObj = parseDateIWIYYY(week)?.toISOString()
-    console.log('weekObj sent to Lambda:', weekObj)
-
     return await axios
         .get(`${fetchURL}/transactions/get-week-summary`,
             {
                 params: {
-                    date: weekObj
+                    week
                 }
             })
         .then(res => res.data)
