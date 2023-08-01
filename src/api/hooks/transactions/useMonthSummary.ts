@@ -6,13 +6,14 @@ import {fetchMonthSummary} from "../../transactions/fetchMonthSummary";
 
 export default function useMonthSummary() {
     const store = useTransactionsStore()
-    const date = computed(() => store.getSelectedMonth)
+    const month = computed(() => store.getSelectedMonth)
 
     return useQuery<MonthSummary[]>(
-        ['monthSummary', date.value],
-        () => fetchMonthSummary(date.value),
+        ['monthSummary', month.value],
+        () => fetchMonthSummary(month.value),
         {
             keepPreviousData: true,
-            refetchOnWindowFocus: false
+            refetchOnWindowFocus: false,
+            enabled: !!month.value
         })
 }

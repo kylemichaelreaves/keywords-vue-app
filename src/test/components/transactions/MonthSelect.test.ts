@@ -45,6 +45,7 @@ describe('MonthsSelect', () => {
             const transactionsStore = useTransactionsStore(createTestingPinia());
 
             // Get the transformedData from the component's setup function
+            // @ts-ignore
             const transformedData = wrapper.vm.transformedData;
 
             // Assuming you have some transformed data to be rendered as options
@@ -76,6 +77,8 @@ describe('MonthsSelect', () => {
 
         // Check if the select is disabled
         const select = wrapperWithSelectedWeek.findComponent(ElSelect);
+        // Check if the select is disabled
         expect(select.props("disabled")).toBe(true);
+
     });
 })

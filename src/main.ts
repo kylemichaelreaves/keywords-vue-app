@@ -15,6 +15,7 @@ import Transaction from "./components/transactions/Transaction.vue";
 import BudgetVisualizer from "./components/BudgetVisualizer.vue";
 import TransactionsTable from "./components/transactions/TransactionsTable.vue";
 import MemoSummaryTable from "./components/transactions/MemoSummaryTable.vue";
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 const pinia = createPinia()
 

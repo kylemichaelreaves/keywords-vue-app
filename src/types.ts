@@ -38,6 +38,7 @@ interface MonthSummary {
     monthly_amount_debit: number;
 }
 
+
 interface AddressResponse {
     osm_type: string;
     osm_id: number;
@@ -97,6 +98,29 @@ interface WeekYear {
     week_year: string;
 }
 
+type TimeframeType = 'day' | 'week' | 'year';
+
+type OfSummaryTypeBase = {
+    total_debit: number;
+    year: string;
+    day_number?: string;
+    week_number?: string;
+    month_number?: string;
+}
+
+type OFSummary = OfSummaryTypeBase;
+
+type MJSummary = OfSummaryTypeBase;
+
+type Summary = OFSummary | MJSummary;
+
+type Summaries = {
+    period: string;
+    total_debit: number;
+    total_credit: number;
+    amount_difference: number;
+};
+
 export type {
     AddressFields,
     AddressResponse,
@@ -112,5 +136,9 @@ export type {
     TimelineChartProps,
     WeekYear,
     WeekSummary,
-    MonthSummary
+    MonthSummary,
+    OFSummary,
+    MJSummary,
+    Summary,
+    Summaries,
 };

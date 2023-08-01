@@ -34,18 +34,9 @@ describe('WeekSummaryTable', function () {
                 },
                 plugins: [VueQueryPlugin, createTestingPinia()],
             },
-            provide: {
-                weekSummaryData: ref([
-                    {
-                        memo: 'Memo: Test 1',
-                        weeklyAmountDebit: -300,
-                    },
-                    {
-                        memo: 'Memo: Test 2',
-                        weeklyAmountDebit: -100,
-                    },
-                ]),
-        }});
+            });
+
+        console.log('wrapper', wrapper.html());
 
         const store = useTransactionsStore();
 

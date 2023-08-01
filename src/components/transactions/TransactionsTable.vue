@@ -5,10 +5,12 @@
             :loading="isFetching"
             :isFetching="isFetching"
             :data="reactiveTableData"
-            style="width: 100%"
             table-layout="auto"
             height="auto"
+            size="small"
             border
+            stripe
+            show-summary
     >
         <el-table-column
                 v-for="columnKey in columnKeys"

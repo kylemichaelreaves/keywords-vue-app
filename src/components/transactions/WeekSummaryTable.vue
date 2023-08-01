@@ -1,17 +1,30 @@
 <template>
-    <el-card>
-        <el-table v-i='weekSummaryData' :data="[weekSummaryData]" table-layout="auto" :loading="isFetching">
-            <el-table-column v-for="column in columns" :key="column.prop" :prop="column.prop" :label="column.label">
-                <template v-if="column.prop === 'memo'" #default="scope">
-                    <el-statistic :title="column.label" :value="scope.row.memo" data-testid="memo-week-summary"/>
-                </template>
-                <template v-if="column.prop === 'weeklyAmountDebit'" #default="scope">
-                    <el-statistic :title="column.label" :value="scope.row.weekly_amount_debit"
-                                  data-testid="weekly-amount-debit"/>
-                </template>
-            </el-table-column>
+  <el-card>
+    <!-- TODO instead of headers, maybe have Week#, startedOn, endedOn -->
+    <el-row>
+      <el-col>
+        <el-table
+            v-if='weekSummaryData'
+            :data="weekSummaryData"
+            table-layout="auto"
+            size="large"
+            :loading="isFetching"
+            layout="auto"
+            show-summary
+        >
+          <el-table-column
+              v-for="column in columns"
+              :key="column.prop"
+              :prop="column.prop"
+              :label="column.label"
+          />
         </el-table>
-    </el-card>
+      </el-col>
+      <el-col>
+        <WeeklyAmountDebitTotal/>
+      </el-col>
+    </el-row>
+  </el-card>
 </template>
 
 <script lang="ts">
@@ -19,34 +32,47 @@ import {computed, defineComponent, watch} from 'vue'
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "../../stores/transactionsStore";
 import useWeekSummary from "../../api/hooks/transactions/useWeekSummary";
+import WeeklyAmountDebitTotal from "./WeeklyAmountDebitTotal.vue";
+import {WeekSummary} from "../../types";
 
 export default defineComponent({
-    name: "WeekSummaryTable",
-    components: {
-        ElCard,
-        ElStatistic,
-        ElTable,
-        ElTableColumn
-    },
-    setup() {
+  name: "WeekSummaryTable",
+  components: {
+    ElCard,
+    ElStatistic,
+    ElTable,
+    ElTableColumn,
+    WeeklyAmountDebitTotal
+  },
+  setup() {
 
-        const store = useTransactionsStore()
+    const store = useTransactionsStore()
 
-        const selectedWeek = computed(() => store.getSelectedWeek)
+    const selectedWeek = computed(() => store.getSelectedWeek)
 
-        const {data: weekSummaryData, isError, refetch, isFetching, isLoading, error} = useWeekSummary()
+    const {data: weekSummaryData, isError, refetch, isFetching, isLoading, error} = useWeekSummary()
+    const weeks = computed(() => store.getWeeks)
 
-        const columns = [
-            {prop: 'memo', label: 'Memo'},
-            {prop: 'weeklyAmountDebit', label: 'Weekly Amount Debit'},
-        ];
+    const isFirstWeek = computed(() => {
+      return weeks.value[0].week_year === selectedWeek.value
+    })
 
-        watch(() => store.selectedWeek, () => {
-            refetch();
-        });
+    const isLastWeek = computed(() => {
+      return weeks.value[weeks.value.length - 1].week_year === selectedWeek.value
+    })
 
-        return {weekSummaryData, isError, refetch, isFetching, isLoading, error, columns}
-    }
+
+    const columns = [
+      {prop: 'memo', label: 'Memo'},
+      {prop: 'total_debit_amount', label: 'Weekly Amount Debit'},
+    ];
+
+    watch(() => store.selectedWeek, () => {
+      refetch();
+    });
+
+    return {weekSummaryData, isError, refetch, isFetching, isLoading, error, columns}
+  }
 })
 </script>
 

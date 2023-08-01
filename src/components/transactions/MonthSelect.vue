@@ -1,15 +1,15 @@
 <template>
     <el-select
             ref="selectComponent"
-            v-model="selectedMonth"
+            :model-value="selectedMonth"
             placeholder="select month"
-            @update:model-value="updateSelectedMonth"
-            :disabled="selectedWeek.value !== ''"
+            @update:model-value="updateSelectedMonth($event)"
+            :disabled="!!selectedWeek.value"
             clearable
             filterable
     >
         <el-option
-                v-for="option in transformedData"
+                v-for="option in monthOptions"
                 :key="option.value"
                 :label="option.label"
                 :value="option.value"
@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref} from 'vue'
+import {computed, defineComponent, onMounted, ref} from 'vue'
 import {useMonths} from "../../api/hooks/transactions/useMonths";
 import {ElOption, ElSelect} from "element-plus";
 import {MonthYear} from "../../types";
@@ -36,15 +36,12 @@ export default defineComponent({
     },
     setup() {
 
-        const transactionsStore = useTransactionsStore()
+        const store = useTransactionsStore()
 
-
-        const selectedMonth = computed(() => transactionsStore.getSelectedMonth)
-        const selectedWeek = computed(() => transactionsStore.getSelectedWeek)
-
+        // fetch months that will populate the dropdown from the results of this hook
         const {data, isFetching, isLoading, isError, error} = useMonths()
-
-        const transformedData = computed(() => {
+        // make the data usable to the component
+        const monthOptions = computed(() => {
             if (!data.value) {
                 return []
             }
@@ -55,18 +52,24 @@ export default defineComponent({
         });
 
         const updateSelectedMonth = (month: string) => {
-            transactionsStore.setSelectedMonth(month)
+            store.setSelectedMonth(month)
         }
+
+        onMounted(() => {
+            if (data.value) {
+                store.setMonths(data.value)
+            }
+        });
 
         return {
             data,
-            transformedData,
+            monthOptions,
             isFetching,
             isLoading,
             isError,
             error,
-            selectedMonth,
-            selectedWeek,
+            selectedMonth: computed(() => store.getSelectedMonth),
+            selectedWeek: computed(() => store.getSelectedWeek),
             updateSelectedMonth
         }
     }
