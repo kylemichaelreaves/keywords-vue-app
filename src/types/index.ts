@@ -7,6 +7,7 @@ interface AddressFields {
     state: string;
     zipcode?: string;
 }
+
 type Transaction = {
     transactionNumber: string;
     date: string;
