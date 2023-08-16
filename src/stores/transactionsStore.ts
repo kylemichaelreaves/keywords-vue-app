@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {Memo, MJSummary, MonthYear, OFSummary, Summaries, WeekYear} from "../types";
+import {Memo, MJSummary, MonthYear, OFSummary, Summaries, WeekYear} from "@types/types";
 import {fetchMonths} from "../api/transactions/fetchMonths";
 import {fetchWeeks} from "../api/transactions/fetchWeeks";
 import {fetchMemos} from "../api/transactions/fetchMemos";

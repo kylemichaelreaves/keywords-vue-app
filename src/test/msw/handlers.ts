@@ -8,8 +8,8 @@ import {
     Transaction,
     TransactionsList,
     WeekSummary, WeekYear
-} from "../../types";
-import {addressesMock} from "../mock/address";
+} from "@types/types";
+import {addressesMock} from "@test/mock/address";
 import {
     memosMock,
     memoSummaryMock,
@@ -17,9 +17,9 @@ import {
     monthSummaryMock,
     transactionsMock, weeksMock,
     weekSummaryMock
-} from "../mock/transaction";
+} from "@test/mock/transaction";
 
-export const handlers = [
+const handlers = [
     rest.get('*/address-geocoder', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json<AddressResponse[]>(addressesMock))
     }),
@@ -58,3 +58,5 @@ export const handlers = [
     }),
 
 ]
+
+export default handlers

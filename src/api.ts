@@ -1,4 +1,4 @@
-import {TransactionsList} from "./types";
+import {TransactionsList} from "@types/types";
 import * as d3 from 'd3';
 import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
 

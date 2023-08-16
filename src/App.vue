@@ -1,3 +1,8 @@
+<template>
+  <Navbar/>
+  <router-view :key="route.path"/>
+</template>
+
 <script lang="ts">
 import Navbar from './components/Navbar.vue'
 import {defineComponent} from "vue";
@@ -16,10 +21,6 @@ export default defineComponent({
 })
 </script>
 
-<template>
-  <Navbar/>
-  <router-view :key="route.path"/>
-</template>
 
 <style scoped>
 .logo {

@@ -1,20 +1,20 @@
 import {createApp} from 'vue'
-import {createRouter, createWebHistory} from "vue-router";
+import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createPinia} from 'pinia'
 import './style.css'
 import App from './App.vue'
-import Keywords from "./components/Keywords.vue";
-import Home from "./components/Home.vue";
-import Navbar from "./components/Navbar.vue";
-import AddressGeocoderForm from "./components/address/AddressGeocoderForm.vue";
+import Keywords from "@components/Keywords.vue";
+import Home from "@components/Home.vue";
+import Navbar from "@components/Navbar.vue";
+import AddressGeocoderForm from "@components/address/AddressGeocoderForm.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import Transaction from "./components/transactions/Transaction.vue";
-import BudgetVisualizer from "./components/BudgetVisualizer.vue";
-import TransactionsTable from "./components/transactions/TransactionsTable.vue";
-import MemoSummaryTable from "./components/transactions/MemoSummaryTable.vue";
+import Transaction from "@components/transactions/Transaction.vue";
+import BudgetVisualizer from "@components/BudgetVisualizer.vue";
+import TransactionsTable from "@components/transactions/TransactionsTable.vue";
+import MemoSummaryTable from "@components/transactions/MemoSummaryTable.vue";
 import 'element-plus/theme-chalk/dark/css-vars.css'
 
 const pinia = createPinia()
@@ -66,7 +66,7 @@ export const routes = [
 
 export const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes: routes as RouteRecordRaw[]
 })
 
 const app = createApp(App)

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {isValidURL} from "../helpers/isValidURL";
-import {WeekSummary} from "../../types";
+import {WeekSummary} from "@types/types";
 
 export const fetchWeekSummary = async (
     week: string

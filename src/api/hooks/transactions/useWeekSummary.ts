@@ -1,5 +1,5 @@
 import {useQuery} from '@tanstack/vue-query'
-import {WeekSummary} from "../../../types";
+import {WeekSummary} from "@types/types";
 import {fetchWeekSummary} from "../../transactions/fetchWeekSummary";
 import {computed} from "vue";
 import {useTransactionsStore} from "../../../stores/transactionsStore";

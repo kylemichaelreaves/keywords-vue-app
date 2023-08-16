@@ -1,11 +1,10 @@
 import {mount} from '@vue/test-utils';
-import MemoSummaryTable from '../../../components/transactions/MemoSummaryTable.vue';
+import MemoSummaryTable from '@components/transactions/MemoSummaryTable.vue';
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
-import {useTransactionsStore} from "../../../stores/transactionsStore";
-import {server} from "../../test-setup";
-import {ref} from "vue";
+import {useTransactionsStore} from "@stores/transactionsStore";
+import {server} from "@test/test-setup";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -45,7 +44,8 @@ describe('MemoSummaryTable.vue', () => {
                         transactions_count: 'Memo: Test 1',
                         sum_amount_debit: -300,
                     }],
-        }});
+            }
+        });
 
         const store = useTransactionsStore();
 

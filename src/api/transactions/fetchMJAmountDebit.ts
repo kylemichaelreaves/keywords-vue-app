@@ -1,6 +1,6 @@
 import axios from "axios";
 import {isValidURL} from "../helpers/isValidURL";
-import {MJSummary} from "../../types";
+import {MJSummary} from "@types/types";
 
 export async function fetchMJAmountDebit(timeFrame: string, date: Date | null | undefined): Promise<MJSummary> {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;

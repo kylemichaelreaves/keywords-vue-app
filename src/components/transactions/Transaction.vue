@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import {defineComponent, watchEffect} from "vue";
-import {TransactionData} from "../../types"
+import {TransactionData} from "@types/types"
 
 
 export default defineComponent({

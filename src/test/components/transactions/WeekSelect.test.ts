@@ -1,7 +1,7 @@
-import WeekSelect from "../../../components/transactions/WeekSelect.vue";
+import WeekSelect from "@components/transactions/WeekSelect.vue";
 import {ElOption, ElSelect} from "element-plus";
 import {createTestingPinia} from "@pinia/testing";
-import {useTransactionsStore} from "../../../stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactionsStore";
 import {mount} from "@vue/test-utils";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {test} from "vitest";

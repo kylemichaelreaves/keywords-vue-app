@@ -1,4 +1,4 @@
-import {MJSummary, OFSummary} from "../../types";
+import {MJSummary, OFSummary} from "@types/types";
 import * as d3 from 'd3';
 
 interface DataPoint {

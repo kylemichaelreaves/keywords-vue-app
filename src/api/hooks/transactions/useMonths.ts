@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/vue-query';
 import {fetchMonths} from "../../transactions/fetchMonths";
-import {MonthYear} from "../../../types";
+import {MonthYear} from "@types/types";
 
 export function useMonths() {
     return useQuery<Array<MonthYear>>({

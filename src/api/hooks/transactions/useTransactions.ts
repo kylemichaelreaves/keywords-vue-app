@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/vue-query'
 import {fetchTransactions} from '../../transactions/fetchTransactions'
-import {Transaction} from "../../../types";
+import {Transaction} from "@types/types";
 import {computed, Ref, UnwrapRef} from "vue";
 import {useTransactionsStore} from "../../../stores/transactionsStore";
 import {parseDateMMYYYY} from "../../helpers/dataUtils";

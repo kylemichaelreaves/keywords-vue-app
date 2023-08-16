@@ -1,30 +1,28 @@
-/// <reference types="vitest" />
+import {fileURLToPath, URL} from 'node:url'
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
-import {resolve} from 'path'
-import mkcert from 'vite-plugin-mkcert'
-import tsconfigPaths from 'vite-tsconfig-paths'
+import path from "path";
 
 // https://vitejs.dev/config/
+
+const aliases: string[] = [
+    'components',
+    'stores',
+    'test',
+    'api'
+]
+
 export default defineConfig({
-    plugins: [vue(), mkcert(), tsconfigPaths()],
-    build: {
-        target: 'esnext',
-    },
-    test: {
-        globals: true,
-        environment: 'jsdom',
-        setupFiles: ['./src/test/test-setup.ts'],
-        include: ['**/**.{test,spec}.{ts, tsx, jsx, js}'],
-        reporters: ['default', 'html'],
-    },
+    plugins: [
+        vue(),
+    ],
     resolve: {
-        alias: {
-            '@': resolve(__dirname, '/src'),
-        }
-    },
-    server: {
-        host: '127.0.0.1',
-        https: true,
-    },
-})
+        alias: aliases.map(alias => (
+            {
+                find: `@${alias}`,
+                replacement: path.resolve(__dirname, `src/${alias}`),
+            }
+        ))
+    }
+});
+

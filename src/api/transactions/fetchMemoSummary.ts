@@ -1,6 +1,6 @@
 import axios from "axios";
 import {isValidURL} from "../helpers/isValidURL";
-import {MemoSummary} from "../../types";
+import {MemoSummary} from "@types/types";
 
 export async function fetchMemoSummary(memo: string): Promise<MemoSummary> {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;

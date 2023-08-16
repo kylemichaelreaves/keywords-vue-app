@@ -1,5 +1,5 @@
 import {useQuery} from '@tanstack/vue-query'
-import {MonthSummary} from "../../../types";
+import {MonthSummary} from "@types/types";
 import {computed} from "vue";
 import {useTransactionsStore} from "../../../stores/transactionsStore";
 import {fetchMonthSummary} from "../../transactions/fetchMonthSummary";

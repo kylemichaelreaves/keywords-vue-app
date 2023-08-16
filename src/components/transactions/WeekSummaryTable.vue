@@ -33,7 +33,7 @@ import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "../../stores/transactionsStore";
 import useWeekSummary from "../../api/hooks/transactions/useWeekSummary";
 import WeeklyAmountDebitTotal from "./WeeklyAmountDebitTotal.vue";
-import {WeekSummary} from "../../types";
+import {WeekSummary} from "@types/types";
 
 export default defineComponent({
   name: "WeekSummaryTable",

@@ -1,4 +1,4 @@
-import {Memo, MemoSummary, MonthSummary, MonthYear, Transaction, WeekSummary, WeekYear} from "../../../types";
+import {Memo, MemoSummary, MonthSummary, MonthYear, Transaction, WeekSummary, WeekYear} from "@types/types";
 
 export const transactionsMock: Transaction[] = [
     {

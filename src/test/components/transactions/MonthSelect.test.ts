@@ -1,11 +1,11 @@
-import {vi, test} from 'vitest'
-import {fireEvent, waitFor, screen, render} from "@testing-library/vue";
-import MonthSelect from "../../../components/transactions/MonthSelect.vue";
+import {test} from 'vitest'
+import {waitFor, screen, render} from "@testing-library/vue";
+import MonthSelect from "@components/transactions/MonthSelect.vue";
 import {ElOption, ElSelect} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {mount} from "@vue/test-utils";
 import {createTestingPinia} from '@pinia/testing'
-import {useTransactionsStore} from "../../../stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactionsStore";
 
 describe('MonthsSelect', () => {
 

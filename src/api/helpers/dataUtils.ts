@@ -1,4 +1,4 @@
-import {Transaction} from "../../types";
+import {Transaction} from "@types/types";
 
 function filterDataByMonth(data: Transaction[], selectedMonth: string): Transaction[] {
     if (selectedMonth) {
@@ -46,6 +46,7 @@ function parseDateMMYYYY(input: string): Date | null {
 
     return new Date(year, month);
 }
+
 function formatKey(key: string): string {
     if (!key) return "";
 
@@ -94,5 +95,13 @@ function getDateNumberKey(dateType: 'month' | 'week'): 'month_number' | 'week_nu
 }
 
 
-
-export {filterDataByMonth, formatKey, sumDebits, isDateSameAsPrevious, filterDataByMemo, parseDateMMYYYY, formatDate, getDateNumberKey};
+export {
+    filterDataByMonth,
+    formatKey,
+    sumDebits,
+    isDateSameAsPrevious,
+    filterDataByMemo,
+    parseDateMMYYYY,
+    formatDate,
+    getDateNumberKey
+};
