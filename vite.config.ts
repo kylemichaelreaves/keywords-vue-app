@@ -9,7 +9,8 @@ const aliases: string[] = [
     'components',
     'stores',
     'test',
-    'api'
+    'api',
+    'types',
 ]
 
 export default defineConfig({
