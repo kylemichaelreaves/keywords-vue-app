@@ -23,6 +23,10 @@ export default defineConfig(
                 {
                     find: '@api',
                     replacement: "src/api",
+                },
+                {
+                    find: '@types',
+                    replacement: "src/types",
                 }
             ],
             globals: true,
