@@ -1,4 +1,4 @@
-import {Transaction} from "@types/types";
+import type {Transaction} from "@/types";
 
 function filterDataByMonth(data: Transaction[], selectedMonth: string): Transaction[] {
     if (selectedMonth) {

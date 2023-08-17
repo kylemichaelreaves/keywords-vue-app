@@ -1,5 +1,5 @@
 import {filterDataByMonth, sumDebits, parseDateMMYYYY, formatDate, formatKey} from '../../../api/helpers/dataUtils'
-import {Transaction} from '@types/types';
+import {Transaction} from '@/types';
 
 describe('filterDataByMonth', () => {
     const testData: Transaction[] = [

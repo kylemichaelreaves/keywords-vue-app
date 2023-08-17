@@ -1,4 +1,4 @@
-import {AddressResponse} from "@types/types";
+import {AddressResponse} from "@/types";
 
 export const addressesMock: AddressResponse[] =
     [

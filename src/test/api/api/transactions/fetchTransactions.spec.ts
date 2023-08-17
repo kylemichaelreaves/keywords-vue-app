@@ -1,6 +1,6 @@
 import {test} from 'vitest';
 import {fetchTransactions} from "../../../../api/transactions/fetchTransactions";
-import {Transaction} from "@types/types";
+import {Transaction} from "@/types";
 import {transactionsMock} from "../../../mock/transaction";
 
 describe('fetchTransactions', () => {

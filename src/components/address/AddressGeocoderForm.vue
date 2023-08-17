@@ -46,7 +46,7 @@ import AddressList from "./AddressList.vue";
 import useGeocodeAddress from "../..//api/hooks/addresses/useGeocodeAddress";
 import {router} from "../../main";
 import AddressResults from "./AddressResults.vue";
-import {AddressFields} from "@types/types";
+import {AddressFields} from "@/types";
 import {Location} from "@element-plus/icons-vue";
 
 export default defineComponent({

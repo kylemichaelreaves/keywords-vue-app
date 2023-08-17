@@ -5,7 +5,7 @@
 <script lang="ts">
 import {ref, onMounted, defineComponent, watch, computed} from 'vue';
 import * as d3 from 'd3';
-import {Transaction} from '@types/types';
+import {Transaction} from '@/types';
 
 interface MemoDataPoint {
   memo: string;

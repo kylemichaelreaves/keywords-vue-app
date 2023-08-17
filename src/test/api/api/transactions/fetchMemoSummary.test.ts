@@ -1,7 +1,7 @@
 import {setupServer} from 'msw/node';
 import {rest} from 'msw';
 import {fetchMemoSummary} from "@/api/transactions/fetchMemoSummary";
-import {MemoSummary} from "@types/types";
+import {MemoSummary} from "@/types";
 
 // Set up the MSW server
 const server = setupServer();

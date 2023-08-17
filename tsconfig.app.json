@@ -7,7 +7,7 @@
   ],
   "exclude": [
     "src/**/__tests__/*",
-    "src/test/*",
+    "src/test/*"
   ],
   "module": "esnext",
   "compilerOptions": {
@@ -16,7 +16,19 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ]
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@types": [
+        "./src/types"
+      ],
+      "@test/*": [
+        "./src/test/*"
+      ],
+      "@api/*": [
+        "./src/api/*"
+      ],
     }
   }
 }

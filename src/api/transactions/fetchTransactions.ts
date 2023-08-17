@@ -1,5 +1,5 @@
 import axios from "axios";
-import {Transaction} from "@types/types";
+import {Transaction} from "@/types";
 import {isValidURL} from "../helpers/isValidURL";
 
 export const fetchTransactions = async (

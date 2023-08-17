@@ -30,10 +30,10 @@
 <script lang="ts">
 import {computed, defineComponent, watch} from 'vue'
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
-import {useTransactionsStore} from "../../stores/transactionsStore";
-import useWeekSummary from "../../api/hooks/transactions/useWeekSummary";
+import {useTransactionsStore} from "@/stores/transactionsStore";
+import useWeekSummary from "@/api/hooks/transactions/useWeekSummary";
 import WeeklyAmountDebitTotal from "./WeeklyAmountDebitTotal.vue";
-import {WeekSummary} from "@types/types";
+import type {WeekSummary} from "@/types";
 
 export default defineComponent({
   name: "WeekSummaryTable",

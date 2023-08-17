@@ -8,7 +8,7 @@ import {
     Transaction,
     TransactionsList,
     WeekSummary, WeekYear
-} from "@types/types";
+} from "@/types";
 import {addressesMock} from "@test/mock/address";
 import {
     memosMock,

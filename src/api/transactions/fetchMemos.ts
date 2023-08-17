@@ -1,6 +1,6 @@
 import axios from "axios";
 import {isValidURL} from "../helpers/isValidURL";
-import {Memo} from "@types/types";
+import {Memo} from "@/types";
 import {parseDateMMYYYY} from "../helpers/dataUtils";
 
 export async function fetchMemos(date?: string): Promise<Array<Memo>> {

@@ -5,7 +5,7 @@
 <script lang="ts">
 import {ref, onMounted, defineComponent} from 'vue';
 import * as d3 from 'd3';
-import { PieChartData } from '@types/types';
+import { PieChartData } from '@/types';
 
 const PieChart = defineComponent( {
   name: 'PieChart',

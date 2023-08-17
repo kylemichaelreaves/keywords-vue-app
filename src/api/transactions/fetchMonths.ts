@@ -1,6 +1,6 @@
 import axios from "axios";
 import {isValidURL} from "../helpers/isValidURL";
-import {MonthYear} from "@types/types";
+import {MonthYear} from "@/types";
 
 export async function fetchMonths(): Promise<Array<MonthYear>> {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
