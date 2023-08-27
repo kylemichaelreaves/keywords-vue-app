@@ -9,7 +9,7 @@ import type {
     TransactionsList,
     WeekSummary, WeekYear
 } from "@types";
-import {addressesMock} from "@test/mock/address";
+import {addressesMock} from "../../mocks/address";
 import {
     memosMock,
     memoSummaryMock,
@@ -17,7 +17,7 @@ import {
     monthSummaryMock,
     transactionsMock, weeksMock,
     weekSummaryMock
-} from "@test/mock/transaction";
+} from "../../mocks/transaction";
 
 const handlers = [
     rest.get('*/address-geocoder', (req, res, ctx) => {

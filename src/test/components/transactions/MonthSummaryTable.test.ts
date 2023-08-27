@@ -4,7 +4,7 @@ import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
 import {useTransactionsStore} from "@stores/transactions";
-import {monthSummaryMock} from "@test/mock/transaction";
+import {monthSummaryMock} from "../../../mocks/transaction";
 import {server} from "@test/test-setup";
 
 // Add this to the beginning of your test file or a test setup file

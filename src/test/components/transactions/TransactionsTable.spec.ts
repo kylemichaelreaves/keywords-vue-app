@@ -1,7 +1,7 @@
 import TransactionsTable from "@components/transactions/TransactionsTable.vue";
 import {mount} from "@vue/test-utils";
 import {test} from "vitest";
-import {transactionsMock} from "@test/mock/transaction";
+import {transactionsMock} from "../../../mocks/transaction";
 import {ElTable, ElTableColumn} from "element-plus";
 import {mockRouter} from "@test/router.mock";
 

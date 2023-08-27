@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 import tsconfigPaths from "vite-tsconfig-paths";
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -10,6 +9,7 @@ const ALIASES: string[] = [
     'constants',
     'components',
     'main',
+    'mocks',
     'stores',
     'test',
     'types'

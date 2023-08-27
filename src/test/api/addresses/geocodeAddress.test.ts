@@ -1,6 +1,6 @@
 import { geocodeAddress } from '@api/address/geocodeAddress'
 import {test} from 'vitest'
-import {addressesMock} from "@test/mock/address";
+import {addressesMock} from "../../../mocks/address";
 import type {AddressFields} from "@types";
 
 describe('geocodeAddress', () => {
