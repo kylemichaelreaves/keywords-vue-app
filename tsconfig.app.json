@@ -17,31 +17,31 @@
       "jsdom"
     ],
     "composite": true,
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "paths": {
       "@/*": [
-        "./src/*"
+        "src/*"
       ],
       "@components/*": [
-        "./src/components/*"
+        "components/*"
       ],
       "@types": [
-        "./src/types/index.ts"
+        "types/index.ts"
       ],
       "@test/*": [
-        "./src/test/*"
+        "test/*"
       ],
       "@api/*": [
-        "./src/api/*"
+        "api/*"
       ],
       "@stores/*": [
-        "./src/stores/*"
+        "stores/*"
       ],
       "@constants": [
-        "./src/constants.ts"
+        "constants.ts"
       ],
       "@main": [
-        "./src/main.ts"
+        "main.ts"
       ]
     }
   }
