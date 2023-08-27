@@ -1,5 +1,5 @@
 import {rest} from 'msw'
-import {
+import type {
     AddressResponse,
     Memo,
     MemoSummary,
@@ -8,7 +8,7 @@ import {
     Transaction,
     TransactionsList,
     WeekSummary, WeekYear
-} from "@/types";
+} from "@types";
 import {addressesMock} from "@test/mock/address";
 import {
     memosMock,

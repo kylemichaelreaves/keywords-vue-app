@@ -1,5 +1,10 @@
-import {filterDataByMonth, sumDebits, parseDateMMYYYY, formatDate, formatKey} from '../../../api/helpers/dataUtils'
-import {Transaction} from '@/types';
+import {filterDataByMonth} from '@api/helpers/filterDataByMonth'
+import {sumDebits} from '@api/helpers/sumDebits'
+import {parseDateMMYYYY} from '@api/helpers/parseDateMMYYYY'
+import {formatDate} from '@api/helpers/formatDate'
+import {formatKey} from '@api/helpers/formatKey'
+
+import type {Transaction} from '@types';
 
 describe('filterDataByMonth', () => {
     const testData: Transaction[] = [
@@ -118,12 +123,12 @@ describe('formatDate', () => {
 
     test('handles different date inputs', () => {
         const inputs = [
-            { input: '2021-12-25T18:30:00.000Z', expected: '2021-12-25' },
-            { input: '2020-02-29T12:00:00.000Z', expected: '2020-02-29' },
-            { input: '2010-07-04T04:45:00.000Z', expected: '2010-07-04' },
+            {input: '2021-12-25T18:30:00.000Z', expected: '2021-12-25'},
+            {input: '2020-02-29T12:00:00.000Z', expected: '2020-02-29'},
+            {input: '2010-07-04T04:45:00.000Z', expected: '2010-07-04'},
         ];
 
-        inputs.forEach(({ input, expected }) => {
+        inputs.forEach(({input, expected}) => {
             const result = formatDate(input);
             expect(result).toBe(expected);
         });

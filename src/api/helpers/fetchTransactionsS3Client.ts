@@ -1,24 +1,5 @@
-import type {TransactionsList} from "@/types";
-import * as d3 from 'd3';
 import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
-
-export function parseData(data: string): {
-    Description: string;
-    "Transaction Number": string;
-    amountDebit: string;
-    amountCredit: string;
-    Date: string;
-    Memo: string
-}[] {
-    return d3.dsvFormat(',').parse(data).map(row => ({
-        'Transaction Number': row['Transaction Number'] ?? '',
-        Date: row.Date ?? '',
-        Description: row.Description ?? '',
-        Memo: row.Memo ?? '',
-        'amountDebit': row['Amount Debit'] ?? '',
-        'amountCredit': row['Amount Credit'] ?? '',
-    }));
-}
+import {parseData} from "@api/helpers/parseData";
 
 export async function fetchTransactionsS3Client(): Promise<{
     Description: string;

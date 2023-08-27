@@ -8,7 +8,7 @@
 <script lang="ts">
 import {defineComponent, ref} from "vue";
 import {ElRadioGroup, ElRadioButton} from "element-plus";
-import {useTransactionsStore} from "../../stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactions";
 
 export default defineComponent({
   name: "TransactionTypeToggle",

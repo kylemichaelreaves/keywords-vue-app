@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/vue-query';
 import {fetchSummaries} from "@api/transactions/fetchSummaries";
-import {useTransactionsStore} from "@stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactions";
 import type {Summaries} from "@types";
 import {computed} from "vue";
 

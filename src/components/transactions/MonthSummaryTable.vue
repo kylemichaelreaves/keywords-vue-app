@@ -42,8 +42,8 @@
 <script lang="ts">
 import {computed, defineComponent, onMounted, watch} from 'vue'
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
-import {useTransactionsStore} from "../../stores/transactionsStore";
-import useMonthSummary from "../../api/hooks/transactions/useMonthSummary";
+import {useTransactionsStore} from "@stores/transactions";
+import useMonthSummary from "@api/hooks/transactions/useMonthSummary";
 import OFSummaryTable from "./OFSummaryTable.vue";
 import MJSummaryTable from "./MJSummaryTable.vue";
 import MonthsSummaryTable from "./MonthsSummaryTable.vue";

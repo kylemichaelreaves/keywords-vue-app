@@ -42,8 +42,8 @@
 
 <script lang="ts">
 import {computed, defineComponent} from "vue";
-import type {Transaction} from "@/types";
-import {formatDate} from "@/api/helpers/dataUtils";
+import type {Transaction} from "@types";
+import formatDate from "@api/helpers/formatDate";
 
 const transactionsTableProps = {
   tableData: {

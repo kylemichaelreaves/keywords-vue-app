@@ -21,8 +21,8 @@
 <script lang="ts">
 import {defineComponent, onMounted} from 'vue'
 import {ElCard, ElTable, ElTableColumn} from "element-plus";
-import useSummaries from "../../api/hooks/transactions/useSummaries";
-import {useTransactionsStore} from "../../stores/transactionsStore";
+import useSummaries from "@api/hooks/transactions/useSummaries";
+import {useTransactionsStore} from "@stores/transactions";
 
 export default defineComponent({
   name: "WeeksSummaryTable",

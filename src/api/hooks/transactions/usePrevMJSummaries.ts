@@ -1,8 +1,8 @@
 import {useQuery} from '@tanstack/vue-query'
-import {useTransactionsStore} from "../../../stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
-import {fetchMJAmountDebit} from "../../transactions/fetchMJAmountDebit";
-import {parseDateMMYYYY} from "../../helpers/dataUtils";
+import {fetchMJAmountDebit} from "@api/transactions/fetchMJAmountDebit";
+import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
 
 // Get the Amount Debit for Memo's fitting the MJ category, for subsequent months
 export function usePrevMJSummaries() {

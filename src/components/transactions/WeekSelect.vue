@@ -19,9 +19,9 @@
 
 <script lang="ts">
 import {computed, defineComponent, onMounted} from "vue";
-import {useWeeks} from "../../api/hooks/transactions/useWeeks"
+import {useWeeks} from "@api/hooks/transactions/useWeeks"
 import {ElOption, ElSelect} from "element-plus"
-import {useTransactionsStore} from "../../stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactions";
 
 export default defineComponent({
     name: 'WeekSelect',

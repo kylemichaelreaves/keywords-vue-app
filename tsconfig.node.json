@@ -12,7 +12,10 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "types": [
-      "node"
+      "node",
+      "jsdom",
+      "jest",
+      "vitest/globals"
     ]
   }
 }

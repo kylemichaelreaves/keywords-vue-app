@@ -1,8 +1,8 @@
 import {useQuery} from '@tanstack/vue-query'
-import {fetchSumAmountDebitByDate} from "../../transactions/fetchSumAmountDebitByDate";
-import {parseDateIWIYYY} from "../../helpers/parseDateIWIYYY";
-import {parseDateMMYYYY} from "../../helpers/dataUtils";
-import {useTransactionsStore} from "../../../stores/transactionsStore";
+import {fetchSumAmountDebitByDate} from "@api/transactions/fetchSumAmountDebitByDate";
+import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
+import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
+import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
 
 export default function useSumAmountDebitByDate(timeFrame: string, date: string) {

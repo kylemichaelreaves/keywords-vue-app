@@ -141,5 +141,5 @@ export type {
     OFSummary,
     MJSummary,
     Summary,
-    Summaries,
+    Summaries
 };

@@ -1,7 +1,7 @@
 import {useQuery} from '@tanstack/vue-query'
-import {fetchMemos} from "@/api/transactions/fetchMemos";
-import type {Memo} from "@/types";
-import {useTransactionsStore} from "@/stores/transactionsStore";
+import {fetchMemos} from "@api/transactions/fetchMemos";
+import type {Memo} from "@types";
+import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
 
 export default function useMemos() {

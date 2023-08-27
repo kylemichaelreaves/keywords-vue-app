@@ -1,5 +1,6 @@
 import {createApp} from 'vue'
-import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
+import {createRouter, createWebHistory} from "vue-router";
+import type {RouteRecordRaw} from "vue-router";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createPinia} from 'pinia'
 import './style.css'

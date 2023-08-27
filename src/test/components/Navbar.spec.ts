@@ -1,14 +1,14 @@
 import {mount} from '@vue/test-utils'
 import Navbar from '@components/Navbar.vue'
-import {routes} from "@/main";
-import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
+import {routes} from "@main";
+import {createRouter, createWebHistory} from "vue-router";
 import {ElTabPane, ElTabs} from "element-plus";
 
 describe('Navbar.vue', () => {
     it('renders the correct number of tabs', () => {
         const router = createRouter({
             history: createWebHistory(),
-            routes: routes as RouteRecordRaw[]
+            routes: routes
         })
         const wrapper = mount(Navbar, {
             global: {
@@ -28,7 +28,7 @@ describe('Navbar.vue', () => {
     it('clicking on a tab changes the active tab', async () => {
         const router = createRouter({
             history: createWebHistory(),
-            routes: routes as RouteRecordRaw[]
+            routes: routes
         })
         const wrapper = mount(Navbar, {
             global: {

@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/vue-query'
 import {geocodeAddress} from "../../address/geocodeAddress";
-import type {AddressFields} from "@/types";
+import type {AddressFields} from "@types";
 
 export default function useGeocodeAddress(address: AddressFields) {
     return useQuery({

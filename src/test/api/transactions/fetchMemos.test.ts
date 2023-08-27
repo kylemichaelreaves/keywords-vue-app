@@ -1,5 +1,5 @@
 import {test} from 'vitest'
-import {fetchMemos} from "@/api/transactions/fetchMemos";
+import {fetchMemos} from "@api/transactions/fetchMemos";
 import {memosMock} from "@test/mock/transaction";
 
 describe('fetchMemos', () => {

@@ -5,7 +5,7 @@ import {ElOption, ElSelect} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {mount} from "@vue/test-utils";
 import {createTestingPinia} from '@pinia/testing'
-import {useTransactionsStore} from "@stores/transactionsStore";
+import {useTranscationsStore} from "@stores/transactions";
 
 describe('MonthsSelect', () => {
 

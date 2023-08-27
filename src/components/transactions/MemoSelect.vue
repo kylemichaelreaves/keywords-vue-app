@@ -18,9 +18,9 @@
 
 <script lang='ts'>
 import {computed, defineComponent, watch} from 'vue'
-import useMemos from "../../api/hooks/transactions/useMemos";
+import useMemos from "@api/hooks/transactions/useMemos";
 import {ElOption, ElSelect} from "element-plus";
-import {useTransactionsStore} from "../../stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactions";
 
 export default defineComponent({
     name: "MemoSelect",

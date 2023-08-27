@@ -3,7 +3,7 @@ import MemoSummaryTable from '@components/transactions/MemoSummaryTable.vue';
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
-import {useTransactionsStore} from "@stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactions";
 import {server} from "@test/test-setup";
 
 beforeAll(() => server.listen());

@@ -11,6 +11,11 @@
   ],
   "module": "esnext",
   "compilerOptions": {
+    "types": [
+      "vitest/globals",
+      "node",
+      "jsdom"
+    ],
     "composite": true,
     "baseUrl": ".",
     "paths": {
@@ -21,7 +26,7 @@
         "./src/components/*"
       ],
       "@types": [
-        "./src/types"
+        "./src/types/index.ts"
       ],
       "@test/*": [
         "./src/test/*"
@@ -32,6 +37,12 @@
       "@stores/*": [
         "./src/stores/*"
       ],
+      "@constants": [
+        "./src/constants.ts"
+      ],
+      "@main": [
+        "./src/main.ts"
+      ]
     }
   }
 }

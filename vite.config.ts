@@ -1,29 +1,32 @@
-import {fileURLToPath, URL} from 'node:url'
+/// <reference types="vitest" />
+import tsconfigPaths from "vite-tsconfig-paths";
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from "path";
+// import {ALIASES} from "./src/constants";
 
-// https://vitejs.dev/config/
-
-const aliases: string[] = [
+const ALIASES: string[] = [
+    'api',
+    'constants',
     'components',
+    'main',
     'stores',
     'test',
-    'api',
-    'types',
+    'types'
 ]
 
 export default defineConfig({
     plugins: [
         vue(),
+        tsconfigPaths()
     ],
     resolve: {
-        alias: aliases.map(alias => (
+        alias: ALIASES.map(alias => (
             {
                 find: `@${alias}`,
                 replacement: path.resolve(__dirname, `src/${alias}`),
             }
         ))
-    }
+    },
 });
 

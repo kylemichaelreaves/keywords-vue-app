@@ -20,10 +20,10 @@
 
 <script lang="ts">
 import {computed, defineComponent, onMounted} from 'vue'
-import {useMonths} from "@/api/hooks/transactions/useMonths";
+import {useMonths} from "@api/hooks/transactions/useMonths";
 import {ElOption, ElSelect} from "element-plus";
-import type {MonthYear} from "@/types";
-import {useTransactionsStore} from "@/stores/transactionsStore";
+import type {MonthYear} from "@types";
+import {useTransactionsStore} from "@stores/transactions";
 
 export default defineComponent({
   name: "MonthSelect",

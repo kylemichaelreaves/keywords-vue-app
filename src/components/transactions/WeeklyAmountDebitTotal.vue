@@ -5,8 +5,8 @@
 <script lang="ts">
 import {defineComponent, watch} from "vue";
 import {ElStatistic} from "element-plus";
-import useSumAmountDebitByDate from "../../api/hooks/transactions/useSumAmountDebitByDate";
-import {useTransactionsStore} from "../../stores/transactionsStore";
+import useSumAmountDebitByDate from "@api/hooks/transactions/useSumAmountDebitByDate";
+import {useTransactionsStore} from "@stores/transactions";
 
 export default defineComponent({
   name: 'WeeklyAmountDebitTotal',

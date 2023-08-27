@@ -1,6 +1,6 @@
 import axios from "axios";
-import {Transaction} from "@/types";
-import {isValidURL} from "../helpers/isValidURL";
+import type {Transaction} from "@types";
+import {isValidURL} from "@api/helpers/isValidUrl";
 
 export const fetchTransactions = async (
     limit?: number,
