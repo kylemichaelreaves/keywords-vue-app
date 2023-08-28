@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/vue-query';
 import {fetchMemoSummary} from "../../transactions/fetchMemoSummary";
-import {useTransactionsStore} from "../../../stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
 
 export default function useMemoSummary() {

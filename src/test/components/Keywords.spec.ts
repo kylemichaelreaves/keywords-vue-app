@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import Keywords from '../../components/Keywords.vue';
+import Keywords from '@components/Keywords.vue';
 import ElementPlus, {ElInput} from 'element-plus';
 
 describe('Keywords.vue', () => {

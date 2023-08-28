@@ -1,0 +1,49 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": [
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue"
+  ],
+  "exclude": [
+    "src/**/__tests__/*",
+    "src/test/*"
+  ],
+  "module": "esnext",
+  "composite": true,
+  "compilerOptions": {
+    "types": [
+      "vitest/globals",
+      "node",
+      "jsdom"
+    ],
+    "composite": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@components/*": [
+        "components/*"
+      ],
+      "@types": [
+        "types/index.ts"
+      ],
+      "@test/*": [
+        "test/*"
+      ],
+      "@mocks/*": [
+        "mocks/*"
+      ],
+      "@api/*": [
+        "api/*"
+      ],
+      "@stores/*": [
+        "stores/*"
+      ],
+      "@constants": [
+        "constants.ts"
+      ],
+      "@main": [
+        "main.ts"
+      ]
+    }
+  }
+}

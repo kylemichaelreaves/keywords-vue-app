@@ -15,46 +15,49 @@
 
 <script lang="ts">
 import {computed, defineComponent, ref} from "vue";
-import {RouteRecordRaw, useRoute, useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
+import type {RouteRecordRaw} from "vue-router";
 
-const Navbar = defineComponent({
-  setup() {
-    const router = useRouter();
-    const routes = router.options.routes;
-    const activeTab = ref(0);
-    const route = useRoute();
+export default defineComponent(
+    {
+      name: "Navbar",
+      setup() {
+        const router = useRouter();
+        const routes = router.options.routes;
+        const activeTab = ref(0);
+        const route = useRoute();
 
-    routes.forEach((r, index) => {
-      if (r.path === route.path) {
-        activeTab.value = index;
+        routes.forEach((r, index) => {
+          if (r.path === route.path) {
+            activeTab.value = index;
+          }
+        });
+
+        const routeIcon = (route: RouteRecordRaw) => computed(() => {
+          switch (route.name) {
+            case 'home':
+              return 'HomeFilled'
+            case 'address-geocoder':
+              return 'LocationFilled'
+            case 'keywords':
+              return 'Key'
+            case 'budget-visualizer':
+              return 'TrendCharts'
+            default:
+              return ''
+          }
+        })
+
+        function handleClick(tab: { index: number }, event: Event) {
+          router.push({path: routes[tab.index].path});
+          activeTab.value = tab.index;
+        }
+
+        return {routes, route, activeTab, handleClick, routeIcon};
       }
     });
 
-    const routeIcon = (route: RouteRecordRaw) => computed(() => {
-      switch (route.name) {
-        case 'home':
-          return 'HomeFilled'
-        case 'address-geocoder':
-          return 'LocationFilled'
-        case 'keywords':
-          return 'Key'
-        case 'budget-visualizer':
-          return 'TrendCharts'
-        default:
-          return ''
-      }
-    })
 
-    function handleClick(tab: { index: number }, event: Event) {
-      router.push({path: routes[tab.index].path});
-      activeTab.value = tab.index;
-    }
-
-    return {routes, route, activeTab, handleClick, routeIcon};
-  }
-});
-
-export default Navbar;
 </script>
 
 <style scoped>

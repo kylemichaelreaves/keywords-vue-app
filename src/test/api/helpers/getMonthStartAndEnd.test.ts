@@ -1,5 +1,5 @@
 import { test } from 'vitest';
-import {getMonthStartAndEnd} from "../../../api/helpers/getMonthStartAndEnd";
+import {getMonthStartAndEnd} from "@api/helpers/getMonthStartAndEnd";
 
 test('getMonthStartAndEnd: returns correct month start and end', async () => {
     const date = new Date(2023, 4, 5); // May 5, 2023

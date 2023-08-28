@@ -1,30 +1,32 @@
-/// <reference types="vitest" />
+import tsconfigPaths from "vite-tsconfig-paths";
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
-import {resolve} from 'path'
-import mkcert from 'vite-plugin-mkcert'
-import tsconfigPaths from 'vite-tsconfig-paths'
+import path from "path";
+// import {ALIASES} from "./src/constants";
 
-// https://vitejs.dev/config/
+const ALIASES: string[] = [
+    'api',
+    'constants',
+    'components',
+    'main',
+    'mocks',
+    'stores',
+    'test',
+    'types'
+]
+
 export default defineConfig({
-    plugins: [vue(), mkcert(), tsconfigPaths()],
-    build: {
-        target: 'esnext',
-    },
-    test: {
-        globals: true,
-        environment: 'jsdom',
-        setupFiles: ['./src/test/test-setup.ts'],
-        include: ['**/**.{test,spec}.{ts, tsx, jsx, js}'],
-        reporters: ['default', 'html'],
-    },
+    plugins: [
+        vue(),
+        tsconfigPaths()
+    ],
     resolve: {
-        alias: {
-            '@': resolve(__dirname, '/src'),
-        }
+        alias: ALIASES.map(alias => (
+            {
+                find: `@${alias}`,
+                replacement: path.resolve(__dirname, `src/${alias}`),
+            }
+        ))
     },
-    server: {
-        host: '127.0.0.1',
-        https: true,
-    },
-})
+});
+

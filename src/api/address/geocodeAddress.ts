@@ -1,6 +1,6 @@
 import axios from "axios";
-import {API_GATEWAY_URL} from "../../constants";
-import {AddressFields, AddressResponse} from "../../types";
+import {API_GATEWAY_URL} from "@constants";
+import type {AddressFields, AddressResponse} from "@types";
 
 // TODO rename: fetchAddress -. geocodeAddress
 export const geocodeAddress = async (address: AddressFields): Promise<AddressResponse[]> => {

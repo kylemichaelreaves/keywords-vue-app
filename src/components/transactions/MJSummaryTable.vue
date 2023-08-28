@@ -13,8 +13,8 @@
 <script lang="ts">
 import {computed, defineComponent, watch, onMounted} from "vue";
 import {ElCard, ElCol, ElRow, ElStatistic} from "element-plus";
-import useMJAmountDebit from "../../api/hooks/transactions/useMJAmountDebit";
-import {useTransactionsStore} from "../../stores/transactionsStore";
+import useMJAmountDebit from "@api/hooks/transactions/useMJAmountDebit";
+import {useTransactionsStore} from "@stores/transactions";
 import MJPrevSummaries from "./MJPrevSummaries.vue";
 
 export default defineComponent({

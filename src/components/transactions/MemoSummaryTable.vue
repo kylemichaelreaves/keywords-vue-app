@@ -16,8 +16,8 @@
 <script lang="ts">
 import {defineComponent, watch} from "vue";
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
-import useMemoSummary from "../../api/hooks/transactions/useMemoSummary";
-import {useTransactionsStore} from "../../stores/transactionsStore";
+import useMemoSummary from "@api/hooks/transactions/useMemoSummary";
+import {useTransactionsStore} from "@stores/transactions";
 
 export default defineComponent({
     name: "MemoSummaryTable",

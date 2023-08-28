@@ -4,8 +4,8 @@
 
 <script lang="ts">
 import {defineComponent, onMounted, watch} from "vue";
-import {useTransactionsStore} from "../../stores/transactionsStore";
-import {usePrevOFSummaries} from "../../api/hooks/transactions/usePrevOFSummaries";
+import {useTransactionsStore} from "@stores/transactions";
+import {usePrevOFSummaries} from "@api/hooks/transactions/usePrevOFSummaries";
 import LineChart from "../charts/LineChart.vue";
 
 export default defineComponent({

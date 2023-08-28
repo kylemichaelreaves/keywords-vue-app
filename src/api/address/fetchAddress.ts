@@ -1,5 +1,5 @@
 import axios from "axios";
-import {isValidURL} from "../helpers/isValidURL";
+import {isValidURL} from "@api/helpers/isValidURL";
 
 export async function fetchAddress(id: string, fetchURL?: string) {
     if (!fetchURL) {

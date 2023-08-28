@@ -1,7 +1,7 @@
 import axios from "axios";
-import {isValidURL} from "../helpers/isValidURL";
-import {Memo} from "../../types";
-import {parseDateMMYYYY} from "../helpers/dataUtils";
+import {isValidURL} from "@api/helpers/isValidURL";
+import type {Memo} from "@types";
+import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
 
 export async function fetchMemos(date?: string): Promise<Array<Memo>> {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;

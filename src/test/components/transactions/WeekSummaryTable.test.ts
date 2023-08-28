@@ -1,10 +1,9 @@
 import {mount} from '@vue/test-utils';
-import WeekSummaryTable from "../../../components/transactions/WeekSummaryTable.vue";
+import WeekSummaryTable from "@components/transactions/WeekSummaryTable.vue";
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
-import {useTransactionsStore} from "../../../stores/transactionsStore";
-import {ref} from "vue";
+import {useTransactionsStore} from "@stores/transactions";
 
 // Add this to the beginning of your test file or a test setup file
 global.requestAnimationFrame = (cb) => {

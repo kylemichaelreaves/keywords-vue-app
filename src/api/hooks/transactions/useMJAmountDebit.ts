@@ -1,9 +1,9 @@
 import {useQuery} from '@tanstack/vue-query'
-import {fetchMJAmountDebit} from "../../transactions/fetchMJAmountDebit";
-import {useTransactionsStore} from "../../../stores/transactionsStore";
+import {fetchMJAmountDebit} from "@api/transactions/fetchMJAmountDebit";
+import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
-import {parseDateIWIYYY} from "../../helpers/parseDateIWIYYY";
-import {parseDateMMYYYY} from "../../helpers/dataUtils";
+import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
+import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
 
 // Get the Amount Debit for Memo's fitting the MJ category, for a certain period of time
 export default function useMJAmountDebit() {

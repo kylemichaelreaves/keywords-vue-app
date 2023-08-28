@@ -1,6 +1,6 @@
-import {fetchMonthSummary} from '../../../../api/transactions/fetchMonthSummary';
-import {monthSummaryMock} from '../../../mock/transaction';
-import {server} from '../../../test-setup';
+import {fetchMonthSummary} from '@api/transactions/fetchMonthSummary';
+import {monthSummaryMock} from '@mocks/transaction';
+import {server} from '../../test-setup';
 import {rest} from 'msw';
 
 describe('fetchMonthSummary', () => {

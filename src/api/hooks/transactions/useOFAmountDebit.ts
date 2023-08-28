@@ -1,9 +1,9 @@
 import {useQuery} from '@tanstack/vue-query'
-import {fetchOFAmountDebit} from "../../transactions/fetchOFAmountDebit";
-import {useTransactionsStore} from "../../../stores/transactionsStore";
+import {fetchOFAmountDebit} from "@api/transactions/fetchOFAmountDebit";
+import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
-import {parseDateIWIYYY} from "../../helpers/parseDateIWIYYY";
-import {parseDateMMYYYY} from "../../helpers/dataUtils";
+import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
+import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
 
 // Get the Amount Debit for Memo's fitting the OF category, for a certain period of time
 export default function useOFAmountDebit() {

@@ -1,5 +1,5 @@
 import { test } from 'vitest';
-import {isValidURL} from "../../../api/helpers/isValidURL";
+import {isValidURL} from "@api/helpers/isValidURL";
 
 test('isValidURL > should return true for a valid URL', ({ expect }) => {
     const validURL = 'https://example.com';

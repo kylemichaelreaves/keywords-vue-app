@@ -1,5 +1,5 @@
 import axios from "axios";
-import { isValidURL } from "../helpers/isValidURL";
+import { isValidURL } from "@api/helpers/isValidURL";
 
 export async function fetchSumAmountDebitByDate(timeFrame: string, date: Date | null | undefined) {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;

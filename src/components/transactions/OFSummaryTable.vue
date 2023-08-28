@@ -12,9 +12,9 @@
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, watch} from "vue";
-import useOFAmountDebit from "../../api/hooks/transactions/useOFAmountDebit";
+import useOFAmountDebit from "@api/hooks/transactions/useOFAmountDebit";
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
-import {useTransactionsStore} from "../../stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactions";
 import OFPrevSummaries from "./OFPrevSummaries.vue";
 
 export default defineComponent({

@@ -1,6 +1,6 @@
 import {mount, shallowMount} from '@vue/test-utils';
 import { test } from 'vitest';
-import CustomSelect from "../../../components/shared/CustomSelect.vue";
+import CustomSelect from "@components/shared/CustomSelect.vue";
 import {ElOption, ElSelect} from "element-plus";
 
 const createWrapper = (props: Record<string, unknown>) => {

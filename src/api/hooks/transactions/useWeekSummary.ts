@@ -1,8 +1,8 @@
 import {useQuery} from '@tanstack/vue-query'
-import {WeekSummary} from "../../../types";
-import {fetchWeekSummary} from "../../transactions/fetchWeekSummary";
+import type {WeekSummary} from "@types";
+import {fetchWeekSummary} from "@api/transactions/fetchWeekSummary";
 import {computed} from "vue";
-import {useTransactionsStore} from "../../../stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactions";
 
 export default function useWeekSummary() {
     const store = useTransactionsStore()

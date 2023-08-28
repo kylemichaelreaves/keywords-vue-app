@@ -1,6 +1,6 @@
 import {vi, test} from 'vitest'
 import {mount} from "@vue/test-utils";
-import MemoSelect from "../../../components/transactions/MemoSelect.vue";
+import MemoSelect from "@components/transactions/MemoSelect.vue";
 import {ElOption, ElSelect} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from "@pinia/testing";

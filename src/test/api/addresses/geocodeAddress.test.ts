@@ -1,7 +1,7 @@
-import { geocodeAddress } from '../../../../api/address/geocodeAddress'
+import { geocodeAddress } from '@api/address/geocodeAddress'
 import {test} from 'vitest'
-import {addressesMock} from "../../../mock/address";
-import {AddressFields} from "../../../../types";
+import {addressesMock} from "@mocks/address";
+import type {AddressFields} from "@types";
 
 describe('geocodeAddress', () => {
     afterEach(() => {

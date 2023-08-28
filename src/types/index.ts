@@ -7,6 +7,7 @@ interface AddressFields {
     state: string;
     zipcode?: string;
 }
+
 type Transaction = {
     transactionNumber: string;
     date: string;
@@ -140,5 +141,5 @@ export type {
     OFSummary,
     MJSummary,
     Summary,
-    Summaries,
+    Summaries
 };

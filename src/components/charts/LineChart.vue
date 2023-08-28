@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import {ref, onMounted, defineComponent, watchEffect} from 'vue';
-import {Summary} from "../../types";
+import type {Summary} from "@types";
 import {createLineChart} from "./createLineChart";
 
 const LineChart = defineComponent({

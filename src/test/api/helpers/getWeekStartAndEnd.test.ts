@@ -1,4 +1,4 @@
-import {getWeekStartAndEnd} from "../../../api/helpers/getWeekStartAndEnd";
+import {getWeekStartAndEnd} from "@api/helpers/getWeekStartAndEnd";
 
 test('getWeekStartAndEnd: works with a regular week', async () => {
     const date = new Date(2023, 4, 10); // May 10, 2023

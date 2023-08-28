@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import {defineComponent, computed} from "vue";
-import {formatKey} from "../../api/helpers/dataUtils";
+import {formatKey} from "@api/helpers/formatKey";
 
 export default defineComponent({
     name: "AddressResultFieldsTable",

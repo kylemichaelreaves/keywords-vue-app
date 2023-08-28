@@ -67,11 +67,11 @@
 import {computed, defineComponent, onMounted, ref, watch} from "vue";
 import TransactionsTable from "./transactions/TransactionsTable.vue";
 import TransactionUploader from "./transactions/TransactionUploader.vue";
-import useTransactions from "../api/hooks/transactions/useTransactions";
+import useTransactions from "@api/hooks/transactions/useTransactions";
 import MonthSelect from "./transactions/MonthSelect.vue";
 import MemoSelect from "./transactions/MemoSelect.vue";
 import {TrendCharts} from "@element-plus/icons-vue";
-import {useTransactionsStore} from "../stores/transactionsStore";
+import {useTransactionsStore} from "@stores/transactions";
 import MemoSummaryTable from "./transactions/MemoSummaryTable.vue";
 import WeekSelect from "./transactions/WeekSelect.vue";
 import WeekSummaryTable from "./transactions/WeekSummaryTable.vue";

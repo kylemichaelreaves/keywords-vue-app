@@ -1,6 +1,6 @@
 import axios from "axios";
-import {isValidURL} from "../helpers/isValidURL";
-import {Summaries} from "../../types";
+import {isValidURL} from "@api/helpers/isValidURL";
+import type {Summaries} from "@types";
 
 export async function fetchSummaries(
     timeFrame: string
