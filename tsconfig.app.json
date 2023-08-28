@@ -20,28 +20,28 @@
     "baseUrl": "./src",
     "paths": {
       "@components/*": [
-        "/components/*"
+        "components/*"
       ],
       "@types": [
-        "/types/index.ts"
+        "types/index.ts"
       ],
       "@test/*": [
-        "/test/*"
+        "test/*"
       ],
       "@mocks/*": [
-        "/mocks/*"
+        "mocks/*"
       ],
       "@api/*": [
-        "/api/*"
+        "api/*"
       ],
       "@stores/*": [
-        "/stores/*"
+        "stores/*"
       ],
       "@constants": [
-        "/constants.ts"
+        "constants.ts"
       ],
       "@main": [
-        "/main.ts"
+        "main.ts"
       ]
     }
   }
