@@ -1,5 +1,5 @@
 import axios from "axios";
-import {isValidURL} from "@api/helpers/isValidUrl";
+import {isValidURL} from "@api/helpers/isValidURL";
 import type {MonthYear} from "@types";
 
 export async function fetchMonths(): Promise<Array<MonthYear>> {

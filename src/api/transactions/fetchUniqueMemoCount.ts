@@ -1,5 +1,5 @@
 import axios from "axios";
-import { isValidURL } from "@api/helpers/isValidUrl";
+import { isValidURL } from "@api/helpers/isValidURL";
 
 export async function fetchUniqueMemoCount() {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;

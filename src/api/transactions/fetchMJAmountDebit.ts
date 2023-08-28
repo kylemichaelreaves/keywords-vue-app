@@ -1,5 +1,5 @@
 import axios from "axios";
-import {isValidURL} from "@api/helpers/isValidUrl";
+import {isValidURL} from "@api/helpers/isValidURL";
 import type {MJSummary} from "@types";
 
 export async function fetchMJAmountDebit(timeFrame: string, date: Date | null | undefined): Promise<MJSummary> {
