@@ -10,6 +10,7 @@
     "src/test/*"
   ],
   "module": "esnext",
+  "composite": true,
   "compilerOptions": {
     "types": [
       "vitest/globals",

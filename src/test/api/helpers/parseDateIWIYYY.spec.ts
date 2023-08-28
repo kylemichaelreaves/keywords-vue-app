@@ -1,5 +1,5 @@
 import {test} from 'vitest'
-import {parseDateIWIYYY} from "../../../api/helpers/parseDateIWIYYY";
+import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
 
 describe('parseDateIWIYYY', () => {
     // Test valid input cases

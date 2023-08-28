@@ -1,6 +1,6 @@
 import {test} from 'vitest'
 import {fetchMemos} from "@api/transactions/fetchMemos";
-import {memosMock} from "../../../mocks/transaction";
+import {memosMock} from "@mocks/transaction";
 
 describe('fetchMemos', () => {
     afterEach(() => {
