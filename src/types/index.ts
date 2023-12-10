@@ -91,6 +91,10 @@ interface Memo {
     Memo: string
 }
 
+interface DayYear {
+    day_year: string;
+}
+
 interface MonthYear {
     month_year: string;
 }
@@ -99,7 +103,7 @@ interface WeekYear {
     week_year: string;
 }
 
-type TimeframeType = 'day' | 'week' | 'year';
+type TimeframeType = 'day' | 'week' | 'month' | 'year';
 
 type OfSummaryTypeBase = {
     total_debit: number;
@@ -125,6 +129,7 @@ type Summaries = {
 export type {
     AddressFields,
     AddressResponse,
+    DayYear,
     Transaction,
     TransactionData,
     TransactionsList,

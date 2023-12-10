@@ -1,4 +1,5 @@
-import type {Memo, MemoSummary, MonthSummary, MonthYear, Transaction, WeekSummary, WeekYear} from "./src/types";
+import type {Memo, MemoSummary, MonthSummary, MonthYear, Transaction, WeekSummary, WeekYear} from "@types";
+import type {DayYear} from "@types";
 
 export const transactionsMock: Transaction[] = [
     {
@@ -13,6 +14,18 @@ export const transactionsMock: Transaction[] = [
         memo: 'Test Transaction',
         amountDebit: '20.00',
     },
+]
+
+export const daysMock: DayYear[] = [
+    {
+        day_year: '12-31-2022',
+    },
+    {
+        day_year: '12-30-2022',
+    },
+    {
+        day_year: '12-29-2022',
+    }
 ]
 
 export const monthsMock: MonthYear[] = [

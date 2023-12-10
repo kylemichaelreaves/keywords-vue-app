@@ -11,4 +11,4 @@ interface ImportMeta {
     readonly env: ImportMetaEnv
 }
 
-export { ImportMeta }
+export {ImportMeta}

@@ -1,12 +1,15 @@
 <template>
   <el-card>
     <template #header>
-    <el-row align="middle" style="justify-content: space-around">
-      <h3>OF sum total for {{ timeframe }} {{ selectedMonth }}:</h3>
-      <el-statistic v-if="data" size="large" :value="data[0].total_debit" :key="data"/>
-    </el-row>
+      <el-row align="middle" style="justify-content: space-around">
+        <!--      TODO don't hardcode selectedMonth, but whatever the selectedPeriod? is -->
+        <h3>OF sum total for {{ timeframe }} {{ selectedMonth }}:</h3>
+        <el-statistic v-if="data" size="large" :value="data.total_debit" :key="data.total_debit"/>
+      </el-row>
     </template>
-      <OFPrevSummaries/>
+    <div v-if="isError">{{ error }}</div>
+    <div v-if="isLoading || isFetching">Loading...</div>
+    <OFPrevSummaries/>
   </el-card>
 </template>
 
@@ -47,11 +50,7 @@ export default defineComponent({
       ];
     });
 
-    watch(() => store.selectedMonth, () => {
-      refetch();
-    });
-
-    watch(() => store.selectedWeek, () => {
+    watch(() => [store.selectedMonth, store.selectedWeek], () => {
       refetch();
     });
 

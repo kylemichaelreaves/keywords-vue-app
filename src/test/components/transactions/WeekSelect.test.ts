@@ -24,28 +24,26 @@ describe('WeekSelect', () => {
     })
 
 
-    test('should emit the selected month', async () => {
-        it("renders options and updates selectedMonth in the store", async () => {
-            // Access the transactions store
-            const transactionsStore = useTransactionsStore(createTestingPinia());
+    it("renders options and updates selectedMonth in the store", async () => {
+        // Access the transactions store
+        const transactionsStore = useTransactionsStore(createTestingPinia());
 
-            // Get the transformedData from the component's setup function
-            // @ts-ignore
-            const transformedData = wrapper.vm.transformedData;
+        // Get the transformedData from the component's setup function
+        // @ts-ignore
+        const transformedData = wrapper.vm.transformedData;
 
-            // Assuming you have some transformed data to be rendered as options
-            const options = wrapper.findAll("option");
+        // Assuming you have some transformed data to be rendered as options
+        const options = wrapper.findAll("option");
 
-            // Check if the correct number of options is rendered
-            expect(options.length).toBe(transformedData.length);
+        // Check if the correct number of options is rendered
+        expect(options.length).toBe(transformedData.length);
 
-            // Select the first option
-            await wrapper.get("select").setValue(transformedData[0].value);
+        // Select the first option
+        await wrapper.get("select").setValue(transformedData[0].value);
 
-            // Check if the selectedMonth in the store is updated correctly
-            expect(transactionsStore.getSelectedWeek).toBe(transformedData[0].value);
-        });
-    })
+        // Check if the selectedMonth in the store is updated correctly
+        expect(transactionsStore.getSelectedWeek).toBe(transformedData[0].value);
+    });
 
 
     test.skip('should be disabled when there is a selectedMonth in the store', async () => {

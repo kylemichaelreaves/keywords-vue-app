@@ -1,51 +1,52 @@
-import {mount} from '@vue/test-utils';
+import {mount, shallowMount} from '@vue/test-utils';
 import MonthSummaryTable from "@components/transactions/MonthSummaryTable.vue";
-import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
+import {ElCard, ElForm, ElFormItem, ElIcon, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
 import {useTransactionsStore} from "@stores/transactions";
-import {monthSummaryMock} from "../../../mocks/transaction";
-import {server} from "@test/test-setup";
+import {monthSummaryMock} from "@mocks/transaction";
+import {waitFor} from "@testing-library/vue";
 
 // Add this to the beginning of your test file or a test setup file
-global.requestAnimationFrame = (cb) => {
-    return setTimeout(cb, 0);
-};
-global.cancelAnimationFrame = (id) => {
-    clearTimeout(id);
-};
+// global.requestAnimationFrame = (cb) => {
+//     return setTimeout(cb, 0);
+// };
+// global.cancelAnimationFrame = (id) => {
+//     clearTimeout(id);
+// };
 
-// Start the msw server before running the tests
-beforeAll(() => {
-    server.listen();
-});
-
-// Reset any runtime request handlers
-afterEach(() => {
-    server.resetHandlers();
-});
-
-// Clean up once the tests are done
-afterAll(() => {
-    server.close();
-});
+vi.mock("@api/hooks/transactions/useMonthSummary", () => {
+    return {
+        useMonthSummary: () => {
+            return {
+                data: monthSummaryMock,
+                isError: false,
+                refetch: vi.fn(),
+                isLoading: false,
+                error: null,
+            }
+        }
+    }
+})
 
 
 describe('MonthSummaryTable', function () {
-    test.skip('renders the MonthlySummaryTable with the correct fields', async () => {
-        const wrapper = mount(MonthSummaryTable, {
+    test('renders the MonthlySummaryTable with the correct fields', async () => {
+        const wrapper = shallowMount(MonthSummaryTable, {
             global: {
                 components: {
                     ElTable,
                     ElStatistic,
                     ElTableColumn,
                     ElCard,
+                    ElForm,
+                    ElIcon,
+                    ElFormItem,
                 },
                 plugins: [VueQueryPlugin, createTestingPinia()],
             }
         });
 
-        console.log('wrapper', wrapper);
 
         // // Wait for the query to finish loading data
         // await waitFor(() => {
@@ -59,7 +60,6 @@ describe('MonthSummaryTable', function () {
         // Wait for the loading state to be removed
         // wrapper.vm.isLoading = false;
         wrapper.vm.monthSummaryData = monthSummaryMock;
-        await wrapper.vm.$nextTick();
 
         const table = wrapper.findComponent(ElTable);
         const columns = wrapper.findAllComponents(ElTableColumn);

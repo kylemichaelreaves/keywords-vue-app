@@ -1,11 +1,11 @@
+<!--Write unit tests for this Vue component with vitest and vue-utils-->
 <template>
   <el-card>
     <template #header>
       <div class="card-header">
         <h3>Month Summary: {{ selectedMonth }}</h3>
         <el-button-group>
-          <el-button type="primary" :icon="ArrowLeft.value" @click="goToPreviousMonth" :disabled="isLastMonth">Previous
-            Month
+          <el-button type="primary" :icon="ArrowLeft.value" @click="goToPreviousMonth" :disabled="isLastMonth">Previous Month
           </el-button>
           <el-button type="primary" :icon="ArrowRight.value" @click="goToNextMonth" :disabled="isFirstMonth">Next Month
           </el-button>
@@ -17,6 +17,7 @@
         <el-table
             v-if="monthSummaryData && monthSummaryData.length > 0"
             :data="monthSummaryData"
+            :default-sort="{prop: 'total_debit_amount', order: 'descending'}"
             size="small"
             table-layout="fixed"
             :loading="isFetching || isLoading"
@@ -31,8 +32,8 @@
         </el-table>
       </el-col>
       <el-col :span="10">
-<!--        <OFSummaryTable/>-->
-<!--        <MJSummaryTable/>-->
+        <OFSummaryTable/>
+        <MJSummaryTable/>
         <MonthsSummaryTable v-if="selectedMonth"/>
       </el-col>
     </el-row>

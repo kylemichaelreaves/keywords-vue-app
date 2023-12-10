@@ -1,6 +1,9 @@
-import {Component, createApp, h} from "vue";
-import {render, RenderOptions} from "@testing-library/vue";
-import {QueryClient, QueryClientConfig, VueQueryPlugin} from "@tanstack/vue-query";
+import {createApp, h} from "vue";
+import type {Component} from "vue"
+import type { QueryClientConfig} from "@tanstack/vue-query"
+import {render} from "@testing-library/vue";
+import type {RenderOptions} from "@testing-library/vue";
+import { QueryClient, VueQueryPlugin} from "@tanstack/vue-query";
 import ElementPlus from "element-plus";
 
 export const renderWithQueryClient = (component: Component,

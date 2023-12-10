@@ -1,5 +1,5 @@
 <template>
-  <el-radio-group v-model="selectedType" size="small" data-testid="transaction-type-toggle" @change="updateSelectedType">
+  <el-radio-group v-model="selectedType" size="small" data-testid="transaction-type-toggle" @change:selectedType="updateSelectedType">
     <el-radio-button label="Amount Debit" name="debit">Amount Debit</el-radio-button>
     <el-radio-button label="Amount Credit" name="credit">Amount Credit</el-radio-button>
   </el-radio-group>

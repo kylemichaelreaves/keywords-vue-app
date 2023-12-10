@@ -11,7 +11,9 @@
 
     <el-row style="justify-content: space-between">
       <el-col>
-        <MemoSummaryTable v-if="selectedMemo"/>
+        <Suspense>
+          <MemoSummaryTable v-if="selectedMemo"/>
+        </Suspense>
       </el-col>
       <el-col>
         <Suspense>
@@ -19,7 +21,9 @@
         </Suspense>
       </el-col>
       <el-col>
-        <WeekSummaryTable v-if="selectedWeek"/>
+        <Suspense>
+          <WeekSummaryTable v-if="selectedWeek"/>
+        </Suspense>
       </el-col>
     </el-row>
     <el-alert v-if="error" type="error" :title="'Error: ' + error">
@@ -30,7 +34,7 @@
     <br/>
 
     <el-row style="justify-content: space-between">
-      <el-col :span="15">
+      <el-col :span="20">
         <WeekSelect
             @update:selected-week="updateSelectedWeek($event)"
             :selected-value="selectedWeek"
@@ -44,7 +48,6 @@
             :selected-value="selectedMemo"
         />
       </el-col>
-
     </el-row>
 
 
@@ -98,12 +101,14 @@ export default defineComponent({
     const LIMIT = 100;
     const OFFSET = ref(0);
     const {
-      data,
+      data: dataRef,
       error,
       isLoading,
       isFetching,
       refetch
     } = useTransactions(LIMIT, OFFSET.value);
+
+    const data = dataRef.value
 
     const updateSelectedMonth = (newMonth: string) => {
       store.setSelectedMonth(newMonth);

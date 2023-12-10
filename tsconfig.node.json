@@ -15,7 +15,8 @@
       "node",
       "jsdom",
       "jest",
-      "vitest/globals"
+      "vitest/globals",
+      "vite/client",
     ]
   }
 }
