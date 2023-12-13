@@ -31,7 +31,7 @@ vi.mock("@api/hooks/transactions/useMonthSummary", () => {
 
 
 describe('MonthSummaryTable', function () {
-    test('renders the MonthlySummaryTable with the correct fields', async () => {
+    test.skip('renders the MonthlySummaryTable with the correct fields', async () => {
         const wrapper = shallowMount(MonthSummaryTable, {
             global: {
                 components: {

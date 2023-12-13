@@ -10,22 +10,17 @@
     </template>
 
     <el-row style="justify-content: space-between">
-      <el-col>
-        <Suspense>
-          <MemoSummaryTable v-if="selectedMemo"/>
-        </Suspense>
-      </el-col>
-      <el-col>
-        <Suspense>
-          <MonthSummaryTable v-if="selectedMonth"/>
-        </Suspense>
-      </el-col>
-      <el-col>
-        <Suspense>
-          <WeekSummaryTable v-if="selectedWeek"/>
-        </Suspense>
-      </el-col>
+      <Suspense>
+        <MemoSummaryTable v-if="selectedMemo"/>
+      </Suspense>
+      <Suspense>
+        <MonthSummaryTable v-if="selectedMonth"/>
+      </Suspense>
+      <Suspense>
+        <WeekSummaryTable v-if="selectedWeek"/>
+      </Suspense>
     </el-row>
+
     <el-alert v-if="error" type="error" :title="'Error: ' + error">
       <h2>
         {{ error }}
@@ -35,21 +30,11 @@
 
     <el-row style="justify-content: space-between">
       <el-col :span="20">
-        <WeekSelect
-            @update:selected-week="updateSelectedWeek($event)"
-            :selected-value="selectedWeek"
-        />
-        <MonthSelect
-            @update:selected-month="updateSelectedMonth($event)"
-            :selected-value="selectedMonth"
-        />
-        <MemoSelect
-            @update:selected-memo="updateSelectedMemo($event)"
-            :selected-value="selectedMemo"
-        />
+        <WeekSelect/>
+        <MonthSelect/>
+        <MemoSelect/>
       </el-col>
     </el-row>
-
 
     <TransactionsTable
         v-if="data"
@@ -62,14 +47,13 @@
         :loading="isFetching || isLoading"
     />
   </el-card>
-
+  <VueQueryDevtools/>
   <router-view :key="$route.fullPath"></router-view>
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, ref, watch} from "vue";
 import TransactionsTable from "./transactions/TransactionsTable.vue";
-import TransactionUploader from "./transactions/TransactionUploader.vue";
 import useTransactions from "@api/hooks/transactions/useTransactions";
 import MonthSelect from "./transactions/MonthSelect.vue";
 import MemoSelect from "./transactions/MemoSelect.vue";
@@ -79,11 +63,12 @@ import MemoSummaryTable from "./transactions/MemoSummaryTable.vue";
 import WeekSelect from "./transactions/WeekSelect.vue";
 import WeekSummaryTable from "./transactions/WeekSummaryTable.vue";
 import MonthSummaryTable from "./transactions/MonthSummaryTable.vue";
-import TransactionTypeToggle from "./transactions/TransactionTypeToggle.vue";
+import {VueQueryDevtools} from '@tanstack/vue-query-devtools'
 
 export default defineComponent({
   name: "BudgetVisualizer",
   components: {
+    VueQueryDevtools,
     MemoSummaryTable,
     MonthSummaryTable,
     WeekSummaryTable,
@@ -92,8 +77,6 @@ export default defineComponent({
     MonthSelect,
     WeekSelect,
     TransactionsTable,
-    TransactionUploader,
-    TransactionTypeToggle
   },
 
   setup() {
@@ -110,44 +93,47 @@ export default defineComponent({
 
     const data = dataRef.value
 
-    const updateSelectedMonth = (newMonth: string) => {
-      store.setSelectedMonth(newMonth);
-      refetch()
-    };
-
-    const updateSelectedMemo = (newMemo: string) => {
-      store.setSelectedMemo(newMemo);
+    const updateSelected = (setter: (value: string) => void) => (newValue: string) => {
+      setter(newValue);
       refetch();
     };
 
-    const updateSelectedWeek = (newWeek: string) => {
-      store.setSelectedWeek(newWeek);
-      refetch();
-    };
+
+    // const updateSelectedMonth = (newMonth: string) => {
+    //   store.setSelectedMonth(newMonth);
+    //   refetch()
+    // };
+    //
+    // const updateSelectedMemo = (newMemo: string) => {
+    //   store.setSelectedMemo(newMemo);
+    //   refetch();
+    // };
+    //
+    // const updateSelectedWeek = (newWeek: string) => {
+    //   store.setSelectedWeek(newWeek);
+    //   refetch();
+    // };
 
     function incrementOffset() {
       OFFSET.value += LIMIT;
       refetch();
     }
 
-    const columnKeys = computed(() => {
-      if (data?.value && data?.value.length > 0) {
-        console.log("Column keys: ", Object.keys(data?.value[0]))
-        return Object.keys(data?.value[0]).filter(key => key !== 'Check Number' && key !== 'Fees');
-      } else {
-        return [];
-      }
-    });
+    let columnKeys = [
+      'Transaction Number',
+      'Date',
+      'Description',
+      'Memo',
+      'Amount Debit',
+      'Amount Credit',
+      'Balance',
+      'Check Number',
+      'Fees'
+    ];
 
-    watch(() => store.selectedMemo, () => {
-      refetch();
-    });
+    columnKeys = columnKeys.filter(key => key !== 'Check Number' && key !== 'Fees');
 
-    watch(() => store.selectedMonth, () => {
-      refetch();
-    });
-
-    watch(() => store.selectedWeek, () => {
+    watch(() => [store.selectedMemo, store.selectedWeek, store.selectedMonth], () => {
       refetch();
     });
 
@@ -167,9 +153,6 @@ export default defineComponent({
       LIMIT,
       OFFSET,
       columnKeys,
-      updateSelectedMonth,
-      updateSelectedMemo,
-      updateSelectedWeek,
     };
   },
 });

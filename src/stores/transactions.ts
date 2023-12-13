@@ -95,8 +95,13 @@ export const useTransactionsStore = defineStore('transactions', {
         setSelectedType(selectedType: string) {
             this.selectedType = selectedType
         },
+        setDays(days: Array<DayYear>) {
+            this.days = days
+        },
+        setMemos(memos: Array<Memo>) {
+            this.memos = memos
+        },
         setMonths(months: Array<MonthYear>) {
-            console.log('setMonths called')
             this.months = months
         },
         setWeeks(weeks: Array<WeekYear>) {
@@ -139,6 +144,7 @@ export const useTransactionsStore = defineStore('transactions', {
             })
         },
         async fetchPrevSummaries() {
+            // TODO refactor dateType to account for year and day
             let dateType: 'month' | 'week' = 'month';
             let dateSummaries: Array<MonthYear | WeekYear> = [];
             let fetchOFSummary = fetchOFAmountDebit;

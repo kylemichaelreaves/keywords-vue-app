@@ -10,10 +10,6 @@ describe('MemoSelect', () => {
         global: {
             plugins: [ElSelect, ElOption, VueQueryPlugin, createTestingPinia()],
         },
-        props: {
-            selectedMemo: '',
-            'onUpdate:selectedMemo': (e: Event) => wrapper.setProps({selectedMemo: e})
-        }
     })
 
     test('should render', () => {
