@@ -1,15 +1,17 @@
 <template>
   <el-select
-    v-model="selectedDay"
-    placeholder="Select Day"
-    @change="updateSelectedDay"
-    :disabled="isFetching || isLoading || isError"
+      :model-value="selectedDay"
+      placeholder="select a day"
+      @change:selectedDay="updateSelectedDay"
+      :disabled="isFetching || isLoading || isError"
+      clearable
+      filterable
   >
     <el-option
-      v-for="item in dayOptions"
-      :key="item.value"
-      :label="item.label"
-      :value="item.value"
+        v-for="item in dayOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
     />
   </el-select>
 
@@ -21,15 +23,9 @@ import {useDays} from "@api/hooks/transactions/useDays";
 import {ElOption, ElSelect} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 
-defineComponent({
+export default defineComponent({
   name: "DaySelect",
   components: {ElSelect, ElOption},
-  props: {
-    selectedDay: {
-      type: String,
-      default: ''
-    }
-  },
   setup() {
 
     const store = useTransactionsStore()
