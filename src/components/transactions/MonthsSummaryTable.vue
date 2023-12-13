@@ -4,7 +4,7 @@
     <el-table
         v-if="data && data.length > 0"
         :data="data"
-        :key="selectedMonth.value"
+        :key="selectedMonth"
         border
         style="width: 100%"
         table-layout="auto"
@@ -27,10 +27,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, onMounted, watch} from 'vue'
+import {defineComponent, computed, onMounted, watch, type Ref, type ComputedRef} from 'vue'
 import {ElCard, ElTable, ElTableColumn} from "element-plus";
 import useSummaries from "@api/hooks/transactions/useSummaries";
 import {useTransactionsStore} from "@stores/transactions";
+import type {MonthSummary, Summaries, WeekSummary} from "@types";
 
 
 export default defineComponent({
@@ -40,13 +41,24 @@ export default defineComponent({
     ElTable,
     ElTableColumn
   },
-  setup() {
+  setup(): {
+    data: MonthSummary[],
+    isError: Ref<boolean>,
+    refetch: () => void,
+    isFetching: Ref<boolean>,
+    isLoading: Ref<boolean>,
+    error: unknown,
+    columns: { prop: string; label: string }[],
+    tableRowClassName: (params: { row: Summaries }) => string,
+    selectedMonth: ComputedRef<string>
+  } {
     // TODO add store.selectedMonth to this component — it should highlight the row of the selected month
 
     const store = useTransactionsStore()
     const selectedMonth = computed(() => store.getSelectedMonth)
 
-    const {data, isError, refetch, isFetching, isLoading, error} = useSummaries()
+    const {data: dataRef, isError, refetch, isFetching, isLoading, error} = useSummaries()
+    const data = dataRef.value
 
     // watch(() => selectedMonth, (newMonth, oldMonth) => {
     //   // if the newMonth and the oldMonth are the same, do nothing
@@ -55,7 +67,7 @@ export default defineComponent({
     //   console.log("Old Month: ", oldMonth, "New Month: ", newMonth); // Log the old and new values
     // })
 
-    const tableRowClassName = ({row}) => {
+    const tableRowClassName = ({row}: { row: Summaries }) => {
       let className = '';
       const isHighlighted = row.period === selectedMonth.value
       console.log("Is highlighted: ", isHighlighted);

@@ -5,14 +5,6 @@ import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
 import {useTransactionsStore} from "@stores/transactions";
 
-// Add this to the beginning of your test file or a test setup file
-global.requestAnimationFrame = (cb) => {
-    return setTimeout(cb, 0);
-};
-global.cancelAnimationFrame = (id) => {
-    clearTimeout(id);
-};
-
 
 describe('WeekSummaryTable', function () {
 
@@ -33,7 +25,7 @@ describe('WeekSummaryTable', function () {
                 },
                 plugins: [VueQueryPlugin, createTestingPinia()],
             },
-            });
+        });
 
         console.log('wrapper', wrapper.html());
 
@@ -59,7 +51,7 @@ describe('WeekSummaryTable', function () {
         const memo = wrapper.find('[data-testid="memo-week-summary"]');
         const weeklyAmountDebit = wrapper.find('[data-testid="weekly-amount-debit"]');
 
-        // TODO Figure out a way to mock the hooks so that the components which depend on them can be tested
+        // TODO mock the hooks so that the components which depend on them can be tested
         // expect(memo.text()).toBe("Example Memo");
         // expect(weeklyAmountDebit.text()).toBe("100");
 

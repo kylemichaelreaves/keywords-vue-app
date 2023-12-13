@@ -1,6 +1,6 @@
 import {fetchMonthSummary} from '@api/transactions/fetchMonthSummary';
 import {monthSummaryMock} from '@mocks/transaction';
-import {server} from '../../test-setup';
+import {server} from '@test/test-setup';
 import {rest} from 'msw';
 
 describe('fetchMonthSummary', () => {
@@ -14,7 +14,8 @@ describe('fetchMonthSummary', () => {
     test('fetchMonthSummary should throw an error if the request fails', async () => {
         server.use(
             rest.get('*/transactions/get-month-summary', (req, res, ctx) => {
-                return res(ctx.status(500));
+                return res(ctx.status(500),
+                    ctx.json({data: 'Internal Server Error'}));
             })
         );
 

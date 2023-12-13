@@ -1,6 +1,6 @@
 <template>
   <el-table
-      :row-key="row => row['Transaction Number']"
+      :row-key="(row: Transaction) => row.transactionNumber"
       v-if="reactiveTableData"
       :loading="isFetching"
       :isFetching="isFetching"
@@ -74,6 +74,7 @@ const transactionsTableProps = {
 } as const;
 
 export default defineComponent({
+  name: "TransactionsTable",
   methods: {formatDate},
   props: transactionsTableProps,
   setup(props) {

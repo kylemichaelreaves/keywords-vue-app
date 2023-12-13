@@ -1,4 +1,4 @@
-import type { ImportMeta } from 'vite-env'
+import type { ImportMeta } from '@types'
 const API_GATEWAY_URL: ImportMeta = import.meta.env.VITE_APIGATEWAY_URL
 const LAMBDA_DEV_URL: string = 'http://127.0.0.1:3001'
 const ALIASES: string[] = [

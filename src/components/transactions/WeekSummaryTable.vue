@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, watch} from 'vue'
+import {computed, defineComponent, type Ref, watch} from 'vue'
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 import useWeekSummary from "@api/hooks/transactions/useWeekSummary";
@@ -44,13 +44,22 @@ export default defineComponent({
     ElTableColumn,
     WeeklyAmountDebitTotal
   },
-  setup() {
-
+  setup(): {
+    weekSummaryData: WeekSummary[],
+    isError: Ref<boolean>,
+    refetch: () => void,
+    isFetching: Ref<boolean>,
+    isLoading: Ref<boolean>,
+    error: unknown,
+    columns: { prop: string; label: string }[]
+  } {
     const store = useTransactionsStore()
 
     const selectedWeek = computed(() => store.getSelectedWeek)
 
-    const {data: weekSummaryData, isError, refetch, isFetching, isLoading, error} = useWeekSummary()
+    const {data, isError, refetch, isFetching, isLoading, error} = useWeekSummary()
+    const weekSummaryData = data.value
+
     const weeks = computed(() => store.getWeeks)
 
     const isFirstWeek = computed(() => {

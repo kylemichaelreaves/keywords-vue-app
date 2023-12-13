@@ -1,5 +1,7 @@
 <template>
   <LineChart v-if="data && data.length > 0" :summaries="data"/>
+  <div v-if="isError">{{ error }}</div>
+  <div v-if="isLoading || isFetching">Loading...</div>
 </template>
 
 <script lang="ts">

@@ -2,8 +2,9 @@
   <el-card>
     <template #header>
     <el-row style="justify-content: space-around" align="middle">
+      <!--      TODO update to allow for any timeframe, don't hardcode only selectedMonth  -->
       <h3>MJ sum total for {{ timeframe }} {{ selectedMonth }}:</h3>
-      <el-statistic v-if="data" size="large" :value="data[0].total_debit" :key="data" data-testid="mj-amount-debit"/>
+      <el-statistic v-if="data" size="large" :value="data.total_debit" :key="data.total_debit" data-testid="mj-amount-debit"/>
     </el-row>
     </template>
       <MJPrevSummaries/>

@@ -2,9 +2,9 @@
   <el-select
       ref="selectComponent"
       :model-value="selectedMonth"
-      placeholder="select month"
-      @update:model-value="updateSelectedMonth($event)"
-      :disabled="!!selectedMonth"
+      placeholder="select a month"
+      @change:selectedMonth="updateSelectedMonth($event)"
+      :disabled="!!selectedWeek"
       clearable
       filterable
   >
@@ -28,16 +28,10 @@ import {useTransactionsStore} from "@stores/transactions";
 export default defineComponent({
   name: "MonthSelect",
   components: {ElSelect, ElOption},
-  props: {
-    selectedMonth: {
-      type: String,
-      default: ''
-    }
-  },
   setup() {
 
     const store = useTransactionsStore()
-    // fetch months that will populate the dropdown from the results of this hook
+    // fetch months that will populate the dropdown from the result of this hook
     const {data, isFetching, isLoading, isError, error} = useMonths()
     // make the data usable to the component
     const monthOptions = computed(() => {

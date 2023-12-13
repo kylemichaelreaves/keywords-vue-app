@@ -22,7 +22,7 @@ export const fetchTransactions = async (
     return await axios
         .get(`${fetchURL}/transactions/get-transactions`, {
             params: {
-                limit,
+                limit: limit ? limit : undefined,
                 offset,
                 date: dateObj ? dateObj.toISOString() : undefined,
                 timeFrame: timeFrame ? timeFrame : undefined,

@@ -13,7 +13,7 @@ export default function useMonthSummary() {
             },
         ]),
         isError: ref(false),
-        refetch: jest.fn(),
+        refetch: vi.fn(),
         isFetching: ref(false),
         isLoading: ref(false),
         error: ref(null),

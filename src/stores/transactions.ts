@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import type {Memo, MJSummary, MonthYear, OFSummary, Summaries, WeekYear} from "@types";
+import type {Memo, MJSummary, MonthYear, OFSummary, Summaries, WeekYear, DayYear} from "@types";
 import {fetchMonths} from "@api/transactions/fetchMonths";
 import {fetchWeeks} from "@api/transactions/fetchWeeks";
 import {fetchMemos} from "@api/transactions/fetchMemos";
@@ -8,14 +8,17 @@ import {fetchMJAmountDebit} from "@api/transactions/fetchMJAmountDebit";
 import {getDateNumberKey} from "@api/helpers/getDateNumberKey";
 import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
 import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
+import {fetchDays} from "@api/transactions/fetchDays";
 
 export const useTransactionsStore = defineStore('transactions', {
 
     state: (): {
+        selectedDay: string,
         selectedMonth: string,
         selectedMemo: string,
         selectedWeek: string,
         selectedType: string,
+        days: Array<DayYear>,
         weeks: Array<WeekYear>,
         months: Array<MonthYear>,
         memos: Array<Memo>,
@@ -24,10 +27,12 @@ export const useTransactionsStore = defineStore('transactions', {
         weekSummaries: Array<Summaries>,
         monthSummaries: Array<Summaries>,
     } => ({
+        selectedDay: '',
         selectedMonth: '',
         selectedMemo: '',
         selectedWeek: '',
         selectedType: 'Amount Debit',
+        days: [],
         weeks: [],
         months: [],
         memos: [],
@@ -37,6 +42,9 @@ export const useTransactionsStore = defineStore('transactions', {
         monthSummaries: [],
     }),
     getters: {
+        getSelectedDay: (state) => {
+            return state.selectedDay
+        },
         getSelectedMonth: (state) => {
             return state.selectedMonth
         },
@@ -72,6 +80,9 @@ export const useTransactionsStore = defineStore('transactions', {
         }
     },
     actions: {
+        setSelectedDay(selectedDay: string) {
+            this.selectedDay = selectedDay
+        },
         setSelectedMonth(selectedMonth: string) {
             this.selectedMonth = selectedMonth
         },
@@ -84,8 +95,13 @@ export const useTransactionsStore = defineStore('transactions', {
         setSelectedType(selectedType: string) {
             this.selectedType = selectedType
         },
+        setDays(days: Array<DayYear>) {
+            this.days = days
+        },
+        setMemos(memos: Array<Memo>) {
+            this.memos = memos
+        },
         setMonths(months: Array<MonthYear>) {
-            console.log('setMonths called')
             this.months = months
         },
         setWeeks(weeks: Array<WeekYear>) {
@@ -103,6 +119,14 @@ export const useTransactionsStore = defineStore('transactions', {
         setMonthSummaries(summaries: Array<Summaries>) {
             this.monthSummaries = summaries
         },
+        async fetchDaysData() {
+            await fetchDays().then((days) => {
+                this.days = days;
+            }).catch((err) => {
+                console.log('err:', err);
+                throw err;
+            })
+        },
         async fetchWeeksData() {
             await fetchWeeks().then((weeks) => {
                 this.weeks = weeks;
@@ -119,7 +143,8 @@ export const useTransactionsStore = defineStore('transactions', {
                 throw err;
             })
         },
-        fetchPrevSummaries: async function () {
+        async fetchPrevSummaries() {
+            // TODO refactor dateType to account for year and day
             let dateType: 'month' | 'week' = 'month';
             let dateSummaries: Array<MonthYear | WeekYear> = [];
             let fetchOFSummary = fetchOFAmountDebit;
@@ -162,6 +187,16 @@ export const useTransactionsStore = defineStore('transactions', {
                 console.log('err:', err);
                 throw err;
             })
-        }
+        },
+        async getTimeframe() {
+            if (this.selectedMonth) {
+                return 'month';
+            } else if (this.selectedWeek) {
+                return 'week';
+            } else {
+               return 'day';
+            }
+        },
     }
+
 })

@@ -1,6 +1,6 @@
 import {fetchWeekSummary} from "@api/transactions/fetchWeekSummary";
 import {weekSummaryMock} from "@mocks/transaction";
-import {server} from "../../test-setup";
+import {server} from "@test/test-setup";
 import {rest} from "msw";
 
 

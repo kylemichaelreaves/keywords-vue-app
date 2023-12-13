@@ -1,12 +1,13 @@
 import {useQuery} from '@tanstack/vue-query'
 import {fetchTransactions} from '@api/transactions/fetchTransactions'
 import type {Transaction} from "@types";
-import {computed, UnwrapRef} from "vue";
+import {computed} from "vue";
 import {useTransactionsStore} from "@stores/transactions";
 import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
 import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
 
-export default function useTransactions(LIMIT = 100, OFFSET?: UnwrapRef<number>) {
+// TODO refactor limit - limit should be the length of the records for that query
+export default function useTransactions(LIMIT = 100, OFFSET?: number) {
 
     const store = useTransactionsStore()
     const selectedMemo = computed(() => store.getSelectedMemo)
@@ -19,6 +20,7 @@ export default function useTransactions(LIMIT = 100, OFFSET?: UnwrapRef<number>)
         queryKey: queryKey.value,
         queryFn: () => {
             // Convert the date string to a Date object based on the dateType
+            // TODO - include a case for dateType === "year" && dateType === "day"
             let dateObj: Date | null | undefined;
             if (dateType.value === "week") {
                 dateObj = selectedWeek.value ? parseDateIWIYYY(selectedWeek.value) : null;

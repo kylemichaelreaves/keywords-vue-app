@@ -20,11 +20,12 @@
 
 <script lang="ts">
 import {defineComponent, ref} from "vue";
-import {UploadProps, UploadUserFile} from 'element-plus'
+import type {UploadProps, UploadUserFile} from 'element-plus'
 
 const API_GATEWAY_URL: string = import.meta.env.VITE_APIGATEWAY_URL + '/transactions/upload-csv';
 
-const TransactionUploader = defineComponent({
+export default defineComponent({
+  name: 'TransactionUploader',
   setup() {
 
     const fileList = ref<UploadUserFile[]>([])
@@ -70,8 +71,6 @@ const TransactionUploader = defineComponent({
     }
   }
 })
-
-export default TransactionUploader
 </script>
 
 <style scoped>
