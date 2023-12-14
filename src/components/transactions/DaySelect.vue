@@ -22,6 +22,7 @@ import {computed, defineComponent, onMounted} from 'vue'
 import {useDays} from "@api/hooks/transactions/useDays";
 import {ElOption, ElSelect} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
+import type {DayYear} from "@types";
 
 export default defineComponent({
   name: "DaySelect",
@@ -36,9 +37,9 @@ export default defineComponent({
       if (!data.value) {
         return []
       }
-      return data.value.map((item: Day) => ({
-        value: item.day,
-        label: item.day,
+      return data.value.map((item: DayYear) => ({
+        value: item.day_year,
+        label: item.day_year,
       }));
     });
 
