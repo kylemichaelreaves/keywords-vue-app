@@ -1,14 +1,14 @@
 import {defineStore} from 'pinia'
 import type {Memo, MJSummary, MonthYear, OFSummary, Summaries, WeekYear, DayYear} from "@types";
-import {fetchMonths} from "@api/transactions/fetchMonths";
+import {fetchDays} from "@api/transactions/fetchDays";
 import {fetchWeeks} from "@api/transactions/fetchWeeks";
+import {fetchMonths} from "@api/transactions/fetchMonths";
 import {fetchMemos} from "@api/transactions/fetchMemos";
 import {fetchOFAmountDebit} from "@api/transactions/fetchOFAmountDebit";
 import {fetchMJAmountDebit} from "@api/transactions/fetchMJAmountDebit";
 import {getDateNumberKey} from "@api/helpers/getDateNumberKey";
 import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
 import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
-import {fetchDays} from "@api/transactions/fetchDays";
 
 export const useTransactionsStore = defineStore('transactions', {
 
@@ -26,6 +26,10 @@ export const useTransactionsStore = defineStore('transactions', {
         MJSummaries: Array<MJSummary>,
         weekSummaries: Array<Summaries>,
         monthSummaries: Array<Summaries>,
+        currentPage: number,
+        pageSize: number,
+        filter: Record<string, string>,
+        sort: { prop: string, order: string },
     } => ({
         selectedDay: '',
         selectedMonth: '',
@@ -40,6 +44,10 @@ export const useTransactionsStore = defineStore('transactions', {
         MJSummaries: [],
         weekSummaries: [],
         monthSummaries: [],
+        currentPage: 1,
+        pageSize: 100,
+        filter: {},
+        sort: {prop: '', order: ''},
     }),
     getters: {
         getSelectedDay: (state) => {
@@ -77,7 +85,19 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         getMonthSummaries: (state) => {
             return state.monthSummaries
-        }
+        },
+        getCurrentPage: (state) => {
+            return state.currentPage
+        },
+        getPageSize: (state) => {
+            return state.pageSize
+        },
+        getFilter: (state) => {
+            return state.filter
+        },
+        getSort: (state) => {
+            return state.sort
+        },
     },
     actions: {
         setSelectedDay(selectedDay: string) {
@@ -194,8 +214,20 @@ export const useTransactionsStore = defineStore('transactions', {
             } else if (this.selectedWeek) {
                 return 'week';
             } else {
-               return 'day';
+                return 'day';
             }
+        },
+        updateCurrentPage(currentPage: number) {
+            this.currentPage = currentPage;
+        },
+        updatePageSize(pageSize: number) {
+            this.pageSize = pageSize;
+        },
+        updateFilter(filter: Record<string, string>) {
+            this.filter = filter;
+        },
+        updateSort(sort: { prop: string, order: string }) {
+            this.sort = sort;
         },
     }
 

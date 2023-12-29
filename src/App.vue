@@ -1,6 +1,8 @@
 <template>
-  <Navbar/>
-  <router-view :key="route.path"/>
+  <div id="app">
+    <Navbar/>
+    <router-view :key="route.path"/>
+  </div>
 </template>
 
 <script lang="ts">
@@ -22,7 +24,12 @@ export default defineComponent({
 </script>
 
 
+
 <style scoped>
+#app {
+  width: 100vw;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

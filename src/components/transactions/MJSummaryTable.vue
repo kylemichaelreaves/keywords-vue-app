@@ -1,13 +1,14 @@
 <template>
   <el-card>
     <template #header>
-    <el-row style="justify-content: space-around" align="middle">
-      <!--      TODO update to allow for any timeframe, don't hardcode only selectedMonth  -->
-      <h3>MJ sum total for {{ timeframe }} {{ selectedMonth }}:</h3>
-      <el-statistic v-if="data" size="large" :value="data.total_debit" :key="data.total_debit" data-testid="mj-amount-debit"/>
-    </el-row>
+      <el-row style="justify-content: space-around" align="middle">
+        <!--      TODO update to allow for any timeframe, don't hardcode only selectedMonth  -->
+        <h3>MJ sum total for {{ timeframe }} {{ selectedMonth }}:</h3>
+        <el-statistic v-if="data" size="large" :value="data.total_debit" :key="data.total_debit"
+                      data-testid="mj-amount-debit"/>
+      </el-row>
     </template>
-      <MJPrevSummaries/>
+    <MJPrevSummaries/>
   </el-card>
 </template>
 
@@ -28,16 +29,7 @@ export default defineComponent({
 
     const selectedWeek = computed(() => store.getSelectedWeek);
     const selectedMonth = computed(() => store.getSelectedMonth);
-
-    const timeframe = computed(() => {
-      if (store.selectedMonth) {
-        return 'month';
-      } else if (store.selectedWeek) {
-        return 'week';
-      } else {
-        return 'day';
-      }
-    });
+    const timeframe = computed(() => store.getTimeframe);
 
     const columns = computed(() => {
       return [
@@ -47,11 +39,7 @@ export default defineComponent({
       ];
     });
 
-    watch(() => store.selectedMonth, () => {
-      refetch();
-    });
-
-    watch(() => store.selectedWeek, () => {
+    watch(() => [store.selectedMonth, store.selectedWeek], () => {
       refetch();
     });
 

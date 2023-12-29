@@ -78,7 +78,6 @@ export default defineComponent({
     WeekSelect,
     TransactionsTable,
   },
-
   setup() {
     const store = useTransactionsStore();
     const LIMIT = 100;
@@ -92,27 +91,6 @@ export default defineComponent({
     } = useTransactions(LIMIT, OFFSET.value);
 
     const data = dataRef.value
-
-    const updateSelected = (setter: (value: string) => void) => (newValue: string) => {
-      setter(newValue);
-      refetch();
-    };
-
-
-    // const updateSelectedMonth = (newMonth: string) => {
-    //   store.setSelectedMonth(newMonth);
-    //   refetch()
-    // };
-    //
-    // const updateSelectedMemo = (newMemo: string) => {
-    //   store.setSelectedMemo(newMemo);
-    //   refetch();
-    // };
-    //
-    // const updateSelectedWeek = (newWeek: string) => {
-    //   store.setSelectedWeek(newWeek);
-    //   refetch();
-    // };
 
     function incrementOffset() {
       OFFSET.value += LIMIT;
@@ -159,6 +137,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
+
+
+
 .dark {
   background-color: #383838;
   color: #ecf0f1;

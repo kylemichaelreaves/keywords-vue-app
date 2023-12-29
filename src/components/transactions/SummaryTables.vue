@@ -40,11 +40,7 @@ export default defineComponent({
     const months = computed(() => store.getMonths)
 
     onMounted(() => {
-      store.getMonths()
-    })
-
-    watch(selectedMonth, () => {
-      store.fetchWeeks()
+      store.getMonths
     })
 
     return {

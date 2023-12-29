@@ -12,5 +12,5 @@ export function getWeekStartAndEnd(date: Date) {
     const weekStart = `${dayNames[startOfWeek.getDay()]} ${monthNames[startOfWeek.getMonth()]} ${startOfWeek.getDate()}`;
     const weekEnd = `${dayNames[endOfWeek.getDay()]} ${monthNames[endOfWeek.getMonth()]} ${endOfWeek.getDate()}`;
 
-    return { weekStart, weekEnd };
+    return {weekStart, weekEnd};
 }

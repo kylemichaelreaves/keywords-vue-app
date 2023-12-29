@@ -1,104 +1,90 @@
-import filterDataByMemo from "@api/helpers/filterDataByMemo";
 import type {Transaction} from "@types";
+import filterDataByMemo from "@api/helpers/filterDataByMemo";
 
-// export default function filterDataByMemo(data: Transaction[], selectedMemo: string): Transaction[] {
-//     if (selectedMemo) {
-//         return data.filter((d: Transaction) => d.memo === selectedMemo);
-//     } else {
-//         return data;
-//     }
-// }
+
 describe('filterDataByMemo', () => {
     test('filterDataByMemo should return the correct data', () => {
-        const data = [
+        const data: Transaction[] = [
             {
-                transactionNumber: 1,
+                transactionNumber: '1',
                 date: '2021-05-15',
-                amountCredit: 100,
+                description: 'Test Description 1',
                 memo: 'Test Memo 1',
-                category: 'Test Category 1',
-                type: 'Test Type 1',
+                amountDebit: '100',
+                amountCredit: '100',
             },
             {
-                transactionNumber: 2,
+                transactionNumber: '2',
                 date: '2021-05-15',
-                amountCredit: 200,
+                description: 'Test Description 2',
                 memo: 'Test Memo 2',
-                category: 'Test Category 2',
-                type: 'Test Type 2',
+                amountDebit: '200',
             },
             {
-                transactionNumber: 3,
+                transactionNumber: '3',
                 date: '2021-05-15',
-                amountCredit: 300,
+                description: 'Test Description 3',
                 memo: 'Test Memo 1',
-                category: 'Test Category 1',
-                type: 'Test Type 1',
+                amountDebit: '300',
             },
-        ] as Transaction[];
+        ];
         const selectedMemo = 'Test Memo 1';
-
         const result = filterDataByMemo(data, selectedMemo);
         expect(result).toEqual([
             {
-                transactionNumber: 1,
+                transactionNumber: '1',
                 date: '2021-05-15',
-                amountCredit: 100,
+                description: 'Test Description 1',
                 memo: 'Test Memo 1',
-                category: 'Test Category 1',
-                type: 'Test Type 1',
+                amountDebit: '100',
+                amountCredit: '100',
             },
             {
-                transactionNumber: 3,
+                transactionNumber: '3',
                 date: '2021-05-15',
-                amountCredit: 300,
+                description: 'Test Description 3',
                 memo: 'Test Memo 1',
-                category: 'Test Category 1',
-                type: 'Test Type 1',
+                amountDebit: '300',
             },
         ]);
     });
 
     test('filterDataByMemo should return all data if no memo is selected', () => {
-        const data = [
+        const data: Transaction[] = [
             {
-                transactionNumber: 1,
+                transactionNumber: '1',
                 date: '2021-05-15',
-                amountCredit: 100,
+                description: 'Test Description 1',
                 memo: 'Test Memo 1',
-                category: 'Test Category 1',
-                type: 'Test Type 1',
+                amountDebit: '100',
+                amountCredit: '100',
             },
             {
-                transactionNumber: 2,
+                transactionNumber: '2',
                 date: '2021-05-15',
-                amountCredit: 200,
+                description: 'Test Description 2',
                 memo: 'Test Memo 2',
-                category: 'Test Category 2',
-                type: 'Test Type 2',
+                amountDebit: '200',
             },
             {
-                transactionNumber: 3,
+                transactionNumber: '3',
                 date: '2021-05-15',
-                amountCredit: 300,
+                description: 'Test Description 3',
                 memo: 'Test Memo 1',
-                category: 'Test Category 1',
-                type: 'Test Type 1',
+                amountDebit: '300',
             },
-        ] as Transaction[];
+        ];
         const selectedMemo = 'Test Memo 2';
 
         const result = filterDataByMemo(data, selectedMemo);
         expect(result).toEqual([
             {
-                transactionNumber: 2,
+                transactionNumber: '2',
                 date: '2021-05-15',
-                amountCredit: 200,
+                description: 'Test Description 2',
                 memo: 'Test Memo 2',
-                category: 'Test Category 2',
-                type: 'Test Type 2',
+                amountDebit: '200',
             },
         ]);
     });
-
-})
+});

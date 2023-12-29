@@ -21,7 +21,7 @@ describe('MemoSelect', () => {
     })
 
     test('clearable should be true', async () => {
-        const selectComponent = wrapper.vm.$refs.selectComponent as InstanceType<typeof ElSelect>;
-        expect(selectComponent.clearable).toBe(true);
+        const select = wrapper.findComponent({name: 'ElSelect'})
+        expect(select.vm.clearable).toBe(true)
     })
 });
