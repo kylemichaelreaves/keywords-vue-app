@@ -2,9 +2,11 @@
   <SelectComponent
       :options="dayOptions"
       :selectedValue="selectedDay"
-      placeholder="select a month"
+      placeholder="select a day"
       :disabled="!!selectedWeek"
       :onChange="updateSelectedDay"
+      :loading="isLoading || isFetching"
+      loading-text="…loading days…"
   />
 </template>
 
