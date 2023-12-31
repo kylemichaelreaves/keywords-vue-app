@@ -1,33 +1,23 @@
 <template>
-  <el-select
-      ref="selectComponent"
-      :model-value="selectedMonth"
+  <SelectComponent
+      :options="monthOptions"
+      :selectedValue="selectedMonth"
       placeholder="select a month"
-      @change:selectedMonth="updateSelectedMonth($event)"
       :disabled="!!selectedWeek"
-      clearable
-      filterable
-  >
-    <el-option
-        v-for="option in monthOptions"
-        :key="option.value"
-        :label="option.label"
-        :value="option.value"
-        data-testid="month-option"
-    />
-  </el-select>
+      :onChange="updateSelectedMonth"
+  />
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, onMounted} from 'vue'
 import {useMonths} from "@api/hooks/transactions/useMonths";
-import {ElOption, ElSelect} from "element-plus";
 import type {MonthYear} from "@types";
 import {useTransactionsStore} from "@stores/transactions";
+import SelectComponent from "@components/shared/SelectComponent.vue";
 
 export default defineComponent({
   name: "MonthSelect",
-  components: {ElSelect, ElOption},
+  components: {SelectComponent},
   setup() {
 
     const store = useTransactionsStore()

@@ -1,75 +1,62 @@
 <template>
-    <el-select
-            ref="selectComponent"
-            :model-value="selectedMemo"
-            placeholder="select Memo"
-            @change:selectedMemo="updateSelectedMemo($event)"
-            clearable
-            filterable
-    >
-        <el-option
-                v-for="option in memoOptions"
-                :key="option.value"
-                :label="option.label"
-                :value="option.value"
-        />
-    </el-select>
+  <SelectComponent
+      :on-change="updateSelectedMemo"
+      placeholder="select a memo"
+      :selected-value="selectedMemo"
+      :options="memoOptions"
+  />
 </template>
 
 <script lang='ts'>
-import {computed, defineComponent, onMounted, watch} from 'vue'
+import {computed, defineComponent, onMounted} from 'vue'
 import useMemos from "@api/hooks/transactions/useMemos";
 import {ElOption, ElSelect} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
+import type {Memo} from "@types";
+import SelectComponent from "@components/shared/SelectComponent.vue";
 
 export default defineComponent({
-    name: "MemoSelect",
-    components: {ElOption, ElSelect},
-    setup() {
+  name: "MemoSelect",
+  components: {SelectComponent, ElOption, ElSelect},
+  setup() {
 
-        const transactionsStore = useTransactionsStore()
+    const transactionsStore = useTransactionsStore()
 
-        const selectedMemo = computed(() => transactionsStore.getSelectedMemo);
+    const selectedMemo = computed(() => transactionsStore.getSelectedMemo);
 
-        const selectedMonth = computed(() => transactionsStore.getSelectedMonth);
+    const {data, isLoading, isFetching, isError, error, refetch} = useMemos()
 
-        const {data, isLoading, isFetching, isError, error, refetch} = useMemos()
+    const memoOptions = computed(() => {
+      if (!data.value) {
+        return []
+      }
+      return data.value.map((item: Memo) => ({
+        value: item.Memo,
+        label: item.Memo,
+      }));
+    });
 
-        const memoOptions = computed(() => {
-            if (!data.value) {
-                return []
-            }
-            return data.value.map(item => ({
-                value: item.Memo,
-                label: item.Memo,
-            }));
-        });
-
-        const updateSelectedMemo = (memo: string) => {
-            transactionsStore.setSelectedMemo(memo)
-        }
-
-        watch(selectedMonth, (newMonth) => {
-            refetch()
-        })
-
-        onMounted(() => {
-            if (data.value) {
-                transactionsStore.setMemos(data.value)
-            }
-        })
-
-        return {
-            data,
-            memoOptions,
-            isLoading,
-            isFetching,
-            isError,
-            error,
-            selectedMemo,
-          updateSelectedMemo,
-        }
+    const updateSelectedMemo = (memo: string) => {
+      transactionsStore.setSelectedMemo(memo)
     }
+
+    onMounted(() => {
+      if (data.value) {
+        transactionsStore.setMemos(data.value)
+      }
+    })
+
+    return {
+      data,
+      memoOptions,
+      isLoading,
+      isFetching,
+      isError,
+      error,
+      selectedMemo,
+      updateSelectedMemo,
+    }
+  }
 })
 </script>
 

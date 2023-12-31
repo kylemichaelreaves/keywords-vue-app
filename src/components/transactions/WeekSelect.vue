@@ -1,38 +1,29 @@
 <template>
-  <el-select
-      ref="selectComponent"
-      :model-value="selectedWeek"
+  <SelectComponent
+      :options="weekOptions"
+      :selectedValue="selectedWeek"
       placeholder="select a week"
+      :onChange="updateSelectedWeek"
       :disabled="!!selectedMonth"
-      @change:selectedWeek="updateSelectedWeek($event)"
-      clearable
-      filterable
-  >
-    <el-option
-        v-for="option in weekOptions"
-        :key="option.value"
-        :label="option.label"
-        :value="option.value"
-    />
-  </el-select>
+  />
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onMounted} from "vue";
+import {computed, defineComponent, onMounted, watch} from "vue";
 import {useWeeks} from "@api/hooks/transactions/useWeeks"
-import {ElOption, ElSelect} from "element-plus"
 import {useTransactionsStore} from "@stores/transactions";
+import SelectComponent from "@components/shared/SelectComponent.vue";
 
 export default defineComponent({
   name: 'WeekSelect',
-  components: {ElOption, ElSelect},
+  components: {SelectComponent},
   setup() {
     const store = useTransactionsStore();
 
     const selectedWeek = computed(() => store.getSelectedWeek);
     const selectedMonth = computed(() => store.getSelectedMonth)
 
-    const {data, isLoading, isFetching, isError, error} = useWeeks();
+    const {data, isLoading, isFetching, isError, error, refetch} = useWeeks();
 
     const weekOptions = computed(() => {
       if (!data.value) {
@@ -54,6 +45,14 @@ export default defineComponent({
       }
     })
 
+    // if there's a selectedMonth, the options should be repopulated with the weeks of that month
+    watch(selectedMonth, (newVal, oldVal) => {
+      if (newVal) {
+        store.setSelectedWeek('')
+        refetch()
+      }
+    })
+
     return {
       data,
       selectedWeek,
@@ -67,7 +66,6 @@ export default defineComponent({
     }
   }
 })
-
 </script>
 
 

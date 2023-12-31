@@ -5,9 +5,21 @@
       <div class="card-header">
         <h3>Month Summary: {{ selectedMonth }}</h3>
         <el-button-group>
-          <el-button type="primary" :icon="ArrowLeft.value" @click="goToPreviousMonth" :disabled="isLastMonth">Previous Month
+          <el-button
+              type="primary"
+              :icon="ArrowLeft.value"
+              @click="goToPreviousMonth"
+              :disabled="isLastMonth"
+          >
+            Previous Month
           </el-button>
-          <el-button type="primary" :icon="ArrowRight.value" @click="goToNextMonth" :disabled="isFirstMonth">Next Month
+          <el-button
+              type="primary"
+              :icon="ArrowRight.value"
+              @click="goToNextMonth"
+              :disabled="isFirstMonth"
+          >
+            Next Month
           </el-button>
         </el-button-group>
       </div>
@@ -72,7 +84,9 @@ export default defineComponent({
     NavigationButtonGroup,
     MonthsSummaryTable
   },
-  async setup() {
+  async setup(
+
+  ) {
     const store = useTransactionsStore()
     const selectedMonth = computed(() => store.getSelectedMonth)
     const months = computed(() => store.getMonths)

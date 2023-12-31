@@ -2,18 +2,22 @@ import {useQuery} from '@tanstack/vue-query';
 import {fetchSummaries} from "@api/transactions/fetchSummaries";
 import {useTransactionsStore} from "@stores/transactions";
 import type {Summaries} from "@types";
+import type {UseQueryReturnType} from "@tanstack/vue-query";
 import {computed} from "vue";
 
-export default function useSummaries() {
+export default function useSummaries(): UseQueryReturnType<Summaries[], Error> {
     const store = useTransactionsStore();
-    const selectedMonth = computed(() => store.getSelectedMonth);
+    const selectedDay = computed(() => store.getSelectedDay);
     const selectedWeek = computed(() => store.getSelectedWeek);
+    const selectedMonth = computed(() => store.getSelectedMonth);
 
     return useQuery<Array<Summaries>>(
         {
             queryKey: ['summaries'],
             queryFn: () => {
-                if (selectedWeek.value && selectedWeek.value !== '') {
+                if (selectedDay.value && selectedDay.value !== '') {
+                    return fetchSummaries("day");
+                } else if (selectedWeek.value && selectedWeek.value !== '') {
                     return fetchSummaries("week");
                 } else if (selectedMonth.value && selectedMonth.value !== '') {
                     return fetchSummaries("month");
@@ -21,8 +25,7 @@ export default function useSummaries() {
                     return Promise.reject(new Error("Neither week nor month is selected"));
                 }
             },
-            keepPreviousData: true,
             refetchOnWindowFocus: false,
-            enabled: !!selectedMonth.value || !!selectedWeek.value
+            enabled: !!selectedMonth.value || !!selectedWeek.value || !!selectedDay.value
         });
 }

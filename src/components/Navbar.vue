@@ -61,4 +61,16 @@ export default defineComponent(
 </script>
 
 <style scoped>
+  .custom-tabs-label {
+    display: flex;
+    align-items: center;
+  }
+
+  .custom-tabs-label el-icon {
+    margin-right: 0.5em;
+  }
+
+  .custom-tabs-label span {
+    font-size: 1.2em;
+  }
 </style>

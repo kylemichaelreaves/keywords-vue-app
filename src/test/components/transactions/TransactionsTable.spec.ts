@@ -1,24 +1,58 @@
 import TransactionsTable from "@components/transactions/TransactionsTable.vue";
-import {mount} from "@vue/test-utils";
+import {mount, VueWrapper} from "@vue/test-utils";
 import {test} from "vitest";
-import {transactionsMock} from "../../../mocks/transaction";
+import {transactionsMock} from "@mocks/transaction";
 import {ElTable, ElTableColumn} from "element-plus";
 import {mockRouter} from "@test/router.mock";
+import {createTestingPinia} from "@pinia/testing";
+import type {TestingPinia} from "@pinia/testing";
+import {useTransactionsStore} from "@stores/transactions";
 
 describe.skip("TransactionsTable", async () => {
-    test("renders the correct number of columns", async () => {
-        const linkedColumns = ["transactionNumber", "memo"];
+    let store: TestingPinia;
+    let transactionsStore: ReturnType<typeof useTransactionsStore>;
+    let wrapper: VueWrapper;
 
-        const wrapper = mount(TransactionsTable, {
+    beforeEach(async () => {
+        store = createTestingPinia();
+        transactionsStore = useTransactionsStore(store);
+        wrapper = mount(TransactionsTable, {
             props: {
                 displayData: {rows: transactionsMock},
-                linkedColumns: linkedColumns,
+                linkedColumns: [],
                 isFetching: false,
             },
             global: {
-                plugins: [mockRouter, ElTable, ElTableColumn],
+                plugins: [mockRouter, ElTable, ElTableColumn, createTestingPinia(
+                    {
+                        initialState: {
+                            transactions: {
+                                selectedMonth: '',
+                                selectedWeek: '',
+                                selectedDay: '',
+                                selectedMemo: '',
+                            }
+                        },
+                        stubActions: false,
+                    }
+                )],
             },
         });
+    });
+
+    afterEach(() => {
+        vi.resetAllMocks()
+
+        //     reset the store
+        transactionsStore.selectedMonth = '';
+        transactionsStore.selectedWeek = '';
+        transactionsStore.weeks = [];
+    });
+
+    test("renders the correct number of columns", async () => {
+        const linkedColumns = ["transactionNumber", "memo"];
+
+        await wrapper.setProps({linkedColumns: linkedColumns})
 
         await wrapper.vm.$nextTick();
 
@@ -33,17 +67,6 @@ describe.skip("TransactionsTable", async () => {
                 // Add other rows as needed
             ],
         };
-
-        const wrapper = mount(TransactionsTable, {
-            props: {
-                displayData: {rows: transactionsMock},
-                linkedColumns: ["transactionNumber"],
-                isFetching: false,
-            },
-            global: {
-                plugins: [mockRouter, ElTable, ElTableColumn],
-            },
-        });
 
         await wrapper.vm.$nextTick();
 

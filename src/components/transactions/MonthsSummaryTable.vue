@@ -42,7 +42,7 @@ export default defineComponent({
     ElTableColumn
   },
   setup(): {
-    data: MonthSummary[],
+    data: Summaries[],
     isError: Ref<boolean>,
     refetch: () => void,
     isFetching: Ref<boolean>,

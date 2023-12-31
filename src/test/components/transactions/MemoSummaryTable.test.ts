@@ -4,22 +4,40 @@ import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
 import {useTransactionsStore} from "@stores/transactions";
-import {server} from "@test/test-setup";
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
-// Add this to the beginning of your test file or a test setup file
-global.requestAnimationFrame = (cb) => {
-    return setTimeout(cb, 0);
-};
-global.cancelAnimationFrame = (id) => {
-    clearTimeout(id);
-};
-
 
 describe('MemoSummaryTable.vue', () => {
+    const wrapper = mount(MemoSummaryTable, {
+        global: {
+            components: {
+                ElTable,
+                ElStatistic,
+                ElTableColumn,
+                ElCard,
+            },
+            plugins: [VueQueryPlugin, createTestingPinia(
+                {
+                    initialState: {
+                        transactions: {
+                            selectedMonth: '',
+                            selectedWeek: '',
+                            selectedDay: '',
+                            selectedMemo: '',
+                        }
+                    },
+                    stubActions: false,
+                }
+            )],
+        },
+        provide: {
+            memoTableData:
+                [{
+                    transactions_count: 'Memo: Test 1',
+                    sum_amount_debit: -300,
+                }],
+        }
+    });
+
+
     afterEach(() => {
         vi.clearAllMocks()
         vi.clearAllTimers()
@@ -28,24 +46,6 @@ describe('MemoSummaryTable.vue', () => {
 
     test.skip('renders the MemoSummaryTable with the correct fields', async () => {
 
-        const wrapper = mount(MemoSummaryTable, {
-            global: {
-                components: {
-                    ElTable,
-                    ElStatistic,
-                    ElTableColumn,
-                    ElCard,
-                },
-                plugins: [VueQueryPlugin, createTestingPinia()],
-            },
-            provide: {
-                memoTableData:
-                    [{
-                        transactions_count: 'Memo: Test 1',
-                        sum_amount_debit: -300,
-                    }],
-            }
-        });
 
         const store = useTransactionsStore();
 

@@ -6,12 +6,26 @@ import {VueQueryPlugin} from "@tanstack/vue-query";
 import {mount} from "@vue/test-utils";
 import {createTestingPinia} from '@pinia/testing'
 import {useTransactionsStore} from "@stores/transactions";
+import {monthsMock} from "@mocks/transaction";
 
 describe('MonthsSelect', () => {
-
     const wrapper = mount(MonthSelect, {
+        props: {
+            options: monthsMock,
+            selectedValue: '11/2022',
+            placeholder: 'Select a month',
+            onChange: vi.fn()
+        },
         global: {
-            plugins: [ElSelect, ElOption, VueQueryPlugin, createTestingPinia()],
+            plugins: [VueQueryPlugin, createTestingPinia(
+                {
+                    initialState: {
+                        transactions: {
+                            selectedMonth: '11/2022',
+                        }
+                    }
+                }
+            )],
         }
     })
 
@@ -20,12 +34,6 @@ describe('MonthsSelect', () => {
     })
 
     test.skip('should render the component and its options', async () => {
-        render(MonthSelect, {
-            global: {
-                plugins: [ElSelect, VueQueryPlugin],
-            }
-        })
-
         await waitFor(() => {
             expect(screen.getByPlaceholderText('select month')).toBeInTheDocument()
             expect(screen.getByText('11/2022')).toBeInTheDocument()
@@ -35,8 +43,8 @@ describe('MonthsSelect', () => {
     })
 
     test('clearable should be true', async () => {
-        // @ts-ignore
-        expect(wrapper.vm.$refs.selectComponent.clearable).toBe(true)
+        const select = wrapper.findComponent({name: 'ElSelect'})
+        expect(select.vm.clearable).toBe(true)
     })
 
 
