@@ -39,6 +39,11 @@ interface MonthSummary {
     monthly_amount_debit: number;
 }
 
+interface DaySummary {
+    memo: string;
+    daily_amount_debit: number;
+}
+
 
 interface AddressResponse {
     osm_type: string;
@@ -130,6 +135,7 @@ export type {
     AddressFields,
     AddressResponse,
     DayYear,
+    DaySummary,
     Transaction,
     TransactionData,
     TransactionsList,
