@@ -6,7 +6,7 @@
           <el-icon style="vertical-align: middle">
             <component :is="routeIcon(route).value"/>
           </el-icon>
-          <span>{{ " " + route.name }}</span>
+          <span>{{ " " + String(route.name) }}</span>
         </span>
       </template>
     </el-tab-pane>

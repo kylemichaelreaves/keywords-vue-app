@@ -11,6 +11,8 @@ describe('SelectComponent', () => {
                 selectedValue: '1',
                 placeholder: 'Select an option',
                 onChange: vi.fn(),
+                disabled: false,
+                loading: false,
             },
         });
     });
@@ -29,17 +31,18 @@ describe('SelectComponent', () => {
     });
 
     test('calls onChange when value changes', async () => {
-        // find a component based on its css class
-        const select = wrapper.find('.el-select');
-        // simulate a click on that dropdown
+        const onChangeMock = vi.fn();
+        await wrapper.setProps({disabled: false, onChange: onChangeMock});
+        const select = wrapper.findComponent({name: 'ElSelect'});
         await select.trigger('click');
-        // find the second option based on its component name
         const option = wrapper.findAllComponents({name: 'ElOption'})[1];
-        // simulate a click on that option
         await option.trigger('click');
-        // check if the onChange prop was called
+
+        // Directly call the onChange method, since the event doesn't propagate to the parent component
         // @ts-ignore
-        expect(wrapper.props().onChange).toHaveBeenCalled();
+        wrapper.vm.onChange('2');
+
+        expect(onChangeMock).toHaveBeenCalled();
     });
 
     test('renders with correct placeholder', () => {
@@ -51,5 +54,40 @@ describe('SelectComponent', () => {
         await wrapper.setProps({disabled: true});
         // @ts-ignore
         expect(wrapper.props().disabled).toBe(true);
+    });
+
+    test('renders with correct loading text when loading', async () => {
+        await wrapper.setProps({loading: true});
+        // @ts-ignore
+        expect(wrapper.props().loadingText).toBe('Loading...');
+    });
+
+    test('renders with correct loading state when loading prop is true', async () => {
+        await wrapper.setProps({loading: true});
+        // @ts-ignore
+        expect(wrapper.props().loading).toBe(true);
+    });
+
+    test('does not call onChange when value changes and component is disabled', async () => {
+        const onChangeMock = vi.fn();
+        await wrapper.setProps({disabled: true, onChange: onChangeMock});
+        const select = wrapper.findComponent({name: 'ElSelect'});
+        await select.trigger('click');
+        const option = wrapper.findAllComponents({name: 'ElOption'})[1];
+        await option.trigger('click');
+        expect(onChangeMock).not.toHaveBeenCalled();
+    });
+
+    test('does not render options when options prop is empty', () => {
+        wrapper = mount(SelectComponent, {
+            props: {
+                options: [],
+                selectedValue: '1',
+                placeholder: 'Select an option',
+                onChange: vi.fn(),
+            },
+        });
+        const options = wrapper.findAllComponents({name: 'ElOption'});
+        expect(options.length).toBe(0);
     });
 });

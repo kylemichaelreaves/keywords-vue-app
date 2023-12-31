@@ -27,11 +27,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, onMounted, watch, type Ref, type ComputedRef} from 'vue'
+import {defineComponent, computed, type Ref, type ComputedRef} from 'vue'
 import {ElCard, ElTable, ElTableColumn} from "element-plus";
 import useSummaries from "@api/hooks/transactions/useSummaries";
 import {useTransactionsStore} from "@stores/transactions";
-import type {MonthSummary, Summaries, WeekSummary} from "@types";
+import type {Summaries} from "@types";
 
 
 export default defineComponent({
@@ -42,7 +42,7 @@ export default defineComponent({
     ElTableColumn
   },
   setup(): {
-    data: Summaries[],
+    data: Summaries[] | undefined,
     isError: Ref<boolean>,
     refetch: () => void,
     isFetching: Ref<boolean>,

@@ -10,6 +10,7 @@
     </template>
 
     <el-row style="justify-content: space-between">
+      <!--      TODO add DaySummaryTable component-->
       <Suspense>
         <MemoSummaryTable v-if="selectedMemo"/>
       </Suspense>

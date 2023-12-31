@@ -2,10 +2,12 @@
   <el-select
       :model-value="selectedValue"
       :placeholder="placeholder"
-      @update:model-value="onChange"
+      @change:model-value="onChange"
       :disabled="disabled"
       clearable
       filterable
+      :loading="loading"
+      :loading-text="loadingText"
   >
     <el-option
         v-for="option in options"
@@ -19,7 +21,7 @@
 
 <script lang="ts">
 import {ElOption, ElSelect} from "element-plus";
-import {defineComponent} from "vue";
+import {defineComponent, type PropType} from "vue";
 
 export default defineComponent({
   name: "SelectComponent",
@@ -42,9 +44,19 @@ export default defineComponent({
       default: false
     },
     onChange: {
-      type: Function,
+      type: Function as PropType<(selectedValue: string) => void>,
       required: true
-    }
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+    loadingText: {
+      type: String,
+      default: 'Loading...',
+      required: false,
+},
   },
   setup() {
     return {}
