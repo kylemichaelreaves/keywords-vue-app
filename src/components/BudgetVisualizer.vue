@@ -138,9 +138,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
-
-
 .dark {
   background-color: #383838;
   color: #ecf0f1;
