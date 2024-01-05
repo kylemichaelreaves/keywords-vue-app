@@ -2,7 +2,7 @@
   <SelectComponent
       :on-change="updateSelectedMemo"
       placeholder="select a memo"
-      :selected-value="selectedMemo"
+      :selectedValue="selectedMemo"
       :options="memoOptions"
   />
 </template>

@@ -2,7 +2,7 @@
   <el-select
       :model-value="selectedValue"
       :placeholder="placeholder"
-      @change:model-value="onChange"
+      @change="onChange($event)"
       :disabled="disabled"
       clearable
       filterable
@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import {ElOption, ElSelect} from "element-plus";
-import {defineComponent, type PropType} from "vue";
+import {defineComponent, type PropType, toRefs} from "vue";
 
 export default defineComponent({
   name: "SelectComponent",
@@ -58,8 +58,17 @@ export default defineComponent({
       required: false,
 },
   },
-  setup() {
-    return {}
+  setup(props) {
+    const {options, selectedValue, placeholder, disabled, onChange, loading, loadingText} = toRefs(props)
+    return {
+      options,
+      selectedValue,
+      placeholder,
+      disabled,
+      onChange,
+      loading,
+      loadingText
+    }
   }
 })
 </script>

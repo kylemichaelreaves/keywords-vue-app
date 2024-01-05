@@ -1,9 +1,10 @@
 <template>
+<!--  TODO this disabled condition doesn't make any sense -->
   <SelectComponent
       :options="dayOptions"
       :selectedValue="selectedDay"
       placeholder="select a day"
-      :disabled="!!selectedWeek"
+      :disabled="!!selectedWeek || !!selectedMonth"
       :onChange="updateSelectedDay"
       :loading="isLoading || isFetching"
       loading-text="…loading days…"
@@ -65,6 +66,7 @@ export default defineComponent({
       error,
       selectedDay: computed(() => store.getSelectedDay),
       selectedWeek: computed(() => store.getSelectedWeek),
+      selectedMonth: computed(() => store.getSelectedMonth),
       updateSelectedDay
     }
   }
