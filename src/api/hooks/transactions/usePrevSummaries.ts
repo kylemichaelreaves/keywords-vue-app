@@ -4,9 +4,11 @@ import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
 import {fetchMJAmountDebit} from "@api/transactions/fetchMJAmountDebit";
 import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
+import type {UseQueryReturnType} from "@tanstack/vue-query";
+import type {Summaries} from "@types";
 
 // Get the Amount Debit for Memo's fitting the MJ category, for subsequent months
-export function usePrevSummaries() {
+export function usePrevSummaries(): UseQueryReturnType<Summaries, Error> {
     const store = useTransactionsStore()
     const selectedMonth = computed(() => store.getSelectedMonth)
     const dateType = computed(() => "month");
@@ -35,8 +37,7 @@ export function usePrevSummaries() {
             // filtering out duplicate values based on your business logic
             return summaries;
         },
-        keepPreviousData: true,
         refetchOnWindowFocus: false,
-        enabled: selectedMonth.value !== ''
+        enabled: !!selectedMonth.value
     })
 }

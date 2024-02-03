@@ -14,10 +14,12 @@ export const useTransactionsStore = defineStore('transactions', {
 
     state: (): {
         selectedDay: string,
-        selectedMonth: string,
-        selectedMemo: string,
         selectedWeek: string,
+        selectedMonth: string,
+        selectedYear: string,
+        selectedMemo: string,
         selectedType: string,
+        selectedBudgetCategory: string,
         days: Array<DayYear>,
         weeks: Array<WeekYear>,
         months: Array<MonthYear>,
@@ -30,12 +32,16 @@ export const useTransactionsStore = defineStore('transactions', {
         pageSize: number,
         filter: Record<string, string>,
         sort: { prop: string, order: string },
+        memoLimit: number,
+        memoOffset: number,
     } => ({
         selectedDay: '',
         selectedMonth: '',
+        selectedYear: '',
         selectedMemo: '',
         selectedWeek: '',
         selectedType: 'Amount Debit',
+        selectedBudgetCategory: '',
         days: [],
         weeks: [],
         months: [],
@@ -48,6 +54,8 @@ export const useTransactionsStore = defineStore('transactions', {
         pageSize: 100,
         filter: {},
         sort: {prop: '', order: ''},
+        memoLimit: 100,
+        memoOffset: 0,
     }),
     getters: {
         getSelectedDay: (state) => {
@@ -61,6 +69,9 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         getSelectedWeek: (state) => {
             return state.selectedWeek
+        },
+        getSelectedYear: (state) => {
+            return state.selectedYear
         },
         getSelectedType: (state) => {
             return state.selectedType
@@ -98,6 +109,15 @@ export const useTransactionsStore = defineStore('transactions', {
         getSort: (state) => {
             return state.sort
         },
+        getMemoLimit: (state) => {
+            return state.memoLimit
+        },
+        getMemoOffset: (state) => {
+            return state.memoOffset
+        },
+        getSelectedBudgetCategory: (state) => {
+            return state.selectedBudgetCategory
+        }
     },
     actions: {
         setSelectedDay(selectedDay: string) {
@@ -112,6 +132,9 @@ export const useTransactionsStore = defineStore('transactions', {
         setSelectedWeek(selectedWeek: string) {
             this.selectedWeek = selectedWeek
         },
+        setSelectedYear(selectedYear: string) {
+            this.selectedYear = selectedYear
+        },
         setSelectedType(selectedType: string) {
             this.selectedType = selectedType
         },
@@ -120,6 +143,12 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         setMemos(memos: Array<Memo>) {
             this.memos = memos
+        },
+        setMemoLimit(limit: number) {
+            this.memoLimit = limit
+        },
+        setMemoOffset(offset: number) {
+            this.memoOffset = offset
         },
         setMonths(months: Array<MonthYear>) {
             this.months = months
@@ -229,6 +258,9 @@ export const useTransactionsStore = defineStore('transactions', {
         updateSort(sort: { prop: string, order: string }) {
             this.sort = sort;
         },
+        setSelectedBudgetCategory(selectedBudgetCategory: string) {
+            this.selectedBudgetCategory = selectedBudgetCategory;
+        }
     }
 
 })

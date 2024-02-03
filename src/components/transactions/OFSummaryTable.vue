@@ -3,8 +3,8 @@
     <template #header>
       <el-row align="middle" style="justify-content: space-around">
         <!--      TODO don't hardcode selectedMonth, but whatever the selectedPeriod? is -->
-        <h3>OF sum total for {{ timeframe }} {{ selectedMonth }}:</h3>
-        <el-statistic v-if="data" size="large" :value="data.total_debit" :key="data.total_debit"/>
+        <h3>OF sum total for {{ selectedMonth }}:</h3>
+        <el-statistic size="large" :value="statisticValue" title="Total OF Amount Debit"/>
       </el-row>
     </template>
     <div v-if="isError">{{ error }}</div>
@@ -42,6 +42,14 @@ export default defineComponent({
       }
     });
 
+    const statisticValue = computed(() => {
+      if (!data.value) {
+        return 0;
+      } else {
+        return data.value[0].total_debit;
+      }
+    });
+
     const columns = computed(() => {
       return [
         {prop: 'total_debit', label: 'Total Debit'},
@@ -68,6 +76,7 @@ export default defineComponent({
       columns,
       selectedWeek,
       selectedMonth,
+      statisticValue,
       timeframe
     }
   }
@@ -76,5 +85,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 </style>

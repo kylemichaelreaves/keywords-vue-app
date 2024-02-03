@@ -10,10 +10,10 @@ import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
 // TODO refactor limit - limit should be the length of the records for that query
 export default function useTransactions(LIMIT = 100, OFFSET?: number): UseQueryReturnType<Transaction[], Error> {
     const store = useTransactionsStore()
-    const selectedMemo = computed(() => store.getSelectedMemo)
     const selectedDay = computed(() => store.getSelectedDay)
     const selectedWeek = computed(() => store.getSelectedWeek)
     const selectedMonth = computed(() => store.getSelectedMonth)
+    const selectedMemo = computed(() => store.getSelectedMemo)
     const dateType = computed(() => {
         return selectedDay.value ? "day" :
             selectedWeek.value ? "week" :
@@ -43,7 +43,13 @@ export default function useTransactions(LIMIT = 100, OFFSET?: number): UseQueryR
             } else if (dateType.value === "day") {
                 dateObj = selectedDay.value ? new Date(selectedDay.value) : null;
             }
-            return fetchTransactions(LIMIT, OFFSET, selectedMemo.value, dateType.value, dateObj);
+            return fetchTransactions({
+                limit: LIMIT,
+                offset: OFFSET,
+                memo: selectedMemo.value,
+                timeFrame: dateType.value,
+                date: dateObj
+            });
         },
         refetchOnWindowFocus: false
     })

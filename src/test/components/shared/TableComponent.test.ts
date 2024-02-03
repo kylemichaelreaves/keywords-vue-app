@@ -92,8 +92,6 @@ describe('TableComponent', () => {
 
         await wrapper.vm.$nextTick()
 
-        console.log('table.vm', table.vm.store);
-
         expect(store.getCurrentPage).toBe(2)
     })
 })

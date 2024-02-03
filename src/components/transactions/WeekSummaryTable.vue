@@ -45,7 +45,7 @@ export default defineComponent({
     WeeklyAmountDebitTotal
   },
   setup(): {
-    weekSummaryData: WeekSummary[],
+    weekSummaryData: WeekSummary[] | undefined,
     isError: Ref<boolean>,
     refetch: () => void,
     isFetching: Ref<boolean>,

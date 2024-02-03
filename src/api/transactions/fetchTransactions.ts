@@ -1,14 +1,10 @@
 import axios from "axios";
 import type {Transaction} from "@types";
 import {isValidURL} from "@api/helpers/isValidURL";
+import type {FetchTransactionsParams} from "@types";
 
-export const fetchTransactions = async (
-    limit?: number,
-    offset?: number,
-    memo?: string,
-    timeFrame?: string,
-    date?: Date | null | undefined,
-): Promise<Array<Transaction>> => {
+export const fetchTransactions = async (queryParams: FetchTransactionsParams): Promise<Array<Transaction>> => {
+    const {date, limit, offset, timeFrame, memo} = queryParams;
 
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
@@ -17,7 +13,8 @@ export const fetchTransactions = async (
     }
 
     // Convert the date string to a Date object
-    const dateObj = date ? date : null;
+    // TODO why is this null and not undefined?
+    const dateObj = date ? date : undefined;
 
     return await axios
         .get(`${fetchURL}/transactions/get-transactions`, {

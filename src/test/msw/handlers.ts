@@ -1,15 +1,4 @@
-import {MockedRequest, rest, RestHandler} from 'msw'
-
-import type {
-    AddressResponse, DayYear,
-    Memo,
-    MemoSummary,
-    MonthSummary,
-    MonthYear,
-    Transaction,
-    TransactionsList,
-    WeekSummary, WeekYear
-} from "@types";
+import {http, HttpResponse, HttpHandler} from 'msw'
 import {addressesMock} from "@mocks/address";
 import {
     daysMock,
@@ -21,46 +10,47 @@ import {
     weekSummaryMock
 } from "@mocks/transaction";
 
-const handlers:  RestHandler<MockedRequest>[] = [
-    rest.get('*/address-geocoder', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json<AddressResponse[]>(addressesMock))
+const handlers: HttpHandler[] = [
+    http.get('*/address-geocoder', (info) => {
+        return new HttpResponse(JSON.stringify(addressesMock), {status: 200})
     }),
 
-    rest.get("*/transactions/get-transactions", (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json<Transaction[]>(transactionsMock));
+    http.get("*/transactions/get-transactions", (info) => {
+        return new HttpResponse(JSON.stringify(transactionsMock), {status: 200})
     }),
 
-    rest.get("*/transactions/get-months", (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json<MonthYear[]>(monthsMock));
+    http.get("*/transactions/get-months", (info) => {
+        return new HttpResponse(JSON.stringify(monthsMock), {status: 200})
     }),
 
-    rest.get("*/transactions/get-days", (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json<DayYear[]>(daysMock));
+    http.get("*/transactions/get-days", (info) => {
+        return new HttpResponse(JSON.stringify(daysMock), {status: 200})
     }),
 
-    rest.get("*/transactions/get-weeks", (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json<WeekYear[]>(weeksMock));
+    http.get("*/transactions/get-weeks", (info) => {
+        return new HttpResponse(JSON.stringify(weeksMock), {status: 200})
     }),
 
-    rest.get("*/transactions/get-memos", (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json<Memo[]>(memosMock));
+    http.get("*/transactions/get-memos", (info) => {
+        return new HttpResponse(JSON.stringify(memosMock), {status: 200})
     }),
 
-    rest.get("*/transactions/get-memo-summary", (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json<MemoSummary>(memoSummaryMock));
+    http.get("*/transactions/get-memo-summary", (info) => {
+        return new HttpResponse(JSON.stringify(memoSummaryMock), {status: 200})
     }),
 
-    rest.get("*/transactions/get-month-summary", (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json<MonthSummary[]>(monthSummaryMock));
+    http.get("*/transactions/get-month-summary", (info) => {
+        return new HttpResponse(JSON.stringify(monthSummaryMock), {status: 200})
     }),
 
-    rest.get('*/transactions/get-week-summary', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json<WeekSummary[]>(weekSummaryMock));
+    http.get('*/transactions/get-week-summary', (info) => {
+        return new HttpResponse(JSON.stringify(weekSummaryMock), {status: 200})
     }),
 
-    rest.get('*', (req, res, ctx) => {
-        console.error(`Unhandled request: ${req.url.toString()}`);
-        return res(ctx.status(500))
+    http.get('*', (info) => {
+        // console.error(`Unhandled request: ${req.url.toString()}`);
+        // return res(ctx.status(500))
+        return new HttpResponse('Unhandled request', {status: 500})
     }),
 
 ]

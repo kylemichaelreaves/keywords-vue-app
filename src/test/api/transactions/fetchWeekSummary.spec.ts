@@ -1,7 +1,7 @@
 import {fetchWeekSummary} from "@api/transactions/fetchWeekSummary";
 import {weekSummaryMock} from "@mocks/transaction";
 import {server} from "@test/test-setup";
-import {rest} from "msw";
+import {http, HttpResponse} from "msw";
 
 
 describe('fetchWeekSummary', () => {
@@ -14,8 +14,9 @@ describe('fetchWeekSummary', () => {
 
     test('fetchWeekSummary should throw an error if the request fails', async () => {
         server.use(
-            rest.get('*/transactions/get-week-summary', (req, res, ctx) => {
-                return res(ctx.status(500));
+            http.get('*/transactions/get-week-summary', (info) => {
+                // return res(ctx.status(500));
+                return new HttpResponse('Unhandled request', {status: 500})
             })
         );
 

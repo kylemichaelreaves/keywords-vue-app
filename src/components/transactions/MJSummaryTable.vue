@@ -2,10 +2,8 @@
   <el-card>
     <template #header>
       <el-row style="justify-content: space-around" align="middle">
-        <!--      TODO update to allow for any timeframe, don't hardcode only selectedMonth  -->
-        <h3>MJ sum total for {{ timeframe }} {{ selectedMonth }}:</h3>
-        <el-statistic v-if="data" size="large" :value="data.total_debit" :key="data.total_debit"
-                      data-testid="mj-amount-debit"/>
+        <h3>MJ sum total for {{ selectedMonth }}:</h3>
+        <el-statistic size="large" :value="statisticValue" title="Total MJ Amount Debit"/>
       </el-row>
     </template>
     <MJPrevSummaries/>
@@ -31,6 +29,14 @@ export default defineComponent({
     const selectedMonth = computed(() => store.getSelectedMonth);
     const timeframe = computed(() => store.getTimeframe);
 
+    const statisticValue = computed(() => {
+      if (!data.value) {
+        return 0;
+      } else {
+        return data.value[0].total_debit;
+      }
+    });
+
     const columns = computed(() => {
       return [
         {prop: 'total_debit', label: 'Total Debit'},
@@ -39,8 +45,9 @@ export default defineComponent({
       ];
     });
 
-    watch(() => [store.selectedMonth, store.selectedWeek], () => {
+    watch(() => [store.selectedMonth, store.selectedWeek, statisticValue], () => {
       refetch();
+      console.log('statisticValue', statisticValue.value);
     });
 
     onMounted(() => {
@@ -55,6 +62,7 @@ export default defineComponent({
       isError,
       error,
       columns,
+      statisticValue,
       selectedWeek,
       selectedMonth,
       timeframe

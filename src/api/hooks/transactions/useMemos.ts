@@ -8,10 +8,11 @@ import {computed} from "vue";
 export default function useMemos(): UseQueryReturnType<Memo[], Error> {
     const store = useTransactionsStore()
     const selectedMonth = computed(() => store.getSelectedMonth)
+    // TODO: update to account for selectedYear, selectedWeek, selectedDay
     const queryKeyText = computed(() => ['memos', selectedMonth.value])
 
     return useQuery<Array<Memo>>({
-        queryKey: ['memos', queryKeyText.value],
+        queryKey: queryKeyText.value,
         queryFn: () => fetchMemos(selectedMonth.value),
         refetchOnWindowFocus: false,
     })

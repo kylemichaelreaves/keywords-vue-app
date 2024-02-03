@@ -1,11 +1,8 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "@tsconfig/node20/tsconfig.json",
   "include": [
-    "vite.config.*",
-    "vitest.config.*",
-    "cypress.config.*",
-    "nightwatch.conf.*",
-    "playwright.config.*"
+    "vite.config.ts",
+    "vitest.config.ts",
   ],
   "compilerOptions": {
     "composite": true,
@@ -14,7 +11,6 @@
     "types": [
       "node",
       "jsdom",
-      "jest",
       "vitest/globals",
       "vite/client",
     ]
