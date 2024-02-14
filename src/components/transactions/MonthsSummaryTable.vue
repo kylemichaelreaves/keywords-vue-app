@@ -1,4 +1,5 @@
 <template>
+  <!--  TODO paginate this table, use the TableComponent -->
   <h4>Months Summary Table</h4>
   <div v-if="selectedMonth">
     <el-table
@@ -27,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, type Ref, type ComputedRef} from 'vue'
+import {defineComponent, computed, type Ref, type ComputedRef, onMounted} from 'vue'
 import {ElCard, ElTable, ElTableColumn} from "element-plus";
 import useSummaries from "@api/hooks/transactions/useSummaries";
 import {useTransactionsStore} from "@stores/transactions";
@@ -74,6 +75,10 @@ export default defineComponent({
 
       return className;
     }
+
+    onMounted(() => {
+      refetch()
+    });
 
     const columns = [
       {prop: 'period', label: 'Period'},

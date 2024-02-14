@@ -1,7 +1,7 @@
 <template>
   <el-statistic
       v-if="data"
-      :value="data"
+      :value="data[0].week_total_amount_debit"
       title="Weekly Total Amount Debit"
       :loading="isLoading || isFetching"
   />

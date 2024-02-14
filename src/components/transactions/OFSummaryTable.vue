@@ -1,11 +1,10 @@
 <template>
   <el-card>
     <template #header>
-      <el-row align="middle" style="justify-content: space-around">
-        <!--      TODO don't hardcode selectedMonth, but whatever the selectedPeriod? is -->
+      <div class="header-container">
         <h3>OF sum total for {{ selectedMonth }}:</h3>
         <el-statistic size="large" :value="statisticValue" title="Total OF Amount Debit"/>
-      </el-row>
+      </div>
     </template>
     <div v-if="isError">{{ error }}</div>
     <div v-if="isLoading || isFetching">Loading...</div>
@@ -85,4 +84,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Optional: Aligns items in the cross-axis (horizontally in this case) */
+}
 </style>

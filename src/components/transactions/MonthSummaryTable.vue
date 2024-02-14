@@ -2,7 +2,7 @@
   <el-card>
     <template #header>
       <div class="card-header">
-        <h3>Month Summary: {{ selectedMonth }}</h3>
+        <h2>Month Summary for: {{ selectedMonth }}</h2>
         <el-button-group>
           <el-button
               type="primary"
@@ -20,6 +20,11 @@
           >
             Next Month
           </el-button>
+          <el-button
+              type="info"
+              @click="resetSelectedMonth"
+              :icon="Close"
+          />
         </el-button-group>
       </div>
     </template>
@@ -47,7 +52,7 @@
       <el-col :span="10">
         <OFSummaryTable/>
         <MJSummaryTable/>
-        <MonthsSummaryTable v-if="selectedMonth"/>
+        <MonthsSummaryTable/>
       </el-col>
     </el-row>
   </el-card>
@@ -58,7 +63,7 @@ import {computed, type ComputedRef, defineComponent, onMounted, type Ref, watch}
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 import useMonthSummary from "@api/hooks/transactions/useMonthSummary";
-import {ArrowLeft, ArrowRight} from "@element-plus/icons-vue";
+import {ArrowLeft, ArrowRight, Close} from "@element-plus/icons-vue";
 import NavigationButtonGroup from "../shared/NavigationButtonGroup.vue";
 import type {MonthSummary, MonthYear} from "@types";
 import OFSummaryTable from "@components/transactions/OFSummaryTable.vue";
@@ -67,9 +72,13 @@ import MonthsSummaryTable from "@components/transactions/MonthsSummaryTable.vue"
 import {goToNextMonth, goToPreviousMonth} from "@components/transactions/monthNavigation";
 import type {QueryObserverResult, RefetchOptions} from "@tanstack/vue-query";
 
+
 export default defineComponent({
   name: "MonthSummaryTable",
   computed: {
+    Close() {
+      return Close
+    },
     ArrowRight() {
       return ArrowRight
     },
@@ -100,7 +109,9 @@ export default defineComponent({
     goToPreviousMonth: (selectedMonth: string, months: MonthYear[]) => string,
     goToNextMonth: (selectedMonth: string, months: MonthYear[]) => string,
     isFirstMonth: ComputedRef<boolean>,
-    isLastMonth: ComputedRef<boolean>
+    isLastMonth: ComputedRef<boolean>,
+    resetSelectedMonth: () => void,
+    Close: typeof Close
   } {
     const store = useTransactionsStore()
     const selectedMonth = computed(() => store.getSelectedMonth)
@@ -132,6 +143,10 @@ export default defineComponent({
       }));
     });
 
+    const resetSelectedMonth = () => {
+      store.setSelectedMonth('');
+    }
+
     watch(() => selectedMonth.value, async (newValue: string) => {
       await refetch();
       await store.fetchPrevSummaries();
@@ -154,7 +169,9 @@ export default defineComponent({
       goToPreviousMonth,
       goToNextMonth,
       isFirstMonth,
-      isLastMonth
+      isLastMonth,
+      resetSelectedMonth,
+      Close
     }
   }
 })

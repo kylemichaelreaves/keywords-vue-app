@@ -1,10 +1,10 @@
 <template>
   <el-card>
     <template #header>
-      <el-row style="justify-content: space-around" align="middle">
-        <h3>MJ sum total for {{ selectedMonth }}:</h3>
+      <div class="header-container">
+        <h3>MJ sum total for: {{ selectedMonth }}</h3>
         <el-statistic size="large" :value="statisticValue" title="Total MJ Amount Debit"/>
-      </el-row>
+      </div>
     </template>
     <MJPrevSummaries/>
   </el-card>
@@ -16,6 +16,7 @@ import {ElCard, ElCol, ElRow, ElStatistic} from "element-plus";
 import useMJAmountDebit from "@api/hooks/transactions/useMJAmountDebit";
 import {useTransactionsStore} from "@stores/transactions";
 import MJPrevSummaries from "./MJPrevSummaries.vue";
+import type {OFSummary} from "@types";
 
 export default defineComponent({
   name: 'MJSummaryTable',
@@ -25,15 +26,18 @@ export default defineComponent({
 
     const store = useTransactionsStore();
 
+    const dataItems = computed(() => data.value as unknown as OFSummary[])
+
     const selectedWeek = computed(() => store.getSelectedWeek);
     const selectedMonth = computed(() => store.getSelectedMonth);
     const timeframe = computed(() => store.getTimeframe);
 
+
     const statisticValue = computed(() => {
-      if (!data.value) {
+      if (!dataItems.value || !dataItems.value.length) {
         return 0;
       } else {
-        return data.value[0].total_debit;
+        return dataItems.value[0].total_debit;
       }
     });
 
@@ -73,5 +77,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Optional: Aligns items in the cross-axis (horizontally in this case) */
+}
 </style>

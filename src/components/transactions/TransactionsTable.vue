@@ -1,6 +1,7 @@
 <template>
+  <!--  TODO paginate Table -->
   <el-table
-      :row-key="(row: Transaction) => row.transactionNumber"
+      :row-key="getRowKey"
       v-if="reactiveTableData && reactiveTableData.length > 0"
       :loading="isFetching"
       :isFetching="isFetching"
@@ -102,12 +103,17 @@ export default defineComponent({
 
     const reactiveTableData = computed(() => props.tableData);
 
+    function getRowKey(row: Transaction)  {
+      return row.transactionNumber;
+    }
+
     return {
       reactiveTableData,
       LIMIT,
       OFFSET,
       columnKeys,
-      isFetching
+      isFetching,
+      getRowKey
     };
   },
 });

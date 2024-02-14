@@ -11,16 +11,7 @@ export const useWeeks = (): UseQueryReturnType<WeekYear[], Error> => {
 
     return useQuery<Array<WeekYear>>({
         queryKey: ['weeks'],
-        queryFn: () => fetchWeeks().then(weeks => {
-            if (selectedMonth.value) {
-                const [month, year] = selectedMonth.value.split('/');
-                weeks = weeks.filter(week => {
-                    const [weekMonth, weekYear] = week.week_year.split('/');
-                    return weekYear === year && weekMonth === month;
-                });
-            }
-            return weeks;
-        }),
+        queryFn: () => fetchWeeks(),
         refetchOnWindowFocus: false,
     })
 }

@@ -131,7 +131,7 @@ type FetchTransactionsParams = {
     date?: Date | null | undefined;
 }
 
-type OfSummaryTypeBase = {
+type OFSummaryTypeBase = {
     total_debit: number;
     year: string;
     day_number?: string;
@@ -146,9 +146,9 @@ type JsonObjectType = {
     year: string;
 };
 
-type OFSummary = OfSummaryTypeBase;
+type OFSummary = OFSummaryTypeBase;
 
-type MJSummary = OfSummaryTypeBase;
+type MJSummary = OFSummaryTypeBase;
 
 type Summary = OFSummary | MJSummary;
 
@@ -192,6 +192,7 @@ export type {
     WeekSummary,
     MonthSummary,
     OFSummary,
+    OFSummaryTypeBase,
     MJSummary,
     Summary,
     Summaries
