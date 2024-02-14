@@ -1,12 +1,14 @@
 import {useQuery} from '@tanstack/vue-query'
+import type {UseQueryReturnType} from "@tanstack/vue-query";
 import {fetchOFAmountDebit} from "@api/transactions/fetchOFAmountDebit";
 import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
 import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
 import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
+import type {OFSummary} from "@types";
 
 // Get the Amount Debit for Memo's fitting the OF category, for a certain period of time
-export default function useOFAmountDebit() {
+export default function useOFAmountDebit(): UseQueryReturnType<OFSummary[], Error> {
 
     const store = useTransactionsStore()
 
@@ -27,7 +29,6 @@ export default function useOFAmountDebit() {
             }
             return fetchOFAmountDebit(timeFrame.value, dateObj);
         },
-        keepPreviousData: true,
         refetchOnWindowFocus: false
     })
 }

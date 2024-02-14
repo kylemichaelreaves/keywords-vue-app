@@ -4,9 +4,11 @@ import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
 import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
 import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
+import type {UseQueryReturnType} from "@tanstack/vue-query";
+import type {MJSummary} from "@types";
 
 // Get the Amount Debit for Memo's fitting the MJ category, for a certain period of time
-export default function useMJAmountDebit() {
+export default function useMJAmountDebit(): UseQueryReturnType<MJSummary, Error> {
 
     const store = useTransactionsStore()
     const selectedMonth = computed(() => store.getSelectedMonth)
@@ -17,16 +19,19 @@ export default function useMJAmountDebit() {
     return useQuery({
         queryKey: queryKey.value,
         queryFn: () => {
-
-            let dateObj: Date | null | undefined;
+            let dateObj: Date | null = null;
             if (timeFrame.value === "week" && selectedWeek.value) {
                 dateObj = parseDateIWIYYY(selectedWeek.value);
-            } else if (timeFrame.value === "month" && selectedMonth.value && selectedMonth.value !== '' && selectedMonth.value !== undefined) {
+            } else if (timeFrame.value === "month" && selectedMonth.value) {
                 dateObj = parseDateMMYYYY(selectedMonth.value);
             }
+
+            if (!dateObj) {
+                throw new Error("Invalid date");
+            }
+
             return fetchMJAmountDebit(timeFrame.value, dateObj);
         },
-        keepPreviousData: true,
         refetchOnWindowFocus: false,
         enabled: selectedMonth.value !== ''
     })

@@ -1,10 +1,12 @@
 import {useQuery} from '@tanstack/vue-query';
-import {fetchMemoSummary} from "@api/transactions/fetchMemoSummary";
 import type {UseQueryReturnType} from "@tanstack/vue-query";
-import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
+import {fetchMemoSummary} from "@api/transactions/fetchMemoSummary";
+import {useTransactionsStore} from "@stores/transactions";
 import type {MemoSummary} from "@types";
 
+// TODO part of the Memo's summary has to be whether or not it has a budget category assigned to it
+//
 export default function useMemoSummary(): UseQueryReturnType<MemoSummary, Error> {
     const store = useTransactionsStore()
     const selectedMemo = computed(() => store.getSelectedMemo)

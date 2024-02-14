@@ -33,8 +33,6 @@ describe('WeekSelect', () => {
 
     afterEach(() => {
         vi.resetAllMocks()
-
-        //     reset the store
         transactionsStore.selectedMonth = '';
         transactionsStore.selectedWeek = '';
         transactionsStore.weeks = [];
@@ -52,12 +50,7 @@ describe('WeekSelect', () => {
 
     // TODO when there is a selectedMonth, the weeks of that month should populate the weekSelect
     test('should not be disabled when there is a selectedMonth in the store', async () => {
-        // wrapper.vm._pStores?.transactions.$patch((state) => {
-        //     state.selectedMonth = '11/2022';
-        // });
-
         transactionsStore.selectedMonth = '11/2022';
-
 
         await wrapper.vm.$nextTick();
 
@@ -72,15 +65,13 @@ describe('WeekSelect', () => {
             state.selectedWeek = '42/2022';
         });
 
-        // transactionsStore.setSelectedWeek('42/2022')
         transactionsStore.selectedWeek = '42/2022';
 
-        // await wrapper.setProps({ selectedWeek: '12/2022' });
+
         await wrapper.vm.$nextTick();
-        // console.log('wrapper.vm', wrapper.vm);
+
 
         const select = wrapper.findComponent({name: 'ElSelect'})
-        console.log('select.vm', select.vm);
 
 
         // @ts-ignore
@@ -101,7 +92,6 @@ describe('WeekSelect', () => {
 
         transactionsStore.weeks = [{week_year: '42/2022'}];
 
-        // wrapper.vm.weekOptions = [{value: '42/2022', label: '42/2022'}];
 
 
         await wrapper.vm.$nextTick();
@@ -126,13 +116,10 @@ describe('WeekSelect', () => {
         transactionsStore.setSelectedWeek(week);
 
         wrapper.vm._pStores?.transactions.setSelectedWeek(week);
-        // wrapper.vm.setSelectedWeek(week);
 
         // @ts-ignore
         wrapper.vm.updateSelectedWeek(week);
 
-        // console.log('wrapper.vm.getSelectedWeek', wrapper.vm.getSelectedWeek);
-        // console.log('wrapper.vm.$refs', wrapper.vm.$refs);
 
 
         expect(transactionsStore.setSelectedWeek).toHaveBeenCalledWith(week);

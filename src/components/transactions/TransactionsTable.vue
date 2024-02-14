@@ -1,7 +1,8 @@
 <template>
+  <!--  TODO paginate Table -->
   <el-table
-      :row-key="(row: Transaction) => row.transactionNumber"
-      v-if="reactiveTableData"
+      :row-key="getRowKey"
+      v-if="reactiveTableData && reactiveTableData.length > 0"
       :loading="isFetching"
       :isFetching="isFetching"
       :data="reactiveTableData"
@@ -38,6 +39,9 @@
       </template>
     </el-table-column>
   </el-table>
+  <div v-if="isFetching">
+    <el-progress type="circle" :percentage="100" :stroke-width="6"/>
+  </div>
 </template>
 
 <script lang="ts">
@@ -70,6 +74,22 @@ const transactionsTableProps = {
     type: Boolean,
     required: false,
     default: false
+  },
+  isLoading: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  incrementOffset: {
+    type: Function,
+    required: false,
+    default: () => {
+    }
+  },
+  class: {
+    type: String,
+    required: false,
+    default: ''
   }
 } as const;
 
@@ -83,16 +103,22 @@ export default defineComponent({
 
     const reactiveTableData = computed(() => props.tableData);
 
+    function getRowKey(row: Transaction)  {
+      return row.transactionNumber;
+    }
+
     return {
       reactiveTableData,
       LIMIT,
       OFFSET,
       columnKeys,
-      isFetching
+      isFetching,
+      getRowKey
     };
   },
 });
 </script>
 
 <style scoped>
+
 </style>

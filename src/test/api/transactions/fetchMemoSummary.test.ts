@@ -1,23 +1,20 @@
 import {setupServer} from 'msw/node';
-import {rest} from 'msw';
+import {http, HttpResponse} from 'msw';
 import {fetchMemoSummary} from "@api/transactions/fetchMemoSummary";
 import type {MemoSummary} from "@types";
 
 // Set up the MSW server
 const server = setupServer();
 
+const memoSummary: MemoSummary =
+    {
+        sum_amount_debit: 100,
+        transactions_count: 1,
+        // Add other properties as needed
+    }
 // Create a mock API handler
-const mockAPIHandler = rest.get('/transactions/get-memo-summary', (req, res, ctx) => {
-
-    const memoSummary: MemoSummary =
-        {
-            sum_amount_debit: 100,
-            transactions_count: 1,
-            // Add other properties as needed
-        }
-    ;
-
-    return res(ctx.json(memoSummary));
+const mockAPIHandler = http.get('/transactions/get-memo-summary', (info) => {
+    return new HttpResponse(JSON.stringify(memoSummary), {status: 200})
 });
 
 describe('fetchMemoSummary', () => {
@@ -45,13 +42,14 @@ describe('fetchMemoSummary', () => {
         const endpoint = `${import.meta.env.VITE_APIGATEWAY_URL}/transactions/get-memo-summary`;
 
         server.use(
-            rest.get(endpoint, (req, res, ctx) => {
-                return res(ctx.status(500), ctx.text('Internal Server Error'));
+            http.get(endpoint, (info) => {
+                // return res(ctx.status(500), ctx.text('Internal Server Error'));
+                return new HttpResponse('Unhandled request', {status: 500})
             })
         );
 
         try {
-            await expect(fetchMemoSummary('Memo: Test-X'))
+            expect(fetchMemoSummary('Memo: Test-X'))
         } catch (error) {
             expect(error).toBeDefined();
             expect((error as Error).message).toBe('Request failed with status code 500');

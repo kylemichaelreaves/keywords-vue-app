@@ -22,6 +22,13 @@
       </Suspense>
     </el-row>
 
+    <el-row>
+      <el-col>
+        <BudgetCategoriesTreeSelect/>
+      </el-col>
+    </el-row>
+
+
     <el-alert v-if="error" type="error" :title="'Error: ' + error">
       <h2>
         {{ error }}
@@ -29,24 +36,39 @@
     </el-alert>
     <br/>
 
-    <el-row style="justify-content: space-between">
-      <el-col :span="20">
+    <el-row style="justify-content: space-evenly">
+      <el-col :span="4">
+        <DaySelect/>
+      </el-col>
+      <el-col :span="4">
         <WeekSelect/>
+      </el-col>
+      <el-col :span="4">
         <MonthSelect/>
+      </el-col>
+      <el-col :span="8">
         <MemoSelect/>
+      </el-col>
+      <el-col :span="4">
+        <YearSelect/>
       </el-col>
     </el-row>
 
-    <TransactionsTable
-        v-if="data"
-        :tableData="data"
-        :columnKeys="columnKeys"
-        :isFetching="isFetching"
-        :LIMIT="LIMIT"
-        :OFFSET="OFFSET"
-        :incrementOffset="incrementOffset"
-        :loading="isFetching || isLoading"
-    />
+    <el-row>
+      <el-col>
+        <TransactionsTable
+            class="transactions-table"
+            v-if="data"
+            :tableData="data"
+            :columnKeys="columnKeys"
+            :isFetching="isFetching"
+            :LIMIT="LIMIT"
+            :OFFSET="OFFSET"
+            :incrementOffset="incrementOffset"
+            :isLoading="isFetching || isLoading"
+        />
+      </el-col>
+    </el-row>
   </el-card>
   <VueQueryDevtools/>
   <router-view :key="$route.fullPath"></router-view>
@@ -65,10 +87,17 @@ import WeekSelect from "./transactions/WeekSelect.vue";
 import WeekSummaryTable from "./transactions/WeekSummaryTable.vue";
 import MonthSummaryTable from "./transactions/MonthSummaryTable.vue";
 import {VueQueryDevtools} from '@tanstack/vue-query-devtools'
+import DaySelect from "@components/transactions/DaySelect.vue";
+import YearSelect from "@components/transactions/YearSelect.vue";
+import BudgetCategoriesTreeSelect from "./transactions/BudgetCategoriesTreeSelect.vue";
+
 
 export default defineComponent({
   name: "BudgetVisualizer",
   components: {
+    BudgetCategoriesTreeSelect,
+    YearSelect,
+    DaySelect,
     VueQueryDevtools,
     MemoSummaryTable,
     MonthSummaryTable,
@@ -84,14 +113,12 @@ export default defineComponent({
     const LIMIT = 100;
     const OFFSET = ref(0);
     const {
-      data: dataRef,
+      data,
       error,
       isLoading,
       isFetching,
       refetch
     } = useTransactions(LIMIT, OFFSET.value);
-
-    const data = dataRef.value
 
     function incrementOffset() {
       OFFSET.value += LIMIT;
@@ -141,5 +168,9 @@ export default defineComponent({
 .dark {
   background-color: #383838;
   color: #ecf0f1;
+}
+
+.transactions-table {
+  padding-top: 10px;
 }
 </style>

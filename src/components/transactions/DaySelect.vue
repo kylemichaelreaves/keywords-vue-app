@@ -33,8 +33,8 @@ export default defineComponent({
         return []
       }
       return data.value.map((item: DayYear) => ({
-        value: item.day_year,
-        label: item.day_year,
+        value: item.day,
+        label: item.day,
       }));
     });
 
@@ -75,5 +75,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 </style>

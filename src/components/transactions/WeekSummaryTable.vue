@@ -1,11 +1,19 @@
 <template>
   <el-card>
-    <!-- TODO instead of headers, maybe have Week#, startedOn, endedOn -->
+    <template #header>
+      <el-text>Week Summary for:</el-text>
+      <div class="header-content">
+        <h2 v-if="selectedWeek">
+          {{ selectedWeek }}
+        </h2>
+        <el-button round type="info" :icon="Close" @click="resetSelectedWeek"/>
+      </div>
+    </template>
     <el-row>
       <el-col>
         <el-table
-            v-if='weekSummaryData'
-            :data="weekSummaryData"
+            v-if='data'
+            :data="data"
             table-layout="auto"
             size="large"
             :loading="isFetching"
@@ -34,9 +42,15 @@ import {useTransactionsStore} from "@stores/transactions";
 import useWeekSummary from "@api/hooks/transactions/useWeekSummary";
 import WeeklyAmountDebitTotal from "./WeeklyAmountDebitTotal.vue";
 import type {WeekSummary} from "@types";
+import {Close} from "@element-plus/icons-vue";
 
 export default defineComponent({
   name: "WeekSummaryTable",
+  computed: {
+    Close() {
+      return Close
+    }
+  },
   components: {
     ElCard,
     ElStatistic,
@@ -45,20 +59,21 @@ export default defineComponent({
     WeeklyAmountDebitTotal
   },
   setup(): {
-    weekSummaryData: WeekSummary[],
+    data: Ref<WeekSummary[]> | Ref<undefined>,
     isError: Ref<boolean>,
     refetch: () => void,
     isFetching: Ref<boolean>,
     isLoading: Ref<boolean>,
     error: unknown,
-    columns: { prop: string; label: string }[]
+    columns: { prop: string; label: string }[],
+    selectedWeek: Ref<string>,
+    resetSelectedWeek: () => void
   } {
     const store = useTransactionsStore()
 
     const selectedWeek = computed(() => store.getSelectedWeek)
 
     const {data, isError, refetch, isFetching, isLoading, error} = useWeekSummary()
-    const weekSummaryData = data.value
 
     const weeks = computed(() => store.getWeeks)
 
@@ -70,6 +85,9 @@ export default defineComponent({
       return weeks.value[weeks.value.length - 1].week_year === selectedWeek.value
     })
 
+    const resetSelectedWeek = () => {
+      store.setSelectedWeek('');
+    }
 
     const columns = [
       {prop: 'memo', label: 'Memo'},
@@ -80,10 +98,17 @@ export default defineComponent({
       refetch();
     });
 
-    return {weekSummaryData, isError, refetch, isFetching, isLoading, error, columns}
+    return {data, isError, refetch, isFetching, isLoading, error, columns, selectedWeek, resetSelectedWeek}
   }
 })
 </script>
 
 <style scoped>
+.header-content {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: start;
+  gap: 1rem;
+}
 </style>

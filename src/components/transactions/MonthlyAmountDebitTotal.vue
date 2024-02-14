@@ -1,5 +1,10 @@
 <template>
-  <el-statistic v-if="data" :value="data" title="Monthly Total Amount Debit" :loading="isLoading || isFetching"/>
+  <el-statistic
+      v-if="data"
+      :value="data"
+      title="Monthly Total Amount Debit"
+      :loading="isLoading || isFetching"
+  />
 </template>
 
 <script lang="ts">
@@ -15,7 +20,14 @@ export default defineComponent({
 
     const store = useTransactionsStore();
 
-    const {data, isLoading, isFetching, isError, error, refetch} = useSumAmountDebitByDate('month', store.selectedMonth);
+    const {
+      data,
+      isLoading,
+      isFetching,
+      isError,
+      error,
+      refetch
+    } = useSumAmountDebitByDate('month', store.selectedMonth);
 
     watch(() => store.selectedMonth, (newValue) => {
       if (newValue) {

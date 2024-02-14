@@ -13,7 +13,8 @@ import LineChart from "../charts/LineChart.vue";
 export default defineComponent({
   name: 'MJPrevSummaries',
   components: {LineChart},
-  setup() {
+  setup()
+  {
 
     const store = useTransactionsStore();
 
@@ -27,7 +28,7 @@ export default defineComponent({
       }
     });
 
-    const columns = computed(() => {
+    computed(() => {
       return [
         {prop: 'total_debit', label: 'Total Debit'},
         {prop: `${timeframe.value}_number`, label: `${timeframe.value}`},
@@ -57,6 +58,7 @@ export default defineComponent({
       error,
     }
   }
+
 })
 
 </script>

@@ -1,4 +1,5 @@
 <template>
+  <!--  TODO paginate this table, use the TableComponent -->
   <h4>Months Summary Table</h4>
   <div v-if="selectedMonth">
     <el-table
@@ -27,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, type Ref, type ComputedRef} from 'vue'
+import {defineComponent, computed, type Ref, type ComputedRef, onMounted} from 'vue'
 import {ElCard, ElTable, ElTableColumn} from "element-plus";
 import useSummaries from "@api/hooks/transactions/useSummaries";
 import {useTransactionsStore} from "@stores/transactions";
@@ -52,25 +53,15 @@ export default defineComponent({
     tableRowClassName: (params: { row: Summaries }) => string,
     selectedMonth: ComputedRef<string>
   } {
-    // TODO add store.selectedMonth to this component — it should highlight the row of the selected month
-
     const store = useTransactionsStore()
     const selectedMonth = computed(() => store.getSelectedMonth)
 
     const {data: dataRef, isError, refetch, isFetching, isLoading, error} = useSummaries()
     const data = dataRef.value
 
-    // watch(() => selectedMonth, (newMonth, oldMonth) => {
-    //   // if the newMonth and the oldMonth are the same, do nothing
-    //   if (newMonth.value === oldMonth.value) return;
-    //   // Any other operations you need to do when selectedMonth changes
-    //   console.log("Old Month: ", oldMonth, "New Month: ", newMonth); // Log the old and new values
-    // })
-
     const tableRowClassName = ({row}: { row: Summaries }) => {
       let className = '';
       const isHighlighted = row.period === selectedMonth.value
-      console.log("Is highlighted: ", isHighlighted);
 
       if (isHighlighted) {
         className = 'highlight-row';
@@ -84,6 +75,10 @@ export default defineComponent({
 
       return className;
     }
+
+    onMounted(() => {
+      refetch()
+    });
 
     const columns = [
       {prop: 'period', label: 'Period'},

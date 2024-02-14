@@ -28,3 +28,5 @@ dist-ssr
 
 # don't commit the .nvmrc file
 .nvmrc
+
+html/assets

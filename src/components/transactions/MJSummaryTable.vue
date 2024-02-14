@@ -1,12 +1,10 @@
 <template>
   <el-card>
     <template #header>
-      <el-row style="justify-content: space-around" align="middle">
-        <!--      TODO update to allow for any timeframe, don't hardcode only selectedMonth  -->
-        <h3>MJ sum total for {{ timeframe }} {{ selectedMonth }}:</h3>
-        <el-statistic v-if="data" size="large" :value="data.total_debit" :key="data.total_debit"
-                      data-testid="mj-amount-debit"/>
-      </el-row>
+      <div class="header-container">
+        <h3>MJ sum total for: {{ selectedMonth }}</h3>
+        <el-statistic size="large" :value="statisticValue" title="Total MJ Amount Debit"/>
+      </div>
     </template>
     <MJPrevSummaries/>
   </el-card>
@@ -18,6 +16,7 @@ import {ElCard, ElCol, ElRow, ElStatistic} from "element-plus";
 import useMJAmountDebit from "@api/hooks/transactions/useMJAmountDebit";
 import {useTransactionsStore} from "@stores/transactions";
 import MJPrevSummaries from "./MJPrevSummaries.vue";
+import type {OFSummary} from "@types";
 
 export default defineComponent({
   name: 'MJSummaryTable',
@@ -27,9 +26,20 @@ export default defineComponent({
 
     const store = useTransactionsStore();
 
+    const dataItems = computed(() => data.value as unknown as OFSummary[])
+
     const selectedWeek = computed(() => store.getSelectedWeek);
     const selectedMonth = computed(() => store.getSelectedMonth);
     const timeframe = computed(() => store.getTimeframe);
+
+
+    const statisticValue = computed(() => {
+      if (!dataItems.value || !dataItems.value.length) {
+        return 0;
+      } else {
+        return dataItems.value[0].total_debit;
+      }
+    });
 
     const columns = computed(() => {
       return [
@@ -39,8 +49,9 @@ export default defineComponent({
       ];
     });
 
-    watch(() => [store.selectedMonth, store.selectedWeek], () => {
+    watch(() => [store.selectedMonth, store.selectedWeek, statisticValue], () => {
       refetch();
+      console.log('statisticValue', statisticValue.value);
     });
 
     onMounted(() => {
@@ -55,6 +66,7 @@ export default defineComponent({
       isError,
       error,
       columns,
+      statisticValue,
       selectedWeek,
       selectedMonth,
       timeframe
@@ -65,5 +77,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Optional: Aligns items in the cross-axis (horizontally in this case) */
+}
 </style>

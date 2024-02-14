@@ -15,7 +15,7 @@ export const useDays = (): UseQueryReturnType<DayYear[], Error> => {
 
     const filterDays = (startDay: Date, endDay: Date, days: DayYear[]) => {
         const intervalDays = eachDayOfInterval(startDay, endDay);
-        return days.filter(day => intervalDays.includes(new Date(day.day_year)));
+        return days.filter(day => intervalDays.includes(new Date(day.day)));
     }
 
     return useQuery<Array<DayYear>>({

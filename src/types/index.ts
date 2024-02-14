@@ -29,6 +29,10 @@ interface MemoSummary {
     transactions_count: number;
 }
 
+interface MemoExistence {
+    memo_exists_in_memos: boolean;
+}
+
 interface WeekSummary {
     memo: string;
     weekly_amount_debit: number;
@@ -37,6 +41,11 @@ interface WeekSummary {
 interface MonthSummary {
     memo: string;
     monthly_amount_debit: number;
+}
+
+interface MemoSumAmountDebits {
+    memo: string;
+    total_debit: number;
 }
 
 interface DaySummary {
@@ -97,7 +106,7 @@ interface Memo {
 }
 
 interface DayYear {
-    day_year: string;
+    day: string;
 }
 
 interface MonthYear {
@@ -108,19 +117,38 @@ interface WeekYear {
     week_year: string;
 }
 
+interface Year {
+    year: string;
+}
+
 type TimeframeType = 'day' | 'week' | 'month' | 'year';
 
-type OfSummaryTypeBase = {
+type FetchTransactionsParams = {
+    limit?: number;
+    offset?: number;
+    memo?: string;
+    timeFrame?: TimeframeType;
+    date?: Date | null | undefined;
+}
+
+type OFSummaryTypeBase = {
     total_debit: number;
     year: string;
     day_number?: string;
     week_number?: string;
     month_number?: string;
+    json?: JsonObjectType;
 }
 
-type OFSummary = OfSummaryTypeBase;
+type JsonObjectType = {
+    total_debit: number;
+    month_number: string;
+    year: string;
+};
 
-type MJSummary = OfSummaryTypeBase;
+type OFSummary = OFSummaryTypeBase;
+
+type MJSummary = OFSummaryTypeBase;
 
 type Summary = OFSummary | MJSummary;
 
@@ -131,25 +159,40 @@ type Summaries = {
     amount_difference: number;
 };
 
+type CategoryTreeNode = {
+    value: string | number;
+    label: string;
+    children?: CategoryTreeNode[];
+}
+
+type CategoryTreeData = CategoryTreeNode[];
+
+
 export type {
     AddressFields,
     AddressResponse,
+    CategoryTreeNode,
+    CategoryTreeData,
     DayYear,
     DaySummary,
     Transaction,
     TransactionData,
     TransactionsList,
+    FetchTransactionsParams,
     Memo,
     MemoGroup,
     MemoSummary,
+    MemoSumAmountDebits,
     MonthYear,
     PieChartData,
     ArcDataObject,
     TimelineChartProps,
     WeekYear,
+    Year,
     WeekSummary,
     MonthSummary,
     OFSummary,
+    OFSummaryTypeBase,
     MJSummary,
     Summary,
     Summaries

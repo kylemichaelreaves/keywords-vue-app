@@ -27,8 +27,6 @@ describe('WeekSummaryTable', function () {
             },
         });
 
-        console.log('wrapper', wrapper.html());
-
         const store = useTransactionsStore();
 
         store.selectedWeek = '01-2023';

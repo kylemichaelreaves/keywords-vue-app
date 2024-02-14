@@ -28,8 +28,8 @@
     <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="store.getCurrentPage"
-        :page-size="store.getPageSize"
+        :current-page="currentPage"
+        :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :page-sizes="[10, 20, 30, 40]"
         :total="tableData.length"
@@ -37,15 +37,14 @@
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent, computed, ref} from "vue";
-import {useTransactionsStore} from "@stores/transactions";
-import {ElPagination, ElTable, ElTableColumn} from "element-plus";
 
+<script lang="ts">
+import {defineComponent, ref, computed} from "vue";
+import {ElPagination, ElTable, ElTableColumn} from "element-plus";
+import {useTransactionsStore} from "@stores/transactions";
 
 export default defineComponent({
   name: "TableComponent",
-  methods: {computed},
   components: {
     ElTable,
     ElTableColumn,
@@ -57,7 +56,7 @@ export default defineComponent({
       required: true,
     },
     columns: {
-      type: Array as () => {prop: string, label: string}[],
+      type: Array as () => { prop: string, label: string }[],
       required: true,
     },
     sortableColumns: {
@@ -94,28 +93,32 @@ export default defineComponent({
   },
   setup(props) {
     const store = useTransactionsStore();
+    const currentPage = ref(1);
+    const pageSize = ref(props.LIMIT);
     const tableData = ref(props.tableData);
 
     const pagedTableData = computed(() => {
-      const start = (store.getCurrentPage - 1) * store.getPageSize;
-      const end = store.getCurrentPage * store.getPageSize;
+      const start = (currentPage.value - 1) * pageSize.value;
+      const end = currentPage.value * pageSize.value;
       return tableData.value.slice(start, end);
     });
 
     const handleSizeChange = (val: number) => {
-      store.updatePageSize(val);
-      store.updateCurrentPage(1);
+      pageSize.value = val;
+      currentPage.value = 1;
     };
 
     const handleCurrentChange = (val: number) => {
-      store.updateCurrentPage(val);
+      currentPage.value = val;
     };
 
     return {
-      store,
       pagedTableData,
       handleSizeChange,
       handleCurrentChange,
+      currentPage,
+      pageSize,
+      store,
     };
   },
 });

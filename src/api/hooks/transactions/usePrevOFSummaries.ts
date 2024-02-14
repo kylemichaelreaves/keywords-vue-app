@@ -3,9 +3,11 @@ import {fetchOFAmountDebit} from "@api/transactions/fetchOFAmountDebit";
 import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
 import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
+import type {OFSummary} from "@types";
+import type {UseQueryReturnType} from "@tanstack/vue-query";
 
 // Get the Amount Debit for Memo's fitting the MJ category, for subsequent months
-export function usePrevOFSummaries() {
+export function usePrevOFSummaries(): UseQueryReturnType<OFSummary[], Error> {
     const store = useTransactionsStore()
     const selectedMonth = computed(() => store.getSelectedMonth)
     // TODO compute the dataType based on what's in the store
@@ -23,7 +25,6 @@ export function usePrevOFSummaries() {
                 return OFSummary as unknown as typeof OFSummary;
             }));
         },
-        keepPreviousData: true,
         refetchOnWindowFocus: false,
         enabled: Boolean(store.selectedMonth) || Boolean(store.selectedWeek)
     })

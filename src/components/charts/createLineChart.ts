@@ -34,14 +34,10 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
     const width = 300;
     const height = 150;
 
-    console.log('chartData', chartData);
-
     const x = d3
         .scaleTime()
         .range([0, width])
         .domain(d3.extent(chartData, (d) => d.date).reverse() as unknown as [Date, Date]);
-
-    console.log('x.domain', x.domain());
 
     const [minAmount, maxAmount] = d3.extent(chartData, (d) => d.total_debit) as [number, number];
 

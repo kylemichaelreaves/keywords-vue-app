@@ -1,10 +1,10 @@
-import { mount } from '@vue/test-utils';
+import {mount, type VueWrapper} from '@vue/test-utils';
 import { nextTick } from 'vue';
 import Keywords from '@components/Keywords.vue';
 import ElementPlus, {ElInput} from 'element-plus';
 
 describe('Keywords.vue', () => {
-    let wrapper: any;
+    let wrapper: VueWrapper;
 
     beforeEach(() => {
         wrapper = mount(Keywords, {
@@ -33,6 +33,7 @@ describe('Keywords.vue', () => {
         await elInput.setValue('testing');
         await elInput.trigger('input');
         await nextTick();
+        // @ts-ignore
         expect(wrapper.vm.keywords).toEqual('testing');
     });
 
@@ -46,7 +47,7 @@ describe('Keywords.vue', () => {
         await elInput.setValue('');
         await elInput.trigger('input');
         await nextTick();
-
+        // @ts-ignore
         expect(wrapper.vm.keywords).toEqual('');
     });
 

@@ -21,14 +21,12 @@ const LineChart = defineComponent({
 
 
         onMounted(() => {
-          console.log('Component mounted. Summaries length:', props.summaries.length);
           if (svg.value) {
             createLineChart(svg.value, props.summaries);
           }
         });
 
         watchEffect(() => {
-          console.log('WatchEffect triggered. Summaries length:', props.summaries.length);
           if (svg.value && props.summaries.length) {
             createLineChart(svg.value, props.summaries);
           }
