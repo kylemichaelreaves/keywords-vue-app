@@ -129,6 +129,7 @@ type FetchTransactionsParams = {
     memo?: string;
     timeFrame?: TimeframeType;
     date?: Date | null | undefined;
+    pageParams?: { limit?: number; offset?: number; };
 }
 
 type OFSummaryTypeBase = {

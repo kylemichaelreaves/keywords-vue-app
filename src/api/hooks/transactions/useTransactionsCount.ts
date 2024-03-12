@@ -1,36 +1,35 @@
 import {useQuery} from '@tanstack/vue-query'
 import type {UseQueryReturnType} from '@tanstack/vue-query'
-import type {Transaction} from "@types";
 import {computed} from "vue";
-import {fetchTransactions} from '@api/transactions/fetchTransactions'
+import {fetchTransactionsCount} from '@api/transactions/fetchTransactionsCount'
 import {useTransactionsStore} from "@stores/transactions";
 import {getDateObject} from "@api/helpers/getDateObj";
 
-// TODO refactor limit - limit should be the length of the records for that query
-export default function useTransactions(LIMIT: number, OFFSET?: number): UseQueryReturnType<Transaction[], Error> {
+export default function useTransactionsCount(): UseQueryReturnType<number, Error> {
     const store = useTransactionsStore()
     const selectedDay = computed(() => store.getSelectedDay)
     const selectedWeek = computed(() => store.getSelectedWeek)
     const selectedMonth = computed(() => store.getSelectedMonth)
-    const selectedMemo = computed(() => store.getSelectedMemo)
     const dateType = computed(() => {
         return selectedDay.value ? "day" :
             selectedWeek.value ? "week" :
                 selectedMonth.value ? "month" : undefined
     });
 
-    const queryKey = computed(() => [
-        'transactions',
-        LIMIT,
-        OFFSET,
-        selectedMemo.value,
-        dateType.value,
-        selectedMonth.value,
-        selectedWeek.value
-    ]);
+    const queryKey = computed(() => {
+        let key = ['transactionsCount'];
+        if (selectedDay.value) {
+            key.push(selectedDay.value);
+        } else if (selectedWeek.value) {
+            key.push(selectedWeek.value);
+        } else if (selectedMonth.value) {
+            key.push(selectedMonth.value);
+        }
+        return key;
+    });
 
-    return useQuery<Array<Transaction>>({
-        queryKey: queryKey.value,
+    return useQuery<number>({
+        queryKey: ['transactionsCount', queryKey.value],
         queryFn: () => {
             // Convert the date string to a Date object based on the dateType
             // TODO - include a case for dateType === "year"
@@ -38,16 +37,8 @@ export default function useTransactions(LIMIT: number, OFFSET?: number): UseQuer
                 dateType.value === "week" ? selectedWeek.value :
                     dateType.value === "month" ? selectedMonth.value :
                         dateType.value === "day" ? selectedDay.value : null;
-
             const dateObj = getDateObject(dateType.value, selectedValue);
-
-            return fetchTransactions({
-                limit: LIMIT,
-                offset: OFFSET,
-                memo: selectedMemo.value,
-                timeFrame: dateType.value,
-                date: dateObj
-            });
+            return fetchTransactionsCount(dateType.value, dateObj)
         },
         refetchOnWindowFocus: false
     })

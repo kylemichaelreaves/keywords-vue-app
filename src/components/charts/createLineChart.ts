@@ -37,7 +37,7 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
     const x = d3
         .scaleTime()
         .range([0, width])
-        .domain(d3.extent(chartData, (d) => d.date).reverse() as unknown as [Date, Date]);
+        .domain(d3.extent(chartData, (d) => d.date) as unknown as [Date, Date]);
 
     const [minAmount, maxAmount] = d3.extent(chartData, (d) => d.total_debit) as [number, number];
 

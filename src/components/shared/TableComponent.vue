@@ -20,7 +20,7 @@
           :label="column.label"
           :sortable="sortableColumns.includes(column.prop)"
       >
-        <template v-slot:[`cell-${column}`]="scope">
+        <template v-slot:[`cell-${column.prop}`]="scope">
           <slot :name="`cell-${column}`" :row="scope.row">{{ scope.row[column.prop] }}</slot>
         </template>
       </el-table-column>
@@ -32,7 +32,7 @@
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :page-sizes="[10, 20, 30, 40]"
-        :total="tableData.length"
+        :total="tableData?.length"
     />
   </div>
 </template>
@@ -52,6 +52,7 @@ export default defineComponent({
   },
   props: {
     tableData: {
+      // TODO determine the type of tableData
       type: Array as () => string[],
       required: true,
     },
@@ -68,33 +69,16 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    LIMIT: {
-      type: Number,
-      required: true,
-      default: 100,
-    },
-    OFFSET: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
     rowKey: {
       type: String,
       required: false,
-    },
-    handleSizeChange: {
-      type: Function,
-      required: false,
-    },
-    handleCurrentChange: {
-      type: Function,
-      required: false,
-    },
+    }
   },
   setup(props) {
     const store = useTransactionsStore();
     const currentPage = ref(1);
-    const pageSize = ref(props.LIMIT);
+    const pageSize = ref(100);
+    const offset = ref(0);
     const tableData = ref(props.tableData);
 
     const pagedTableData = computed(() => {
@@ -119,6 +103,7 @@ export default defineComponent({
       currentPage,
       pageSize,
       store,
+      offset,
     };
   },
 });

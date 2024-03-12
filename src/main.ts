@@ -7,16 +7,18 @@ import './style.css'
 import App from './App.vue'
 import Keywords from "@components/Keywords.vue";
 import Home from "@components/Home.vue";
-import Navbar from "@components/Navbar.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import Transaction from "@components/transactions/Transaction.vue";
 import BudgetVisualizer from "@components/BudgetVisualizer.vue";
-import TransactionsTable from "@components/transactions/TransactionsTable.vue";
 import MemoSummaryTable from "@components/transactions/MemoSummaryTable.vue";
 import AddressGeocoderForm from "@components/address/AddressGeocoderForm.vue";
 import 'element-plus/theme-chalk/dark/css-vars.css'
+import BudgetCategoriesTreeSelect from "@components/transactions/BudgetCategoriesTreeSelect.vue";
+import MemosTable from "@components/transactions/MemosTable.vue";
+import NotFound from "@components/NotFound.vue";
+import TransactionsTable from "@components/transactions/TransactionsTable.vue";
 
 const pinia = createPinia()
 
@@ -44,23 +46,38 @@ export const routes = [
             {
                 path: 'transactions',
                 name: 'transactions',
-                component: TransactionsTable,
+                component: TransactionsTable
+            },
+            {
+                path: 'transactions/:transactionNumber',
+                name: 'transaction',
+                component: Transaction,
+                props: true
+            },
+            {
+                path: 'memos',
+                name: 'memos',
+                component: MemosTable,
                 children: [
                     {
-                        path: ':transactionNumber',
-                        name: 'Transaction',
-                        component: Transaction,
+                        path: ':memo',
+                        name: 'memo',
+                        component: MemoSummaryTable,
                         props: true,
-                    },
+                    }
                 ]
             },
             {
-                path: 'memos/:memo',
-                name: 'MemoSummaryTable',
-                component: MemoSummaryTable,
-                props: true,
-            },
+                path: 'budget-categories',
+                name: 'budget-categories',
+                component: BudgetCategoriesTreeSelect,
+            }
         ]
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'not-found',
+        component: NotFound
     }
 ]
 
@@ -72,11 +89,6 @@ export const router = createRouter({
 
 const app = createApp(App)
 
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-    app.component(key, component)
-}
-
-
 app
     .use(router)
     .use(VueQueryPlugin)
@@ -84,6 +96,32 @@ app
     .use(ElementPlus)
     .mount('#app')
 
-app.component('Navbar', Navbar)
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
 
+// // TODO if the app is already mounted, then unMount it and mount it again
+// // if (import.meta.hot) {
+// //     import.meta.hot.accept()
+// //     import.meta.hot.dispose(() => {
+// //         app.unmount()
+// //     })
+// // }
+//
+//
+//
+// app.component('Navbar', Navbar)
+//
+//
+// Mount the app
+if (!app._container) {
+    app.mount('#app');
+}
 
+// Hot Module Replacement (HMR) setup
+if (import.meta.hot) {
+    import.meta.hot.accept();
+    import.meta.hot.dispose(() => {
+        app.unmount();
+    });
+}

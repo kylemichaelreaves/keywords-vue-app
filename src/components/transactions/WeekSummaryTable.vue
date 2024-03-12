@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, type Ref, watch} from 'vue'
+import {computed, defineComponent, onMounted, type Ref, watch} from 'vue'
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 import useWeekSummary from "@api/hooks/transactions/useWeekSummary";
@@ -97,6 +97,10 @@ export default defineComponent({
     watch(() => store.selectedWeek, () => {
       refetch();
     });
+
+    onMounted(() => {
+      refetch();
+    })
 
     return {data, isError, refetch, isFetching, isLoading, error, columns, selectedWeek, resetSelectedWeek}
   }

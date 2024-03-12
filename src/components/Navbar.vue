@@ -25,7 +25,7 @@ export default defineComponent(
       setup() {
         const router = useRouter();
         const route = useRoute();
-        const routes = router.options.routes;
+        const routes = router.options.routes.filter(r => r.name !== 'not-found');
         const activeTab = ref(0);
 
         routes.forEach((r, index) => {
@@ -53,7 +53,7 @@ export default defineComponent(
             case 'budget-visualizer':
               return 'TrendCharts'
             default:
-              return ''
+              return 'InformationFilled'
           }
         })
 

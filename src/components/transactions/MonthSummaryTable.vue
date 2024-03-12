@@ -59,7 +59,15 @@
 </template>
 
 <script lang="ts">
-import {computed, type ComputedRef, defineComponent, onMounted, type Ref, watch} from 'vue'
+import {
+  computed,
+  type ComputedRef,
+  defineComponent,
+  onBeforeUnmount,
+  onMounted,
+  type Ref,
+  watch
+} from 'vue'
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 import useMonthSummary from "@api/hooks/transactions/useMonthSummary";
@@ -152,9 +160,16 @@ export default defineComponent({
       await store.fetchPrevSummaries();
     });
 
+    // TODO figure out why I did this in the first place
     onMounted(async () => {
       await store.fetchMonthsData()
       await store.fetchPrevSummaries();
+    });
+
+    onBeforeUnmount(() => {
+      //   reset the transactionsPageLimit to the default value
+      console.log('resetting the transactionsPageLimit to the default value while unmounting the component')
+      store.updateTransactionsTableLimit(100)
     });
 
     return {
