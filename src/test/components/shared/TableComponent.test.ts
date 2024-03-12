@@ -4,7 +4,7 @@ import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from "@pinia/testing";
 import type {TestingPinia} from "@pinia/testing";
 import {useTransactionsStore} from "@stores/transactions";
-import {afterEach} from "vitest";
+import {vi, afterEach} from "vitest";
 
 describe('TableComponent', () => {
     let store: TestingPinia;
@@ -47,8 +47,8 @@ describe('TableComponent', () => {
         vi.resetAllMocks()
 
         //     reset the store
-        transactionsStore.pageSize = 10;
-        transactionsStore.currentPage = 1;
+        transactionsStore.transactionsPageSize = 10;
+        transactionsStore.transactionsCurrentPage = 1;
     })
 
 
@@ -66,32 +66,42 @@ describe('TableComponent', () => {
         expect(wrapper.find('el-table').exists()).toBe(false)
     })
 
+    // TODO these shouldn't be use the store but rather should use the state within the component
     it('updates page size when handleSizeChange is called', async () => {
         const store = useTransactionsStore();
-        store.pageSize = 20
+        store.transactionsPageSize = 20
         // @ts-ignore
         await wrapper.vm.handleSizeChange(20)
 
         await wrapper.vm.$nextTick()
 
         // @ts-ignore
-        expect(wrapper.vm.store.getPageSize).toBe(20)
+        expect(wrapper.vm.pageSize).toBe(20)
+
+        // @ts-ignore
+        expect(wrapper.vm.store.getTransactionsPageSize).toBe(20)
     })
 
+    // TODO these shouldn't be use the store but rather should use the state within the component
     it('updates current page when handleCurrentChange is called', async () => {
         const store = useTransactionsStore();
 
-        store.currentPage = 1
+        store.transactionsCurrentPage = 1
 
         const table = wrapper.findComponent({name: 'TableComponent'})
 
         // console.log('pagination.vm', pagination.vm);
 
+        store.transactionsCurrentPage = 2
 
-        store.currentPage = 2
+        // @ts-ignore
+        await wrapper.vm.handleCurrentChange(2)
 
         await wrapper.vm.$nextTick()
 
-        expect(store.getCurrentPage).toBe(2)
+        // @ts-ignore
+        expect(wrapper.vm.currentPage).toBe(2)
+
+        expect(store.getTransactionsCurrentPage).toBe(2)
     })
 })

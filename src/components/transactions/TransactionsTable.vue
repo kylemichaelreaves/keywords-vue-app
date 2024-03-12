@@ -1,8 +1,7 @@
 <template>
-  <!--  TODO paginate Table -->
   <el-table
       :row-key="getRowKey"
-      v-if="reactiveTableData && reactiveTableData.length > 0"
+      v-if="reactiveTableData"
       :loading="isFetching"
       :isFetching="isFetching"
       :data="reactiveTableData"
@@ -20,7 +19,7 @@
         :label="columnKey"
     >
       <template v-if="columnKey === 'Transaction Number'" #default="scope">
-        <router-link :to="`budget-visualizer/transactions/${scope.row[columnKey]}`">
+        <router-link :to="`transactions/${scope.row[columnKey]}`">
           {{ scope.row[columnKey] }}
         </router-link>
       </template>
@@ -30,7 +29,7 @@
         </div>
       </template>
       <template v-else-if="columnKey === 'Memo'" #default="scope">
-        <router-link :to="`budget-visualizer/memos/${encodeURIComponent(scope.row[columnKey])}`">
+        <router-link :to="`memos/${encodeURIComponent(scope.row[columnKey])}`">
           {{ scope.row[columnKey] }}
         </router-link>
       </template>
@@ -39,13 +38,10 @@
       </template>
     </el-table-column>
   </el-table>
-  <div v-if="isFetching">
-    <el-progress type="circle" :percentage="100" :stroke-width="6"/>
-  </div>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent} from "vue";
+import {computed, defineComponent, ref} from "vue";
 import type {Transaction} from "@types";
 import {formatDate} from "@api/helpers/formatDate";
 
@@ -54,16 +50,6 @@ const transactionsTableProps = {
     type: Array as () => Transaction[],
     required: true,
     default: () => []
-  },
-  LIMIT: {
-    type: Number,
-    required: true,
-    default: 100
-  },
-  OFFSET: {
-    type: Number,
-    required: true,
-    default: 0
   },
   columnKeys: {
     type: Array as () => string[],
@@ -80,12 +66,6 @@ const transactionsTableProps = {
     required: false,
     default: false
   },
-  incrementOffset: {
-    type: Function,
-    required: false,
-    default: () => {
-    }
-  },
   class: {
     type: String,
     required: false,
@@ -99,18 +79,16 @@ export default defineComponent({
   props: transactionsTableProps,
   setup(props) {
 
-    const {LIMIT, OFFSET, columnKeys, isFetching} = props;
+    let {columnKeys, isFetching} = props;
 
     const reactiveTableData = computed(() => props.tableData);
 
-    function getRowKey(row: Transaction)  {
+    function getRowKey(row: Transaction) {
       return row.transactionNumber;
     }
 
     return {
       reactiveTableData,
-      LIMIT,
-      OFFSET,
       columnKeys,
       isFetching,
       getRowKey
@@ -120,5 +98,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 </style>

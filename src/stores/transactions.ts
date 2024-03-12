@@ -28,12 +28,14 @@ export const useTransactionsStore = defineStore('transactions', {
         MJSummaries: Array<MJSummary>,
         weekSummaries: Array<Summaries>,
         monthSummaries: Array<Summaries>,
-        currentPage: number,
-        pageSize: number,
+        transactionsCurrentPage: number,
+        transactionsPageSize: number,
         filter: Record<string, string>,
         sort: { prop: string, order: string },
         memoLimit: number,
         memoOffset: number,
+        transactionsTableLimit: number,
+        transactionsTableOffset: number,
     } => ({
         selectedDay: '',
         selectedMonth: '',
@@ -50,12 +52,14 @@ export const useTransactionsStore = defineStore('transactions', {
         MJSummaries: [],
         weekSummaries: [],
         monthSummaries: [],
-        currentPage: 1,
-        pageSize: 100,
+        transactionsCurrentPage: 1,
+        transactionsPageSize: 100,
         filter: {},
         sort: {prop: '', order: ''},
         memoLimit: 100,
         memoOffset: 0,
+        transactionsTableLimit: 100,
+        transactionsTableOffset: 0,
     }),
     getters: {
         getSelectedDay: (state) => {
@@ -97,11 +101,11 @@ export const useTransactionsStore = defineStore('transactions', {
         getMonthSummaries: (state) => {
             return state.monthSummaries
         },
-        getCurrentPage: (state) => {
-            return state.currentPage
+        getTransactionsCurrentPage: (state) => {
+            return state.transactionsCurrentPage
         },
-        getPageSize: (state) => {
-            return state.pageSize
+        getTransactionsPageSize: (state) => {
+            return state.transactionsPageSize
         },
         getFilter: (state) => {
             return state.filter
@@ -117,6 +121,12 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         getSelectedBudgetCategory: (state) => {
             return state.selectedBudgetCategory
+        },
+        getTransactionsTableLimit: (state) => {
+            return state.transactionsTableLimit
+        },
+        getTransactionsTableOffset: (state) => {
+            return state.transactionsTableOffset
         }
     },
     actions: {
@@ -246,11 +256,11 @@ export const useTransactionsStore = defineStore('transactions', {
                 return 'day';
             }
         },
-        updateCurrentPage(currentPage: number) {
-            this.currentPage = currentPage;
+        updateTransactionsCurrentPage(currentPage: number) {
+            this.transactionsCurrentPage = currentPage;
         },
-        updatePageSize(pageSize: number) {
-            this.pageSize = pageSize;
+        updateTransactionsPageSize(pageSize: number) {
+            this.transactionsPageSize = pageSize;
         },
         updateFilter(filter: Record<string, string>) {
             this.filter = filter;
@@ -260,6 +270,12 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         setSelectedBudgetCategory(selectedBudgetCategory: string) {
             this.selectedBudgetCategory = selectedBudgetCategory;
+        },
+        updateTransactionsTableLimit(limit: number) {
+            this.transactionsTableLimit = limit;
+        },
+        updateTransactionsTableOffset(offset: number) {
+            this.transactionsTableOffset = offset;
         }
     }
 

@@ -16,7 +16,7 @@ export const fetchWeekSummary = async (
         .get(`${fetchURL}/transactions/get-week-summary`,
             {
                 params: {
-                    week
+                    week: week
                 }
             })
         .then(res => res.data)

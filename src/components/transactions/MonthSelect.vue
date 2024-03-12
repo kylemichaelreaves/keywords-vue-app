@@ -1,7 +1,7 @@
 <template>
   <SelectComponent
       :options="monthOptions"
-      :selectedValue="selectedMonth"
+      :selectedValue="store.selectedMonth"
       placeholder="select a month"
       :disabled="!!selectedWeek"
       :onChange="updateSelectedMonth"
@@ -53,7 +53,8 @@ export default defineComponent({
       error,
       selectedMonth: computed(() => store.getSelectedMonth),
       selectedWeek: computed(() => store.getSelectedWeek),
-      updateSelectedMonth
+      updateSelectedMonth,
+      store
     }
   }
 })

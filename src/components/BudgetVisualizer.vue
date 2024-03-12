@@ -8,122 +8,186 @@
         Budget Visualizer
       </h2>
     </template>
+    <el-container>
+      <el-aside width="200px">
+        <el-menu class="el-menu-vertical-demo" default-active="1">
+          <el-menu-item index="1">
+            <router-link :to="{name: 'transactions'}">
+              <el-icon>
+                <Money/>
+              </el-icon>
+              <span slot="title">Transactions</span>
+            </router-link>
+          </el-menu-item>
+          <el-menu-item index="2">
+            <router-link :to="{name: 'memos'}">
+              <el-icon>
+                <OfficeBuilding/>
+              </el-icon>
+              <span>Memos</span>
+            </router-link>
+          </el-menu-item>
+          <el-menu-item index="3">
+            <router-link :to="{name: 'budget-categories'}">
+              <el-icon>
+                <Files/>
+              </el-icon>
+              <span>Budget Categories</span>
+            </router-link>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-main>
+        <el-alert v-if="error" type="error" :title="'Error: ' + error">
+          <h2>
+            {{ error }}
+          </h2>
+        </el-alert>
+        <br/>
+        <!--        <TransactionsTableSummaryTables/>-->
+        <!--        <TransactionsTableSelects/>-->
 
-    <el-row style="justify-content: space-between">
-      <!--      TODO add DaySummaryTable component-->
-      <Suspense>
-        <MemoSummaryTable v-if="selectedMemo"/>
-      </Suspense>
-      <Suspense>
-        <MonthSummaryTable v-if="selectedMonth"/>
-      </Suspense>
-      <Suspense>
-        <WeekSummaryTable v-if="selectedWeek"/>
-      </Suspense>
-    </el-row>
+        <el-row style="justify-content: space-between">
+          <!--      TODO add DaySummaryTable component-->
+          <Suspense>
+            <MemoSummaryTable v-if="selectedMemo"/>
+          </Suspense>
+          <Suspense>
+            <MonthSummaryTable v-if="selectedMonth"/>
+          </Suspense>
+          <Suspense>
+            <WeekSummaryTable v-if="selectedWeek"/>
+          </Suspense>
+        </el-row>
 
-    <el-row>
-      <el-col>
-        <BudgetCategoriesTreeSelect/>
-      </el-col>
-    </el-row>
+        <el-row v-if="showTransactionsTable" style="justify-content: space-evenly">
+          <el-col :span="4">
+            <DaySelect/>
+          </el-col>
+          <el-col :span="4">
+            <WeekSelect/>
+          </el-col>
+          <el-col :span="4">
+            <MonthSelect/>
+          </el-col>
+          <el-col :span="4">
+            <YearSelect/>
+          </el-col>
+          <el-col :span="8">
+            <MemoSelect/>
+          </el-col>
+        </el-row>
 
-
-    <el-alert v-if="error" type="error" :title="'Error: ' + error">
-      <h2>
-        {{ error }}
-      </h2>
-    </el-alert>
-    <br/>
-
-    <el-row style="justify-content: space-evenly">
-      <el-col :span="4">
-        <DaySelect/>
-      </el-col>
-      <el-col :span="4">
-        <WeekSelect/>
-      </el-col>
-      <el-col :span="4">
-        <MonthSelect/>
-      </el-col>
-      <el-col :span="8">
-        <MemoSelect/>
-      </el-col>
-      <el-col :span="4">
-        <YearSelect/>
-      </el-col>
-    </el-row>
-
-    <el-row>
-      <el-col>
-        <TransactionsTable
-            class="transactions-table"
-            v-if="data"
-            :tableData="data"
-            :columnKeys="columnKeys"
-            :isFetching="isFetching"
-            :LIMIT="LIMIT"
-            :OFFSET="OFFSET"
-            :incrementOffset="incrementOffset"
-            :isLoading="isFetching || isLoading"
-        />
-      </el-col>
-    </el-row>
+        <el-row>
+          <el-col>
+            <TransactionsTable
+                class="transactions-table"
+                v-if="showTransactionsTable && paginatedData"
+                :tableData="paginatedData"
+                :columnKeys="columnKeys"
+                :isFetching="isFetching"
+                :isLoading="isLoading"
+            />
+            <!--    TODO fix pagination not loading onMount  -->
+            <el-pagination
+                v-if="showTransactionsTable"
+                background
+                layout="prev, pager, next"
+                :total="totalItems"
+                :page-size="LIMIT"
+                :current-page="currentPage"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+            />
+          </el-col>
+        </el-row>
+      </el-main>
+    </el-container>
   </el-card>
   <VueQueryDevtools/>
   <router-view :key="$route.fullPath"></router-view>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onMounted, ref, watch} from "vue";
-import TransactionsTable from "./transactions/TransactionsTable.vue";
+import {computed, defineComponent, onMounted, watch} from "vue";
 import useTransactions from "@api/hooks/transactions/useTransactions";
-import MonthSelect from "./transactions/MonthSelect.vue";
-import MemoSelect from "./transactions/MemoSelect.vue";
-import {TrendCharts} from "@element-plus/icons-vue";
+import {Files, Money, OfficeBuilding, TrendCharts} from "@element-plus/icons-vue";
 import {useTransactionsStore} from "@stores/transactions";
-import MemoSummaryTable from "./transactions/MemoSummaryTable.vue";
-import WeekSelect from "./transactions/WeekSelect.vue";
-import WeekSummaryTable from "./transactions/WeekSummaryTable.vue";
-import MonthSummaryTable from "./transactions/MonthSummaryTable.vue";
 import {VueQueryDevtools} from '@tanstack/vue-query-devtools'
-import DaySelect from "@components/transactions/DaySelect.vue";
-import YearSelect from "@components/transactions/YearSelect.vue";
 import BudgetCategoriesTreeSelect from "./transactions/BudgetCategoriesTreeSelect.vue";
-
+import {useRoute, useRouter} from "vue-router";
+import TransactionsTable from "./transactions/TransactionsTable.vue";
+import TransactionsTableSelects from "@components/transactions/TransactionsTableSelects.vue";
+import TransactionsTableSummaryTables from "@components/transactions/TransactionsTableSummaryTables.vue";
+import MonthSummaryTable from "@components/transactions/MonthSummaryTable.vue";
+import MemoSummaryTable from "@components/transactions/MemoSummaryTable.vue";
+import WeekSummaryTable from "@components/transactions/WeekSummaryTable.vue";
+import YearSelect from "@components/transactions/YearSelect.vue";
+import DaySelect from "@components/transactions/DaySelect.vue";
+import MonthSelect from "@components/transactions/MonthSelect.vue";
+import WeekSelect from "@components/transactions/WeekSelect.vue";
+import MemoSelect from "@components/transactions/MemoSelect.vue";
 
 export default defineComponent({
   name: "BudgetVisualizer",
   components: {
+    MemoSelect, WeekSelect, MonthSelect, DaySelect, YearSelect,
+    WeekSummaryTable, MemoSummaryTable, MonthSummaryTable,
+    TransactionsTableSummaryTables,
+    TransactionsTableSelects,
+    Money,
+    Files,
+    OfficeBuilding,
     BudgetCategoriesTreeSelect,
-    YearSelect,
-    DaySelect,
     VueQueryDevtools,
-    MemoSummaryTable,
-    MonthSummaryTable,
-    WeekSummaryTable,
     TrendCharts,
-    MemoSelect,
-    MonthSelect,
-    WeekSelect,
     TransactionsTable,
   },
   setup() {
     const store = useTransactionsStore();
-    const LIMIT = 100;
-    const OFFSET = ref(0);
+
+    const route = useRoute(); // Get the current route
+    const router = useRouter();
+
+    const LIMIT = computed(() => store.getTransactionsTableLimit);
+    const OFFSET = computed(() => store.getTransactionsTableOffset);
+
+    // Reactive references to store state for pagination
+    const currentPage = computed({
+      get: () => Math.floor(store.transactionsTableOffset / store.transactionsTableLimit) + 1,
+      set: (val: number) => {
+        store.updateTransactionsTableOffset((val - 1) * store.transactionsTableLimit);
+      }
+    });
+
+
     const {
       data,
       error,
       isLoading,
       isFetching,
       refetch
-    } = useTransactions(LIMIT, OFFSET.value);
+    } = useTransactions(LIMIT.value, OFFSET.value);
 
-    function incrementOffset() {
-      OFFSET.value += LIMIT;
-      refetch();
+    const totalItems = data?.value?.length
+
+    // Handler for page changes
+    function handleCurrentChange(newPage: number) {
+      currentPage.value = newPage; // This will automatically update the store's offset
     }
+
+    // Optionally, handle size change if your UI allows changing the number of items per page
+    function handleSizeChange(newSize: number) {
+      store.updateTransactionsTableLimit(newSize);
+      store.updateTransactionsTableOffset(0); // Reset to the beginning or adjust as needed
+    }
+
+    const paginatedData = computed(() => {
+      const start = (currentPage.value - 1) * store.transactionsTableLimit;
+      const end = start + store.transactionsTableLimit;
+      return data?.value?.slice(start, end);
+    });
+
 
     let columnKeys = [
       'Transaction Number',
@@ -139,8 +203,17 @@ export default defineComponent({
 
     columnKeys = columnKeys.filter(key => key !== 'Check Number' && key !== 'Fees');
 
+    const showTransactionsTable = computed(() => route.name === 'transactions');
+
     watch(() => [store.selectedMemo, store.selectedWeek, store.selectedMonth], () => {
+      // update the store's limit when the selected memo, week, or month changes, but not when the value is reset
+      // if these values are not null, set the store to 0
+      // if (store.selectedMemo || store.selectedWeek || store.selectedMonth) {
+      //   store.updateTransactionsTableLimit(0);
+      // }
+
       refetch();
+      console.log('totalItems', totalItems)
     });
 
     onMounted(() => {
@@ -150,7 +223,6 @@ export default defineComponent({
     return {
       data,
       error,
-      incrementOffset,
       isLoading,
       isFetching,
       selectedWeek: computed(() => store.getSelectedWeek),
@@ -159,6 +231,12 @@ export default defineComponent({
       LIMIT,
       OFFSET,
       columnKeys,
+      handleSizeChange,
+      handleCurrentChange,
+      currentPage,
+      paginatedData,
+      totalItems,
+      showTransactionsTable,
     };
   },
 });
