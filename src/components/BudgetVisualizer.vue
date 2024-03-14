@@ -11,28 +11,12 @@
     <el-container>
       <el-aside width="200px">
         <el-menu class="el-menu-vertical-demo" default-active="1">
-          <el-menu-item index="1">
-            <router-link :to="{name: 'transactions'}">
+          <el-menu-item v-for="item in menuItems" :key="item.index" :index="item.index">
+            <router-link :to="{name: item.name}">
               <el-icon>
-                <Money/>
+                <component :is="item.icon"/>
               </el-icon>
-              <span slot="title">Transactions</span>
-            </router-link>
-          </el-menu-item>
-          <el-menu-item index="2">
-            <router-link :to="{name: 'memos'}">
-              <el-icon>
-                <OfficeBuilding/>
-              </el-icon>
-              <span>Memos</span>
-            </router-link>
-          </el-menu-item>
-          <el-menu-item index="3">
-            <router-link :to="{name: 'budget-categories'}">
-              <el-icon>
-                <Files/>
-              </el-icon>
-              <span>Budget Categories</span>
+              <span slot="title">{{ item.title }}</span>
             </router-link>
           </el-menu-item>
         </el-menu>
@@ -160,6 +144,12 @@ export default defineComponent({
       }
     });
 
+    const menuItems = [
+      { index: "1", name: "transactions", icon: "Money", title: "Transactions" },
+      { index: "2", name: "memos", icon: "OfficeBuilding", title: "Memos" },
+      { index: "3", name: "budget-categories", icon: "Files", title: "Budget Categories" }
+    ]
+
 
     const {
       data,
@@ -237,6 +227,7 @@ export default defineComponent({
       paginatedData,
       totalItems,
       showTransactionsTable,
+      menuItems
     };
   },
 });
