@@ -1,34 +1,29 @@
 <template>
-  <!--  TODO paginate this table, use the TableComponent -->
   <h4>Months Summary Table</h4>
-  <div v-if="selectedMonth">
-    <el-table
-        v-if="data && data.length > 0"
-        :data="data"
-        :key="selectedMonth"
-        border
-        style="width: 100%"
-        table-layout="auto"
-        size="small"
-        :row-class-name="tableRowClassName"
-        show-summary
-    >
-      <el-table-column
-          v-for="column in columns"
-          :key="column.prop"
-          :prop="column.prop"
-          :label="column.label"
-      />
-    </el-table>
-  </div>
-  <div v-else>
-    <p>Please select a month to display the data.</p>
-  </div>
-
+  <el-text size="large">A summary table of all the months I have in my database</el-text>
+  <!--  TODO use TableComponent -->
+  <el-table
+      v-if="data && data.length > 0"
+      :data="data"
+      v-loading="isFetching || isLoading || isRefetching"
+      :row-key="selectedMonth"
+      border
+      table-layout="auto"
+      size="small"
+      :row-class-name="tableRowClassName"
+      show-summary
+  >
+    <el-table-column
+        v-for="column in columns"
+        :key="column.prop"
+        :prop="column.prop"
+        :label="column.label"
+    />
+  </el-table>
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, type Ref, type ComputedRef, onMounted} from 'vue'
+import {defineComponent, computed, onMounted} from 'vue'
 import {ElCard, ElTable, ElTableColumn} from "element-plus";
 import useSummaries from "@api/hooks/transactions/useSummaries";
 import {useTransactionsStore} from "@stores/transactions";
@@ -42,22 +37,11 @@ export default defineComponent({
     ElTable,
     ElTableColumn
   },
-  setup(): {
-    data: Summaries[] | undefined,
-    isError: Ref<boolean>,
-    refetch: () => void,
-    isFetching: Ref<boolean>,
-    isLoading: Ref<boolean>,
-    error: unknown,
-    columns: { prop: string; label: string }[],
-    tableRowClassName: (params: { row: Summaries }) => string,
-    selectedMonth: ComputedRef<string>
-  } {
+  setup() {
     const store = useTransactionsStore()
     const selectedMonth = computed(() => store.getSelectedMonth)
 
-    const {data: dataRef, isError, refetch, isFetching, isLoading, error} = useSummaries()
-    const data = dataRef.value
+    const {data, isError, refetch, isFetching, isRefetching, isLoading, error} = useSummaries()
 
     const tableRowClassName = ({row}: { row: Summaries }) => {
       let className = '';
@@ -88,7 +72,7 @@ export default defineComponent({
     ];
 
     return {
-      data, isError, refetch, isFetching, isLoading, error, columns, tableRowClassName, selectedMonth
+      data, isError, refetch, isFetching, isRefetching, isLoading, error, columns, tableRowClassName, selectedMonth
     }
   }
 })

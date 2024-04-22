@@ -21,9 +21,8 @@ export default defineComponent({
   setup() {
 
     const store = useTransactionsStore()
-    // fetch months that will populate the dropdown from the result of this hook
     const {data, isFetching, isLoading, isError, error} = useMonths()
-    // make the data usable to the component
+
     const monthOptions = computed(() => {
       if (!data.value) {
         return []

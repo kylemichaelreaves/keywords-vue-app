@@ -3,7 +3,8 @@
     <template #header>
       <div class="header-container">
         <h3>OF sum total for {{ selectedMonth }}:</h3>
-        <el-statistic size="large" :value="statisticValue" title="Total OF Amount Debit"/>
+        <el-statistic size="large" :value="statisticValue" title="Total OF Amount Debit"
+                      v-loading="isLoading || isFetching || isRefetching"/>
       </div>
     </template>
     <div v-if="isError">{{ error }}</div>
@@ -24,7 +25,7 @@ export default defineComponent({
   components: {OFPrevSummaries, ElTable, ElTableColumn, ElCard, ElStatistic},
   setup() {
 
-    const {data, isLoading, isFetching, isError, error, refetch} = useOFAmountDebit();
+    const {data, isLoading, isFetching, isError, error, refetch, isRefetching} = useOFAmountDebit();
 
     const store = useTransactionsStore();
 
@@ -70,13 +71,14 @@ export default defineComponent({
       data,
       isLoading,
       isFetching,
+      isRefetching,
       isError,
       error,
       columns,
       selectedWeek,
       selectedMonth,
       statisticValue,
-      timeframe
+      timeframe,
     }
   }
 })

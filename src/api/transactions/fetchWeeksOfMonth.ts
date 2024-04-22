@@ -1,19 +1,16 @@
 import axios from "axios";
 import {isValidURL} from "@api/helpers/isValidURL";
-import type {MemoSumAmountDebits} from "@types";
 
-// TODO figure out why we are passing LIMIT and OFFSET???
-export async function fetchMemosSumAmountDebits(limit: number, offset: number): Promise<MemoSumAmountDebits[]> {
+export async function fetchWeeksOfMonth(monthString: string) {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
     if (!isValidURL(fetchURL)) {
         throw Error('url is not valid');
     }
 
-    return await axios.get(`${fetchURL}/transactions/get-memos-sum-amount-debits`, {
+    return await axios.get(`${fetchURL}/transactions/get-weeks-of-month`, {
         params: {
-            limit: limit,
-            offset: offset,
+            month: monthString
         }
     })
         .then(res => res.data)

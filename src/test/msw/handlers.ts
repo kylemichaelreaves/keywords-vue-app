@@ -19,6 +19,10 @@ const handlers: HttpHandler[] = [
         return new HttpResponse(JSON.stringify(transactionsMock), {status: 200})
     }),
 
+    http.post("*/transactions/update-transaction", (info) => {
+        return new HttpResponse(JSON.stringify(transactionsMock[0]), {status: 200})
+    }),
+
     http.get("*/transactions/get-months", (info) => {
         return new HttpResponse(JSON.stringify(monthsMock), {status: 200})
     }),
@@ -33,6 +37,10 @@ const handlers: HttpHandler[] = [
 
     http.get("*/transactions/get-memos", (info) => {
         return new HttpResponse(JSON.stringify(memosMock), {status: 200})
+    }),
+
+    http.post("*/transactions/update-memo", (info) => {
+        return new HttpResponse(JSON.stringify(memosMock[0]), {status: 200})
     }),
 
     http.get("*/transactions/get-memo-summary", (info) => {

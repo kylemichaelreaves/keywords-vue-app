@@ -1,4 +1,4 @@
-import {test} from 'vitest';
+import {vi, test} from 'vitest';
 import {fetchTransactions} from "@api/transactions/fetchTransactions";
 import type {Transaction} from "@types";
 import {transactionsMock} from "@mocks/transaction";

@@ -1,4 +1,4 @@
-import {test} from 'vitest'
+import {vi, test} from 'vitest'
 import {fetchMemos} from "@api/transactions/fetchMemos";
 import {memosMock} from "@mocks/transaction";
 

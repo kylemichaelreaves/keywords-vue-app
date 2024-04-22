@@ -27,8 +27,8 @@
 import {computed, defineComponent, type Ref, watch} from 'vue'
 import {ElCard, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
-import useDaySummary from "@api/hooks/transactions/useDaySummary"; // You need to implement this
-import type {DaySummary} from "@types"; // You need to define this
+import useDaySummary from "@api/hooks/transactions/useDaySummary"; 
+import type {DaySummary} from "@types";
 
 export default defineComponent({
   name: "DaySummaryTable",
@@ -44,13 +44,15 @@ export default defineComponent({
     isFetching: Ref<boolean>,
     isLoading: Ref<boolean>,
     error: unknown,
-    columns: { prop: string; label: string }[]
+    columns: { prop: string; label: string }[],
+    selectedDay: Ref<string>
   } {
     const store = useTransactionsStore()
 
-    const selectedDay = computed(() => store.getSelectedDay) // You need to implement this
+    // TODO refactor, or duplicate component to have one that can accept props
+    const selectedDay = computed(() => store.getSelectedDay)
+    const {data, isError, refetch, isFetching, isLoading, error} = useDaySummary()
 
-    const {data, isError, refetch, isFetching, isLoading, error} = useDaySummary() // You need to implement this
     const daySummaryData = data.value
 
     // Generate columns based on the keys of the first object in the data array

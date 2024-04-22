@@ -1,4 +1,7 @@
+import { DateTime } from 'luxon';
+
 export function parseDateMMYYYY(input: string): Date | null {
+    // regex to match the format MM/YYYY
     const regex = /^(\d{2})\/(\d{4})$/;
     const match = input.match(regex);
 
@@ -6,12 +9,13 @@ export function parseDateMMYYYY(input: string): Date | null {
         return null;
     }
 
-    const month = parseInt(match[1], 10) - 1; // Month is 0-indexed
-    const year = parseInt(match[2], 10);
+    const [month, year] = input.split('/').map(Number);
+    // Month in Luxon is 1-based, so no need to subtract 1
+    const dt = DateTime.fromObject({year: year, month: month, day: 1}, { zone: 'UTC' });
 
-    if (month < 0 || month > 11) {
-        return null;
+    if (dt.isValid && month >= 1 && month <= 12) {
+        return dt.toJSDate();
     }
 
-    return new Date(year, month);
+    return null;
 }

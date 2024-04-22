@@ -1,7 +1,7 @@
 <template>
   <LineChart v-if="data && data.length > 0" :summaries="data"/>
   <div v-if="isError">{{ error }}</div>
-  <div v-if="isLoading || isFetching">Loading...</div>
+  <div v-if="isLoading || isFetching || isRefetching">Loading...</div>
 </template>
 
 <script lang="ts">
@@ -36,7 +36,7 @@ export default defineComponent({
       ];
     });
 
-    const {data, isLoading, isFetching, isError, error, refetch} = usePrevMJSummaries();
+    const {data, isLoading, isFetching, isRefetching, isError, error, refetch} = usePrevMJSummaries();
 
     onMounted( () => {
       refetch();
@@ -54,6 +54,7 @@ export default defineComponent({
       data,
       isLoading,
       isFetching,
+      isRefetching,
       isError,
       error,
     }

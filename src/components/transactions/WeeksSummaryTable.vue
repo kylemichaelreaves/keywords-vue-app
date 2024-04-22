@@ -2,8 +2,9 @@
   <el-card>
     <el-table
         v-if="data && data.length > 0"
+        v-loading="isFetching || isLoading || isRefetching"
         :data="data"
-        :key="data"
+        :row-key="data[0].period"
         stripe
         border
         style="width: 100%">
@@ -35,7 +36,7 @@ export default defineComponent({
 
     const store = useTransactionsStore()
 
-    const {data, isError, refetch, isFetching, isLoading, error} = useSummaries()
+    const {data, isError, refetch, isFetching, isLoading, isRefetching, error, isRefetchError} = useSummaries()
 
     const columns = [
       {prop: 'period', label: 'Period'},
@@ -52,7 +53,7 @@ export default defineComponent({
     })
 
     return {
-      data, isError, refetch, isFetching, isLoading, error, columns
+      data, isError, refetch, isFetching, isRefetching, isLoading, error, columns
     }
   }
 })

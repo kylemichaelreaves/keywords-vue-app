@@ -1,24 +1,25 @@
 import {useQuery} from '@tanstack/vue-query'
 import type {UseQueryReturnType} from "@tanstack/vue-query";
-
 import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
 import {fetchMJAmountDebit} from "@api/transactions/fetchMJAmountDebit";
 import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
 import type {MJSummary} from "@types";
+import {getDateType} from "@components/transactions/getDateType";
+import {getSelectedDateTypeValue} from "@components/transactions/getSelectedDateTypeValue";
 
-// Get the Amount Debit for Memo's fitting the MJ category, for subsequent months
+// Get the Amount Debit for Memo's fitting the MJ category, for preceding months
 export function usePrevMJSummaries(): UseQueryReturnType<MJSummary[], Error> {
     const store = useTransactionsStore()
-    const selectedMonth = computed(() => store.getSelectedMonth)
-    const dateType = computed(() => "month");
-    const queryKey = computed(() => ['PrevMJSummaries', dateType.value, selectedMonth.value]);
+    const selectedDateTypeValue = getSelectedDateTypeValue()
+    const dateType = getDateType();
+    const queryKey = computed(() => ['PrevMJSummaries', dateType, selectedDateTypeValue.value]);
 
     return useQuery({
         queryKey: queryKey.value,
         queryFn: async () => {
             // find where the selectedMonth is in our months array
-            const currentIndex = store.months.findIndex(month => month.month_year === selectedMonth.value);
+            const currentIndex = store.months.findIndex(month => month.month_year === selectedDateTypeValue.value);
             // get the next 3 months
             const monthsToFetch = store.months.slice(currentIndex, currentIndex + 3);
             const [results] = await Promise.all([Promise.all(monthsToFetch.map(async (month) => {
@@ -36,7 +37,7 @@ export function usePrevMJSummaries(): UseQueryReturnType<MJSummary[], Error> {
                 } else {
                     // if not, fetch the data
                     const dateObj = parseDateMMYYYY(monthYear);
-                    const MJSummary = await fetchMJAmountDebit(dateType.value, dateObj);
+                    const MJSummary = await fetchMJAmountDebit(dateType, dateObj);
                     // update the store
                     store.setMJSummaries([...store.MJSummaries, ...MJSummary as unknown as typeof MJSummary[]]);
                     return MJSummary;

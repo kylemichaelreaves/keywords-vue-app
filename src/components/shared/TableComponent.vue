@@ -2,7 +2,7 @@
   <div>
     <el-table
         v-if="tableData"
-        :loading="isFetching"
+        v-loading="isFetching"
         :data="pagedTableData"
         :default-sort="{prop: 'date', order: 'descending'}"
         :default-filters="store.getFilter"
@@ -26,6 +26,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
+        v-if="shouldShowPagination"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
@@ -39,7 +40,7 @@
 
 
 <script lang="ts">
-import {defineComponent, ref, computed} from "vue";
+import {defineComponent, ref, computed, watch} from "vue";
 import {ElPagination, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 
@@ -87,14 +88,24 @@ export default defineComponent({
       return tableData.value.slice(start, end);
     });
 
+    const shouldShowPagination = computed(() => {
+      return tableData.value.length > pageSize.value;
+    });
+
     const handleSizeChange = (val: number) => {
       pageSize.value = val;
       currentPage.value = 1;
     };
 
+
     const handleCurrentChange = (val: number) => {
       currentPage.value = val;
     };
+
+    watch(() => props.tableData, (newData) => {
+      tableData.value = newData;
+    });
+
 
     return {
       pagedTableData,
@@ -104,6 +115,7 @@ export default defineComponent({
       pageSize,
       store,
       offset,
+      shouldShowPagination,
     };
   },
 });

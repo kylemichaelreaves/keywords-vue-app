@@ -15,9 +15,12 @@ describe('TableComponent', () => {
         store = createTestingPinia();
         transactionsStore = useTransactionsStore(store);
 
+        // a data array whose length makes the ElPagination component appear
+        const mockData = Array.from({length: 101}, (_, i) => `data${i + 1}`)
+
         wrapper = mount(TableComponent, {
             props: {
-                tableData: ['data1', 'data2', 'data3'],
+                tableData: mockData,
                 columns: [{prop: 'column1', label: 'Column 1'}],
                 sortableColumns: ['column1'],
                 isFetching: false,

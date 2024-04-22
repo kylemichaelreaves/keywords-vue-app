@@ -168,6 +168,11 @@ type CategoryTreeNode = {
 
 type CategoryTreeData = CategoryTreeNode[];
 
+type RouterQueryParams = {
+    [key: string]: string | number | null | undefined;
+};
+
+
 
 export type {
     AddressFields,
@@ -196,5 +201,6 @@ export type {
     OFSummaryTypeBase,
     MJSummary,
     Summary,
-    Summaries
+    Summaries,
+    RouterQueryParams
 };

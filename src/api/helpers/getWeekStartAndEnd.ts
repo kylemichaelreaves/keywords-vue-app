@@ -1,16 +1,18 @@
-export function getWeekStartAndEnd(date: Date) {
-    const dayOfWeek = date.getDay();
-    const startOfWeek = new Date(date);
-    startOfWeek.setDate(date.getDate() - dayOfWeek);
+import {DateTime} from 'luxon';
 
-    const endOfWeek = new Date(date);
-    endOfWeek.setDate(date.getDate() + (6 - dayOfWeek));
+export function getWeekStartAndEnd(dateInput: Date) {
+    // Parse the input date using Luxon
+    const date = DateTime.fromJSDate(dateInput).startOf('day').setZone('UTC');
 
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    // Calculate the start and end of the week
+    const weekStart = date.startOf('week');
+    const weekEnd = date.endOf('week');
 
-    const weekStart = `${dayNames[startOfWeek.getDay()]} ${monthNames[startOfWeek.getMonth()]} ${startOfWeek.getDate()}`;
-    const weekEnd = `${dayNames[endOfWeek.getDay()]} ${monthNames[endOfWeek.getMonth()]} ${endOfWeek.getDate()}`;
+    // Format start and end of the week
+    const weekStartFormatted = weekStart.toFormat('cccc MMMM dd');
+    const weekEndFormatted = weekEnd.toFormat('cccc MMMM dd');
 
-    return {weekStart, weekEnd};
+    return {weekStart: weekStartFormatted, weekEnd: weekEndFormatted};
 }
+
+

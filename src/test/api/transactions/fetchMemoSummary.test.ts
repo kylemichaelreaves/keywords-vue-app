@@ -2,6 +2,7 @@ import {setupServer} from 'msw/node';
 import {http, HttpResponse} from 'msw';
 import {fetchMemoSummary} from "@api/transactions/fetchMemoSummary";
 import type {MemoSummary} from "@types";
+import {vi, test} from "vitest";
 
 // Set up the MSW server
 const server = setupServer();
@@ -18,6 +19,10 @@ const mockAPIHandler = http.get('/transactions/get-memo-summary', (info) => {
 });
 
 describe('fetchMemoSummary', () => {
+    afterEach(() => {
+        vi.resetAllMocks();
+    });
+
     test('fetchMemoSummary returns memo summary data', async () => {
         server.use(mockAPIHandler);
 

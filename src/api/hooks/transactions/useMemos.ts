@@ -12,8 +12,12 @@ export default function useMemos(): UseQueryReturnType<Memo[], Error> {
     const queryKeyText = computed(() => ['memos', selectedMonth.value])
 
     return useQuery<Array<Memo>>({
-        queryKey: queryKeyText.value,
-        queryFn: () => fetchMemos(selectedMonth.value),
+        queryKey: ['memos'],
+        queryFn: async () => {
+            const memos = fetchMemos()
+            store.setMemos(await memos)
+            return memos
+        },
         refetchOnWindowFocus: false,
     })
 }
