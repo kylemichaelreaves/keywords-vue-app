@@ -9,7 +9,6 @@ import {fetchMemo} from "@api/transactions/fetchMemo";
 export default function useMemo(): UseQueryReturnType<Memo, Error> {
     const store = useTransactionsStore()
     const selectedMemo = computed(() => store.getSelectedMemo)
-
     const queryKeyText = computed(() => ['memo', selectedMemo.value])
 
     return useQuery<Memo>({

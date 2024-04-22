@@ -1,5 +1,5 @@
 import {fetchWeeks} from "@api/transactions/fetchWeeks";
-import {test} from "vitest";
+import {vi, test} from "vitest";
 import {weeksMock} from "@mocks/transaction/"
 
 describe('fetchWeeks', () => {

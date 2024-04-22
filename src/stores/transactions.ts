@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import type {Memo, MJSummary, MonthYear, OFSummary, Summaries, WeekYear, DayYear} from "@types";
+import type {Memo, MJSummary, MonthYear, OFSummary, Summaries, WeekYear, DayYear, Year} from "@types";
 import {fetchDays} from "@api/transactions/fetchDays";
 import {fetchWeeks} from "@api/transactions/fetchWeeks";
 import {fetchMonths} from "@api/transactions/fetchMonths";
@@ -21,9 +21,12 @@ export const useTransactionsStore = defineStore('transactions', {
         selectedType: string,
         selectedBudgetCategory: string,
         days: Array<DayYear>,
+        daysForSelectedWeek: Array<string>,
+        weeksForSelectedMonth: Array<string>,
         weeks: Array<WeekYear>,
         months: Array<MonthYear>,
         memos: Array<Memo>,
+        years: Array<Year>,
         OFSummaries: Array<OFSummary>,
         MJSummaries: Array<MJSummary>,
         weekSummaries: Array<Summaries>,
@@ -45,9 +48,12 @@ export const useTransactionsStore = defineStore('transactions', {
         selectedType: 'Amount Debit',
         selectedBudgetCategory: '',
         days: [],
+        daysForSelectedWeek: [],
+        weeksForSelectedMonth: [],
         weeks: [],
         months: [],
         memos: [],
+        years: [],
         OFSummaries: [],
         MJSummaries: [],
         weekSummaries: [],
@@ -127,6 +133,9 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         getTransactionsTableOffset: (state) => {
             return state.transactionsTableOffset
+        },
+        getDaysForSelectedWeek: (state) => {
+            return state.daysForSelectedWeek
         }
     },
     actions: {
@@ -165,6 +174,9 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         setWeeks(weeks: Array<WeekYear>) {
             this.weeks = weeks
+        },
+        setYears(years: Array<Year>) {
+            this.years = years
         },
         setOFSummaries(summaries: Array<OFSummary>) {
             this.OFSummaries = summaries
@@ -276,6 +288,12 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         updateTransactionsTableOffset(offset: number) {
             this.transactionsTableOffset = offset;
+        },
+        setDaysForSelectedWeek(days: Array<string>) {
+            this.daysForSelectedWeek = days;
+        },
+        setWeeksForSelectedMonth(weeks: Array<string>) {
+            this.weeksForSelectedMonth = weeks;
         }
     }
 

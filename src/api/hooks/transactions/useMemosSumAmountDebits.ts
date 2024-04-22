@@ -4,7 +4,7 @@ import {fetchMemosSumAmountDebits} from "@api/transactions/fetchMemosSumAmountDe
 import {useTransactionsStore} from "@stores/transactions";
 import type {MemoSumAmountDebits} from "@types";
 
-
+// TODO figure out why we are passing LIMIT and OFFSET here but not Memo???
 export default function useMemosSumAmountDebits(LIMIT: number, OFFSET: number): UseQueryReturnType<MemoSumAmountDebits[], Error> {
     const store = useTransactionsStore()
     const memo = store.getSelectedMemo

@@ -2,9 +2,14 @@ import {fetchWeekSummary} from "@api/transactions/fetchWeekSummary";
 import {weekSummaryMock} from "@mocks/transaction";
 import {server} from "@test/test-setup";
 import {http, HttpResponse} from "msw";
+import {describe, test, vi} from "vitest";
 
 
 describe('fetchWeekSummary', () => {
+    afterEach(() => {
+        vi.resetAllMocks();
+    });
+
     test('fetchWeekSummary should fetch data correctly', async () => {
         const week = '52-2021';
 

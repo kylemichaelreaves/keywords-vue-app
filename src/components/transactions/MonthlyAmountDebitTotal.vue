@@ -3,7 +3,7 @@
       v-if="data"
       :value="data"
       title="Monthly Total Amount Debit"
-      :loading="isLoading || isFetching"
+      v-loading="isLoading || isFetching || isRefetching"
   />
 </template>
 
@@ -24,6 +24,7 @@ export default defineComponent({
       data,
       isLoading,
       isFetching,
+      isRefetching,
       isError,
       error,
       refetch
@@ -39,6 +40,7 @@ export default defineComponent({
       data,
       isLoading,
       isFetching,
+      isRefetching,
       isError,
       error,
     }

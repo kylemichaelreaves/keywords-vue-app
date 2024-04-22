@@ -71,7 +71,8 @@ export const routes = [
                 path: 'budget-categories',
                 name: 'budget-categories',
                 component: BudgetCategoriesTreeSelect,
-            }
+            },
+
         ]
     },
     {
@@ -100,20 +101,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 
-// // TODO if the app is already mounted, then unMount it and mount it again
-// // if (import.meta.hot) {
-// //     import.meta.hot.accept()
-// //     import.meta.hot.dispose(() => {
-// //         app.unmount()
-// //     })
-// // }
-//
-//
-//
-// app.component('Navbar', Navbar)
-//
-//
-// Mount the app
 if (!app._container) {
     app.mount('#app');
 }

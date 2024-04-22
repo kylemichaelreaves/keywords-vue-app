@@ -12,7 +12,9 @@
     "test:watch": "vitest --watch",
     "test:debug": "vitest --debug",
     "test:coverage": "vitest --coverage",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
@@ -21,6 +23,7 @@
     "buffer": "^6.0.3",
     "d3": "^7.8.2",
     "element-plus": "^2.2.28",
+    "luxon": "^3.4.4",
     "pinia": "^2.0.29",
     "prettier": "^3.0.0",
     "vue": "^3.3.4",
@@ -28,12 +31,14 @@
   },
   "devDependencies": {
     "@pinia/testing": "^0.1.0",
+    "@playwright/test": "^1.42.1",
     "@tanstack/vue-query-devtools": "^5.13.5",
     "@testing-library/dom": "^9.2.0",
     "@testing-library/jest-dom": "^6.1.2",
     "@testing-library/vue": "^8.0.1",
     "@tsconfig/node20": "^20.1.2",
     "@types/d3": "^7.4.0",
+    "@types/luxon": "^3.4.2",
     "@types/node": "^20.10.4",
     "@types/pg": "^8.6.6",
     "@typescript-eslint/eslint-plugin": "^6.16.0",
