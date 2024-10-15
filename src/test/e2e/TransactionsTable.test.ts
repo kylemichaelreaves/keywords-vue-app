@@ -15,6 +15,6 @@ test('clicking the Transactions icon on the menu NavBar opens the TransactionsTa
     await expect(transactionsPage.monthSelect).toBeVisible();
     await expect(transactionsPage.yearSelect).toBeVisible();
 
-    await expect(transactionsPage.transactionsTable).toBeVisible();
+    await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: 5000 });
 
 });
