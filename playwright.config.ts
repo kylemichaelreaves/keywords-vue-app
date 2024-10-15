@@ -106,6 +106,6 @@ export default defineConfig({
          */
         command: process.env.CI ? 'npm run preview' : 'npm run dev',
         port: 5173,
-        reuseExistingServer: !process.env.CI
+        reuseExistingServer: true
     }
 })
