@@ -16,7 +16,6 @@ import type {Memo} from "@types";
 import useMemoTransactions from "@api/hooks/transactions/useMemoTransactions";
 import {type PropType, watch} from "vue";
 import {ElTableColumn} from "element-plus";
-import {useRoute} from "vue-router";
 
 const props = defineProps({
   memo: {
@@ -24,9 +23,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-const route = useRoute();
-console.log(route.params.memo);
 
 
 const columns = [
@@ -47,7 +43,7 @@ const filteredColumns = columns.filter(column => !excludedColumns.includes(colum
 
 const {data, error, isError, refetch, isFetching, isLoading} = useMemoTransactions(props.memo);
 
-watch(() => props.memo.name, () => {
+watch(() => props.memo, () => {
   refetch();
 });
 

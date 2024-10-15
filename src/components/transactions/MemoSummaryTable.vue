@@ -54,7 +54,7 @@ const columns = [
   {prop: 'transactionsCount', label: 'Transactions Count'},
 ];
 
-watch(() => props.memo.name, () => {
+watch(() => props.memo, () => {
   refetch();
 });
 </script>

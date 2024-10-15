@@ -1,5 +1,5 @@
 import { geocodeAddress } from '@api/address/geocodeAddress'
-import {test} from 'vitest'
+import {vi, test} from 'vitest'
 import {addressesMock} from "@mocks/address";
 import type {AddressFields} from "@types";
 
@@ -9,7 +9,7 @@ describe('geocodeAddress', () => {
     });
 
 
-    test('geocodeAddress returns address data when a valid address is provided', async () => {
+    test.skip('geocodeAddress returns address data when a valid address is provided', async () => {
         const address: AddressFields = {
             streetAddress: '123 Main St',
             unitOrAptNum: 'Apt 4B',

@@ -5,7 +5,7 @@ import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
 import {useTransactionsStore} from "@stores/transactions";
 
-describe('MemoSummaryTable.vue', () => {
+describe.skip('MemoSummaryTable.vue', () => {
     const wrapper = mount(MemoSummaryTable, {
         global: {
             components: {

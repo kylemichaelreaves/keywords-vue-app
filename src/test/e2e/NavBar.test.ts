@@ -5,7 +5,7 @@ test.beforeEach(async ({page}) => {
 })
 
 test('the NavBar is visible', async ({page}) => {
-    const navBar = page.locator('.el-tabs');
+    const navBar = page.locator('.el-tabs').first();
     await expect(navBar).toBeVisible();
 })
 
