@@ -5,7 +5,6 @@ import {TransactionsPage} from "@test/e2e/pages/TransactionsPage";
 test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({page}) => {
 
     const transactionsPage = new TransactionsPage(page);
-    console.log('transactionsPage: ', transactionsPage)
 
 
     await transactionsPage.goto();
