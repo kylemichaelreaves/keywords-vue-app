@@ -9,6 +9,8 @@ test('clicking the Transactions icon on the menu NavBar opens the TransactionsTa
 
     await transactionsPage.goto();
 
+    console.log('transactionsPage', transactionsPage);
+
 
     await expect(transactionsPage.daySelect).toBeVisible();
     await expect(transactionsPage.weekSelect).toBeVisible();
