@@ -9,7 +9,7 @@ export class TransactionsPage {
     readonly memoSelect: Locator;
 
     constructor(public readonly page: Page) {
-        this.transactionsTable = this.page.locator('.el-table');
+        this.transactionsTable = this.page.locator('.el-table__inner-wrapper');
         this.daySelect = this.page.locator('div').filter({ hasText: /^select a day$/ }).nth(4)
         this.weekSelect = this.page.locator('div').filter({ hasText: /^select a week$/ }).nth(2)
         this.monthSelect = this.page.locator('div').filter({ hasText: /^select a month$/ }).nth(2)

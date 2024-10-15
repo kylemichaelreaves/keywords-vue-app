@@ -6,12 +6,9 @@ test('clicking the Transactions icon on the menu NavBar opens the TransactionsTa
 
     const transactionsPage = new TransactionsPage(page);
 
-
     await transactionsPage.goto();
 
-    console.log('transactionsPage', transactionsPage);
-    console.log('transactionsPage.transactionsTable', transactionsPage.transactionsTable);
-
+    await transactionsPage.transactionsTable.waitFor();
 
     await expect(transactionsPage.daySelect).toBeVisible();
     await expect(transactionsPage.weekSelect).toBeVisible();
