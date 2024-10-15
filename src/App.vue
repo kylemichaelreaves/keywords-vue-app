@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Navbar/>
+    <Breadcrumbs/>
     <router-view :key="route.path"/>
   </div>
 </template>
@@ -9,11 +10,13 @@
 import Navbar from './components/Navbar.vue'
 import {defineComponent} from "vue";
 import {useRoute} from "vue-router";
+import Breadcrumbs from "@components/Breadcrumbs.vue";
 
 
 export default defineComponent({
   name: 'App',
   components: {
+    Breadcrumbs,
     Navbar,
   },
   setup() {
@@ -24,23 +27,8 @@ export default defineComponent({
 </script>
 
 
-
 <style scoped>
 #app {
-  width: 100vw;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+  width: 95vw;
 }
 </style>

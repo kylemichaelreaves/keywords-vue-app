@@ -1,4 +1,10 @@
-
+/**
+ * Formats a given date string into a specified format.
+ *
+ * @param {string} dateString - The date string to format.
+ * @param {string} [format='YYYY-MM-DD'] - The desired output format. Defaults to 'YYYY-MM-DD'.
+ * @returns {string} - The formatted date string or 'Invalid date' if the input is not a valid date.
+ */
 export function formatDate(dateString: string, format: string = 'YYYY-MM-DD'): string {
     // Input validation: Check if dateString matches the expected format
     let date = new Date(dateString);

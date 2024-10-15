@@ -5,7 +5,9 @@ import {fetchMemosCount} from '@api/transactions/fetchMemosCount'
 export default function useMemosCount(): UseQueryReturnType<number, Error> {
     return useQuery<number>({
         queryKey: ['memosCount'],
-        queryFn: () => fetchMemosCount(),
+        queryFn: async () => {
+            return fetchMemosCount();
+        },
         refetchOnWindowFocus: false
     })
 }

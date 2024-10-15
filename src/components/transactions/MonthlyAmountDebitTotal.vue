@@ -8,17 +8,22 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, watch} from "vue";
+import {computed, defineComponent, watch} from "vue";
 import {ElStatistic} from "element-plus";
 import useSumAmountDebitByDate from "@api/hooks/transactions/useSumAmountDebitByDate";
 import {useTransactionsStore} from "@stores/transactions";
+import {useRoute} from "vue-router";
 
 export default defineComponent({
   name: 'MonthlyAmountDebitTotal',
   components: {ElStatistic},
   setup() {
 
+    const route = useRoute();
+    console.log('route', route);
+
     const store = useTransactionsStore();
+    const selectedMonth = computed(() => store.getSelectedMonth);
 
     const {
       data,
@@ -28,7 +33,7 @@ export default defineComponent({
       isError,
       error,
       refetch
-    } = useSumAmountDebitByDate('month', store.selectedMonth);
+    } = useSumAmountDebitByDate('month', selectedMonth.value);
 
     watch(() => store.selectedMonth, (newValue) => {
       if (newValue) {

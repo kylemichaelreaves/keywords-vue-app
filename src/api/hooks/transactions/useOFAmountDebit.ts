@@ -1,34 +1,40 @@
-import {useQuery} from '@tanstack/vue-query'
-import type {UseQueryReturnType} from "@tanstack/vue-query";
-import {fetchOFAmountDebit} from "@api/transactions/fetchOFAmountDebit";
-import {useTransactionsStore} from "@stores/transactions";
-import {computed} from "vue";
-import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
-import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
-import type {OFSummary} from "@types";
+import { useQuery } from '@tanstack/vue-query';
+import type { UseQueryReturnType } from '@tanstack/vue-query';
+import { fetchOFAmountDebit } from '@api/transactions/fetchOFAmountDebit';
+import { getDateTypeAndValue } from '@components/transactions/getDateTypeAndValue';
+import { parseDateIWIYYY } from '@api/helpers/parseDateIWIYYY';
+import { parseDateMMYYYY } from '@api/helpers/parseDateMMYYYY';
+import type {OFSummary} from '@types';
+import { computed } from 'vue';
 
 // Get the Amount Debit for Memo's fitting the OF category, for a certain period of time
-export default function useOFAmountDebit(): UseQueryReturnType<OFSummary[], Error> {
+export default function useOFAmountDebit(): UseQueryReturnType<OFSummary, Error> {
+    // Use the helper function to get the date type and selected value
+    const { dateType, selectedValue } = getDateTypeAndValue();
 
-    const store = useTransactionsStore()
+    // Create a queryKey based on the determined date type and selected value
+    const queryKey = computed(() => ['OFAmountDebit', dateType, selectedValue?.value]);
 
-    const selectedMonth = computed(() => store.getSelectedMonth)
-    const selectedWeek = computed(() => store.getSelectedWeek)
-    const timeFrame = computed(() => selectedWeek.value ? "week" : "month");
-    const queryKey = computed(() => ['OFAmountDebit', timeFrame.value, selectedMonth.value, selectedWeek.value]);
-
-    return useQuery({
+    return useQuery<OFSummary>({
         queryKey: queryKey.value,
         queryFn: () => {
-
-            let dateObj: Date | null | undefined;
-            if (timeFrame.value === "week" && selectedWeek.value) {
-                dateObj = parseDateIWIYYY(selectedWeek.value);
-            } else if (timeFrame.value === "month" && selectedMonth.value) {
-                dateObj = parseDateMMYYYY(selectedMonth.value);
+            // Determine the date object based on the date type
+            let dateObj: Date | null = null;
+            if (dateType === "week" && selectedValue) {
+                dateObj = parseDateIWIYYY(selectedValue.value);
+            } else if (dateType === "month" && selectedValue) {
+                dateObj = parseDateMMYYYY(selectedValue.value);
             }
-            return fetchOFAmountDebit(timeFrame.value, dateObj);
+
+            // Ensure valid date object is passed
+            if (!dateObj) {
+                throw new Error("Invalid date");
+            }
+
+            // Fetch the OF Amount Debit using the determined time frame and date object
+            return fetchOFAmountDebit(dateType, dateObj);
         },
-        refetchOnWindowFocus: false
-    })
+        refetchOnWindowFocus: false,
+        enabled: !!selectedValue // Enable query only when there is a valid selected value
+    });
 }

@@ -26,5 +26,5 @@ export default function updateUrlParams(params: RouterQueryParams) {
     });
 
     // Update the URL with the new query params
-    router.replace({query: queryParams});
+    router.replace({query: queryParams}).then(r => r);
 }

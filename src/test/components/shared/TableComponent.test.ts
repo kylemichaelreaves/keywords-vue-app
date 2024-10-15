@@ -4,7 +4,7 @@ import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from "@pinia/testing";
 import type {TestingPinia} from "@pinia/testing";
 import {useTransactionsStore} from "@stores/transactions";
-import {vi, afterEach} from "vitest";
+import {vi, afterEach, beforeEach} from "vitest";
 
 describe('TableComponent', () => {
     let store: TestingPinia;

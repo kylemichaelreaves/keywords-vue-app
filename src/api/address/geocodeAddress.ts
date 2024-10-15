@@ -8,7 +8,7 @@ export const geocodeAddress = async (address: AddressFields): Promise<AddressRes
     return typeof address === "undefined"
         ? Promise.reject(new Error("address is undefined"))
         : await axios
-            .get(`${API_GATEWAY_URL}/address-geocoder`, {
+            .get(`${API_GATEWAY_URL}/addresses/geocoder`, {
                 params: address,
             })
             .then((response) => {

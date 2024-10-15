@@ -2,6 +2,7 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": [
     "src/**/*",
+    "src/**/*.vue",
     "env.d.ts",
     "vite-env.d.ts"
   ],
@@ -9,9 +10,19 @@
     "src/**/__tests__/*",
     "src/test/*"
   ],
-  "module": "esnext",
+  "module": "ESNext",
+  "target": "ESNext",
   "composite": true,
+  "moduleResolution": "Bundler",
+  "strict": true,
+  "skipLibCheck": true,
+  "esModuleInterop": true,
+  "forceConsistentCasingInFileNames": true,
   "compilerOptions": {
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "types": [
       "vitest/globals",
       "vite/client",

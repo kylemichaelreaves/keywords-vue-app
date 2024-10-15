@@ -6,7 +6,6 @@ import {useTransactionsStore} from "@stores/transactions";
 
 export const useWeeks = (): UseQueryReturnType<WeekYear[], Error> => {
     const store = useTransactionsStore()
-
     return useQuery<Array<WeekYear>>({
         queryKey: ['weeks'],
         queryFn: async () => {

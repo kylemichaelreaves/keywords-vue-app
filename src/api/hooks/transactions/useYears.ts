@@ -6,8 +6,6 @@ import {useTransactionsStore} from "@stores/transactions";
 
 export const useYears = (): UseQueryReturnType<Year[], Error> => {
     const store = useTransactionsStore();
-    const selectedYear = store.getSelectedYear;
-
     return useQuery<Array<Year>>({
         queryKey: ['years'],
         queryFn: async () => {

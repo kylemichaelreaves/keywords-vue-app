@@ -7,7 +7,6 @@ import {fetchDaySummary} from "@api/transactions/fetchDaySummary";
 export function useDaySummariesForSelectedWeek() {
     const store = useTransactionsStore();
     const week = computed(() => store.getSelectedWeek);
-
     return useQuery({
         queryKey: ['daySummariesForSelectedWeek', week.value],
         queryFn: async () => {

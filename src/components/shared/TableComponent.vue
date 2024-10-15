@@ -21,7 +21,17 @@
           :sortable="sortableColumns.includes(column.prop)"
       >
         <template v-slot:[`cell-${column.prop}`]="scope">
-          <slot :name="`cell-${column}`" :row="scope.row">{{ scope.row[column.prop] }}</slot>
+          <!-- Check if column is in routerLinkColumn prop -->
+          <router-link v-if="routerLinkColumn && routerLinkColumn[column.prop]"
+                       :to="`${routerLinkColumn[column.prop]}/${encodeURIComponent(scope.row[column.prop])}`">
+            {{ scope.row[column.prop] }}
+          </router-link>
+          <span v-else-if="typeof column.formatter === 'function'">
+            {{ column.formatter(scope.row[column.prop]) }}
+          </span>
+          <span v-else>
+            {{ scope.row[column.prop] }}
+          </span>
         </template>
       </el-table-column>
     </el-table>
@@ -39,86 +49,78 @@
 </template>
 
 
-<script lang="ts">
-import {defineComponent, ref, computed, watch} from "vue";
+<script setup lang="ts">
+import {ref, computed, watch} from "vue";
 import {ElPagination, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 
-export default defineComponent({
-  name: "TableComponent",
-  components: {
-    ElTable,
-    ElTableColumn,
-    ElPagination,
+
+const props = defineProps({
+  tableData: {
+    type: Array as () => Record<string, never>[],
+    required: true,
   },
-  props: {
-    tableData: {
-      // TODO determine the type of tableData
-      type: Array as () => string[],
-      required: true,
-    },
-    columns: {
-      type: Array as () => { prop: string, label: string }[],
-      required: true,
-    },
-    sortableColumns: {
-      type: Array as () => string[],
-      default: () => [],
-      required: false,
-    },
-    isFetching: {
-      type: Boolean,
-      default: false,
-    },
-    rowKey: {
-      type: String,
-      required: false,
-    }
+  columns: {
+    type: Array as () => Array<{
+      prop: string,
+      label: string,
+      routerLinkBasePath?: string,
+      formatter?: (value: string) => string
+      pathFunction?: (value: string) => string
+    }>,
+    required: true,
   },
-  setup(props) {
-    const store = useTransactionsStore();
-    const currentPage = ref(1);
-    const pageSize = ref(100);
-    const offset = ref(0);
-    const tableData = ref(props.tableData);
-
-    const pagedTableData = computed(() => {
-      const start = (currentPage.value - 1) * pageSize.value;
-      const end = currentPage.value * pageSize.value;
-      return tableData.value.slice(start, end);
-    });
-
-    const shouldShowPagination = computed(() => {
-      return tableData.value.length > pageSize.value;
-    });
-
-    const handleSizeChange = (val: number) => {
-      pageSize.value = val;
-      currentPage.value = 1;
-    };
-
-
-    const handleCurrentChange = (val: number) => {
-      currentPage.value = val;
-    };
-
-    watch(() => props.tableData, (newData) => {
-      tableData.value = newData;
-    });
-
-
-    return {
-      pagedTableData,
-      handleSizeChange,
-      handleCurrentChange,
-      currentPage,
-      pageSize,
-      store,
-      offset,
-      shouldShowPagination,
-    };
+  sortableColumns: {
+    type: Array as () => string[],
+    default: () => [],
+    required: false,
   },
+  isFetching: {
+    type: Boolean,
+    default: false,
+  },
+  rowKey: {
+    type: String,
+    required: false,
+  },
+  routerLinkColumn: {
+    type: Object as () => Record<string, string>,
+    required: false,
+    default: () => ({}),
+  },
+})
+
+const store = useTransactionsStore();
+const currentPage = ref(1);
+const pageSize = ref(100);
+// const offset = ref(0);
+const tableData = ref(props.tableData);
+
+const pagedTableData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = currentPage.value * pageSize.value;
+  return tableData.value.slice(start, end);
 });
+
+const shouldShowPagination = computed(() => {
+  return tableData.value.length > pageSize.value;
+});
+
+const handleSizeChange = (val: number) => {
+  pageSize.value = val;
+  currentPage.value = 1;
+};
+
+
+const handleCurrentChange = (val: number) => {
+  currentPage.value = val;
+};
+
+
+watch(() => props.tableData, (newData) => {
+  tableData.value = newData;
+});
+
 </script>
 
 <style scoped>
