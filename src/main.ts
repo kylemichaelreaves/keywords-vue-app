@@ -10,7 +10,6 @@ import Home from "@components/Home.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import Transaction from "@components/transactions/Transaction.vue";
 import BudgetVisualizer from "@components/BudgetVisualizer.vue";
 import MemoSummaryTable from "@components/transactions/MemoSummaryTable.vue";
 import AddressGeocoderForm from "@components/address/AddressGeocoderForm.vue";
@@ -19,10 +18,15 @@ import BudgetCategoriesTreeSelect from "@components/transactions/BudgetCategorie
 import MemosTable from "@components/transactions/MemosTable.vue";
 import NotFound from "@components/NotFound.vue";
 import TransactionsTable from "@components/transactions/TransactionsTable.vue";
+import LoanCalculator from "@components/loan/LoanCalculator.vue";
+// import Login from "@components/user-management/Login.vue";
+import TransactionSummaryTable from "@components/transactions/TransactionSummaryTable.vue";
+import MonthSummaryTable from "@components/transactions/MonthSummaryTable.vue";
+import WeekSummaryTable from "@components/transactions/WeekSummaryTable.vue";
 
 const pinia = createPinia()
 
-export const routes = [
+export const routes: RouteRecordRaw[] = [
     {
         path: '/',
         name: 'home',
@@ -31,7 +35,7 @@ export const routes = [
     {
         path: '/keywords',
         name: 'keywords',
-        component: () => Keywords
+        component: Keywords
     },
     {
         path: '/address-geocoder',
@@ -44,44 +48,60 @@ export const routes = [
         component: BudgetVisualizer,
         children: [
             {
-                path: 'transactions',
-                name: 'transactions',
-                component: TransactionsTable
+                path: 'loan-calculator',
+                name: 'loan-calculator',
+                component: LoanCalculator
             },
             {
-                path: 'transactions/:transactionNumber',
-                name: 'transaction',
-                component: Transaction,
-                props: true
+                path: 'transactions',
+                name: 'transactions',
+                component: TransactionsTable,
+                children: [
+                    {
+                        path: ':transactionNumber',
+                        name: 'transaction',
+                        component: TransactionSummaryTable,
+                    },
+                    {
+                        path: 'summary/:month',
+                        name: 'month-summary',
+                        component: MonthSummaryTable,
+                        props: true
+                    },
+                    {
+                        path: 'summary/:week',
+                        name: 'week-summary',
+                        component: WeekSummaryTable,
+                        props: true
+                    }
+                ]
             },
             {
                 path: 'memos',
                 name: 'memos',
                 component: MemosTable,
-                children: [
-                    {
-                        path: ':memo',
-                        name: 'memo',
-                        component: MemoSummaryTable,
-                        props: true,
-                    }
-                ]
+                props: true,
+            },
+            {
+                path: 'memos/:memo',
+                name: 'memo',
+                component: MemoSummaryTable,
+                props: true
+
             },
             {
                 path: 'budget-categories',
                 name: 'budget-categories',
                 component: BudgetCategoriesTreeSelect,
             },
-
         ]
     },
     {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
         component: NotFound
-    }
-]
-
+    },
+];
 
 export const router = createRouter({
     history: createWebHistory(),
@@ -105,7 +125,6 @@ if (!app._container) {
     app.mount('#app');
 }
 
-// Hot Module Replacement (HMR) setup
 if (import.meta.hot) {
     import.meta.hot.accept();
     import.meta.hot.dispose(() => {

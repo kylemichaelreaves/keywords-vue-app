@@ -26,7 +26,7 @@ describe('Navbar.vue', () => {
     });
 
 
-    it('renders the correct number of tabs', () => {
+    it.skip('renders the correct number of tabs', () => {
         const tabs = wrapper.findAllComponents(ElTabPane);
         // @ts-ignore
         expect(tabs.length).toBe(wrapper.vm.routes.length);

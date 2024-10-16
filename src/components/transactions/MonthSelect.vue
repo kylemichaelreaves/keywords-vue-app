@@ -9,11 +9,12 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onMounted} from 'vue'
+import {computed, defineComponent, onMounted, watch} from 'vue'
 import {useMonths} from "@api/hooks/transactions/useMonths";
 import type {MonthYear} from "@types";
 import {useTransactionsStore} from "@stores/transactions";
 import SelectComponent from "@components/shared/SelectComponent.vue";
+import {router} from "@main";
 
 export default defineComponent({
   name: "MonthSelect",
@@ -36,6 +37,15 @@ export default defineComponent({
     const updateSelectedMonth = (month: string) => {
       store.setSelectedMonth(month)
     }
+
+    watch(
+        () => store.getSelectedMonth,
+        (newMonth) => {
+          if (newMonth) {
+            router.push({ name: 'month-summary', params: { month: newMonth } });
+          }
+        }
+    );
 
     onMounted(() => {
       if (data.value) {

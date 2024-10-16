@@ -1,7 +1,7 @@
 import axios from "axios";
 import {isValidURL} from "@api/helpers/isValidURL";
 
-export async function fetchMemosCount(timeFrame?: string | undefined, date?: Date | null | undefined, distinct?: boolean | undefined) {
+export async function fetchMemosCount(timeFrame?: string | undefined, date?: Date | null | undefined, distinct?: boolean | undefined): Promise<number> {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
     if (!isValidURL(fetchURL)) {

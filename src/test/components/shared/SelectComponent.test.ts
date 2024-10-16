@@ -1,5 +1,6 @@
 import {mount, VueWrapper} from "@vue/test-utils";
 import SelectComponent from "@components/shared/SelectComponent.vue";
+import {vi, beforeEach} from "vitest";
 
 describe('SelectComponent', () => {
     let wrapper: VueWrapper;

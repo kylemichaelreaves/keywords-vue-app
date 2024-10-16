@@ -8,6 +8,7 @@
       :isError="isError"
       :error="error"
       :onChange="updateSelectedYear"
+      :disabled="true"
   />
 
 </template>

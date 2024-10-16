@@ -8,7 +8,11 @@ import {DateTime} from "luxon";
  */
 export function getWeekRange(weekString: string) {
     const [week, year] = weekString.split('-').map(Number);
-    const startDate = DateTime.fromObject({weekYear: year, weekNumber: week}, {zone: 'UTC'}).startOf('week');
+    const startDate = DateTime.fromObject({
+            weekYear: year,
+            weekNumber: week
+        },
+        {zone: 'UTC'}).startOf('week');
     const endDate = startDate.endOf('week');
 
     return {

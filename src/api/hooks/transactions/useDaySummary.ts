@@ -8,10 +8,11 @@ import {fetchDaySummary} from "@api/transactions/fetchDaySummary";
 export default function useDaySummary(): UseQueryReturnType<DaySummary[], Error> {
     const store = useTransactionsStore()
     const day = computed(() => store.getSelectedDay)
-
     return useQuery<Array<DaySummary>>({
         queryKey: ['daySummary', day.value],
-        queryFn: () => fetchDaySummary(day.value),
+        queryFn: async () => {
+            return fetchDaySummary(day.value)
+        },
         enabled: !!day.value,
         refetchOnWindowFocus: false,
     })

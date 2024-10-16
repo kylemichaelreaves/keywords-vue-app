@@ -1,3 +1,9 @@
+/**
+ * Calculates the week number for a given date.
+ *
+ * @param {Date} date - The date for which to calculate the week number.
+ * @returns {number} - The week number of the given date.
+ */
 export function getWeekNumber(date: Date): number {
     // Get the first day of the year
     const firstDayOfYear = new Date(date.getFullYear(), 0, 1);

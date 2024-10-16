@@ -1,79 +1,77 @@
 <template>
   <el-card>
+    <div v-if="isError">
+      <el-alert type="error" :title="error?.message"/>
+    </div>
     <template #header>
-      <el-text>Memo Summary for:</el-text>
-      <div class="header-content">
-        <h2 v-if="selectedMemo">
-          {{ selectedMemo }}
+      <div class="header-content" v-if="props.memo">
+        <h2 class="memo-title">
+          {{ props.memo }}
         </h2>
-        <el-button round type="info" :icon="Close" @click="resetSelectedMemo"/>
+        <div>
+          <MemoBudgetCategory :memo="props.memo"/>
+        </div>
       </div>
     </template>
-    <el-table v-if="memoTableData" :data="[memoTableData]" table-layout="auto" :loading="isFetching">
+
+    <el-table v-if="data" :data="[data]" table-layout="auto" :loading="isFetching">
       <el-table-column v-for="column in columns" :key="column.prop" :prop="column.prop" :label="column.label">
         <template v-if="column.prop === 'sumAmountDebit'" #default="scope">
           <el-statistic :value="scope.row.sum_amount_debit" data-testid="sum-amount-debit"/>
         </template>
-        <template v-if="column.prop === 'transactionsCount'" #default="scope">
-          <el-statistic :value="scope.row.transactions_count"
-                        data-testid="transactions-count"/>
+        <template v-else-if="column.prop === 'transactionsCount'" #default="scope">
+          <el-statistic :value="scope.row.transactions_count" data-testid="transactions-count"/>
         </template>
       </el-table-column>
     </el-table>
   </el-card>
-  <!--  TODO use TableComponent -->
-  <!--  TODO add another column, somewhere, which will be populated with MemoSumTotalTable -->
-  <!--  TODO if this Memo doesn't have a BudgetCategory in the memo table, display the Assign Budget Category button -->
-  <!--  TODO use a useMutation to send the Memo back to the Memos table with a BudgetCategory -->
+  <MemoTransactionsTable :memo="props.memo"/>
+  <BackButton/>
 </template>
 
-<script lang="ts">
-import {computed, defineComponent, watch} from "vue";
+<script setup lang="ts">
 import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
+import type {Memo} from "@types";
 import useMemoSummary from "@api/hooks/transactions/useMemoSummary";
-import {useTransactionsStore} from "@stores/transactions";
-import {Close} from "@element-plus/icons-vue";
+import {type PropType, watch} from "vue";
+import MemoTransactionsTable from "@components/transactions/MemoTransactionsTable.vue";
+import MemoBudgetCategory from "@components/transactions/MemoBudgetCategory.vue";
+import BackButton from "@components/shared/BackButton.vue";
 
-export default defineComponent({
-  name: "MemoSummaryTable",
-  components: {
-    ElStatistic,
-    ElCard,
-    ElTable,
-    ElTableColumn,
-    Close
-  },
-  setup() {
-
-    const store = useTransactionsStore();
-    const selectedMemo = computed(() => store.getSelectedMemo);
-
-    const {data: memoTableData, refetch, isFetching} = useMemoSummary();
-
-    const columns = [
-      {prop: 'sumAmountDebit', label: 'Sum Amount Debit'},
-      {prop: 'transactionsCount', label: 'Transactions Count'},
-    ];
-
-    const resetSelectedMemo = () => {
-      store.setSelectedMemo('');
+const props = defineProps(
+    {
+      memo: {
+        type: String as unknown as PropType<Memo>,
+        required: true,
+      },
     }
+);
 
-    watch(() => selectedMemo, () => {
-      refetch();
-    });
+const {data, refetch, isFetching, isError, error} = useMemoSummary(props.memo);
 
-    return {memoTableData, columns, isFetching, selectedMemo, Close, resetSelectedMemo};
-  }
-})
+const columns = [
+  {prop: 'sumAmountDebit', label: 'Sum Amount Debit'},
+  {prop: 'transactionsCount', label: 'Transactions Count'},
+];
+
+watch(() => props.memo, () => {
+  refetch();
+});
 </script>
 
 <style scoped>
 .header-content {
   display: flex;
-  align-content: center;
+  justify-content: space-between;
   align-items: center;
-  justify-content: start;
-  gap: 1rem;
 }
+
+.memo-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+
 </style>
+

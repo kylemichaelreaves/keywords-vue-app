@@ -4,7 +4,6 @@
       :selectedValue="selectedWeek"
       placeholder="select a week"
       :onChange="updateSelectedWeek"
-      :disabled="!!selectedMonth"
   />
 </template>
 
@@ -46,12 +45,12 @@ export default defineComponent({
     })
 
     // if there's a selectedMonth, the options should be repopulated with the weeks of that month
-    watch(selectedMonth, (newVal, oldVal) => {
-      if (newVal) {
-        store.setSelectedWeek('')
-        refetch()
-      }
-    })
+    // watch(selectedMonth, (newVal, oldVal) => {
+    //   if (newVal) {
+    //     store.setSelectedWeek('')
+    //     refetch()
+    //   }
+    // })
 
     return {
       data,

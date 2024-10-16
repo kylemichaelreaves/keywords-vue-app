@@ -1,3 +1,9 @@
+/**
+ * Calculates the day of the year for a given date.
+ *
+ * @param {Date} date - The date for which to calculate the day of the year.
+ * @returns {number} - The day of the year (1-366).
+ */
 export function getDayOfYear(date: Date): number {
     // Create a new date object for the start of the year
     const start = new Date(date.getFullYear(), 0, 0);
@@ -12,8 +18,6 @@ export function getDayOfYear(date: Date): number {
     const oneDay = 1000 * 60 * 60 * 24;
 
     // Convert the time difference from milliseconds to days
-    const day = Math.floor(diff / oneDay);
-
     // Return the day of the year
-    return day;
+    return Math.floor(diff / oneDay);
 }

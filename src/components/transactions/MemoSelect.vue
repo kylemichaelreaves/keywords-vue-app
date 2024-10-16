@@ -10,14 +10,13 @@
 <script lang='ts'>
 import {computed, defineComponent, onMounted} from 'vue'
 import useMemos from "@api/hooks/transactions/useMemos";
-import {ElOption, ElSelect} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 import type {Memo} from "@types";
 import SelectComponent from "@components/shared/SelectComponent.vue";
 
 export default defineComponent({
   name: "MemoSelect",
-  components: {SelectComponent, ElOption, ElSelect},
+  components: {SelectComponent},
   setup() {
 
     const transactionsStore = useTransactionsStore()
@@ -61,5 +60,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 </style>

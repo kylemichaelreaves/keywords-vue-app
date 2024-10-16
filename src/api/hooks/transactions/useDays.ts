@@ -6,7 +6,6 @@ import {useTransactionsStore} from "@stores/transactions";
 
 export const useDays = (): UseQueryReturnType<DayYear[], Error> => {
     const store = useTransactionsStore();
-
     return useQuery<Array<DayYear>>({
         queryKey: ['days'],
         queryFn: async () => {

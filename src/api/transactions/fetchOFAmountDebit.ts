@@ -1,8 +1,8 @@
 import axios from "axios";
 import {isValidURL} from "@api/helpers/isValidURL";
-import type {OFSummary} from "@types";
+import type {OFSummaryTypeBase} from "@types";
 
-export async function fetchOFAmountDebit(timeFrame: string, date: Date | null | undefined): Promise<OFSummary> {
+export async function fetchOFAmountDebit(timeFrame: string, date?: Date | null | undefined): Promise<OFSummaryTypeBase> {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
     if (!isValidURL(fetchURL)) {
@@ -12,7 +12,7 @@ export async function fetchOFAmountDebit(timeFrame: string, date: Date | null | 
     return await axios.get(`${fetchURL}/transactions/get-of-amount-debit`, {
         params: {
             timeFrame: timeFrame,
-            date: date?.toISOString().split('T')[0]
+            date: date ? date?.toISOString().split('T')[0] : null
         }
     })
         .then(res => res.data)

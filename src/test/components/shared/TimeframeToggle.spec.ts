@@ -31,10 +31,8 @@ describe("TimeframeToggle.vue", () => {
                 },
             },
         });
-
-        const checkTags = wrapper.findAllComponents(ElCheckTag);
-
-        await wrapper.vm.handleChange("monthly");
+        wrapper.findAllComponents(ElCheckTag);
+        wrapper.vm.handleChange("monthly");
 
         expect(wrapper.vm.selectedOption).toBe("monthly");
     });

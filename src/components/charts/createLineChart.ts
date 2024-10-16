@@ -13,13 +13,17 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
         d3.select(svgElement).selectAll('*').remove();
     }
 
+    const parentElement = svgElement?.parentElement;
+    const parentWidth = parentElement ? parentElement.getBoundingClientRect().width : 300;
+
+
     const chartData = summaries.flat().map((item: OFSummary | MJSummary) => {
         let date;
         if (item.day_number) {
             date = new Date(Number(item.year), Number(item.month_number) - 1, Number(item.day_number));
         } else if (item.week_number) {
-            date = new Date(Number(item.year), 0, 1); // start with Jan 1
-            date.setDate(Number(item.week_number) * 7); // add the number of weeks
+            date = new Date(Number(item.year), 0, 1);
+            date.setDate(Number(item.week_number) * 7);
         } else {
             date = new Date(Number(item.year), Number(item.month_number) - 1, 1);
         }
@@ -31,8 +35,9 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
 
 
     const margin = {top: 5, right: 5, bottom: 40, left: 32};
-    const width = 300;
+    const width = parentWidth - margin.left - margin.right;
     const height = 150;
+
 
     const x = d3
         .scaleTime()
@@ -66,8 +71,8 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
         .selectAll('text')
         .style('text-anchor', 'end')
         .attr('dx', '-.8em')
-        .attr('dy', '.55em') // moved labels slightly down
-        .attr('transform', 'rotate(-35)'); // decrease rotation angle
+        .attr('dy', '.55em')
+        .attr('transform', 'rotate(-35)');
 
 
     svg

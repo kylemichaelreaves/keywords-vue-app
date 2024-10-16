@@ -1,6 +1,7 @@
 // getDateType.ts
 import { useTransactionsStore } from "@stores/transactions";
 import { computed } from "vue";
+import {Timeframe} from "@types";
 
 export const getDateType = () => {
     const store = useTransactionsStore();
@@ -9,11 +10,11 @@ export const getDateType = () => {
     const selectedWeek = computed(() => store.getSelectedWeek);
     // Extend this logic to include other timeframes like 'year' in the future
     if (selectedDay.value) {
-        return "day";
+        return Timeframe.Day;
     } else if (selectedWeek.value) {
-        return "week";
+        return Timeframe.Week;
     } else if (selectedMonth.value) {
-        return "month";
+        return Timeframe.Month;
     } else {
         // Default or error handling
         return "unknown"; // Handle this case appropriately

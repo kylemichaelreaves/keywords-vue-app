@@ -1,51 +1,36 @@
 <template>
   <el-button-group>
-    <el-button type="primary" :icon="ArrowLeft.value" @click="goToPrevious" :disabled="isLast">Previous Month
+    <el-button type="primary" :icon="ArrowLeft.value" @click="props.goToPrevious($event)" :disabled="props.isLast">
+      Previous
     </el-button>
-    <el-button type="primary" :icon="ArrowRight.value" @click="goToNext" :disabled="isFirst">Next Month
+    <el-button type="primary" :icon="ArrowRight.value" @click="props.goToNext($event)" :disabled="props.isFirst">
+      Next
     </el-button>
   </el-button-group>
 </template>
 
-<script lang="ts">
-import {defineComponent} from "vue";
+<script setup lang="ts">
 import {ArrowLeft, ArrowRight} from "@element-plus/icons-vue";
 import {ElButton, ElButtonGroup} from "element-plus";
 
-export default defineComponent({
-  name: 'NavigationButtonGroup',
-  components: {
-    ArrowLeft,
-    ArrowRight,
-    ElButton,
-    ElButtonGroup
+
+const props = defineProps({
+  goToPrevious: {
+    type: Function,
+    required: true
   },
-  props: {
-    goToPrevious: {
-      type: Function,
-      required: true
-    },
-    goToNext: {
-      type: Function,
-      required: true
-    },
-    isFirst: {
-      type: Boolean,
-      required: true
-    },
-    isLast: {
-      type: Boolean,
-      required: true
-    }
+  goToNext: {
+    type: Function,
+    required: true
   },
-  computed: {
-    ArrowRight() {
-      return ArrowRight
-    },
-    ArrowLeft() {
-      return ArrowLeft
-    }
+  isFirst: {
+    type: Boolean,
+    required: true
   },
+  isLast: {
+    type: Boolean,
+    required: true
+  }
 })
 </script>
 

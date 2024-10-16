@@ -3,28 +3,50 @@ import type {DayYear} from "@types";
 
 export const transactionsMock: Transaction[] = [
     {
-        transactionNumber: '1',
-        date: '2022-12-31',
-        memo: 'Test Transaction',
-        amountDebit: '10.00',
+        "Transaction Number": "XXXXXXX0000XXXX",
+        "Date": "2024-09-30T00:00:00.000Z",
+        "Description": "POS PURCHASE NON-PIN",
+        "Memo": "Memo Name 1",
+        "Amount Debit": -13.99,
+        "Amount Credit": null,
+        "Balance": 820.79,
+        "Check Number": null,
+        "Fees": null
     },
     {
-        transactionNumber: '2',
-        date: '2022-12-31',
-        memo: 'Test Transaction',
-        amountDebit: '20.00',
+        "Transaction Number": "XXXXXXX0000XXXX",
+        "Date": "2024-09-30T00:00:00.000Z",
+        "Description": "POS PURCHASE NON-PIN",
+        "Memo": "Memo Name 2",
+        "Amount Debit": -9.99,
+        "Amount Credit": null,
+        "Balance": 820.79,
+        "Check Number": null,
+        "Fees": null
     },
+    {
+        "Transaction Number": "XXXXXXX0000XXXX",
+        "Date": "2024-09-30T00:00:00.000Z",
+        "Description": "POS PURCHASE NON-PIN",
+        "Memo": "Memo Name 3",
+        "Amount Debit": -1.99,
+        "Amount Credit": null,
+        "Balance": 820.79,
+        "Check Number": null,
+        "Fees": null
+    }
+
 ]
 
 export const daysMock: DayYear[] = [
     {
-        day_year: '12-31-2022',
+        day: '12-31-2022',
     },
     {
-        day_year: '12-30-2022',
+        day: '12-30-2022',
     },
     {
-        day_year: '12-29-2022',
+        day: '12-29-2022',
     }
 ]
 
@@ -53,13 +75,13 @@ export const weeksMock: WeekYear[] = [
 
 export const memosMock: Memo[] = [
     {
-        Memo: 'Test Memo 1',
+        name: 'Test Memo 1',
     },
     {
-        Memo: 'Test Memo 2',
+        name: 'Test Memo 2',
     },
     {
-        Memo: 'Test Memo 3',
+        name: 'Test Memo 3',
     }
 ]
 

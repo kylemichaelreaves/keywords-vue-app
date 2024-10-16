@@ -1,10 +1,9 @@
 <template>
-<!--  TODO this disabled condition doesn't make any sense -->
   <SelectComponent
       :options="dayOptions"
       :selectedValue="selectedDay"
       placeholder="select a day"
-      :disabled="!!selectedWeek || !!selectedMonth"
+      :disabled="true"
       :onChange="updateSelectedDay"
       :loading="isLoading || isFetching"
       loading-text="…loading days…"

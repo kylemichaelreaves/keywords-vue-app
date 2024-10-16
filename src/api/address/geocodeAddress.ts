@@ -2,13 +2,12 @@ import axios from "axios";
 import {API_GATEWAY_URL} from "@constants";
 import type {AddressFields, AddressResponse} from "@types";
 
-// TODO rename: fetchAddress -. geocodeAddress
 export const geocodeAddress = async (address: AddressFields): Promise<AddressResponse[]> => {
 
     return typeof address === "undefined"
         ? Promise.reject(new Error("address is undefined"))
         : await axios
-            .get(`${API_GATEWAY_URL}/address-geocoder`, {
+            .get(`${API_GATEWAY_URL}/addresses/geocoder`, {
                 params: address,
             })
             .then((response) => {

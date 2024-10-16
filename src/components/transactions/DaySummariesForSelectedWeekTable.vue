@@ -7,17 +7,17 @@
   </el-text>
   <!--  TODO the calendar should display the Sum Amount for each day of the selectedWeek -->
   <!--  TODO if the date is click, a modal displays the DaySummary table for the clicked date -->
-  <el-calendar
-      :range="[selectedWeekStart, selectedWeekEnd]"
-      @click="handleCalendarClick"
-  >
-    <template #date-cell="{data}">
-      <div @click="openModal(data.day)">
-        <span>{{ data.day }}</span>
-        <span v-if="getAmountDebitForDay(data.day) !== null">Debit: ${{ getAmountDebitForDay(data.day) }}</span>
-      </div>
-    </template>
-  </el-calendar>
+<!--  <el-calendar-->
+<!--      :range="[selectedWeekStart, selectedWeekEnd]"-->
+<!--      @click="handleCalendarClick"-->
+<!--  >-->
+<!--    <template #date-cell="{data}">-->
+<!--      <div @click="openModal(data.day)">-->
+<!--        <span>{{ data.day }}</span>-->
+<!--        <span v-if="getAmountDebitForDay(data.day) !== null">Debit: ${{ getAmountDebitForDay(data.day) }}</span>-->
+<!--      </div>-->
+<!--    </template>-->
+<!--  </el-calendar>-->
 
   <!-- Modal for Day Details -->
   <el-dialog

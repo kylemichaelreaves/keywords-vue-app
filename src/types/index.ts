@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-interface AddressFields {
+export interface AddressFields {
     streetAddress: string;
     unitOrAptNum?: string;
     municipality: string;
@@ -8,7 +8,7 @@ interface AddressFields {
     zipcode?: string;
 }
 
-type Transaction = {
+export type Transaction = {
     transactionNumber: string;
     date: string;
     description?: string;
@@ -20,41 +20,41 @@ type Transaction = {
     fees?: string;
 };
 
-interface TransactionData {
+export interface TransactionData {
     [key: string]: string;
 }
 
-interface MemoSummary {
+export interface MemoSummary {
     sum_amount_debit: number;
     transactions_count: number;
 }
 
-interface MemoExistence {
+export interface MemoExistence {
     memo_exists_in_memos: boolean;
 }
 
-interface WeekSummary {
+export interface WeekSummary {
     memo: string;
     weekly_amount_debit: number;
 }
 
-interface MonthSummary {
+export interface MonthSummary {
     memo: string;
     monthly_amount_debit: number;
 }
 
-interface MemoSumAmountDebits {
+export interface MemoSumAmountDebits {
     memo: string;
     total_debit: number;
 }
 
-interface DaySummary {
+export interface DaySummary {
     memo: string;
     daily_amount_debit: number;
 }
 
 
-interface AddressResponse {
+export interface AddressResponse {
     osm_type: string;
     osm_id: number;
     licence: string;
@@ -82,57 +82,64 @@ interface AddressResponse {
 }
 
 
-type TransactionsList = { rows: Array<Transaction> };
+export type TransactionsList = { rows: Array<Transaction> };
 
 
-type ArcDataObject<T> = d3.DefaultArcObject & { data: PieChartData };
+export type ArcDataObject<T> = d3.DefaultArcObject & { data: PieChartData };
 
-interface MemoGroup {
+export interface MemoGroup {
     date: string;
     memos: { memo: string, amount: number }[];
 }
 
-interface PieChartData {
+export interface PieChartData {
     label: string;
     value: number;
 }
 
-interface TimelineChartProps {
+export interface TimelineChartProps {
     debitsByMonth: { [key: string]: number };
 }
 
-interface Memo {
-    Memo: string
+export interface Memo {
+    name: string
 }
 
-interface DayYear {
+export interface DayYear {
     day: string;
 }
 
-interface MonthYear {
+export interface MonthYear {
     month_year: string;
 }
 
-interface WeekYear {
+export interface WeekYear {
     week_year: string;
 }
 
-interface Year {
+export interface Year {
     year: string;
 }
 
-type TimeframeType = 'day' | 'week' | 'month' | 'year';
+export type TimeframeType = 'day' | 'week' | 'month' | 'year';
 
-type FetchTransactionsParams = {
+export enum Timeframe {
+    Day = 'day',
+    Month = 'month',
+    Week = 'week',
+    Year = 'year',
+}
+
+export type FetchTransactionsParams = {
     limit?: number;
     offset?: number;
     memo?: string;
     timeFrame?: TimeframeType;
-    date?: Date | null | undefined;
+    date?: Date | undefined;
     pageParams?: { limit?: number; offset?: number; };
 }
 
-type OFSummaryTypeBase = {
+export type OFSummaryTypeBase = {
     total_debit: number;
     year: string;
     day_number?: string;
@@ -141,66 +148,70 @@ type OFSummaryTypeBase = {
     json?: JsonObjectType;
 }
 
-type JsonObjectType = {
+export type JsonObjectType = {
     total_debit: number;
     month_number: string;
     year: string;
 };
 
-type OFSummary = OFSummaryTypeBase;
+export type OFSummary = OFSummaryTypeBase;
 
-type MJSummary = OFSummaryTypeBase;
+export type MJSummary = OFSummaryTypeBase;
 
-type Summary = OFSummary | MJSummary;
+export type Summary = OFSummary | MJSummary;
 
-type Summaries = {
+export type Summaries = {
     period: string;
     total_debit: number;
     total_credit: number;
     amount_difference: number;
 };
 
-type CategoryTreeNode = {
+export type CategoryTreeNode = {
     value: string | number;
     label: string;
     children?: CategoryTreeNode[];
 }
 
-type CategoryTreeData = CategoryTreeNode[];
+export type CategoryTreeData = CategoryTreeNode[];
 
-type RouterQueryParams = {
+export type RouterQueryParams = {
     [key: string]: string | number | null | undefined;
 };
 
+export interface User {
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    role: string;
+}
 
+export interface FormField {
+    label: string;
+    type: string;
+    placeholder: string;
+}
 
-export type {
-    AddressFields,
-    AddressResponse,
-    CategoryTreeNode,
-    CategoryTreeData,
-    DayYear,
-    DaySummary,
-    Transaction,
-    TransactionData,
-    TransactionsList,
-    FetchTransactionsParams,
-    Memo,
-    MemoGroup,
-    MemoSummary,
-    MemoSumAmountDebits,
-    MonthYear,
-    PieChartData,
-    ArcDataObject,
-    TimelineChartProps,
-    WeekYear,
-    Year,
-    WeekSummary,
-    MonthSummary,
-    OFSummary,
-    OFSummaryTypeBase,
-    MJSummary,
-    Summary,
-    Summaries,
-    RouterQueryParams
+export interface BudgetCategory {
+    budget_category: string;
+}
+
+export type LoanFormType = {
+    loanAmount: number;
+    interestRate: number;
+    loanTerm: number;
+    startDate: Date;
+    [key: string]: number | Date;
 };
+
+export interface CarBudget {
+    memo: string;
+    amountDebit: number;
+    total_amount_debit: number;
+}
+
+export type Breadcrumb = {
+    label: string;
+    to: string;
+}

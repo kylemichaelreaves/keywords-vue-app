@@ -1,7 +1,7 @@
 import axios from "axios";
 import { isValidURL } from "@api/helpers/isValidURL";
 
-export async function fetchTransactionsCount(timeFrame?: string | undefined, date?: Date | null | undefined) {
+export async function fetchTransactionsCount(timeFrame?: string | undefined, date?: Date | null | undefined | string) {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
     if (!isValidURL(fetchURL)) {
