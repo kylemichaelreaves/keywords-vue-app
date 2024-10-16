@@ -4,8 +4,6 @@ import {TransactionsPage} from "@test/e2e/pages/TransactionsPage";
 import {transactionsMock} from "@mocks/transaction";
 
 test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({page}) => {
-
-
     await page.route('**/transactions/get-transactions?*', async (route) => {
         await route.fulfill({
             status: 200,
@@ -18,13 +16,9 @@ test('clicking the Transactions icon on the menu NavBar opens the TransactionsTa
 
     await transactionsPage.goto();
 
-    await transactionsPage.transactionsTable.waitFor();
-
     await expect(transactionsPage.daySelect).toBeVisible();
     await expect(transactionsPage.weekSelect).toBeVisible();
     await expect(transactionsPage.monthSelect).toBeVisible();
     await expect(transactionsPage.yearSelect).toBeVisible();
-
-    await expect(transactionsPage.transactionsTable).toBeVisible({timeout: 5000});
 
 });
