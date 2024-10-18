@@ -4,6 +4,7 @@ import {ElCard, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
 import {useTransactionsStore} from "@stores/transactions";
+import {vi} from "vitest";
 
 describe.skip('MemoSummaryTable.vue', () => {
     const wrapper = mount(MemoSummaryTable, {

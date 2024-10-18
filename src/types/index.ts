@@ -173,8 +173,6 @@ export type CategoryTreeNode = {
     children?: CategoryTreeNode[];
 }
 
-export type CategoryTreeData = CategoryTreeNode[];
-
 export type RouterQueryParams = {
     [key: string]: string | number | null | undefined;
 };
