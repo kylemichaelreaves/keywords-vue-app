@@ -1,10 +1,11 @@
 <template>
+  <AlertComponent v-if="error && isError" :title="error.name" :message="error.message" type="error"/>
   <div class="flex-container">
     <el-text type="primary" class="text">
       Budget Category
     </el-text>
-    <el-row>
-      <el-col :span="12">
+    <el-row :gutter="10">
+      <el-col :span="16">
         <el-tree-select
             :data="selectTreeData"
             v-model="selectedBudgetCategory"
@@ -12,13 +13,13 @@
             show-checkbox
         />
       </el-col>
-      <el-col :span="12">
+      <el-col :span="8">
         <div v-if="selectedBudgetCategory" class="button-container">
           <el-button
               type="danger"
-              @click="updateSelectedBudgetCategory('')"
+              @click="resetSelectedBudgetCategory"
           >
-            Reset Category
+          Reset Category
           </el-button>
         </div>
       </el-col>
@@ -26,92 +27,78 @@
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent, computed, ref, watch} from "vue";
+<script setup lang="ts">
+import {computed, ref, watch, defineEmits} from "vue";
 import {ElText, ElTreeSelect} from "element-plus";
 import {useBudgetCategories} from "@api/hooks/transactions/useBudgetCategories";
 import {convertToTree} from "@api/helpers/convertToTree";
 import {useTransactionsStore} from "@stores/transactions";
-import type {CategoryTreeData} from "@types";
+import type {CategoryTreeNode} from "@types";
+import AlertComponent from "@components/shared/AlertComponent.vue";
 
-export default defineComponent({
-  name: "BudgetCategoriesTreeSelect",
-  components: {
-    ElTreeSelect,
-    ElText
-  },
-  setup() {
+const props = defineProps({
+  selectedBudgetCategory: {
+    type: String,
+    required: true
+  }
+});
 
-    const store = useTransactionsStore();
-    const selectedBudgetCategory = ref('');
+const emit = defineEmits(['update:selected-budget-category']);
 
-    const {data, isFetching, isLoading, isError, error} = useBudgetCategories()
+const store = useTransactionsStore();
 
-    // convert the data to a format that the tree select component can use
-    // use the convertToTree function
-    const selectTreeData = computed(() => {
-      if (!data.value || !data.value.length) {
-        return []
-      } else {
-        // Iterate over the data.value array
-        return data.value.map((item) => {
-          // Get the 'data' object and convert it to a tree
-          return convertToTree(item.data);
-        }).flat();
+// Use ref to bind the selected budget category
+const selectedBudgetCategory = ref(props.selectedBudgetCategory);
+
+const {data, isError, error} = useBudgetCategories();
+
+// Convert the data to a format that the tree select component can use
+const selectTreeData = computed(() => {
+  if (!data.value || !data.value.length) {
+    return [];
+  } else {
+    return data.value.map((item) => convertToTree(item.data)).flat();
+  }
+});
+
+// Function to find the label from the value in the category tree
+const getLabelFromValue = (value: string): string | null => {
+  const findItemInTree = (items: CategoryTreeNode[], value: string): CategoryTreeNode | null => {
+    for (const item of items) {
+      if (item.value === value) {
+        return item;
       }
-    });
-
-    const getLabelFromValue = (value: string) => {
-      const foundItem = selectTreeData.value.find(item => item.value === value);
-      console.log('foundItem', foundItem)
-      if (!foundItem) {
-        return '';
-      }
-      return foundItem.label
-    }
-
-    function findLabel(data: CategoryTreeData, value: string): string | null {
-      for (let item of data) {
-        if (item.value === value) {
-          return item.label;
-        } else if (item.children) {
-          let label = findLabel(item.children, value);
-          if (label) {
-            return label;
-          }
+      if (item.children) {
+        const foundChild = findItemInTree(item.children, value);
+        if (foundChild) {
+          return foundChild;
         }
       }
-      return null;
     }
+    return null;
+  };
 
+  const foundItem = findItemInTree(selectTreeData.value, value);
+  return foundItem ? foundItem.label : `${value} not found`;
+};
 
-    const updateSelectedBudgetCategory = (category: string) => {
-      const budgetCategoryLabel = getLabelFromValue(category);
-      console.log('budgetCategoryLabel', budgetCategoryLabel)
-      store.setSelectedBudgetCategory(budgetCategoryLabel);
-      selectedBudgetCategory.value = budgetCategoryLabel;
-    }
+// Reset the selected category to null
+const resetSelectedBudgetCategory = () => {
+  selectedBudgetCategory.value = null;
+  store.setSelectedBudgetCategory(null);
+  emit('update:selected-budget-category', null);
+};
 
-
-    watch(() => selectedBudgetCategory.value, (newVal, oldVal) => {
-      store.setSelectedBudgetCategory(newVal)
-    })
-
-    return {
-      data,
-      isFetching,
-      isLoading,
-      isError,
-      error,
-      selectedBudgetCategory,
-      selectTreeData,
-      store,
-      updateSelectedBudgetCategory
-    };
+// Watch for changes in the selected budget category
+watch(selectedBudgetCategory, (newVal) => {
+  if (newVal) {
+    const budgetCategoryLabel = getLabelFromValue(newVal);
+    store.setSelectedBudgetCategory(budgetCategoryLabel);
+    emit('update:selected-budget-category', budgetCategoryLabel);
   }
-})
-</script>
+});
 
+</script>
 
 <style scoped>
 .text {
@@ -127,8 +114,8 @@ export default defineComponent({
 .button-container {
   margin-left: auto;
 }
+
 .tree-select {
-  width: 10vw;
+  width: 20vw;
 }
 </style>
-

@@ -1,12 +1,11 @@
-import {useMutation} from '@tanstack/vue-query';
-import type {BudgetCategory, Memo} from "@types";
 import {updateMemoBudgetCategory} from "@api/transactions/updateMemoBudgetCategory";
+import {useMutation} from "@tanstack/vue-query";
 
-export default function mutateMemoBudgetCategory(memo: Memo, budgetCategory: BudgetCategory) {
+export default function mutateMemoBudgetCategory() {
     return useMutation({
-        mutationKey: ['memo-budget-category', memo, budgetCategory],
-        mutationFn: async () => {
-            return updateMemoBudgetCategory(memo, budgetCategory)
-        },
-    })
+        mutationKey: ['mutate-memo-budget-category'],
+        mutationFn: async ({ memo, budgetCategory }: { memo: string, budgetCategory: string }) => {
+            return updateMemoBudgetCategory(memo, budgetCategory);
+        }
+    });
 }
