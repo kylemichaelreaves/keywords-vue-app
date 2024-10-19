@@ -1,14 +1,5 @@
 import {defineStore} from 'pinia'
-import type {Memo, MJSummary, MonthYear, OFSummary, Summaries, WeekYear, DayYear, Year} from "@types";
-import {fetchDays} from "@api/transactions/fetchDays";
-import {fetchWeeks} from "@api/transactions/fetchWeeks";
-import {fetchMonths} from "@api/transactions/fetchMonths";
-import {fetchMemos} from "@api/transactions/fetchMemos";
-import {fetchOFAmountDebit} from "@api/transactions/fetchOFAmountDebit";
-import {fetchMJAmountDebit} from "@api/transactions/fetchMJAmountDebit";
-import {getDateNumberKey} from "@api/helpers/getDateNumberKey";
-import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
-import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
+import type {Memo, MJSummary, MonthYear, OFSummary, Summaries, WeekYear, DayYear, Year, Transaction} from "@types";
 
 export const useTransactionsStore = defineStore('transactions', {
 
@@ -31,6 +22,7 @@ export const useTransactionsStore = defineStore('transactions', {
         MJSummaries: Array<MJSummary>,
         weekSummaries: Array<Summaries>,
         monthSummaries: Array<Summaries>,
+        transactions: Array<Transaction>,
         transactionsCurrentPage: number,
         transactionsPageSize: number,
         filter: Record<string, string>,
@@ -66,6 +58,7 @@ export const useTransactionsStore = defineStore('transactions', {
         memoOffset: 0,
         transactionsTableLimit: 100,
         transactionsTableOffset: 0,
+        transactions: []
     }),
     getters: {
         getSelectedDay: (state) => {
@@ -136,6 +129,9 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         getDaysForSelectedWeek: (state) => {
             return state.daysForSelectedWeek
+        },
+        getTransactions: (state) => {
+            return state.transactions
         }
     },
     actions: {
@@ -190,84 +186,6 @@ export const useTransactionsStore = defineStore('transactions', {
         setMonthSummaries(summaries: Array<Summaries>) {
             this.monthSummaries = summaries
         },
-        async fetchDaysData() {
-            await fetchDays().then((days) => {
-                this.days = days;
-            }).catch((err) => {
-                console.log('err:', err);
-                throw err;
-            })
-        },
-        async fetchWeeksData() {
-            await fetchWeeks().then((weeks) => {
-                this.weeks = weeks;
-            }).catch((err) => {
-                console.log('err:', err);
-                throw err;
-            })
-        },
-        async fetchMonthsData() {
-            await fetchMonths().then((months) => {
-                this.months = months;
-            }).catch((err) => {
-                console.log('err:', err);
-                throw err;
-            })
-        },
-        async fetchPrevSummaries() {
-            // TODO refactor dateType to account for year and day
-            let dateType: 'month' | 'week' = 'month';
-            let dateSummaries: Array<MonthYear | WeekYear> = [];
-            let fetchOFSummary = fetchOFAmountDebit;
-            let fetchMJSummary = fetchMJAmountDebit;
-            let parsedDate;
-
-            if (this.selectedMonth) {
-                dateType = 'month';
-                const currentIndex = this.months.findIndex(month => month.month_year === this.selectedMonth);
-                dateSummaries = this.months.slice(currentIndex, currentIndex + 3);
-                parsedDate = parseDateMMYYYY(this.selectedMonth)
-            } else if (this.selectedWeek) {
-                dateType = 'week';
-                const currentIndex = this.weeks.findIndex(week => week.week_year === this.selectedWeek);
-                dateSummaries = this.weeks.slice(currentIndex, currentIndex + 3);
-                parsedDate = parseDateIWIYYY(this.selectedMonth)
-            }
-
-            for (let date of dateSummaries) {
-                const OFsummary = await fetchOFSummary(dateType, parsedDate);
-                const MJSummary = await fetchMJSummary(dateType, parsedDate);
-
-                const dateNumberKey = getDateNumberKey(dateType);
-                // only add if not already in array
-                if (!this.OFSummaries.some(summary =>
-                    summary.year === OFsummary.year && summary[dateNumberKey] === OFsummary[dateNumberKey])) {
-                    this.OFSummaries = [...this.OFSummaries, OFsummary];
-                }
-                // only add if not already in array
-                if (!this.MJSummaries.some(summary =>
-                    summary.year === MJSummary.year && summary[dateNumberKey] === MJSummary[dateNumberKey])) {
-                    this.MJSummaries = [...this.MJSummaries, MJSummary];
-                }
-            }
-        },
-        async fetchMemosData() {
-            await fetchMemos().then((memos) => {
-                this.memos = memos;
-            }).catch((err) => {
-                console.log('err:', err);
-                throw err;
-            })
-        },
-        async getTimeframe() {
-            if (this.selectedMonth) {
-                return 'month';
-            } else if (this.selectedWeek) {
-                return 'week';
-            } else {
-                return 'day';
-            }
-        },
         updateTransactionsCurrentPage(currentPage: number) {
             this.transactionsCurrentPage = currentPage;
         },
@@ -294,6 +212,9 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         setWeeksForSelectedMonth(weeks: Array<string>) {
             this.weeksForSelectedMonth = weeks;
+        },
+        setTransactions(transactions: Array<Transaction>) {
+            this.transactions = transactions;
         }
     }
 

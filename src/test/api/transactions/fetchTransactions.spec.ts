@@ -14,7 +14,7 @@ describe('fetchTransactions', () => {
         const offset = 0;
         const transactions: Transaction[] = transactionsMock;
 
-        const result = await fetchTransactions(limit, offset, API_GATEWAY_URL);
+        const result = await fetchTransactions(limit);
 
         expect(result).toBeDefined();
         expect(result.length).toEqual(transactions.length);
@@ -26,7 +26,7 @@ describe('fetchTransactions', () => {
         const offset = 0;
 
         try {
-             await fetchTransactions(limit, offset, fetchUrl);
+             await fetchTransactions(limit);
         } catch (error) {
             expect(error).toBeDefined()
             expect((error as Error).message).toBe('Request failed with status code 500');
@@ -38,7 +38,7 @@ describe('fetchTransactions', () => {
         const offset = 0;
 
         try {
-            await fetchTransactions(limit, offset);
+            await fetchTransactions(limit);
         } catch (error) {
             expect(error).toBeDefined();
             expect((error as Error).message).toBe('API_GATEWAY_URL is not defined');

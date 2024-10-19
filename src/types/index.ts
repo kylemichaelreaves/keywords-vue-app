@@ -1,5 +1,3 @@
-import * as d3 from "d3";
-
 export interface AddressFields {
     streetAddress: string;
     unitOrAptNum?: string;
@@ -19,20 +17,10 @@ export type Transaction = {
     checkNumber?: string;
     fees?: string;
 };
-
-export interface TransactionData {
-    [key: string]: string;
-}
-
 export interface MemoSummary {
     sum_amount_debit: number;
     transactions_count: number;
 }
-
-export interface MemoExistence {
-    memo_exists_in_memos: boolean;
-}
-
 export interface WeekSummary {
     memo: string;
     weekly_amount_debit: number;
@@ -81,26 +69,10 @@ export interface AddressResponse {
     lat: string
 }
 
-
-export type TransactionsList = { rows: Array<Transaction> };
-
-
-export type ArcDataObject<T> = d3.DefaultArcObject & { data: PieChartData };
-
-export interface MemoGroup {
-    date: string;
-    memos: { memo: string, amount: number }[];
-}
-
 export interface PieChartData {
     label: string;
     value: number;
 }
-
-export interface TimelineChartProps {
-    debitsByMonth: { [key: string]: number };
-}
-
 export interface Memo {
     name: string
 }
@@ -128,15 +100,6 @@ export enum Timeframe {
     Month = 'month',
     Week = 'week',
     Year = 'year',
-}
-
-export type FetchTransactionsParams = {
-    limit?: number;
-    offset?: number;
-    memo?: string;
-    timeFrame?: TimeframeType;
-    date?: Date | undefined;
-    pageParams?: { limit?: number; offset?: number; };
 }
 
 export type OFSummaryTypeBase = {
