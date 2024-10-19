@@ -1,11 +1,12 @@
+// New function to determine the date object based on the dateType and the selected value
 import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
 import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
 import type {ComputedRef} from "vue";
 
 // Function to determine the date object based on the dateType and its selected value
-export function getDateObject(dateType: string, selectedValue: ComputedRef<string> | null) {
+export function getJSDateObject(dateType: string, selectedValue: ComputedRef<string> | null) {
     if (!selectedValue) {
-        return null; // Return early if selectedValue is null or undefined
+        return null;
     }
 
     switch (dateType) {
@@ -20,7 +21,7 @@ export function getDateObject(dateType: string, selectedValue: ComputedRef<strin
 
         case "year":
 
-            return isNaN(new Date(selectedValue.value).getFullYear()) ? null : String(new Date(selectedValue.value).getFullYear());
+            return new Date(selectedValue.value).getFullYear();
 
         default:
             return;

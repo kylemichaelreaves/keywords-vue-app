@@ -3,7 +3,10 @@
     <AlertComponent v-if="isError && error" :title="error.name" :message="error?.message" type="error"/>
     <template #header>
       <div class="card-header">
-        <h2>Month Summary for: {{ selectedMonth }}</h2>
+        <div class="summary-left">
+          <h2>Month Summary for: {{ selectedMonth }}</h2>
+          <MonthlyAmountDebitTotal/>
+        </div>
 
         <!--        TODO abstract to its own component -->
         <el-button-group>
@@ -32,10 +35,10 @@
       </div>
     </template>
 
+
     <el-row>
       <el-col :span="12">
         <!-- TODO use TableComponent -->
-        <!-- TODO a way to assign a budget category to a memo, and have that color highlight the relevant Memo's rows -->
         <!-- TODO sortable el-column, the column is Total Amount Debit -->
         <el-table
             v-if="data"
@@ -92,6 +95,7 @@ import MonthsSummaryTable from "@components/transactions/MonthsSummaryTable.vue"
 import AlertComponent from "@components/shared/AlertComponent.vue";
 import {router} from "@main";
 import CarBudgetSummaryTable from "@components/transactions/CarBudgetSummaryTable.vue";
+import MonthlyAmountDebitTotal from "@components/transactions/MonthlyAmountDebitTotal.vue";
 
 
 const store = useTransactionsStore()
@@ -175,5 +179,11 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.summary-left {
+  display: flex;
+  align-items: center;
+  gap: 5rem;
 }
 </style>

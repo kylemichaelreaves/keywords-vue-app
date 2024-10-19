@@ -10,13 +10,14 @@
   <!--      :columns="memoColumns"-->
   <!--  />-->
   <el-card>
-  <h2>Memos Table</h2>
-  <el-text size="large">A table of all the distinct Memos in the database</el-text><br/>
-  <el-text size="default">Along with the total Amount Debit and Budget Category, if there is one assigned to it</el-text>
-    <div v-if="isError">
-      <el-alert type="error" :title="error"/>
-    </div>
-    <el-table v-if="data" :data="data" table-layout="auto" :loading="isFetching" size="small">
+    <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error"/>
+    <h2>Memos Table</h2>
+    <el-text size="large">A table of all the distinct Memos in the database</el-text>
+    <br/>
+    <el-text size="default">Along with the total Amount Debit and Budget Category, if there is one assigned to it
+    </el-text>
+
+    <el-table v-if="data" :data="data" table-layout="auto" :loading="isFetching || isLoading" size="small">
       <el-table-column v-for="column in memoColumns" :key="column.prop" :prop="column.prop" :label="column.label">
         <template v-if="column.prop === 'Memo'" #default="scope">
           <router-link :to="{ name: 'memo', params: { memo: scope.row[column.prop] }}">
@@ -28,38 +29,20 @@
   </el-card>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue'
-import TableComponent from "@components/shared/TableComponent.vue";
+<script setup lang="ts">
 import useMemos from "@api/hooks/transactions/useMemos";
-
-export default defineComponent({
-  name: 'MemosTable',
-  components: {
-    TableComponent,
-  },
-  setup() {
+import AlertComponent from "@components/shared/AlertComponent.vue";
 
 
-    const {data, isLoading, isFetching, error, isError} = useMemos();
+const {data, isLoading, isFetching, error, isError} = useMemos();
 
-    const memoColumns = [
-      {prop: 'Memo', label: 'Memo'},
-      {prop: 'Budget Category', label: 'Budget Category'}
-    ]
+const memoColumns = [
+  {prop: 'Memo', label: 'Memo'},
+  {prop: 'Budget Category', label: 'Budget Category'}
+]
 
-    return {
-      data,
-      isLoading,
-      isFetching,
-      error,
-      isError,
-      memoColumns
-    }
-  }
-})
 
 </script>
-<style scoped>
 
+<style scoped>
 </style>

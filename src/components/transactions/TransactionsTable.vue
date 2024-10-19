@@ -41,7 +41,7 @@
       background
       layout="prev, pager, next"
       :total="totalItems"
-      :page-size="LIMIT"
+      :page-count="LIMIT"
       :current-page="currentPage"
       @update:current-page="handleCurrentChange"
       @update:page-size="handleSizeChange"
@@ -52,14 +52,13 @@
 
 <script setup lang="ts">
 import {computed, onMounted, watch} from "vue";
-import type {Memo, Transaction} from "@types";
+import type {Transaction} from "@types";
 import {formatDate} from "@api/helpers/formatDate";
 import MonthSummaryTable from "@components/transactions/MonthSummaryTable.vue";
 import WeekSummaryTable from "@components/transactions/WeekSummaryTable.vue";
 import {useTransactionsStore} from "@stores/transactions";
 import useTransactions from "@api/hooks/transactions/useTransactions";
 import TransactionsTableSelects from "@components/transactions/TransactionsTableSelects.vue";
-import MemoSummaryTable from "@components/transactions/MemoSummaryTable.vue";
 import AlertComponent from "@components/shared/AlertComponent.vue";
 
 
@@ -124,7 +123,17 @@ function getRowKey(row: Transaction): string {
   return row.transactionNumber;
 }
 
-watch([selectedMonth, selectedWeek, selectedMemo], () => {
+watch(selectedMonth, (newMonth) => {
+  if (newMonth) {
+    refetch();
+  }
+});
+
+watch(() => selectedWeek.value, () => {
+  refetch();
+});
+
+watch(() => selectedMemo.value, () => {
   refetch();
 });
 

@@ -1,41 +1,47 @@
 import {useQuery} from '@tanstack/vue-query'
-import type {UseQueryReturnType} from '@tanstack/vue-query'
-import type {TimeframeType, Transaction} from "@types";
-import {computed} from "vue";
-import {fetchTransactions} from '@api/transactions/fetchTransactions'
-import {useTransactionsStore} from "@stores/transactions";
-import {getDateObject} from "@api/helpers/getDateObj";
-import {getDateTypeAndValue} from "@components/transactions/getDateTypeAndValue";
+import {computed} from 'vue';
+import {useTransactionsStore} from '@stores/transactions';
+import {fetchTransactions} from '@api/transactions/fetchTransactions';
+import {getJSDateObject} from '@api/helpers/getJSDateObject';
+import {getDateTypeAndValue} from '@components/transactions/getDateTypeAndValue';
+import type {Transaction} from "@types";
 
-export default function useTransactions(LIMIT: number, OFFSET?: number): UseQueryReturnType<Transaction[], Error> {
-    const store = useTransactionsStore()
-    const selectedMemo = computed(() => store.getSelectedMemo)
-    const {dateType, selectedValue} = getDateTypeAndValue();
+export default function useTransactions(LIMIT: number, OFFSET: number) {
+    const store = useTransactionsStore();
+    const selectedMemo = computed(() => store.getSelectedMemo);
 
-    console.log('dateType', dateType);
-    console.log('selectedValue', selectedValue);
+    const dateTypeAndValue = computed(() => getDateTypeAndValue());
+    const dateType = computed(() => dateTypeAndValue.value.dateType);
+    const selectedValue = computed(() => dateTypeAndValue.value.selectedValue);
 
-    const queryKey = computed(() => [
-        'transactions',
-        LIMIT,
-        OFFSET,
-        selectedMemo.value,
-        dateType,
-        selectedValue?.value
-    ]);
+    const cachedTransactions = computed(() => store.getTransactions);
 
     return useQuery<Array<Transaction>>({
-        queryKey: queryKey.value,
+        queryKey: [
+            'transactions',
+            LIMIT,
+            OFFSET,
+            selectedMemo.value,
+            dateType.value,
+            selectedValue.value
+        ],
         queryFn: () => {
-            const dateObj = getDateObject(dateType, selectedValue);
-            return fetchTransactions({
-                limit: LIMIT,
-                offset: OFFSET,
-                memo: selectedMemo.value,
-                timeFrame: dateType as TimeframeType,
-                date: dateObj
-            });
+            if (cachedTransactions.value.length > 0) {
+                return cachedTransactions.value;
+            } else {
+                const dateObj = getJSDateObject(dateType.value, selectedValue.value);
+                const transactions = fetchTransactions({
+                    limit: LIMIT,
+                    offset: OFFSET,
+                    memo: selectedMemo.value,
+                    timeFrame: dateType.value,
+                    date: dateObj as unknown as Date
+                });
+                store.setTransactions(transactions as unknown as Transaction[]);
+                return transactions;
+            }
         },
-        refetchOnWindowFocus: false
-    })
+        refetchOnWindowFocus: false,
+        // staleTime: 1000 * 60 * 5 // Cache for 5 minutes
+    });
 }

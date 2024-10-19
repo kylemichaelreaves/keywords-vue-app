@@ -1,56 +1,53 @@
 <template>
+  <AlertComponent v-if="isError && error" :title="error.name" :message="error?.message" type="error"/>
   <el-statistic
       v-if="data"
-      :value="data"
+      :value="statisticValue"
       title="Monthly Total Amount Debit"
       v-loading="isLoading || isFetching || isRefetching"
+      :precision="2"
   />
 </template>
 
-<script lang="ts">
-import {computed, defineComponent, watch} from "vue";
+<script setup lang="ts">
+import {computed, watch} from "vue";
 import {ElStatistic} from "element-plus";
 import useSumAmountDebitByDate from "@api/hooks/transactions/useSumAmountDebitByDate";
 import {useTransactionsStore} from "@stores/transactions";
-import {useRoute} from "vue-router";
+import AlertComponent from "@components/shared/AlertComponent.vue";
 
-export default defineComponent({
-  name: 'MonthlyAmountDebitTotal',
-  components: {ElStatistic},
-  setup() {
 
-    const route = useRoute();
-    console.log('route', route);
+const store = useTransactionsStore();
+const selectedMonth = computed(() => store.getSelectedMonth);
 
-    const store = useTransactionsStore();
-    const selectedMonth = computed(() => store.getSelectedMonth);
 
-    const {
-      data,
-      isLoading,
-      isFetching,
-      isRefetching,
-      isError,
-      error,
-      refetch
-    } = useSumAmountDebitByDate('month', selectedMonth.value);
+const {
+  data,
+  isLoading,
+  isFetching,
+  isRefetching,
+  isError,
+  error,
+  refetch
+} = useSumAmountDebitByDate('month', selectedMonth.value);
 
-    watch(() => store.selectedMonth, (newValue) => {
-      if (newValue) {
-        refetch();
-      }
-    }, {immediate: true});
+const dataItems = computed(() => data.value);
 
-    return {
-      data,
-      isLoading,
-      isFetching,
-      isRefetching,
-      isError,
-      error,
-    }
+const statisticValue = computed(() => {
+  if (!dataItems.value) {
+    return 0;
+  } else {
+    return dataItems.value[0].month_total_amount_debit;
   }
-})
+});
+
+
+watch(() => store.selectedMonth, (newValue) => {
+  if (newValue) {
+    refetch();
+  }
+}, {immediate: true});
+
 
 </script>
 
