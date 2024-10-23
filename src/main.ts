@@ -63,13 +63,13 @@ export const routes: RouteRecordRaw[] = [
                         component: TransactionSummaryTable,
                     },
                     {
-                        path: 'summary/:month',
+                        path: 'summary/month/:month',
                         name: 'month-summary',
                         component: MonthSummaryTable,
                         props: true
                     },
                     {
-                        path: 'summary/:week',
+                        path: 'summary/week/:week',
                         name: 'week-summary',
                         component: WeekSummaryTable,
                         props: true

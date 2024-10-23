@@ -1,4 +1,4 @@
-import {useQuery} from '@tanstack/vue-query'
+import {useInfiniteQuery} from '@tanstack/vue-query';
 import {computed} from 'vue';
 import {useTransactionsStore} from '@stores/transactions';
 import {fetchTransactions} from '@api/transactions/fetchTransactions';
@@ -14,34 +14,30 @@ export default function useTransactions(LIMIT: number, OFFSET: number) {
     const dateType = computed(() => dateTypeAndValue.value.dateType);
     const selectedValue = computed(() => dateTypeAndValue.value.selectedValue);
 
-    const cachedTransactions = computed(() => store.getTransactions);
-
-    return useQuery<Array<Transaction>>({
-        queryKey: [
-            'transactions',
-            LIMIT,
-            OFFSET,
-            selectedMemo.value,
-            dateType.value,
-            selectedValue.value
-        ],
-        queryFn: () => {
-            if (cachedTransactions.value.length > 0) {
-                return cachedTransactions.value;
-            } else {
-                const dateObj = getJSDateObject(dateType.value, selectedValue.value);
-                const transactions = fetchTransactions({
-                    limit: LIMIT,
-                    offset: OFFSET,
-                    memo: selectedMemo.value,
-                    timeFrame: dateType.value,
-                    date: dateObj as unknown as Date
-                });
-                store.setTransactions(transactions as unknown as Transaction[]);
-                return transactions;
+    return useInfiniteQuery<Array<Transaction>>({
+        initialPageParam: 0,
+        queryKey: ['transactions', LIMIT, selectedMemo.value, dateType.value, selectedValue.value],
+        queryFn: async ({pageParam = 0}) => {
+            console.log('pageParam:', pageParam);
+            const dateObj = getJSDateObject(dateType.value, selectedValue.value);
+            return await fetchTransactions({
+                limit: LIMIT,
+                offset: Number(pageParam),
+                memo: selectedMemo.value,
+                timeFrame: dateType.value,
+                date: dateObj as unknown as Date,
+            });
+        },
+        getNextPageParam: (lastPage, allPages) => {
+            // Return the new offset value, which increases with each page
+            if (lastPage.length < LIMIT) {
+                // Return undefined to indicate there are no more pages to load
+                return undefined;
             }
+            // Otherwise, return the offset for the next page
+            return allPages.length * LIMIT;
         },
         refetchOnWindowFocus: false,
-        // staleTime: 1000 * 60 * 5 // Cache for 5 minutes
+        staleTime: 1000 * 60 * 5 // Cache for 5 minutes
     });
 }

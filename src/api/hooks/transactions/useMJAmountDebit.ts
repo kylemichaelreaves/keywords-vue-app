@@ -7,17 +7,8 @@ import type {UseQueryReturnType} from '@tanstack/vue-query';
 import type {MJSummary} from '@types';
 import {computed} from 'vue';
 
-// TODO refactor away from the store to use props
-// interface MJAmountDebitParams {
-//     selectedValue | date: string;
-//     dateType | timeFrame: string;
-// }
-
-// Get the Amount Debit for Memos fitting the MJ category, for a certain period of time
 export default function useMJAmountDebit(): UseQueryReturnType<MJSummary, Error> {
-    // Use the helper function to get the date type and selected value
     const {dateType, selectedValue} = getDateTypeAndValue();
-
     const queryKey = computed(() => ['MJAmountDebit', dateType, selectedValue?.value]);
 
     return useQuery<MJSummary>({

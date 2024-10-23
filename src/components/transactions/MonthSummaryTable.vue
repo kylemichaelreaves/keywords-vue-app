@@ -157,8 +157,10 @@ const resetSelectedMonth = () => {
   router.push({name: 'transactions'});
 }
 
-watch(() => selectedMonth.value, () => {
-  refetch();
+watch(selectedMonth, (newMonth) => {
+  if(newMonth) {
+    refetch();
+  }
 });
 
 onMounted(() => {
@@ -184,6 +186,6 @@ onBeforeUnmount(() => {
 .summary-left {
   display: flex;
   align-items: center;
-  gap: 5rem;
+  gap: 2.5rem;
 }
 </style>

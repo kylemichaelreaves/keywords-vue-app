@@ -11,9 +11,19 @@ export function usePrevMJSummaries(): UseQueryReturnType<MJSummary[], Error> {
     const dateType = getDateType();
     const queryKey = computed(() => ['PrevMJSummaries', dateType]);
 
+    const cachedPrevMJSummaries = computed(() => store.getMJSummaries);
+
     return useQuery({
         queryKey: queryKey.value,
-        queryFn: () => fetchMJAmountDebit(dateType),
+        queryFn: async () => {
+            if (cachedPrevMJSummaries.value.length > 0) {
+                return cachedPrevMJSummaries.value
+            } else {
+                const prevSummaries = await fetchMJAmountDebit(dateType)
+                store.setMJSummaries(prevSummaries as unknown as MJSummary[])
+                return prevSummaries
+            }
+        },
         refetchOnWindowFocus: false,
         enabled: !!store.selectedMonth || !!store.selectedWeek
     })
