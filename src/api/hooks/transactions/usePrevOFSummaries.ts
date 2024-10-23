@@ -11,9 +11,19 @@ export function usePrevOFSummaries(): UseQueryReturnType<OFSummary[], Error> {
     const dateType = computed(() => "month");
     const queryKey = computed(() => ['PrevOFSummaries', dateType.value]);
 
+    const cachedPrevOFSummaries = computed(() => store.getOFSummaries);
+
     return useQuery({
         queryKey: queryKey.value,
-        queryFn: () => fetchOFAmountDebit(dateType.value),
+        queryFn: async () => {
+            if (cachedPrevOFSummaries.value.length > 0) {
+                return cachedPrevOFSummaries.value
+            } else {
+                const prevSummaries = await fetchOFAmountDebit(dateType.value)
+                store.setOFSummaries(prevSummaries as unknown as OFSummary[])
+                return prevSummaries
+            }
+        },
         refetchOnWindowFocus: false,
         enabled: Boolean(store.selectedMonth) || Boolean(store.selectedWeek)
     })

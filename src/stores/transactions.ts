@@ -20,8 +20,9 @@ export const useTransactionsStore = defineStore('transactions', {
         years: Array<Year>,
         OFSummaries: Array<OFSummary>,
         MJSummaries: Array<MJSummary>,
-        weekSummaries: Array<Summaries>,
-        monthSummaries: Array<Summaries>,
+        daysSummaries: Array<Summaries>,
+        weeksSummaries: Array<Summaries>,
+        monthsSummaries: Array<Summaries>,
         transactions: Array<Transaction>,
         transactionsCurrentPage: number,
         transactionsPageSize: number,
@@ -48,8 +49,9 @@ export const useTransactionsStore = defineStore('transactions', {
         years: [],
         OFSummaries: [],
         MJSummaries: [],
-        weekSummaries: [],
-        monthSummaries: [],
+        daysSummaries: [],
+        weeksSummaries: [],
+        monthsSummaries: [],
         transactionsCurrentPage: 1,
         transactionsPageSize: 100,
         filter: {},
@@ -79,11 +81,17 @@ export const useTransactionsStore = defineStore('transactions', {
         getSelectedType: (state) => {
             return state.selectedType
         },
+        getDays: (state) => {
+            return state.days
+        },
         getWeeks: (state) => {
             return state.weeks
         },
         getMonths: (state) => {
             return state.months
+        },
+        getYears: (state) => {
+            return state.years
         },
         getMemos: (state) => {
             return state.memos
@@ -94,11 +102,14 @@ export const useTransactionsStore = defineStore('transactions', {
         getMJSummaries: (state) => {
             return state.MJSummaries
         },
-        getWeekSummaries: (state) => {
-            return state.weekSummaries
+        getDaysSummaries: (state) => {
+            return state.daysSummaries
         },
-        getMonthSummaries: (state) => {
-            return state.monthSummaries
+        getWeeksSummaries: (state) => {
+            return state.weeksSummaries
+        },
+        getMonthsSummaries: (state) => {
+            return state.monthsSummaries
         },
         getTransactionsCurrentPage: (state) => {
             return state.transactionsCurrentPage
@@ -180,11 +191,14 @@ export const useTransactionsStore = defineStore('transactions', {
         setMJSummaries(summaries: Array<MJSummary>) {
             this.MJSummaries = summaries
         },
-        setWeekSummaries(summaries: Array<Summaries>) {
-            this.weekSummaries = summaries
+        setDaysSummaries(summaries: Array<Summaries>) {
+            this.daysSummaries = summaries
         },
-        setMonthSummaries(summaries: Array<Summaries>) {
-            this.monthSummaries = summaries
+        setWeeksSummaries(summaries: Array<Summaries>) {
+            this.weeksSummaries = summaries
+        },
+        setMonthsSummaries(summaries: Array<Summaries>) {
+            this.monthsSummaries = summaries
         },
         updateTransactionsCurrentPage(currentPage: number) {
             this.transactionsCurrentPage = currentPage;

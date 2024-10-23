@@ -20,7 +20,7 @@ export const fetchTransactions = async (queryParams: {
 
 
     return await axios
-        .get(`${fetchURL}/transactions/get-transactions`, {
+        .get<Array<Transaction>>(`${fetchURL}/transactions/get-transactions`, {
             params: {
                 limit: limit ? limit : undefined,
                 offset: offset ? offset : undefined,

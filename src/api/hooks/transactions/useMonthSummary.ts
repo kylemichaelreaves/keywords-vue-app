@@ -8,6 +8,7 @@ import {fetchMonthSummary} from "@api/transactions/fetchMonthSummary";
 export default function useMonthSummary(): UseQueryReturnType<MonthSummary[], Error> {
     const store = useTransactionsStore()
     const month = computed(() => store.getSelectedMonth)
+
     return useQuery<Array<MonthSummary>>({
         queryKey: ['monthSummary', month.value],
         queryFn: () => fetchMonthSummary(month.value),

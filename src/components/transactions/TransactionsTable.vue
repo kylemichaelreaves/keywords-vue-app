@@ -6,15 +6,20 @@
 
   <el-table
       :row-key="getRowKey"
-      v-if="data"
-      v-loading="isFetching || isLoading || isRefetching"
-      :data="paginatedData"
+      v-if="flattenedData"
+      v-loading="isFetching || isLoading || isRefetching || isFetchingNextPage || isFetchingPreviousPage"
+      :data="flattenedData"
       table-layout="auto"
       height="auto"
       size="small"
       border
       stripe
       show-summary
+      v-infinite-scroll="loadMore"
+      :infinite-scroll-disabled="isFetchingNextPage || !hasNextPage"
+      :infinite-scroll-distance="50"
+      class="infinite-scroll-container"
+      style="overflow-y: auto; height: 750px;"
   >
     <el-table-column v-for="columnKey in columnKeys" :key="columnKey" :prop="columnKey" :label="columnKey">
       <template v-if="columnKey === 'Transaction Number'" #default="scope">
@@ -61,28 +66,39 @@ import useTransactions from "@api/hooks/transactions/useTransactions";
 import TransactionsTableSelects from "@components/transactions/TransactionsTableSelects.vue";
 import AlertComponent from "@components/shared/AlertComponent.vue";
 
-
+// Set up store and basic variables
 const store = useTransactionsStore();
 
 const selectedMonth = computed(() => store.getSelectedMonth);
 const selectedWeek = computed(() => store.getSelectedWeek);
-const selectedMemo = computed(() => store.getSelectedMonth);
 
 const LIMIT = computed(() => store.getTransactionsTableLimit);
 const OFFSET = computed(() => store.getTransactionsTableOffset);
 
+// Fetch transactions data
 const {
   data,
   error,
   isError,
   isLoading,
   isFetching,
+  isFetchingNextPage,
+  isFetchingPreviousPage,
   isRefetching,
-  refetch
+  refetch,
+  fetchNextPage,
+  hasNextPage
 } = useTransactions(LIMIT.value, OFFSET.value);
 
-const totalItems: number | undefined = data?.value?.length
+// Flatten the `pages` array into a single array of transactions
+const flattenedData = computed(() => {
+  return data?.value?.pages.flat() || [];
+});
 
+// Total items based on flattened data
+const totalItems: number = flattenedData.value.length;
+
+// Handle pagination changes
 function handleCurrentChange(newPage: number) {
   currentPage.value = newPage;
 }
@@ -99,12 +115,21 @@ const currentPage = computed({
   }
 });
 
+// Paginate the flattened data for the table display
 const paginatedData = computed(() => {
   const start = (currentPage?.value - 1) * store.transactionsTableLimit;
   const end = start + store.transactionsTableLimit;
-  return data?.value?.slice(start, end);
+  return flattenedData.value.slice(start, end);
 });
 
+const loadMore = () => {
+  console.log('loadMore triggered')
+  if (hasNextPage.value) {
+    fetchNextPage();
+  }
+};
+
+// Define table columns
 let columnKeys = [
   'Transaction Number',
   'Date',
@@ -112,36 +137,23 @@ let columnKeys = [
   'Memo',
   'Amount Debit',
   'Amount Credit',
-  'Balance',
-  'Check Number',
-  'Fees'
+  'Balance'
 ];
-
-columnKeys = columnKeys.filter(key => key !== 'Check Number' && key !== 'Fees');
 
 function getRowKey(row: Transaction): string {
   return row.transactionNumber;
 }
 
+// Watchers to refetch data when certain filters change
 watch(selectedMonth, (newMonth) => {
   if (newMonth) {
     refetch();
   }
 });
 
-watch(() => selectedWeek.value, () => {
-  refetch();
-});
-
-watch(() => selectedMemo.value, () => {
-  refetch();
-});
-
-
 onMounted(() => {
   refetch();
 });
-
 
 </script>
 
