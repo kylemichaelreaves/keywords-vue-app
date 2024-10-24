@@ -1,43 +1,65 @@
 import {useInfiniteQuery} from '@tanstack/vue-query';
-import {computed} from 'vue';
+import {computed, watch} from 'vue';
 import {useTransactionsStore} from '@stores/transactions';
 import {fetchTransactions} from '@api/transactions/fetchTransactions';
 import {getJSDateObject} from '@api/helpers/getJSDateObject';
 import {getDateTypeAndValue} from '@components/transactions/getDateTypeAndValue';
-import type {Transaction} from "@types";
+import type {Transaction} from '@types';
 
-export default function useTransactions(LIMIT: number, OFFSET: number) {
+export default function useTransactions(LIMIT: number) {
     const store = useTransactionsStore();
     const selectedMemo = computed(() => store.getSelectedMemo);
-
     const dateTypeAndValue = computed(() => getDateTypeAndValue());
     const dateType = computed(() => dateTypeAndValue.value.dateType);
     const selectedValue = computed(() => dateTypeAndValue.value.selectedValue);
 
-    return useInfiniteQuery<Array<Transaction>>({
+    const infiniteQuery = useInfiniteQuery<Array<Transaction>>({
         initialPageParam: 0,
         queryKey: ['transactions', LIMIT, selectedMemo.value, dateType.value, selectedValue.value],
         queryFn: async ({pageParam = 0}) => {
-            console.log('pageParam:', pageParam);
             const dateObj = getJSDateObject(dateType.value, selectedValue.value);
-            return await fetchTransactions({
-                limit: LIMIT,
-                offset: Number(pageParam),
-                memo: selectedMemo.value,
-                timeFrame: dateType.value,
-                date: dateObj as unknown as Date,
-            });
+            const cachedTransactions = store.getTransactionsByOffset(Number(pageParam));
+            if (cachedTransactions && cachedTransactions.length > 0) {
+                return cachedTransactions;
+            } else {
+                const transactions = await fetchTransactions({
+                    limit: LIMIT,
+                    offset: Number(pageParam),
+                    memo: selectedMemo.value,
+                    timeFrame: dateType.value,
+                    date: dateObj as Date,
+                });
+                store.setTransactionsByOffset(Number(pageParam), transactions);
+                return transactions;
+            }
         },
         getNextPageParam: (lastPage, allPages) => {
-            // Return the new offset value, which increases with each page
             if (lastPage.length < LIMIT) {
-                // Return undefined to indicate there are no more pages to load
                 return undefined;
             }
-            // Otherwise, return the offset for the next page
             return allPages.length * LIMIT;
         },
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5 // Cache for 5 minutes
+        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     });
+
+    watch(
+        [selectedMemo, dateType, selectedValue],
+        () => {
+            store.clearTransactionsByOffset();
+            infiniteQuery.refetch().then(
+                () => {
+                    console.log('refetched');
+                },
+                (err) => {
+                    console.log('error:', err);
+                }
+            );
+        },
+        {immediate: true}
+    );
+
+    return {
+        ...infiniteQuery,
+    };
 }
