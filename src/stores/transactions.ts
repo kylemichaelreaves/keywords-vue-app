@@ -41,7 +41,7 @@ export const useTransactionsStore = defineStore('transactions', {
         memoOffset: number;
         transactionsTableLimit: number;
         transactionsTableOffset: number;
-        transactionsByOffset: Record<number, Array<Transaction>>; // New state property
+        transactionsByOffset: Record<number, Array<Transaction>>;
     } => ({
         selectedDay: '',
         selectedMonth: '',
@@ -71,7 +71,7 @@ export const useTransactionsStore = defineStore('transactions', {
         transactionsTableLimit: 100,
         transactionsTableOffset: 0,
         transactions: [],
-        transactionsByOffset: {}, // Initialize as empty object
+        transactionsByOffset: {},
     }),
     getters: {
         getSelectedDay: (state) => state.selectedDay,
@@ -101,13 +101,10 @@ export const useTransactionsStore = defineStore('transactions', {
         getTransactionsTableOffset: (state) => state.transactionsTableOffset,
         getDaysForSelectedWeek: (state) => state.daysForSelectedWeek,
         getTransactions: (state) => state.transactions,
-
-        // New getters
         getTransactionsByOffset: (state) => (offset: number) => {
             return state.transactionsByOffset[offset] || [];
         },
         getAllTransactions: (state) => {
-            // Flatten all transactions stored by offset
             return Object.values(state.transactionsByOffset).flat();
         },
     },
