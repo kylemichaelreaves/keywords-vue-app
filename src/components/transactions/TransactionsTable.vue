@@ -8,7 +8,7 @@
       :row-key="getRowKey"
       v-if="flattenedData"
       v-loading="isFetching || isLoading || isRefetching || isFetchingNextPage || isFetchingPreviousPage"
-      :data="flattenedData"
+      :data="paginatedData"
       table-layout="auto"
       height="auto"
       size="small"
@@ -66,7 +66,6 @@ import useTransactions from "@api/hooks/transactions/useTransactions";
 import TransactionsTableSelects from "@components/transactions/TransactionsTableSelects.vue";
 import AlertComponent from "@components/shared/AlertComponent.vue";
 
-// Set up store and basic variables
 const store = useTransactionsStore();
 
 const selectedMonth = computed(() => store.getSelectedMonth);
@@ -75,7 +74,6 @@ const selectedWeek = computed(() => store.getSelectedWeek);
 const LIMIT = computed(() => store.getTransactionsTableLimit);
 const OFFSET = computed(() => store.getTransactionsTableOffset);
 
-// Fetch transactions data
 const {
   data,
   error,
@@ -90,15 +88,12 @@ const {
   hasNextPage
 } = useTransactions(LIMIT.value, OFFSET.value);
 
-// Flatten the `pages` array into a single array of transactions
 const flattenedData = computed(() => {
   return data?.value?.pages.flat() || [];
 });
 
-// Total items based on flattened data
 const totalItems: number = flattenedData.value.length;
 
-// Handle pagination changes
 function handleCurrentChange(newPage: number) {
   currentPage.value = newPage;
 }
@@ -115,19 +110,32 @@ const currentPage = computed({
   }
 });
 
-// Paginate the flattened data for the table display
 const paginatedData = computed(() => {
-  const start = (currentPage?.value - 1) * store.transactionsTableLimit;
-  const end = start + store.transactionsTableLimit;
+  const start = (currentPage.value - 1) * LIMIT.value;
+  const end = start + LIMIT.value;
   return flattenedData.value.slice(start, end);
 });
 
+
 const loadMore = () => {
-  console.log('loadMore triggered')
   if (hasNextPage.value) {
     fetchNextPage();
   }
 };
+
+const loadMorePagesIfNeeded = async () => {
+  const requiredDataCount = currentPage.value * LIMIT.value;
+  while (flattenedData.value.length < requiredDataCount && hasNextPage.value) {
+    await fetchNextPage();
+  }
+};
+
+watch(currentPage, () => {
+  loadMorePagesIfNeeded();
+});
+
+
+
 
 // Define table columns
 let columnKeys = [
