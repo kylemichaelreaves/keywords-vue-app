@@ -29,12 +29,9 @@ export default function useTransactions(LIMIT: number, OFFSET: number) {
             });
         },
         getNextPageParam: (lastPage, allPages) => {
-            // Return the new offset value, which increases with each page
             if (lastPage.length < LIMIT) {
-                // Return undefined to indicate there are no more pages to load
                 return undefined;
             }
-            // Otherwise, return the offset for the next page
             return allPages.length * LIMIT;
         },
         refetchOnWindowFocus: false,

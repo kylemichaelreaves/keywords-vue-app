@@ -1,8 +1,11 @@
 <template>
+  <DailyIntervalLineChart/>
+  <br/>
   <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error"/>
   <MonthSummaryTable v-if="selectedMonth"/>
   <WeekSummaryTable v-if="selectedWeek"/>
   <TransactionsTableSelects/>
+
 
   <el-table
       :row-key="getRowKey"
@@ -65,6 +68,8 @@ import {useTransactionsStore} from "@stores/transactions";
 import useTransactions from "@api/hooks/transactions/useTransactions";
 import TransactionsTableSelects from "@components/transactions/TransactionsTableSelects.vue";
 import AlertComponent from "@components/shared/AlertComponent.vue";
+import IntervalForm from "@components/transactions/IntervalForm.vue";
+import DailyIntervalLineChart from "@components/transactions/DailyIntervalLineChart.vue";
 
 const store = useTransactionsStore();
 

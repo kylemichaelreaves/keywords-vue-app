@@ -104,11 +104,13 @@ export enum Timeframe {
 
 export type OFSummaryTypeBase = {
     total_debit: number;
+    total_amount_debit?: number;
     year: string;
     day_number?: string;
     week_number?: string;
     month_number?: string;
     json?: JsonObjectType;
+    date?: string;
 }
 
 export type JsonObjectType = {
@@ -175,4 +177,9 @@ export interface CarBudget {
 export type Breadcrumb = {
     label: string;
     to: string;
+}
+
+export interface DailyInterval {
+    date: Date,
+    total_amount_debit: number;
 }
