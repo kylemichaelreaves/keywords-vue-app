@@ -5,7 +5,6 @@
   <WeekSummaryTable v-if="selectedWeek"/>
   <TransactionsTableSelects/>
 
-
   <el-table
       :row-key="getRowKey"
       v-if="flattenedData"
@@ -67,7 +66,6 @@ import {useTransactionsStore} from "@stores/transactions";
 import useTransactions from "@api/hooks/transactions/useTransactions";
 import TransactionsTableSelects from "@components/transactions/TransactionsTableSelects.vue";
 import AlertComponent from "@components/shared/AlertComponent.vue";
-import IntervalForm from "@components/transactions/IntervalForm.vue";
 import DailyIntervalLineChart from "@components/transactions/DailyIntervalLineChart.vue";
 
 const store = useTransactionsStore();

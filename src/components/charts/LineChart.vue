@@ -4,14 +4,14 @@
 
 <script lang="ts">
 import { ref, onMounted, defineComponent, watchEffect, onBeforeUnmount } from 'vue';
-import type { Summary } from "@types";
+import type { Summary, DailyInterval } from "@types";
 import { createLineChart } from "./createLineChart";
 
 const LineChart = defineComponent({
   name: 'LineChart',
   props: {
     summaries: {
-      type: Array as () => Summary[],
+      type: Array as () => Summary[] | DailyInterval[],
       default: () => [],
     },
   },

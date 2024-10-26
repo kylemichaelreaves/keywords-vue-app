@@ -23,6 +23,7 @@ import LoanCalculator from "@components/loan/LoanCalculator.vue";
 import TransactionSummaryTable from "@components/transactions/TransactionSummaryTable.vue";
 import MonthSummaryTable from "@components/transactions/MonthSummaryTable.vue";
 import WeekSummaryTable from "@components/transactions/WeekSummaryTable.vue";
+import VueTippy from 'vue-tippy'
 
 const pinia = createPinia()
 
@@ -115,6 +116,7 @@ app
     .use(VueQueryPlugin)
     .use(pinia)
     .use(ElementPlus)
+    .use(VueTippy)
     .mount('#app')
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
