@@ -1,6 +1,5 @@
 <template>
   <DailyIntervalLineChart/>
-  <br/>
   <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error"/>
   <MonthSummaryTable v-if="selectedMonth"/>
   <WeekSummaryTable v-if="selectedWeek"/>

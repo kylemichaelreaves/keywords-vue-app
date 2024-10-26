@@ -87,7 +87,9 @@ watch(
 );
 
 watch(intervalValue, (newVal) => {
-  emit("update:interval", newVal);
+  if (newVal) {
+    emit("update:interval", newVal);
+  }
 });
 
 
@@ -108,5 +110,4 @@ watch(intervalValue, (newVal) => {
 .form-item-inline:last-child {
   margin-right: 0;
 }
-
 </style>
