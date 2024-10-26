@@ -13,7 +13,7 @@ interface DataPoint {
 export const createLineChart = (
     el: unknown,
     summaries: (OFSummary | MJSummary | DailyInterval)[],
-    onDateSelected: (date: Date) => void
+    onDateSelected: (date: string) => void
 ) => {
     const svgElement = el as SVGSVGElement;
 
@@ -26,7 +26,7 @@ export const createLineChart = (
     const parentWidth = parentElement ? parentElement.getBoundingClientRect().width : 300;
 
 
-    const chartData = summaries.flat().map((item: OFSummary | MJSummary) => {
+    const chartData = summaries.flat().map((item: OFSummary | MJSummary | DailyInterval) => {
         const date = item.date
             ? new Date(item.date)
             : item.day_number

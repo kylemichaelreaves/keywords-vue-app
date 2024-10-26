@@ -12,20 +12,6 @@ const props = defineProps<{
   handleOnClickSelection: (selection: string) => void,
 }>();
 
-// const LineChart = defineComponent({
-//   name: 'LineChart',
-//   props: {
-//     summaries: {
-//       type: Array as () => Summary[] | DailyInterval[],
-//       default: () => [],
-//     },
-//     handleOnClickSelection: {
-//       type: Function as unknown as () => (selection: string) => void,
-//       default: () => () => {
-//       },
-//     },
-//   },
-//   setup(props: { summaries: Summary[], handleOnClickSelection: () => (selection: string) => void }) {
 const svg = ref<SVGSVGElement | null>(null);
 
 const width = ref(0);
