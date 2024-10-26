@@ -1,5 +1,9 @@
 import type {MJSummary, OFSummary} from "@types";
 import * as d3 from 'd3';
+import {useTippy} from "vue-tippy";
+import 'tippy.js/animations/scale.css'
+import 'tippy.js/themes/translucent.css'
+
 
 interface DataPoint {
     date: Date;
@@ -34,7 +38,7 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
         };
     });
 
-    const margin = {top: 5, right: 5, bottom: 40, left: 32};
+    const margin = {top: 5, right: 32, bottom: 80, left: 32};
     const width = parentWidth - margin.left - margin.right;
     const height = 150;
 
@@ -72,7 +76,7 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
         .style('text-anchor', 'end')
         .attr('dx', '-.8em')
         .attr('dy', '.55em')
-        .attr('transform', 'rotate(-35)');
+        .attr('transform', 'rotate(-90)');
 
 
     svg
@@ -83,5 +87,29 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
         .attr('stroke-width', 2)
         .attr('d', line);
 
-    svg.append('g').attr('class', 'y-axis').call(yAxis);
+    svg
+        .append('g')
+        .attr('class', 'y-axis')
+        .call(yAxis);
+
+    svg.selectAll('.dot')
+        .data(chartData)
+        .enter()
+        .append('circle')
+        .attr('class', 'dot')
+        .attr('cx', (d) => x(d.date))
+        .attr('cy', (d) => y(d.total_debit))
+        .attr('r', 4)
+        .attr('fill', 'red')
+        .each(function (d) {
+            useTippy(this, {
+                content: `${d.date.toLocaleDateString()}<br>$${d.total_debit}`,
+                allowHTML: true,
+                theme: 'translucent',
+                placement: 'top-start',
+                animation: 'scale',
+            });
+        });
+
+
 }

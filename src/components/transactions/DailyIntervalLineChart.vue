@@ -29,5 +29,4 @@ watch(intervalForm, (newVal) => {
 
 
 <style scoped>
-
 </style>
