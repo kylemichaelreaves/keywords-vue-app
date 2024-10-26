@@ -1,4 +1,4 @@
-import type {MJSummary, OFSummary} from "@types";
+import type {DailyInterval, MJSummary, OFSummary} from "@types";
 import * as d3 from 'd3';
 import {useTippy} from "vue-tippy";
 import 'tippy.js/animations/scale.css'
@@ -10,9 +10,14 @@ interface DataPoint {
     total_debit: number;
 }
 
-export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[]) => {
+export const createLineChart = (
+    el: unknown,
+    summaries: (OFSummary | MJSummary | DailyInterval)[],
+    onDateSelected: (date: string) => void
+) => {
     const svgElement = el as SVGSVGElement;
 
+    // if there's already an SVG element, destroy it utterly
     if (svgElement) {
         d3.select(svgElement).selectAll('*').remove();
     }
@@ -21,9 +26,9 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
     const parentWidth = parentElement ? parentElement.getBoundingClientRect().width : 300;
 
 
-    const chartData = summaries.flat().map((item: OFSummary | MJSummary) => {
+    const chartData = summaries.flat().map((item: OFSummary | MJSummary | DailyInterval) => {
         const date = item.date
-            ? new Date(item.date)  // Use the date directly if provided
+            ? new Date(item.date)
             : item.day_number
                 ? new Date(Number(item.year), Number(item.month_number) - 1, Number(item.day_number))
                 : item.week_number
@@ -101,6 +106,9 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
         .attr('cy', (d) => y(d.total_debit))
         .attr('r', 4)
         .attr('fill', 'red')
+        .on('click', (event, d) => {
+            onDateSelected(d.date);
+        })
         .each(function (d) {
             useTippy(this, {
                 content: `${d.date.toLocaleDateString()}<br>$${d.total_debit}`,
