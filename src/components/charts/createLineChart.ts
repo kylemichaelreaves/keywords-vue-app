@@ -18,21 +18,21 @@ export const createLineChart = (el: unknown, summaries: (OFSummary | MJSummary)[
 
 
     const chartData = summaries.flat().map((item: OFSummary | MJSummary) => {
-        let date;
-        if (item.day_number) {
-            date = new Date(Number(item.year), Number(item.month_number) - 1, Number(item.day_number));
-        } else if (item.week_number) {
-            date = new Date(Number(item.year), 0, 1);
-            date.setDate(Number(item.week_number) * 7);
-        } else {
-            date = new Date(Number(item.year), Number(item.month_number) - 1, 1);
-        }
+        const date = item.date
+            ? new Date(item.date)  // Use the date directly if provided
+            : item.day_number
+                ? new Date(Number(item.year), Number(item.month_number) - 1, Number(item.day_number))
+                : item.week_number
+                    ? new Date(Number(item.year), 0, 1 + (Number(item.week_number) - 1) * 7)
+                    : new Date(Number(item.year), Number(item.month_number) - 1, 1);
+
+        const total_debit = item.total_amount_debit ? item.total_amount_debit : item.total_debit
+
         return {
             date: date,
-            total_debit: item.total_debit,
+            total_debit: total_debit,
         };
     });
-
 
     const margin = {top: 5, right: 5, bottom: 40, left: 32};
     const width = parentWidth - margin.left - margin.right;
