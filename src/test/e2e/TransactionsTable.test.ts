@@ -1,9 +1,17 @@
 // import {test, expect} from '@playwright/test';
 import {test, expect} from '@test/e2e/fixtures/PageFixture';
 import {TransactionsPage} from "@test/e2e/pages/TransactionsPage";
-import { generateTransactions, intervalsMock} from "@mocks/transaction";
+import {generateTransactions, intervalsMock} from "@mocks/transaction";
 
 test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({page}) => {
+    page.on('request', request => {
+        console.log('>>', request.method(), request.url());
+    });
+    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    page.on('pageerror', error => {
+        console.log('Uncaught exception:', error);
+    });
+
     await page.route('**/transactions/get-transactions?*', async (route) => {
         await route.fulfill({
             status: 200,
@@ -12,13 +20,14 @@ test('clicking the Transactions icon on the menu NavBar opens the TransactionsTa
         });
     });
 
-    await page.route('**/transactions/get-daily-total-amount-debit?*', async (route) => {
+    await page.route('**/transactions/get-daily-total-amount-debit?**', async (route) => {
         await route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify(intervalsMock),
         });
     });
+
 
     const transactionsPage = new TransactionsPage(page);
 
