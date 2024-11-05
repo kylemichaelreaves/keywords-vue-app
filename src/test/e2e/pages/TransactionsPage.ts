@@ -13,14 +13,14 @@ export class TransactionsPage {
     readonly transactionsTablePagination: Locator;
 
     constructor(public readonly page: Page) {
-        this.transactionsTable = this.page.locator('.el-table__inner-wrapper');
-        this.daySelect = this.page.locator('div').filter({ hasText: /^select a day$/ }).nth(4)
-        this.weekSelect = this.page.locator('div').filter({ hasText: /^select a week$/ }).nth(2)
-        this.monthSelect = this.page.locator('div').filter({ hasText: /^select a month$/ }).nth(2)
-        this.yearSelect = this.page.locator('div').filter({ hasText: /^select a year$/ }).nth(2)
-        this.memoSelect = this.page.locator('div').filter({ hasText: /^select a memo$/ }).nth(2)
+        this.transactionsTable = this.page.getByTestId('transactions-table')
+        this.daySelect = this.page.getByTestId('day-select')
+        this.weekSelect = this.page.getByTestId('week-select')
+        this.monthSelect = this.page.getByTestId('month-select')
+        this.yearSelect = this.page.getByTestId('year-select')
+        this.memoSelect = this.page.getByTestId('memo-select')
         this.intervalTypeSelect = this.page.getByTestId('interval-type-select')
-        this.intervalNumberInput = this.page.locator('div').filter({ hasText: /^Interval Count$/ })
+        this.intervalNumberInput = this.page.getByTestId('interval-input-number')
         this.intervalLineChart = this.page.getByTestId('daily-line-chart')
         this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
     }

@@ -1,5 +1,6 @@
 <template>
   <SelectComponent
+      data-testid="year-select"
       :selectedValue="selectedYear"
       placeholder="select a year"
       :options="yearOptions"

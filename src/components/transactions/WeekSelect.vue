@@ -1,6 +1,7 @@
 <template>
   <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error"/>
   <SelectComponent
+      data-testid="week-select"
       :options="weekOptions"
       :selectedValue="selectedWeek"
       placeholder="select a week"

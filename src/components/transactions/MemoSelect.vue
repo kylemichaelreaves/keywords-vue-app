@@ -1,5 +1,6 @@
 <template>
   <SelectComponent
+      data-testid="memo-select"
       :on-change="updateSelectedMemo"
       placeholder="select a memo"
       :selectedValue="selectedMemo"
