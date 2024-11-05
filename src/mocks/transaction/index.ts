@@ -1,5 +1,6 @@
 import type {Memo, MemoSummary, MonthSummary, MonthYear, Transaction, WeekSummary, WeekYear} from "@types";
 import type {DayYear} from "@types";
+import {DateTime} from "luxon";
 
 export const transactionsMock: Transaction[] = [
     {
@@ -37,6 +38,23 @@ export const transactionsMock: Transaction[] = [
     }
 
 ]
+
+export function generateTransactions(length: number): Transaction[] {
+    const result: Transaction[] = [];
+    const startDate = DateTime.fromISO(transactionsMock[0].date);
+
+    for (let i = 0; i < length; i++) {
+        const baseTransaction = transactionsMock[i % transactionsMock.length];
+        const newTransaction = {
+            ...baseTransaction,
+            Date: startDate.plus({ days: i }).toISO(), // Increment the date by `i` days
+            "Transaction Number": `XXXXXXX${String(i).padStart(4, '0')}XXXX`, // Optional: unique Transaction Number
+            Memo: `${baseTransaction.memo} ${i + 1}` // Optional: add index to Memo for uniqueness
+        };
+        result.push(newTransaction);
+    }
+    return result;
+}
 
 export const daysMock: DayYear[] = [
     {

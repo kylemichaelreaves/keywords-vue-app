@@ -1,8 +1,8 @@
 <template>
+  <AlertComponent v-if="isError && error" :message="error.message" type="error" :title="error.name"/>
   <h4>Months Summary Table</h4>
   <el-text size="large">A summary table of all the months I have in my database</el-text>
   <!--  TODO use TableComponent -->
-  <AlertComponent v-if="isError && error" :message="error.message" type="error" :title="error.name"/>
   <el-table
       v-if="data && data.length > 0"
       :data="data"
@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted} from 'vue'
+import {computed} from 'vue'
 import {ElTable, ElTableColumn} from "element-plus";
 import useSummaries from "@api/hooks/transactions/useSummaries";
 import {useTransactionsStore} from "@stores/transactions";
@@ -35,7 +35,7 @@ import AlertComponent from "@components/shared/AlertComponent.vue";
 const store = useTransactionsStore()
 const selectedMonth = computed(() => store.getSelectedMonth)
 
-const {data, isError, refetch, isFetching, isRefetching, isLoading, error} = useSummaries()
+const {data, isError, isFetching, isRefetching, isLoading, error} = useSummaries()
 
 const tableRowClassName = ({row}: { row: Summaries }) => {
   let className = '';
@@ -53,10 +53,6 @@ const tableRowClassName = ({row}: { row: Summaries }) => {
 
   return className;
 }
-
-onMounted(() => {
-  refetch()
-});
 
 const columns = [
   {prop: 'period', label: 'Period'},

@@ -7,6 +7,7 @@ import { DateTime } from 'luxon';
  * @returns {Date | null} - A Date object if the input is valid, otherwise null.
  */
 export function parseDateIWIYYY(input: string): Date | null {
+    // regex to match the format WW-YYYY
     const regex = /^(\d{2})-(\d{4})$/;
     const match = input.match(regex);
 

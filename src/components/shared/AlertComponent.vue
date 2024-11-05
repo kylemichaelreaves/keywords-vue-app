@@ -5,11 +5,14 @@
       :closable="true"
       :show-icon="true"
       :center="true"
-      :description="props.type + props.message"
+      :description="props.message"
+      @close="props.close"
   />
 </template>
 
 <script setup lang="ts">
+import type {PropType} from "vue";
+
 const props = defineProps({
   type: {
     type: String,
@@ -22,6 +25,10 @@ const props = defineProps({
   title: {
     type: String,
     required: true
+  },
+  close: {
+    type: Function as PropType<() => void>,
+    required: false
   }
 })
 

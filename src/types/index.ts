@@ -180,6 +180,11 @@ export type Breadcrumb = {
 }
 
 export interface DailyInterval {
+    day_number?: number;
+    week_number?: number;
+    month_number?: number;
+    year?: number;
     date: Date,
     total_amount_debit: number;
+    total_debit?: number;
 }

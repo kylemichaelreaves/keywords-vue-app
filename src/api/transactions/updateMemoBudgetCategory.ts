@@ -1,6 +1,6 @@
 import axios from "axios";
 import {isValidURL} from "@api/helpers/isValidURL";
-import type {Memo, BudgetCategory} from "@types";
+import type {BudgetCategory} from "@types";
 
 // returns a BudgetCategory, or null if it doesn't exist, for a given memo
 export async function updateMemoBudgetCategory (memo: string, budgetCategory: string): Promise<BudgetCategory> {

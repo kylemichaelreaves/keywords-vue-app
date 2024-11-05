@@ -5,6 +5,7 @@
  * @returns {Date | null} - A Date object if the input is valid, otherwise null.
  */
 export function parseDateDDMMYYYY(input: string): Date | null {
+    // regex to match the format MM/DD/YYYY
     const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
     const match = input.match(regex);
 
