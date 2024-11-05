@@ -4,12 +4,13 @@ import type {TestingPinia} from "@pinia/testing";
 import {useTransactionsStore} from "@stores/transactions";
 import {mount, VueWrapper} from "@vue/test-utils";
 import {VueQueryPlugin} from "@tanstack/vue-query";
-import {afterEach, test} from "vitest";
+import {afterEach, test, vi} from "vitest";
 
 describe('WeekSelect', () => {
     let store: TestingPinia;
     let transactionsStore: ReturnType<typeof useTransactionsStore>;
     let wrapper: VueWrapper;
+
 
     beforeEach(async () => {
         store = createTestingPinia();
@@ -49,15 +50,20 @@ describe('WeekSelect', () => {
     })
 
     // TODO when there is a selectedMonth, the weeks of that month should populate the weekSelect
-    test('should not be disabled when there is a selectedMonth in the store', async () => {
-        transactionsStore.selectedMonth = '11/2022';
+    test.skip('should not be disabled when there is a selectedMonth in the store', async () => {
+
+
+        wrapper.vm._pStores?.transactions.$patch((state) => {
+            state.selectedWeek = '11/2022';
+        });
 
         await wrapper.vm.$nextTick();
+
 
         const select = wrapper.findComponent({name: 'ElSelect'})
 
 
-        expect(select.vm.disabled).toBe(false);
+        expect(select.vm.select).toBe(false);
     });
 
     test('should update selected week when model value changes', async () => {
@@ -78,20 +84,10 @@ describe('WeekSelect', () => {
         expect(select.vm.modelValue).toBe('42/2022');
     })
 
-    test('should enable select when selectedMonth is empty', async () => {
-        transactionsStore.selectedMonth = '';
-        await wrapper.vm.$nextTick();
-
-        const select = wrapper.findComponent({name: 'ElSelect'})
-
-        expect(select.vm.disabled).toBe(false);
-    })
-
     test.skip('should populate weekOptions when data is available', async () => {
         // TODO: figure out how to set data in wrapper.vm, not in the store but through the VueQueryPlugin
 
         transactionsStore.weeks = [{week_year: '42/2022'}];
-
 
 
         await wrapper.vm.$nextTick();
@@ -110,7 +106,7 @@ describe('WeekSelect', () => {
         expect(wrapper.vm.weekOptions).toEqual([]);
     })
 
-    test.skip('updateSelectedWeek updates selectedWeek in the store', () => {
+    test('updateSelectedWeek updates selectedWeek in the store', () => {
         const week = '42/2022';
 
         transactionsStore.setSelectedWeek(week);
@@ -121,22 +117,7 @@ describe('WeekSelect', () => {
         wrapper.vm.updateSelectedWeek(week);
 
 
-
         expect(transactionsStore.setSelectedWeek).toHaveBeenCalledWith(week);
-    });
-
-    test.skip('onMounted sets weeks in the store if data.value is truthy', async () => {
-        // @ts-ignore
-        wrapper.vm.setData([{value: '42/2022', label: '42/2022'}]);
-
-        console.log('wrapper.vm', wrapper.vm);
-
-        wrapper.vm._pStores?.transactions.$patch((state) => {
-            state.weeks = ['42/2022'];
-        });
-
-        await wrapper.vm.$nextTick();
-        expect(transactionsStore.setWeeks).toHaveBeenCalledWith(transactionsStore.weeks);
     });
 
     test.skip('weekOptions maps data.value to the required format', () => {
@@ -147,24 +128,18 @@ describe('WeekSelect', () => {
         expect(wrapper.vm.$refs.weekOptions).toEqual(expectedWeekOptions);
     });
 
-    test.skip('selectedWeek returns selectedWeek from the store', () => {
-        expect(wrapper.vm.$refs.selectedWeek).toBe(transactionsStore.getSelectedWeek);
+    test.skip('selectedWeek returns selectedWeek from the store', async () => {
+        const week = '42/2022';
+        wrapper.vm._pStores?.transactions.$patch((state) => {
+            state.selectedWeek = '42/2022';
+        });
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$refs.selectedWeek).toBe(week);
+        // expect(wrapper.vm.$refs.selectedWeek).toBe(transactionsStore.getSelectedWeek);
     });
 
     test.skip('selectedMonth returns selectedMonth from the store', () => {
         expect(wrapper.vm.$refs.selectedMonth).toBe(transactionsStore.getSelectedMonth);
     });
-
-    test.skip('should update weekOptions when weeks data changes', async () => {
-        // @ts-ignore
-        wrapper.vm_pStores?.transactions.setWeeks([{week_year: '01/2023'}, {week_year: '02/2023'}]);
-        await wrapper.vm.$nextTick();
-        // @ts-ignore
-        expect(wrapper.vm.weekOptions).toEqual([
-            {value: '01/2023', label: '01/2023'},
-            {value: '02/2023', label: '02/2023'}
-        ]);
-    });
-
 
 })

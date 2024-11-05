@@ -1,70 +1,49 @@
 <template>
+  <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error"/>
   <SelectComponent
+      data-testid="week-select"
       :options="weekOptions"
       :selectedValue="selectedWeek"
       placeholder="select a week"
       :onChange="updateSelectedWeek"
+      :onClear="clearSelectedYear"
+      :disabled="isLoading || isFetching"
   />
 </template>
 
-<script lang="ts">
-import {computed, defineComponent, onMounted, watch} from "vue";
+<script setup lang="ts">
+import {computed} from "vue";
 import {useWeeks} from "@api/hooks/transactions/useWeeks"
 import {useTransactionsStore} from "@stores/transactions";
 import SelectComponent from "@components/shared/SelectComponent.vue";
+import AlertComponent from "@components/shared/AlertComponent.vue";
 
-export default defineComponent({
-  name: 'WeekSelect',
-  components: {SelectComponent},
-  setup() {
-    const store = useTransactionsStore();
 
-    const selectedWeek = computed(() => store.getSelectedWeek);
-    const selectedMonth = computed(() => store.getSelectedMonth)
+const store = useTransactionsStore();
 
-    const {data, isLoading, isFetching, isError, error, refetch} = useWeeks();
+const selectedWeek = computed(() => store.getSelectedWeek);
 
-    const weekOptions = computed(() => {
-      if (!data.value) {
-        return []
-      }
-      return data.value.map(item => ({
-        value: item.week_year,
-        label: item.week_year
-      }));
-    })
+const {data, isLoading, isFetching, isError, error} = useWeeks();
 
-    const updateSelectedWeek = (week: string) => {
-      store.setSelectedWeek(week)
-    }
-
-    onMounted(() => {
-      if (data.value) {
-        store.setWeeks(data.value)
-      }
-    })
-
-    // if there's a selectedMonth, the options should be repopulated with the weeks of that month
-    // watch(selectedMonth, (newVal, oldVal) => {
-    //   if (newVal) {
-    //     store.setSelectedWeek('')
-    //     refetch()
-    //   }
-    // })
-
-    return {
-      data,
-      selectedWeek,
-      selectedMonth,
-      weekOptions,
-      updateSelectedWeek,
-      isLoading,
-      isFetching,
-      isError,
-      error
-    }
+const weekOptions = computed(() => {
+  if (!data.value) {
+    return []
   }
+  return data.value.map(item => ({
+    value: item.week_year,
+    label: item.week_year
+  }));
 })
+
+const updateSelectedWeek = (week: string) => {
+  store.setSelectedWeek(week)
+}
+
+const clearSelectedYear = () => {
+  store.setSelectedWeek('')
+}
+
+
 </script>
 
 

@@ -42,6 +42,7 @@ export const useTransactionsStore = defineStore('transactions', {
         transactionsTableLimit: number;
         transactionsTableOffset: number;
         transactionsByOffset: Record<number, Array<Transaction>>;
+        transactionsCount: number;
     } => ({
         selectedDay: '',
         selectedMonth: '',
@@ -72,6 +73,7 @@ export const useTransactionsStore = defineStore('transactions', {
         transactionsTableOffset: 0,
         transactions: [],
         transactionsByOffset: {},
+        transactionsCount: 0,
     }),
     getters: {
         getSelectedDay: (state) => state.selectedDay,
@@ -107,6 +109,7 @@ export const useTransactionsStore = defineStore('transactions', {
         getAllTransactions: (state) => {
             return Object.values(state.transactionsByOffset).flat();
         },
+        getTransactionsCount: (state) => state.transactionsCount,
     },
     actions: {
         setSelectedDay(selectedDay: string) {
@@ -178,7 +181,7 @@ export const useTransactionsStore = defineStore('transactions', {
         setSelectedBudgetCategory(selectedBudgetCategory: string) {
             this.selectedBudgetCategory = selectedBudgetCategory;
         },
-        updateTransactionsTableLimit(limit: number) {
+        setTransactionsTableLimit(limit: number) {
             this.transactionsTableLimit = limit;
         },
         updateTransactionsTableOffset(offset: number) {
@@ -198,6 +201,9 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         clearTransactionsByOffset() {
             this.transactionsByOffset = {};
+        },
+        setTransactionsCount(count: number) {
+            this.transactionsCount = Number(count[0].transactions_count);
         },
     },
 });

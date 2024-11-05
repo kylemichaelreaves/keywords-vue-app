@@ -19,7 +19,7 @@ export default function useSummaries(): UseQueryReturnType<Summaries[], Error> {
             case 'week':
                 return store.getWeeksSummaries;
             case 'month':
-                console.log('store.getMonthsSummaries', store.getMonthsSummaries);
+                // console.log('store.getMonthsSummaries', store.getMonthsSummaries);
                 return store.getMonthsSummaries;
         }
     });
@@ -29,7 +29,7 @@ export default function useSummaries(): UseQueryReturnType<Summaries[], Error> {
         queryKey: ['summaries', dateType, selectedValue],
         queryFn: () => {
             if (cachedSummaries.value && cachedSummaries?.value?.length > 0) {
-                console.log('cachedSummaries.value', cachedSummaries.value);
+                // console.log('cachedSummaries.value', cachedSummaries.value);
                 return cachedSummaries.value;
             } else {
                 return fetchSummaries(dateType)
@@ -51,7 +51,6 @@ export default function useSummaries(): UseQueryReturnType<Summaries[], Error> {
         },
         refetchOnWindowFocus: false,
         enabled: !!selectedValue,
-        // five minutes
-        staleTime: 1000 * 60 * 5,
+        // staleTime: 1000 * 60 * 5, // five minutes
     });
 }

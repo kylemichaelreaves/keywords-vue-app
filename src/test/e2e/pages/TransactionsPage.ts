@@ -7,14 +7,22 @@ export class TransactionsPage {
     readonly monthSelect: Locator;
     readonly yearSelect: Locator;
     readonly memoSelect: Locator;
+    readonly intervalTypeSelect: Locator;
+    readonly intervalNumberInput: Locator;
+    readonly intervalLineChart: Locator
+    readonly transactionsTablePagination: Locator;
 
     constructor(public readonly page: Page) {
-        this.transactionsTable = this.page.locator('.el-table__inner-wrapper');
-        this.daySelect = this.page.locator('div').filter({ hasText: /^select a day$/ }).nth(4)
-        this.weekSelect = this.page.locator('div').filter({ hasText: /^select a week$/ }).nth(2)
-        this.monthSelect = this.page.locator('div').filter({ hasText: /^select a month$/ }).nth(2)
-        this.yearSelect = this.page.locator('div').filter({ hasText: /^select a year$/ }).nth(2)
-        this.memoSelect = this.page.locator('div').filter({ hasText: /^select a memo$/ }).nth(2)
+        this.transactionsTable = this.page.getByTestId('transactions-table')
+        this.daySelect = this.page.getByTestId('day-select')
+        this.weekSelect = this.page.getByTestId('week-select')
+        this.monthSelect = this.page.getByTestId('month-select')
+        this.yearSelect = this.page.getByTestId('year-select')
+        this.memoSelect = this.page.getByTestId('memo-select')
+        this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
+        this.intervalTypeSelect = this.page.getByTestId('interval-type-select')
+        this.intervalNumberInput = this.page.getByTestId('interval-input-number')
+        this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
     }
 
     async goto() {
@@ -23,6 +31,14 @@ export class TransactionsPage {
 
     async clickOnDaySelect() {
         await this.daySelect.click()
+    }
+
+    async clickIncreaseInterval()  {
+        await this.page.locator('button').filter({ hasText: /^Increase Interval$/ }).click()
+    }
+
+    async clickDecreaseInterval()  {
+        await this.page.locator('button').filter({ hasText: /^Decrease Interval$/ }).click()
     }
 
 }

@@ -62,6 +62,7 @@ export const routes: RouteRecordRaw[] = [
                         path: ':transactionNumber',
                         name: 'transaction',
                         component: TransactionSummaryTable,
+                        props: true
                     },
                     {
                         path: 'summary/month/:month',

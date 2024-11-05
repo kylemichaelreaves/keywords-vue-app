@@ -169,7 +169,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   //   reset the transactionsPageLimit to the default value
-  store.updateTransactionsTableLimit(100)
+  store.setTransactionsTableLimit(100)
 });
 
 

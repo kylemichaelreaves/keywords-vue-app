@@ -1,6 +1,6 @@
 import axios from "axios";
-import type {TimeframeType, Transaction} from "@types";
 import {isValidURL} from "@api/helpers/isValidURL";
+import type {TimeframeType, Transaction} from "@types";
 
 
 export const fetchTransactions = async (queryParams: {
@@ -24,7 +24,7 @@ export const fetchTransactions = async (queryParams: {
             params: {
                 limit: limit ? limit : undefined,
                 offset: offset ? offset : undefined,
-                date: date ? date.toISOString() : undefined,
+                date: date ? date : undefined,
                 timeFrame: timeFrame ? timeFrame : undefined,
                 memo: memo ? memo : undefined
             },

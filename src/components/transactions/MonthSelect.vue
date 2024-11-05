@@ -1,16 +1,18 @@
 <template>
   <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error"/>
   <SelectComponent
+      data-testid="month-select"
       :options="monthOptions"
       :selectedValue="store.selectedMonth"
       placeholder="select a month"
       :disabled="isLoading || isFetching"
       :onChange="updateSelectedMonth"
+      :on-clear="clearSelectedMonth"
   />
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, watch} from 'vue'
+import {computed, onBeforeUnmount, watch} from 'vue'
 import {useMonths} from "@api/hooks/transactions/useMonths";
 import type {MonthYear} from "@types";
 import {useTransactionsStore} from "@stores/transactions";
@@ -33,7 +35,13 @@ const monthOptions = computed(() => {
 });
 
 const updateSelectedMonth = (month: string) => {
+  // set the limit to 0, to return all of the months data
+  store.setTransactionsTableLimit(200)
   store.setSelectedMonth(month)
+}
+
+const clearSelectedMonth = () => {
+  store.setSelectedMonth('')
 }
 
 watch(
@@ -45,10 +53,8 @@ watch(
     }
 );
 
-onMounted(() => {
-  if (data.value) {
-    store.setMonths(data.value)
-  }
+onBeforeUnmount(() => {
+  store.setTransactionsTableLimit(100)
 });
 
 

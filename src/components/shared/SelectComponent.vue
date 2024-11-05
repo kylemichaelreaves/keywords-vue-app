@@ -1,13 +1,14 @@
 <template>
   <el-select
-      :model-value="selectedValue"
-      :placeholder="placeholder"
-      @change="onChange($event)"
-      :disabled="disabled"
+      :model-value="props.selectedValue"
+      :placeholder="props.placeholder"
+      @change="props.onChange($event)"
+      @clear="props.onClear"
+      :disabled="props.disabled"
       clearable
       filterable
-      :loading="loading"
-      :loading-text="loadingText"
+      :loading="props.loading"
+      :loading-text="props.loadingText"
   >
     <el-option
         v-for="option in options"
@@ -19,58 +20,44 @@
   </el-select>
 </template>
 
-<script lang="ts">
-import {ElOption, ElSelect} from "element-plus";
-import {defineComponent, type PropType, toRefs} from "vue";
+<script setup lang="ts">
+import { ElOption, ElSelect } from "element-plus";
+import type { PropType } from "vue";
 
-export default defineComponent({
-  name: "SelectComponent",
-  components: {ElSelect, ElOption},
-  props: {
-    options: {
-      type: Array as () => Array<{ value: string; label: string }>,
-      required: true
-    },
-    selectedValue: {
-      type: String,
-      required: true
-    },
-    placeholder: {
-      type: String,
-      required: true
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    onChange: {
-      type: Function as PropType<(selectedValue: string) => void>,
-      required: true
-    },
-    loading: {
-      type: Boolean,
-      default: false,
-      required: false,
-    },
-    loadingText: {
-      type: String,
-      default: 'Loading...',
-      required: false,
-},
+const props = defineProps({
+  options: {
+    type: Array as PropType<Array<{ value: string; label: string }>>,
+    required: true
   },
-  setup(props) {
-    const {options, selectedValue, placeholder, disabled, onChange, loading, loadingText} = toRefs(props)
-    return {
-      options,
-      selectedValue,
-      placeholder,
-      disabled,
-      onChange,
-      loading,
-      loadingText
-    }
-  }
-})
+  selectedValue: {
+    type: String,
+    default: ''
+  },
+  placeholder: {
+    type: String,
+    required: true
+  },
+  disabled: {
+    type: Boolean,
+    default: false
+  },
+  onChange: {
+    type: Function as PropType<(selectedValue: string) => void>,
+    required: true
+  },
+  onClear: {
+    type: Function as PropType<(selectedValue: string) => void>,
+    required: false
+  },
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  loadingText: {
+    type: String,
+    default: 'Loading...'
+  },
+});
 </script>
 
 <style scoped>

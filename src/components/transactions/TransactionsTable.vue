@@ -1,11 +1,12 @@
 <template>
-  <DailyIntervalLineChart/>
+  <DailyIntervalLineChart />
   <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error"/>
   <MonthSummaryTable v-if="selectedMonth"/>
   <WeekSummaryTable v-if="selectedWeek"/>
   <TransactionsTableSelects/>
 
   <el-table
+      data-testid="transactions-table"
       :row-key="getRowKey"
       v-if="flattenedData"
       v-loading="isFetching || isLoading || isRefetching || isFetchingNextPage || isFetchingPreviousPage"
@@ -16,11 +17,6 @@
       border
       stripe
       show-summary
-      v-infinite-scroll="loadMore"
-      :infinite-scroll-disabled="isFetchingNextPage || !hasNextPage"
-      :infinite-scroll-distance="50"
-      class="infinite-scroll-container"
-      style="overflow-y: auto; height: 750px;"
   >
     <el-table-column v-for="columnKey in columnKeys" :key="columnKey" :prop="columnKey" :label="columnKey">
       <template v-if="columnKey === 'Transaction Number'" #default="scope">
@@ -43,17 +39,7 @@
       </template>
     </el-table-column>
   </el-table>
-  <el-pagination
-      background
-      layout="prev, pager, next"
-      :total="totalItems"
-      :page-count="LIMIT"
-      :current-page="currentPage"
-      @update:current-page="handleCurrentChange"
-      @update:page-size="handleSizeChange"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-  />
+  <TransactionTablePagination v-if="!isPaginationDisabled"/>
 </template>
 
 <script setup lang="ts">
@@ -67,14 +53,22 @@ import useTransactions from "@api/hooks/transactions/useTransactions";
 import TransactionsTableSelects from "@components/transactions/TransactionsTableSelects.vue";
 import AlertComponent from "@components/shared/AlertComponent.vue";
 import DailyIntervalLineChart from "@components/transactions/DailyIntervalLineChart.vue";
+import TransactionTablePagination from "@components/transactions/TransactionsTablePagination.vue";
+import {getDateTypeAndValue} from "@components/transactions/getDateTypeAndValue";
 
 const store = useTransactionsStore();
 
 const selectedMonth = computed(() => store.getSelectedMonth);
 const selectedWeek = computed(() => store.getSelectedWeek);
+const selectedDay = computed(() => store.getSelectedDay);
+
+const dateTypeAndValue = computed(() => getDateTypeAndValue());
+const selectedValue = computed(() => dateTypeAndValue.value.selectedValue);
+
+// disable the pagination if day, week, or month is selected
+const isPaginationDisabled = computed(() => selectedDay.value || selectedWeek.value || selectedMonth.value);
 
 const LIMIT = computed(() => store.getTransactionsTableLimit);
-const OFFSET = computed(() => store.getTransactionsTableOffset);
 
 const {
   data,
@@ -88,22 +82,11 @@ const {
   refetch,
   fetchNextPage,
   hasNextPage
-} = useTransactions(LIMIT.value, OFFSET.value);
+} = useTransactions();
 
 const flattenedData = computed(() => {
   return data?.value?.pages.flat() || [];
 });
-
-const totalItems: number = flattenedData.value.length;
-
-function handleCurrentChange(newPage: number) {
-  currentPage.value = newPage;
-}
-
-function handleSizeChange(newSize: number) {
-  store.updateTransactionsTableLimit(newSize);
-  store.updateTransactionsTableOffset(0);
-}
 
 const currentPage = computed({
   get: () => Math.floor(store.transactionsTableOffset / store.transactionsTableLimit) + 1,
@@ -118,13 +101,6 @@ const paginatedData = computed(() => {
   return flattenedData.value.slice(start, end);
 });
 
-
-const loadMore = () => {
-  if (hasNextPage.value) {
-    fetchNextPage();
-  }
-};
-
 const loadMorePagesIfNeeded = async () => {
   const requiredDataCount = currentPage.value * LIMIT.value;
   while (flattenedData.value.length < requiredDataCount && hasNextPage.value) {
@@ -136,7 +112,15 @@ watch(currentPage, () => {
   loadMorePagesIfNeeded();
 });
 
-
+// this block allows the DailyIntervalLineChart to set the selectedDay and trigger a refetch
+watch(
+    [selectedValue],
+    () => {
+      store.clearTransactionsByOffset();
+      refetch();
+    },
+    {immediate: true}
+);
 
 
 // Define table columns
@@ -153,13 +137,6 @@ let columnKeys = [
 function getRowKey(row: Transaction): string {
   return row.transactionNumber;
 }
-
-// Watchers to refetch data when certain filters change
-watch(selectedMonth, (newMonth) => {
-  if (newMonth) {
-    refetch();
-  }
-});
 
 onMounted(() => {
   refetch();
