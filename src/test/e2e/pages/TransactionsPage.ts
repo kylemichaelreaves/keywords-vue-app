@@ -19,9 +19,9 @@ export class TransactionsPage {
         this.monthSelect = this.page.getByTestId('month-select')
         this.yearSelect = this.page.getByTestId('year-select')
         this.memoSelect = this.page.getByTestId('memo-select')
+        this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
         this.intervalTypeSelect = this.page.getByTestId('interval-type-select')
         this.intervalNumberInput = this.page.getByTestId('interval-input-number')
-        this.intervalLineChart = this.page.getByTestId('daily-line-chart')
         this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
     }
 

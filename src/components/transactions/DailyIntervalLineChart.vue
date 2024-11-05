@@ -5,7 +5,7 @@
       @update:interval-value="handleIntervalChange"
   />
   <LineChart
-      data-testid="daily-line-chart"
+      data-testid="daily-interval-line-chart"
       v-if="data"
       :summaries="data"
       :loading="isLoading || isFetching"
