@@ -7,12 +7,21 @@ test('clicking the Transactions icon on the menu NavBar opens the TransactionsTa
     page.on('request', request => {
         console.log('>>', request.method(), request.url());
     });
-    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+
+    page.on('response', response => {
+        console.log('<< Response:', response.status(), response.url());
+    });
+
+    page.on('console', msg => {
+        console.log(`Console [${msg.type()}]: ${msg.text()}`);
+    });
+
     page.on('pageerror', error => {
         console.log('Uncaught exception:', error);
     });
 
     await page.route('**/transactions/get-transactions?*', async (route) => {
+        console.log('Mocking get-transactions');
         await route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -21,6 +30,7 @@ test('clicking the Transactions icon on the menu NavBar opens the TransactionsTa
     });
 
     await page.route('**/transactions/get-daily-total-amount-debit?**', async (route) => {
+        console.log('Mocking get-daily-total-amount-debit');
         await route.fulfill({
             status: 200,
             contentType: 'application/json',
