@@ -22,6 +22,7 @@
       </el-form-item>
       <el-form-item label="Interval Type" class="form-item-inline">
         <el-select
+            data-testid="interval-type-select"
             v-model="intervalSelect"
             placeholder="Select interval"
             class="select-inline"

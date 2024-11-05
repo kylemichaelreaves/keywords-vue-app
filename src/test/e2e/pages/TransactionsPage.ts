@@ -19,7 +19,7 @@ export class TransactionsPage {
         this.monthSelect = this.page.locator('div').filter({ hasText: /^select a month$/ }).nth(2)
         this.yearSelect = this.page.locator('div').filter({ hasText: /^select a year$/ }).nth(2)
         this.memoSelect = this.page.locator('div').filter({ hasText: /^select a memo$/ }).nth(2)
-        this.intervalTypeSelect = this.page.locator('div').filter({ hasText: /^Interval TypeMonths$/ })
+        this.intervalTypeSelect = this.page.getByTestId('interval-type-select')
         this.intervalNumberInput = this.page.locator('div').filter({ hasText: /^Interval Count$/ })
         this.intervalLineChart = this.page.getByTestId('daily-line-chart')
         this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
