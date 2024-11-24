@@ -1,8 +1,12 @@
 <template>
   <DailyIntervalLineChart />
+
   <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error"/>
+
   <MonthSummaryTable v-if="selectedMonth"/>
+
   <WeekSummaryTable v-if="selectedWeek"/>
+
   <TransactionsTableSelects/>
 
   <el-table
@@ -43,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, watch} from "vue";
+import {computed, watch} from "vue";
 import type {Transaction} from "@types";
 import {formatDate} from "@api/helpers/formatDate";
 import MonthSummaryTable from "@components/transactions/MonthSummaryTable.vue";
@@ -137,10 +141,6 @@ let columnKeys = [
 function getRowKey(row: Transaction): string {
   return row.transactionNumber;
 }
-
-onMounted(() => {
-  refetch();
-});
 
 </script>
 

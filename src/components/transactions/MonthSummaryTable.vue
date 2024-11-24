@@ -7,31 +7,14 @@
           <h2>Month Summary for: {{ selectedMonth }}</h2>
           <MonthlyAmountDebitTotal/>
         </div>
-
-        <!--        TODO abstract to its own component -->
-        <el-button-group>
-          <el-button
-              type="primary"
-              :icon="ArrowLeft"
-              @click="goToPreviousMonth"
-              :disabled="isLastMonth"
-          >
-            Previous Month
-          </el-button>
-          <el-button
-              type="primary"
-              :icon="ArrowRight"
-              @click="goToNextMonth"
-              :disabled="isFirstMonth"
-          >
-            Next Month
-          </el-button>
-          <el-button
-              type="info"
-              @click="resetSelectedMonth"
-              :icon="Close"
-          />
-        </el-button-group>
+        <NavigationButtonGroup
+            label="Month"
+            :is-last="isLastMonth"
+            :is-first="isFirstMonth"
+            :go-to-next="goToNextMonth"
+            :go-to-previous="goToPreviousMonth"
+            :reset="resetSelectedMonth"
+        />
       </div>
     </template>
 
@@ -96,6 +79,7 @@ import AlertComponent from "@components/shared/AlertComponent.vue";
 import {router} from "@main";
 import CarBudgetSummaryTable from "@components/transactions/CarBudgetSummaryTable.vue";
 import MonthlyAmountDebitTotal from "@components/transactions/MonthlyAmountDebitTotal.vue";
+import NavigationButtonGroup from "@components/shared/NavigationButtonGroup.vue";
 
 
 const store = useTransactionsStore()
@@ -158,7 +142,7 @@ const resetSelectedMonth = () => {
 }
 
 watch(selectedMonth, (newMonth) => {
-  if(newMonth) {
+  if (newMonth) {
     refetch();
   }
 });

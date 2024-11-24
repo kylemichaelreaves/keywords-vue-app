@@ -48,7 +48,7 @@ export default defineComponent({
     onMounted(() => {
       refetch();
       if (data.value) {
-        store.setWeekSummaries(data.value)
+        store.setWeeksSummaries(data.value)
       }
     })
 
