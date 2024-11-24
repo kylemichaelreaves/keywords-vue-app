@@ -4,7 +4,7 @@ import {TransactionsPage} from "@test/e2e/pages/TransactionsPage";
 import {generateTransactions, intervalsMock} from "@mocks/transaction";
 
 test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({page, context}) => {
-    await context.tracing.start({ screenshots: true, snapshots: true });
+    // await context.tracing.start({ screenshots: true, snapshots: true });
 
     page.on('request', request => {
         console.log('>>', request.method(), request.url());
@@ -56,5 +56,5 @@ test('clicking the Transactions icon on the menu NavBar opens the TransactionsTa
     await expect(transactionsPage.intervalNumberInput).toBeVisible();
     await expect(transactionsPage.transactionsTablePagination).toBeVisible();
 
-    await context.tracing.stop({ path: 'trace.zip' });
+    // await context.tracing.stop({ path: 'trace.zip' });
 });
