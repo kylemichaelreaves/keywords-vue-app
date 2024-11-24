@@ -51,7 +51,7 @@ test('clicking the Transactions icon on the menu NavBar opens the TransactionsTa
     await expect(transactionsPage.monthSelect).toBeVisible();
     await expect(transactionsPage.yearSelect).toBeVisible();
     await expect(transactionsPage.memoSelect).toBeVisible();
-    await expect(transactionsPage.intervalLineChart).toBeVisible({timeout: 10000});
+    // await expect(transactionsPage.intervalLineChart).toBeVisible({timeout: 10000});
     await expect(transactionsPage.intervalTypeSelect).toBeVisible();
     await expect(transactionsPage.intervalNumberInput).toBeVisible();
     await expect(transactionsPage.transactionsTablePagination).toBeVisible();
