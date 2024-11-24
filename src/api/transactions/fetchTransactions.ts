@@ -3,13 +3,13 @@ import {isValidURL} from "@api/helpers/isValidURL";
 import type {TimeframeType, Transaction} from "@types";
 
 
-export const fetchTransactions = async (queryParams: {
+export async function fetchTransactions (queryParams: {
     date: Date;
     offset: number;
     limit: number;
     memo: string;
     timeFrame: TimeframeType
-}): Promise<Array<Transaction>> => {
+}) {
     const {date, limit, offset, timeFrame, memo} = queryParams;
 
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
@@ -17,7 +17,6 @@ export const fetchTransactions = async (queryParams: {
     if (!isValidURL(fetchURL)) {
         throw Error('url is not valid');
     }
-
 
     return await axios
         .get<Array<Transaction>>(`${fetchURL}/transactions/get-transactions`, {
@@ -32,6 +31,5 @@ export const fetchTransactions = async (queryParams: {
         .then((res) => res.data)
         .catch((err) => {
             console.log('err:', err);
-            throw err;
         });
 };

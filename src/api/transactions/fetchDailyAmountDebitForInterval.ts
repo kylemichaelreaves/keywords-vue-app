@@ -2,10 +2,7 @@ import axios from "axios";
 import {isValidURL} from "@api/helpers/isValidURL";
 import type {DailyInterval} from "@types";
 
-// TODO pass in selectedMonth or selectedWeek
-export const fetchDailyAmountDebitForInterval = async (
-    interval: string
-) => {
+export async function fetchDailyAmountDebitForInterval(interval?: string, startDate?: string) {
 
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
@@ -16,12 +13,12 @@ export const fetchDailyAmountDebitForInterval = async (
     return await axios
         .get<Array<DailyInterval>>(`${fetchURL}/transactions/get-daily-total-amount-debit`, {
             params: {
-                interval
+                interval,
+                startDate
             },
         })
         .then((res) => res.data)
         .catch((err) => {
-            console.log('err:', err);
-            throw err;
+            console.error('err:', err);
         });
-};
+}

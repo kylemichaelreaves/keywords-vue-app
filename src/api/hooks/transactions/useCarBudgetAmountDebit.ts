@@ -12,7 +12,6 @@ export default function useCarBudgetAmountDebit(): UseQueryReturnType<CarBudget,
     const selectedMonth = computed(() => store.getSelectedMonth)
     const timeFrame = Timeframe.Month;
     const parsedMonth = computed(() => parseDateMMYYYY(selectedMonth.value));
-    console.log('parsedMonth', parsedMonth.value);
 
     return useQuery<CarBudget>({
         queryKey: ['car-budget', parsedMonth.value, timeFrame],

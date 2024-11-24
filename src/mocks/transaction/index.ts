@@ -4,8 +4,8 @@ import {DateTime} from "luxon";
 
 export const transactionsMock: Transaction[] = [
     {
-        "Transaction Number": "XXXXXXX0000XXXX",
-        "Date": "2024-09-30T00:00:00.000Z",
+        "Transaction Number": "XXXXXXX0001XXXX",
+        "Date": "2024-09-28T00:00:00.000Z",
         "Description": "POS PURCHASE NON-PIN",
         "Memo": "Memo Name 1",
         "Amount Debit": -13.99,
@@ -15,8 +15,8 @@ export const transactionsMock: Transaction[] = [
         "Fees": null
     },
     {
-        "Transaction Number": "XXXXXXX0000XXXX",
-        "Date": "2024-09-30T00:00:00.000Z",
+        "Transaction Number": "XXXXXXX0002XXXX",
+        "Date": "2024-09-29T00:00:00.000Z",
         "Description": "POS PURCHASE NON-PIN",
         "Memo": "Memo Name 2",
         "Amount Debit": -9.99,
@@ -26,7 +26,7 @@ export const transactionsMock: Transaction[] = [
         "Fees": null
     },
     {
-        "Transaction Number": "XXXXXXX0000XXXX",
+        "Transaction Number": "XXXXXXX0003XXXX",
         "Date": "2024-09-30T00:00:00.000Z",
         "Description": "POS PURCHASE NON-PIN",
         "Memo": "Memo Name 3",
