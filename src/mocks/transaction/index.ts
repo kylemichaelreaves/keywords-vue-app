@@ -2,15 +2,25 @@ import type {Memo, MemoSummary, MonthSummary, MonthYear, Transaction, WeekSummar
 import type {DayYear} from "@types";
 import {DateTime} from "luxon";
 
-export const transactionsMock: Transaction[] = [
+export const transactionsMock: {
+    "Transaction Number": string,
+    "Date": string,
+    "Description": string,
+    "Memo": string,
+    "Amount Debit": number,
+    "Amount Credit": number | null,
+    "Balance": number,
+    "Check Number": number | null,
+    "Fees": number | null
+}[] = [
     {
         "Transaction Number": "XXXXXXX0001XXXX",
         "Date": "2024-09-28T00:00:00.000Z",
         "Description": "POS PURCHASE NON-PIN",
-        "Memo": "Memo Name 1",
+        "Memo": "Memo",
         "Amount Debit": -13.99,
         "Amount Credit": null,
-        "Balance": 820.79,
+        "Balance": 4820.79,
         "Check Number": null,
         "Fees": null
     },
@@ -18,7 +28,7 @@ export const transactionsMock: Transaction[] = [
         "Transaction Number": "XXXXXXX0002XXXX",
         "Date": "2024-09-29T00:00:00.000Z",
         "Description": "POS PURCHASE NON-PIN",
-        "Memo": "Memo Name 2",
+        "Memo": "Memo",
         "Amount Debit": -9.99,
         "Amount Credit": null,
         "Balance": 820.79,
@@ -29,7 +39,7 @@ export const transactionsMock: Transaction[] = [
         "Transaction Number": "XXXXXXX0003XXXX",
         "Date": "2024-09-30T00:00:00.000Z",
         "Description": "POS PURCHASE NON-PIN",
-        "Memo": "Memo Name 3",
+        "Memo": "Memo",
         "Amount Debit": -1.99,
         "Amount Credit": null,
         "Balance": 820.79,
@@ -39,17 +49,18 @@ export const transactionsMock: Transaction[] = [
 
 ]
 
-export function generateTransactions(length: number): Transaction[] {
-    const result: Transaction[] = [];
-    const startDate = DateTime.fromISO(transactionsMock[0].date);
+export function generateTransactions(length: number) {
+    const result = [];
+    const startDate = DateTime.fromISO(transactionsMock[0]["Date"], {zone: 'utc'});
 
     for (let i = 1; i < length; i++) {
         const baseTransaction = transactionsMock[i % transactionsMock.length];
         const newTransaction = {
             ...baseTransaction,
-            Date: startDate.plus({days: i}).toISO(), // Increment the date by `i` days
-            "Transaction Number": `XXXXXXX${String(i).padStart(4, '0')}XXXX`, // Optional: unique Transaction Number
-            Memo: `${baseTransaction.memo} ${i + 1}` // Optional: add index to Memo for uniqueness
+            Date: startDate.plus({days: i}).toISO(),
+            "Transaction Number": `XXXXXXX${String(i).padStart(4, '0')}XXXX`,
+            Memo: `${baseTransaction["Memo"]} ${i + 1}`,
+            Balance: baseTransaction["Balance"] + baseTransaction["Amount Debit"],
         };
         result.push(newTransaction);
     }
@@ -169,6 +180,12 @@ export const daysMock: DayYear[] = [
     },
     {
         day: '12-29-2022',
+    },
+    {
+        day: '10-31-2022',
+    },
+    {
+        day: '9-30-2022',
     }
 ]
 

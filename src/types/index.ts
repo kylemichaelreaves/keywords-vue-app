@@ -17,6 +17,7 @@ export type Transaction = {
     checkNumber?: string;
     fees?: string;
 };
+
 export interface MemoSummary {
     sum_amount_debit: number;
     transactions_count: number;

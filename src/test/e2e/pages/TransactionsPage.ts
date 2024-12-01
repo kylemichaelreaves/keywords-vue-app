@@ -33,6 +33,10 @@ export class TransactionsPage {
         await this.daySelect.click()
     }
 
+    async clickOnWeekSelect() {
+        await this.weekSelect.click()
+    }
+
     async clickIncreaseInterval()  {
         await this.page.locator('button').filter({ hasText: /^Increase Interval$/ }).click()
     }
