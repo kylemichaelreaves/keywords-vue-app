@@ -38,6 +38,7 @@
           {{ scope.row[columnKey] }}
         </router-link>
       </template>
+      <!-- TODO if the column is budget_category, display the budgetCategoryTreeSelect component -->
       <template v-else #default="scope">
         {{ scope.row[columnKey] }}
       </template>
@@ -135,7 +136,8 @@ let columnKeys = [
   'Memo',
   'Amount Debit',
   'Amount Credit',
-  'Balance'
+  'Balance',
+  'Budget Category'
 ];
 
 function getRowKey(row: Transaction): string {

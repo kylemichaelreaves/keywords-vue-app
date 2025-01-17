@@ -1,8 +1,9 @@
 import axios from "axios";
 import {isValidURL} from "@api/helpers/isValidURL";
-import type {Memo, Transaction} from "@types";
+import type {Transaction, Memo} from "@types";
 
-export async function fetchMemoTransactions(memo: Memo): Promise<Transaction> {
+export async function fetchMemoTransactions(memo: string): Promise<Transaction> {
+    console.log('memo:', memo);
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
     if (!isValidURL(fetchURL)) {

@@ -11,7 +11,6 @@ export default function useMemos(): UseQueryReturnType<Memo[], Error> {
     return useQuery<Array<Memo>>({
         queryKey: ['memos'],
         queryFn: async () => {
-
             if (cachedMemos.value.length > 0) {
                 return cachedMemos.value
             } else {
@@ -19,7 +18,6 @@ export default function useMemos(): UseQueryReturnType<Memo[], Error> {
                 store.setMemos(await memos)
                 return memos
             }
-
         },
         refetchOnWindowFocus: false,
     })

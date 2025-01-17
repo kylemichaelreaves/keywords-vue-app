@@ -12,17 +12,8 @@
   <p>Keywords I never started…I moved onto other things</p>
 </template>
 
-<script lang="ts">
-import {defineComponent} from "vue";
+<script setup lang="ts">
 import {HomeFilled} from "@element-plus/icons-vue";
-
-export default defineComponent({
-  name: "Home",
-  components: {HomeFilled},
-  setup() {
-    return {};
-  }
-})
 </script>
 
 <style scoped>
