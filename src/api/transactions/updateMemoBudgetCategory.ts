@@ -1,23 +1,18 @@
 import axios from "axios";
 import {isValidURL} from "@api/helpers/isValidURL";
-import type {BudgetCategory} from "@types";
+import type {BudgetCategory, Memo} from "@types";
 
 // returns a BudgetCategory, or null if it doesn't exist, for a given memo
-export async function updateMemoBudgetCategory(memo: string, budgetCategory: string): Promise<BudgetCategory> {
+export async function updateMemoBudgetCategory(memo: Memo['name'], budgetCategory: string): Promise<BudgetCategory> {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
     if (!isValidURL(fetchURL)) {
         throw Error('url is not valid');
     }
 
-    return await axios.post(`${fetchURL}/transactions/update-memo-budget-category`, {
+    return await axios.patch(`${fetchURL}/transactions/update-memo-budget-category`, {
             memo: memo,
             budgetCategory: budgetCategory
-        },
-        {
-            headers: {
-                'Content-Type': 'application/json',
-            },
         },
     )
         .then(res => res.data)
