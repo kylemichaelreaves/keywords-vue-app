@@ -32,9 +32,7 @@ const props = defineProps({
   }
 });
 
-
 const emit = defineEmits(['update:isVisible', 'categoryUpdated']);
-
 
 const isModalVisible = ref(props.isVisible);
 const selectedBudgetCategory = ref('');
@@ -43,7 +41,6 @@ watch(() => props.isVisible, (newValue) => {
   isModalVisible.value = newValue;
 });
 
-
 const {error, mutate, isError} = mutateMemoBudgetCategory();
 
 const saveCategory = () => {
@@ -51,7 +48,6 @@ const saveCategory = () => {
     ElMessage.warning('Please select a budget category before saving.');
     return;
   }
-
 
   mutate({
         memo: props.memo,
@@ -64,7 +60,7 @@ const saveCategory = () => {
           closeModal();
         },
         onError: (error) => {
-          ElMessage.error('An error occurred while assigning the budget category.');
+          ElMessage.error(`An error occurred while assigning the budget category: ${error.message}`);
         }
       });
 

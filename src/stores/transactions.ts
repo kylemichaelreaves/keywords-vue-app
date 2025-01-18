@@ -19,7 +19,7 @@ export const useTransactionsStore = defineStore('transactions', {
         selectedYear: string;
         selectedMemo: string;
         selectedType: string;
-        selectedBudgetCategory: string;
+        selectedBudgetCategory: string | null;
         days: Array<DayYear>;
         daysForSelectedWeek: Array<string>;
         weeksForSelectedMonth: Array<string>;
@@ -178,7 +178,7 @@ export const useTransactionsStore = defineStore('transactions', {
         updateSort(sort: { prop: string; order: string }) {
             this.sort = sort;
         },
-        setSelectedBudgetCategory(selectedBudgetCategory: string) {
+        setSelectedBudgetCategory(selectedBudgetCategory: string | null) {
             this.selectedBudgetCategory = selectedBudgetCategory;
         },
         setTransactionsTableLimit(limit: number) {

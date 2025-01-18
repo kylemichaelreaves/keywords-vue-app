@@ -19,10 +19,13 @@ import {ElTableColumn} from "element-plus";
 
 const props = defineProps({
   memo: {
-    type: String as unknown as PropType<Memo>,
+    type: Object as PropType<Memo>,
     required: true,
   },
 });
+
+console.log('props.memo', props.memo);
+console.log('typeof props.memo', typeof props.memo);
 
 
 const columns = [

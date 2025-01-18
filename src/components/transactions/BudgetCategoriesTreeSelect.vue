@@ -4,8 +4,8 @@
     <el-text type="primary" class="text">
       Budget Category
     </el-text>
-    <el-row :gutter="10">
-      <el-col :span="16">
+    <el-row :gutter="35">
+      <el-col :span="12">
         <el-tree-select
             :data="selectTreeData"
             v-model="selectedBudgetCategory"
@@ -13,7 +13,7 @@
             show-checkbox
         />
       </el-col>
-      <el-col :span="8">
+      <el-col :span="10">
         <div v-if="selectedBudgetCategory" class="button-container">
           <el-button
               type="danger"
@@ -33,13 +33,12 @@ import {ElText, ElTreeSelect} from "element-plus";
 import {useBudgetCategories} from "@api/hooks/transactions/useBudgetCategories";
 import {convertToTree} from "@api/helpers/convertToTree";
 import {useTransactionsStore} from "@stores/transactions";
-import type {CategoryTreeNode} from "@types";
+import type {BudgetCategoryResponse, CategoryTreeNode, CategoryNode} from "@types";
 import AlertComponent from "@components/shared/AlertComponent.vue";
 
 const props = defineProps({
   selectedBudgetCategory: {
     type: String,
-    required: true
   }
 });
 
@@ -52,13 +51,12 @@ const selectedBudgetCategory = ref(props.selectedBudgetCategory);
 
 const {data, isError, error} = useBudgetCategories();
 
-// Convert the data to a format that the tree select component can use
-const selectTreeData = computed(() => {
+const selectTreeData = computed<CategoryNode[]>(() => {
   if (!data.value || !data.value.length) {
     return [];
-  } else {
-    return data.value.map((item) => convertToTree(item.data)).flat();
   }
+  const arr = data.value as unknown as BudgetCategoryResponse[];
+  return arr.map((item) => convertToTree(item.data)).flat();
 });
 
 // Function to find the label from the value in the category tree
@@ -116,6 +114,6 @@ watch(selectedBudgetCategory, (newVal) => {
 }
 
 .tree-select {
-  width: 20vw;
+  width: 10vw;
 }
 </style>

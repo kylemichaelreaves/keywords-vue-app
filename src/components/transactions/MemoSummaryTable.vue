@@ -41,11 +41,14 @@ import BackButton from "@components/shared/BackButton.vue";
 const props = defineProps(
     {
       memo: {
-        type: String as unknown as PropType<Memo>,
+        type: Object as PropType<Memo>,
         required: true,
       },
     }
 );
+
+console.log('props.memo', props.memo);
+console.log('typeof props.memo', typeof props.memo);
 
 const {data, refetch, isFetching, isError, error} = useMemoSummary(props.memo);
 
@@ -71,7 +74,4 @@ watch(() => props.memo, () => {
   font-size: 1.5rem;
   font-weight: bold;
 }
-
-
 </style>
-

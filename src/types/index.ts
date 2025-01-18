@@ -11,16 +11,20 @@ export type Transaction = {
     date: string;
     description?: string;
     memo: string;
+    memo_id: number;
     amountDebit: string;
     amountCredit?: string;
     balance?: string;
     checkNumber?: string;
     fees?: string;
+    budgetCategory: string;
 };
+
 export interface MemoSummary {
     sum_amount_debit: number;
     transactions_count: number;
 }
+
 export interface WeekSummary {
     memo: string;
     weekly_amount_debit: number;
@@ -41,25 +45,26 @@ export interface DaySummary {
     daily_amount_debit: number;
 }
 
+export interface Address {
+    house_number: string;
+    road: string;
+    town?: string;
+    village?: string;
+    neighbourhood?: string;
+    county: string;
+    state: string
+    postcode: string;
+    country: string;
+    country_code: string;
+    "ISO3166-2-lvl4": string;
+}
 
 export interface AddressResponse {
     osm_type: string;
     osm_id: number;
     licence: string;
     boundingbox: string[];
-    address: {
-        house_number: string;
-        road: string;
-        town?: string;
-        village?: string;
-        neighbourhood?: string;
-        county: string;
-        state: string
-        postcode: string;
-        country: string;
-        country_code: string;
-        "ISO3166-2-lvl4": string;
-    };
+    address: Address;
     importance: number;
     lon: string;
     display_name: string;
@@ -73,8 +78,12 @@ export interface PieChartData {
     label: string;
     value: number;
 }
+
 export interface Memo {
     name: string
+    recurring: boolean;
+    necessary: boolean;
+    frequency?: Frequency;
 }
 
 export interface DayYear {
@@ -95,12 +104,24 @@ export interface Year {
 
 export type TimeframeType = 'day' | 'week' | 'month' | 'year';
 
+export type Frequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
 export enum Timeframe {
     Day = 'day',
     Month = 'month',
     Week = 'week',
     Year = 'year',
 }
+
+export interface MemoFormFields {
+    component: 'el-input' | 'el-switch' | 'el-select';
+    label: string;
+    placeholder?: string;
+    disabledCondition?: keyof Memo;
+    options?: { value: string; label: string }[];
+}
+
+export type MemoKeys = 'name' | 'recurring' | 'necessary' | 'frequency';
 
 export type OFSummaryTypeBase = {
     total_debit: number;
@@ -158,7 +179,21 @@ export interface FormField {
 
 export interface BudgetCategory {
     budget_category: string;
+    necessary: boolean;
+    recurring: boolean;
+    frequency?: Frequency;
 }
+
+export interface BudgetCategoryData {
+    id: string;        // or other key types, e.g., number
+    name: string;
+    subcategories?: Record<string, BudgetCategoryData>;
+}
+
+export interface BudgetCategoryResponse {
+    data: BudgetCategoryData;
+}
+
 
 export type LoanFormType = {
     loanAmount: number;
@@ -177,6 +212,12 @@ export interface CarBudget {
 export type Breadcrumb = {
     label: string;
     to: string;
+}
+
+export interface CategoryNode {
+    value: string; // The value of the node
+    label: string; // The label of the node
+    children?: CategoryNode[]; // The child nodes of the node
 }
 
 export interface DailyInterval {

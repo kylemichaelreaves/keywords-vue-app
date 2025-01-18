@@ -6,7 +6,7 @@
       {{ budgetCategory }}
     </el-tag>
     <el-button
-        v-else-if="!budgetCategory && !isFetching && !isLoading"
+        v-else-if="buttonCondition"
         class="category-tag"
         size="large"
         round
@@ -17,7 +17,6 @@
       No Budget Category Assigned
     </el-button>
   </el-col>
-
   <BudgetCategoryModal
       :memo="props.memo"
       :isVisible="isModalVisible"
@@ -28,7 +27,6 @@
 </template>
 
 <script setup lang="ts">
-
 import useMemoBudgetCategory from "@api/hooks/transactions/useMemoBudgetCategory";
 import type {BudgetCategory, Memo} from "@types";
 import {computed, type PropType, ref, watch} from "vue";
@@ -37,18 +35,23 @@ import BudgetCategoryModal from "@components/transactions/BudgetCategoryModal.vu
 
 const props = defineProps({
   memo: {
-    type: String as unknown as PropType<Memo>,
+    type: Object as PropType<Memo>,
     required: true,
   },
 });
 
+console.log('props.memo', props.memo);
+console.log('typeof props.memo', typeof props.memo);
+
+const buttonCondition = computed(() => {
+  return !budgetCategory.value && !isFetching.value && !isLoading.value && !isRefetching.value;
+});
 
 const {data, isLoading, isError, refetch, isRefetching, isFetching, error} = useMemoBudgetCategory(props.memo);
 
-
 const isModalVisible = ref(false);
-const selectedBudgetCategory = ref('');
 
+const selectedBudgetCategory = ref('');
 
 const openModal = () => {
   isModalVisible.value = true;
@@ -59,11 +62,9 @@ const closeModal = () => {
   isModalVisible.value = false;
 };
 
-
 const handleCategoryUpdated = (category: string) => {
   selectedBudgetCategory.value = category;
 };
-
 
 const budgetCategory = computed(() => {
   const budgetData = data?.value as BudgetCategory[] | undefined;

@@ -70,7 +70,6 @@ import {
 import {ElCard, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 import useMonthSummary from "@api/hooks/transactions/useMonthSummary";
-import {ArrowLeft, ArrowRight, Close} from "@element-plus/icons-vue";
 import type {MonthYear} from "@types";
 import OFSummaryTable from "@components/transactions/OFSummaryTable.vue";
 import MJSummaryTable from "@components/transactions/MJSummaryTable.vue";

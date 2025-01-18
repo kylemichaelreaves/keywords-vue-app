@@ -6,26 +6,13 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import Navbar from './components/Navbar.vue'
-import {defineComponent} from "vue";
 import {useRoute} from "vue-router";
 import Breadcrumbs from "@components/Breadcrumbs.vue";
 
-
-export default defineComponent({
-  name: 'App',
-  components: {
-    Breadcrumbs,
-    Navbar,
-  },
-  setup() {
-    const route = useRoute();
-    return {route};
-  }
-})
+const route = useRoute();
 </script>
-
 
 <style scoped>
 #app {

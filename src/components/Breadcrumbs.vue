@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import {reactive, watch} from 'vue';
-import {useRoute, useRouter} from 'vue-router';
+import {type RouteLocationNormalizedLoaded, useRoute, useRouter} from 'vue-router';
 import type {RouteRecordRaw} from 'vue-router';
 import type {Breadcrumb} from "@types";
 
@@ -27,7 +27,7 @@ watch(
 );
 
 // Generate breadcrumbs based on the current route
-function generateBreadcrumbs(route: RouteRecordRaw) {
+function generateBreadcrumbs(route: RouteLocationNormalizedLoaded) {
   breadcrumbs.length = 0;
 
   const matchedRoutes = findRouteChain(routes, String(route.name));
@@ -50,8 +50,7 @@ function generateBreadcrumbs(route: RouteRecordRaw) {
   }
 }
 
-// Find the route chain based on the current route name
-function findRouteChain(routes: RouteRecordRaw[], currentRouteName: string | undefined): RouteRecordRaw[] | null {
+function findRouteChain(routes: readonly RouteRecordRaw[], currentRouteName: string | undefined): RouteRecordRaw[] | null {
   for (const route of routes) {
     if (route.name === currentRouteName) {
       return [route];
@@ -66,6 +65,7 @@ function findRouteChain(routes: RouteRecordRaw[], currentRouteName: string | und
   }
   return null;
 }
+
 </script>
 
 <style scoped>
