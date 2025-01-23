@@ -11,8 +11,8 @@ export async function fetchMonths(): Promise<Array<MonthYear>> {
 
     return await axios.get(`${fetchURL}/transactions/get-months`)
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
+        .catch((err: Error) => {
+            console.error('err:', err);
             throw err;
         });
 }

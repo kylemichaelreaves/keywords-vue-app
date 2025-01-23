@@ -3,7 +3,6 @@ import {isValidURL} from "@api/helpers/isValidURL";
 import type {DailyInterval} from "@types";
 
 export async function fetchDailyAmountDebitForInterval(interval?: string, startDate?: string) {
-
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
     if (!isValidURL(fetchURL)) {
@@ -18,7 +17,7 @@ export async function fetchDailyAmountDebitForInterval(interval?: string, startD
             },
         })
         .then((res) => res.data)
-        .catch((err) => {
+        .catch((err: Error) => {
             console.error('err:', err);
         });
 }

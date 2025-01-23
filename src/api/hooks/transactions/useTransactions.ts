@@ -31,7 +31,7 @@ export default function useTransactions() {
                     timeFrame: dateType.value,
                     date: dateObj as unknown as Date,
                 });
-                store.setTransactionsByOffset(Number(pageParam), transactions);
+                store.setTransactionsByOffset(Number(pageParam), transactions as Transaction[]);
                 return transactions;
             }
         },

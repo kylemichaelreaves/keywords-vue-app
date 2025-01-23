@@ -10,9 +10,8 @@ export async function fetchBudgetCategories() {
 
     return await axios.get(`${fetchURL}/transactions/get-budget-categories`)
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw err;
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 
 }

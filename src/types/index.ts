@@ -84,6 +84,7 @@ export interface Memo {
     recurring: boolean;
     necessary: boolean;
     frequency?: Frequency;
+    budgetCategory?: BudgetCategory['budget_category'];
 }
 
 export interface DayYear {
@@ -122,6 +123,25 @@ export interface MemoFormFields {
 }
 
 export type MemoKeys = 'name' | 'recurring' | 'necessary' | 'frequency';
+
+export type TransactionKeys =
+    'transactionNumber'
+    | 'date'
+    | 'description'
+    | 'memo'
+    | 'amountDebit'
+    | 'amountCredit'
+    | 'balance'
+    | 'checkNumber'
+    | 'fees'
+    | 'budgetCategory';
+
+export type TransactionFormFields = {
+    component: 'el-input' | 'el-date-picker' | 'el-select' | 'BudgetCategoryTreeSelect';
+    label: string;
+    placeholder?: string;
+    disabledCondition?: boolean;
+}
 
 export type OFSummaryTypeBase = {
     total_debit: number;
@@ -185,7 +205,7 @@ export interface BudgetCategory {
 }
 
 export interface BudgetCategoryData {
-    id: string;        // or other key types, e.g., number
+    id: string;
     name: string;
     subcategories?: Record<string, BudgetCategoryData>;
 }
@@ -215,9 +235,9 @@ export type Breadcrumb = {
 }
 
 export interface CategoryNode {
-    value: string; // The value of the node
-    label: string; // The label of the node
-    children?: CategoryNode[]; // The child nodes of the node
+    value: string;
+    label: string;
+    children?: CategoryNode[];
 }
 
 export interface DailyInterval {

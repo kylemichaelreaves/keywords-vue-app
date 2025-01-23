@@ -2,7 +2,7 @@ import axios from "axios";
 import {isValidURL} from "@api/helpers/isValidURL";
 import type {BudgetCategory, Memo} from "@types";
 
-// returns a BudgetCategory, or null if it doesn't exist, for a given memo
+// TODO remove: it's redundant. And, remove route from API Gateway.
 export async function updateMemoBudgetCategory(memo: Memo['name'], budgetCategory: string): Promise<BudgetCategory> {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
@@ -16,8 +16,8 @@ export async function updateMemoBudgetCategory(memo: Memo['name'], budgetCategor
         },
     )
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
+        .catch((err: Error) => {
+            console.error('err:', err);
             throw err;
         });
 }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import {isValidURL} from "@api/helpers/isValidURL";
 
+// TODO remove, since it's not being used
 export async function fetchMemosCount(timeFrame?: string | undefined, date?: Date | null | undefined, distinct?: boolean | undefined): Promise<number> {
     const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
 
@@ -15,8 +16,7 @@ export async function fetchMemosCount(timeFrame?: string | undefined, date?: Dat
             distinct: distinct
         }})
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw new Error(err);
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 }

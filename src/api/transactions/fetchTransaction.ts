@@ -9,15 +9,14 @@ export const fetchTransaction = async (transactionNumber: string): Promise<Trans
         throw Error('url is not valid');
     }
 
-    return await axios
-        .get(`${fetchURL}/transactions/get-transaction`, {
-            params: {
-                transactionNumber: transactionNumber
-            },
-        })
+    // TODO replace with 'transactions/{transactionNumber}'
+    return await axios.get(`${fetchURL}/transactions/get-transaction`, {
+        params: {
+            transactionNumber: transactionNumber
+        },
+    })
         .then((res) => res.data)
-        .catch((err) => {
-            console.log('err:', err);
-            throw err;
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 };

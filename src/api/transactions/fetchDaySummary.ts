@@ -15,9 +15,8 @@ export async function fetchDaySummary(day: string): Promise<DaySummary[]> {
         }
     })
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw err;
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 
 }

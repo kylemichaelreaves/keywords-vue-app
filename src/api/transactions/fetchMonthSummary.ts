@@ -17,8 +17,8 @@ export async function fetchMonthSummary(month: string): Promise<MonthSummary[]> 
             }
         })
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 
 }

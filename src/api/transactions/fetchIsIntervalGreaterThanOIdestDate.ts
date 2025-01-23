@@ -14,7 +14,7 @@ export async function fetchIsIntervalGreaterThanOldestDate(interval: string): Pr
         }
     })
         .then(res => res.data)
-        .catch(err => {
+        .catch((err: Error) => {
             console.error('err:', err);
         });
 

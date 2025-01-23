@@ -9,6 +9,7 @@ export async function fetchTransactionsCount(timeFrame?: string | undefined, dat
     }
 
     // TODO timeFrame should be optional — if there's no timeframe, it returns the total number of transactions
+    // TODO refactor away from this route to passing query params to transactions route, totalTransactionsCount
     return await axios.get(`${fetchURL}/transactions/get-transactions-count`, {
         params: {
             timeFrame: timeFrame,
@@ -16,8 +17,7 @@ export async function fetchTransactionsCount(timeFrame?: string | undefined, dat
         }
     })
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw new Error(err);
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 }

@@ -11,16 +11,12 @@ export async function fetchMemoTransactions(memoName: Memo['name']): Promise<Tra
 
     return await axios.get(`${fetchURL}/transactions/get-transactions`, {
         params: {
-            limit: undefined,
-            offset: undefined,
-            date: undefined,
-            timeFrame: undefined,
             memo: memoName
         }
     })
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
+        .catch((err: Error) => {
+            console.error('err:', err);
             throw err;
         });
 

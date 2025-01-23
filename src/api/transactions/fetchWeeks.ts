@@ -11,8 +11,7 @@ export async function fetchWeeks(): Promise<Array<WeekYear>> {
 
     return await axios.get(`${fetchURL}/transactions/get-weeks`)
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw err;
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 }

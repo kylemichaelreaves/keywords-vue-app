@@ -12,15 +12,15 @@ export async function fetchMemoSummary(memo: Memo['name']): Promise<MemoSummary>
         throw Error('url is not valid');
     }
 
+    // TODO refactor, remove redundant path: /get-memo-summary, use 'transactions/summary?memo=${memo}'
     return await axios.get(`${fetchURL}/transactions/get-memo-summary`, {
         params: {
             memo
         }
     })
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw err;
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 
 }
