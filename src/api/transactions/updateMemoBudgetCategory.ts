@@ -16,7 +16,7 @@ export async function updateMemoBudgetCategory(memo: Memo['name'], budgetCategor
         },
     )
         .then(res => res.data)
-        .catch(err => {
+        .catch((err: Error) => {
             console.error('err:', err);
             throw err;
         });

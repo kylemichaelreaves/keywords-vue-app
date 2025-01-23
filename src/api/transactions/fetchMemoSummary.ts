@@ -19,7 +19,7 @@ export async function fetchMemoSummary(memo: Memo['name']): Promise<MemoSummary>
         }
     })
         .then(res => res.data)
-        .catch(err => {
+        .catch((err: Error) => {
             console.error('err:', err);
         });
 

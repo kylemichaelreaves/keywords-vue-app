@@ -17,7 +17,7 @@ export async function fetchMJAmountDebit(timeFrame: string, date?: Date | null |
         }
     })
         .then(res => res.data)
-        .catch(err => {
+        .catch((err: Error) => {
             console.error('err:', err);
         });
 

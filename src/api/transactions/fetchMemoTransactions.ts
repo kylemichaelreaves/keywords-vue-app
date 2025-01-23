@@ -15,7 +15,7 @@ export async function fetchMemoTransactions(memoName: Memo['name']): Promise<Tra
         }
     })
         .then(res => res.data)
-        .catch(err => {
+        .catch((err: Error) => {
             console.error('err:', err);
             throw err;
         });

@@ -13,7 +13,7 @@ export async function updateMemo (memo: Partial<Memo>): Promise<Memo> {
         memo: memo
     })
         .then(res => res.data)
-        .catch(err => {
+        .catch((err: Error) => {
             console.error('err:', err);
             throw err;
         });
