@@ -19,6 +19,7 @@ export const useTransactionsStore = defineStore('transactions', {
         selectedYear: string;
         selectedMemo: string;
         selectedType: string;
+        selectedDescription: string;
         selectedBudgetCategory: string | null;
         days: Array<DayYear>;
         daysForSelectedWeek: Array<string>;
@@ -27,6 +28,7 @@ export const useTransactionsStore = defineStore('transactions', {
         months: Array<MonthYear>;
         memos: Array<Memo>;
         years: Array<Year>;
+        descriptions: Array<string>;
         OFSummaries: Array<OFSummary>;
         MJSummaries: Array<MJSummary>;
         daysSummaries: Array<Summaries>;
@@ -51,6 +53,7 @@ export const useTransactionsStore = defineStore('transactions', {
         selectedWeek: '',
         selectedType: 'Amount Debit',
         selectedBudgetCategory: '',
+        selectedDescription: '',
         days: [],
         daysForSelectedWeek: [],
         weeksForSelectedMonth: [],
@@ -58,6 +61,7 @@ export const useTransactionsStore = defineStore('transactions', {
         months: [],
         memos: [],
         years: [],
+        descriptions: [],
         OFSummaries: [],
         MJSummaries: [],
         daysSummaries: [],
@@ -82,10 +86,12 @@ export const useTransactionsStore = defineStore('transactions', {
         getSelectedWeek: (state) => state.selectedWeek,
         getSelectedYear: (state) => state.selectedYear,
         getSelectedType: (state) => state.selectedType,
+        getSelectedDescription: (state) => state.selectedDescription,
         getDays: (state) => state.days,
         getWeeks: (state) => state.weeks,
         getMonths: (state) => state.months,
         getYears: (state) => state.years,
+        getDescriptions: (state) => state.descriptions,
         getMemos: (state) => state.memos,
         getOFSummaries: (state) => state.OFSummaries,
         getMJSummaries: (state) => state.MJSummaries,
@@ -130,6 +136,9 @@ export const useTransactionsStore = defineStore('transactions', {
         setSelectedType(selectedType: string) {
             this.selectedType = selectedType;
         },
+        setSelectedDescription(selectedDescription: string) {
+            this.selectedDescription = selectedDescription;
+        },
         setDays(days: Array<DayYear>) {
             this.days = days;
         },
@@ -150,6 +159,9 @@ export const useTransactionsStore = defineStore('transactions', {
         },
         setYears(years: Array<Year>) {
             this.years = years;
+        },
+        setDescriptions(descriptions: Array<string>) {
+            this.descriptions = descriptions;
         },
         setOFSummaries(summaries: Array<OFSummary>) {
             this.OFSummaries = summaries;

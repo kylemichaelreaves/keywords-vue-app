@@ -15,9 +15,8 @@ export async function fetchSumAmountDebitByDate(timeFrame: string, date: Date | 
         }
     })
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw new Error(err);
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 
 }

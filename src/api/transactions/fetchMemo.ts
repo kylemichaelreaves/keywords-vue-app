@@ -9,16 +9,14 @@ export async function fetchMemo(memo: Memo['name']): Promise<Memo> {
         throw Error('url is not valid');
     }
 
-
     return await axios.get(`${fetchURL}/transactions/get-memo`, {
         params: {
             memo: memo
         }
     })
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw err;
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 
 }

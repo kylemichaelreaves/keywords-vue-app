@@ -17,7 +17,7 @@ export async function fetchAddress(id: string, fetchURL?: string) {
     return await axios.get(`${fetchURL}/address-geocoder/${id}`)
         .then(res => res.data)
         .catch(err => {
-            console.log('err:', err);
+            console.error('err:', err);
             throw new Error(err);
         });
 }

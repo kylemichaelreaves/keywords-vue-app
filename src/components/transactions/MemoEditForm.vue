@@ -56,7 +56,10 @@ watch(
       memo.necessary = newVal.necessary;
       memo.frequency = newVal.frequency;
     },
-    {deep: true}
+    {
+      deep: true,
+      immediate: true
+    }
 );
 
 const fields: Record<MemoKeys, MemoFormFields> = {

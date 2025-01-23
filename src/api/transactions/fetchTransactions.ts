@@ -1,13 +1,13 @@
 import axios from "axios";
 import {isValidURL} from "@api/helpers/isValidURL";
-import type {TimeframeType, Transaction} from "@types";
+import type {TimeframeType, Memo} from "@types";
 
 
-export async function fetchTransactions (queryParams: {
+export async function fetchTransactions(queryParams: {
     date: Date;
     offset: number;
     limit: number;
-    memo: string;
+    memo: Memo['name'];
     timeFrame: TimeframeType
 }) {
     const {date, limit, offset, timeFrame, memo} = queryParams;
@@ -18,18 +18,18 @@ export async function fetchTransactions (queryParams: {
         throw Error('url is not valid');
     }
 
-    return await axios
-        .get<Array<Transaction>>(`${fetchURL}/transactions/get-transactions`, {
-            params: {
-                limit: limit ? limit : undefined,
-                offset: offset ? offset : undefined,
-                date: date ? date : undefined,
-                timeFrame: timeFrame ? timeFrame : undefined,
-                memo: memo ? memo : undefined
-            },
-        })
+    // TODO refactor in V2 api, remove redundant path: /get-transactions
+    return await axios.get(`${fetchURL}/transactions/get-transactions`, {
+        params: {
+            date: date ? date : undefined,
+            offset: offset ? offset : undefined,
+            limit: limit ? limit : undefined,
+            memo: memo ? memo : undefined,
+            timeFrame: timeFrame ? timeFrame : undefined,
+        },
+    })
         .then((res) => res.data)
-        .catch((err) => {
-            console.log('err:', err);
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 };

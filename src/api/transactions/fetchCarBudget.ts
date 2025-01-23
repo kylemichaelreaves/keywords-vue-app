@@ -10,6 +10,7 @@ export default async function fetchCarBudget(date: Date | null, timeFrame: Timef
         throw Error('url is not valid');
     }
 
+    // TODO instead of a path, pass query params to transactions route, budgetCategory
     return await axios.get(`${fetchURL}/transactions/get-car-budget`, {
         params: {
             timeFrame: timeFrame,
@@ -17,8 +18,7 @@ export default async function fetchCarBudget(date: Date | null, timeFrame: Timef
         }
     })
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw err;
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 }

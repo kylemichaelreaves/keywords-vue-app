@@ -11,8 +11,7 @@ export async function fetchDays(): Promise<Array<DayYear>> {
 
     return await axios.get(`${fetchURL}/transactions/get-days`)
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw err;
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 }

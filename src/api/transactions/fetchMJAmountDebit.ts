@@ -9,6 +9,7 @@ export async function fetchMJAmountDebit(timeFrame: string, date?: Date | null |
         throw Error('url is not valid');
     }
 
+    // TODO instead of a path, pass query params to transactions route, budgetCategory
     return await axios.get(`${fetchURL}/transactions/get-mj-amount-debit`, {
         params: {
             timeFrame: timeFrame,
@@ -17,8 +18,7 @@ export async function fetchMJAmountDebit(timeFrame: string, date?: Date | null |
     })
         .then(res => res.data)
         .catch(err => {
-            console.log('err:', err);
-            throw err;
+            console.error('err:', err);
         });
 
 }

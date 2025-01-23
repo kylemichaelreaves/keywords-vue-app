@@ -14,9 +14,8 @@ export async function fetchWeeksOfMonth(monthString: string) {
         }
     })
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw err;
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 
 }

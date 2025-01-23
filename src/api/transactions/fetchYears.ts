@@ -11,8 +11,7 @@ export async function fetchYears(): Promise<Array<Year>> {
 
     return await axios.get(`${fetchURL}/transactions/get-years`)
         .then(res => res.data)
-        .catch(err => {
-            console.log('err:', err);
-            throw err;
+        .catch((err: Error) => {
+            console.error('err:', err);
         });
 }
