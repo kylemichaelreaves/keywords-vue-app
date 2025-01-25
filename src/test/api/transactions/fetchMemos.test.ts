@@ -12,13 +12,5 @@ describe('fetchMemos', () => {
         expect(memos).toEqual(memosMock);
     });
 
-    test('fetchMemos with an invalid URL should throw an error', async () => {
-        const originalFetchURL = import.meta.env.VITE_APIGATEWAY_URL;
-        import.meta.env.VITE_APIGATEWAY_URL = 'not_a_valid_url';
-
-        await expect(fetchMemos()).rejects.toThrowError('url is not valid');
-
-        import.meta.env.VITE_APIGATEWAY_URL = originalFetchURL;
-    });
 
 })

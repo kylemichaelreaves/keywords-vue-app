@@ -1,16 +1,9 @@
-import axios from "axios";
-import {isValidURL} from "@api/helpers/isValidURL";
+import {httpClient} from "@api/httpClient";
 import type {BudgetCategory, Memo} from "@types";
 
-// TODO remove: it's redundant. And, remove route from API Gateway.
 export async function updateMemoBudgetCategory(memo: Memo['name'], budgetCategory: string): Promise<BudgetCategory> {
-    const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
-
-    if (!isValidURL(fetchURL)) {
-        throw Error('url is not valid');
-    }
-
-    return await axios.patch(`${fetchURL}/transactions/update-memo-budget-category`, {
+    // TODO remove: it's redundant. And, remove route from API Gateway.
+    return await httpClient.patch(`/transactions/update-memo-budget-category`, {
             memo: memo,
             budgetCategory: budgetCategory
         },
@@ -18,6 +11,5 @@ export async function updateMemoBudgetCategory(memo: Memo['name'], budgetCategor
         .then(res => res.data)
         .catch((err: Error) => {
             console.error('err:', err);
-            throw err;
         });
 }

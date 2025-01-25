@@ -1,15 +1,8 @@
-import axios from "axios";
-import {isValidURL} from "@api/helpers/isValidURL";
-
 // TODO remove, since it's not being used
+import {httpClient} from "@api/httpClient";
+
 export async function fetchMemosCount(timeFrame?: string | undefined, date?: Date | null | undefined, distinct?: boolean | undefined): Promise<number> {
-    const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
-
-    if (!isValidURL(fetchURL)) {
-        throw Error('url is not valid');
-    }
-
-    return await axios.get(`${fetchURL}/memos/get-memos-count`, {
+    return await httpClient.get(`/memos/get-memos-count`, {
         params: {
             timeFrame: timeFrame,
             date: date,

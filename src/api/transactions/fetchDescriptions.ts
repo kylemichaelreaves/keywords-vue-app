@@ -8,7 +8,7 @@ export async function fetchDescriptions(): Promise<Array<string>> {
         throw Error('url is not valid');
     }
 
-    return await axios.get(`${fetchURL}/transactions/descriptions`)
+    return await axios.get(`/transactions/descriptions`)
         .then((res) => res.data)
         .catch((err: Error) => {
             console.error('err:', err);

@@ -14,7 +14,7 @@ export async function fetchAddress(id: string, fetchURL?: string) {
         throw Error('url is not valid');
     }
 
-    return await axios.get(`${fetchURL}/address-geocoder/${id}`)
+    return await axios.get(`/address-geocoder/${id}`)
         .then(res => res.data)
         .catch((err: Error) => {
             console.error('err:', err);
