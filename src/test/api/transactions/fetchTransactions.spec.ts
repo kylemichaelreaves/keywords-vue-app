@@ -9,9 +9,7 @@ describe('fetchTransactions', () => {
     });
 
     test('should fetch transactions successfully', async ({expect}) => {
-        const API_GATEWAY_URL = 'https://api.example.com';
         const limit = 10;
-        const offset = 0;
         const transactions: Transaction[] = transactionsMock;
 
         const result = await fetchTransactions(limit);
