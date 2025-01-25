@@ -9,7 +9,7 @@ export async function fetchDaySummary(day: string): Promise<DaySummary[]> {
         throw Error('url is not valid');
     }
 
-    return await axios.get(`${fetchURL}/transactions/get-day-summary`, {
+    return await axios.get(`/transactions/get-day-summary`, {
         params: {
             day
         }

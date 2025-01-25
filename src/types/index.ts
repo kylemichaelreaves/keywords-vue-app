@@ -7,6 +7,7 @@ export interface AddressFields {
 }
 
 export type Transaction = {
+    id: number;
     transactionNumber: string;
     date: string;
     description?: string;
@@ -80,6 +81,7 @@ export interface PieChartData {
 }
 
 export interface Memo {
+    id: number;
     name: string
     recurring: boolean;
     necessary: boolean;

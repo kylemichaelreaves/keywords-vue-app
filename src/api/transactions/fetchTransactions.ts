@@ -1,7 +1,5 @@
-import axios from "axios";
-import {isValidURL} from "@api/helpers/isValidURL";
+import {httpClient} from "@api/httpClient";
 import type {TimeframeType, Memo} from "@types";
-
 
 export async function fetchTransactions(queryParams: {
     date: Date;
@@ -12,14 +10,8 @@ export async function fetchTransactions(queryParams: {
 }) {
     const {date, limit, offset, timeFrame, memo} = queryParams;
 
-    const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
-
-    if (!isValidURL(fetchURL)) {
-        throw Error('url is not valid');
-    }
-
     // TODO refactor in V2 api, remove redundant path: /get-transactions
-    return await axios.get(`${fetchURL}/transactions/get-transactions`, {
+    return await httpClient.get(`/transactions/get-transactions`, {
         params: {
             date: date ? date : undefined,
             offset: offset ? offset : undefined,

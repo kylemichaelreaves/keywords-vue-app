@@ -6,7 +6,7 @@ import {getDateTypeAndValue} from '@components/transactions/getDateTypeAndValue'
 import {computed} from "vue";
 import {useTransactionsStore} from "@stores/transactions";
 
-export default function useSummaries(): UseQueryReturnType<Summaries[], Error> {
+export default function useSummaries() {
 
     const {dateType, selectedValue} = getDateTypeAndValue();
     const store = useTransactionsStore();

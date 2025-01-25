@@ -1,14 +1,7 @@
-import axios from "axios";
-import {isValidURL} from "@api/helpers/isValidURL";
+import {httpClient} from "@api/httpClient";
 
 export async function fetchWeeksOfMonth(monthString: string) {
-    const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
-
-    if (!isValidURL(fetchURL)) {
-        throw Error('url is not valid');
-    }
-
-    return await axios.get(`${fetchURL}/transactions/get-weeks-of-month`, {
+    return await httpClient.get(`/transactions/get-weeks-of-month`, {
         params: {
             month: monthString
         }

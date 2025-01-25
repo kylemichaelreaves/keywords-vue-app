@@ -1,15 +1,8 @@
-import axios from "axios";
-import {isValidURL} from "@api/helpers/isValidURL";
+import {httpClient} from "@api/httpClient";
 import type {MonthYear} from "@types";
 
 export async function fetchMonths(): Promise<Array<MonthYear>> {
-    const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
-
-    if (!isValidURL(fetchURL)) {
-        throw Error('url is not valid');
-    }
-
-    return await axios.get(`${fetchURL}/transactions/get-months`)
+    return await httpClient.get(`/transactions/get-months`)
         .then(res => res.data)
         .catch((err: Error) => {
             console.error('err:', err);

@@ -1,14 +1,7 @@
-import axios from "axios";
-import {isValidURL} from "@api/helpers/isValidURL";
+import {httpClient} from "@api/httpClient";
 
 export async function fetchBudgetCategories() {
-    const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
-
-    if (!isValidURL(fetchURL)) {
-        throw Error('url is not valid');
-    }
-
-    return await axios.get(`${fetchURL}/transactions/get-budget-categories`)
+    return await httpClient.get(`/transactions/get-budget-categories`)
         .then(res => res.data)
         .catch((err: Error) => {
             console.error('err:', err);

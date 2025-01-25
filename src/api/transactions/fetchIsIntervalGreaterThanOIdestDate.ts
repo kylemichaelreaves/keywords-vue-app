@@ -8,7 +8,7 @@ export async function fetchIsIntervalGreaterThanOldestDate(interval: string): Pr
         throw Error('url is not valid');
     }
 
-    return await axios.get(`${fetchURL}/transactions/is-interval-greater-than-oldest-date`, {
+    return await axios.get(`/transactions/is-interval-greater-than-oldest-date`, {
         params: {
             interval
         }

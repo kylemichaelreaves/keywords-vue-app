@@ -1,14 +1,7 @@
-import axios from "axios";
-import { isValidURL } from "@api/helpers/isValidURL";
+import {httpClient} from "@api/httpClient";
 
 export async function fetchSumAmountDebitByDate(timeFrame: string, date: Date | null | undefined) {
-    const fetchURL = import.meta.env.VITE_APIGATEWAY_URL;
-
-    if (!isValidURL(fetchURL)) {
-        throw Error('url is not valid');
-    }
-
-    return await axios.get(`${fetchURL}/transactions/get-sum-amount-debit-by-date`, {
+    return await httpClient.get(`/transactions/get-sum-amount-debit-by-date`, {
         params: {
             timeFrame,
             date: date?.toISOString().split('T')[0]
