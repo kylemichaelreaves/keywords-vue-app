@@ -5,19 +5,18 @@ export const useAuthStore = defineStore('auth', {
     state: (): {
         token: string,
         user: User,
-        users: User[],
         returnUrl: null | string,
         isUserAuthenticated: boolean
     } => ({
         token: '',
         user: {
+            firstName: '',
+            lastName: '',
             username: '',
             email: '',
             password: '',
-            confirmPassword: '',
-            role: ''
+            role: 'user'
         },
-        users: [],
         returnUrl: null,
         isUserAuthenticated: false
     }),
@@ -28,12 +27,9 @@ export const useAuthStore = defineStore('auth', {
         getUser(state) {
             return state.user
         },
-        getUsers(state) {
-            return state.users
-        },
         getIsUserAuthenticated(state) {
             return state.isUserAuthenticated
-        }
+        },
     },
     actions: {
         setToken(token: string) {
@@ -42,18 +38,8 @@ export const useAuthStore = defineStore('auth', {
         setUser(user: User) {
             this.user = user
         },
-        setUsers(users: User[]) {
-            this.users = users
-        },
         setIsUserAuthenticated(isUserAuthenticated: boolean) {
             this.isUserAuthenticated = isUserAuthenticated
         },
-        async login(username: string, password: string) {
-        },
-        async logout() {
-        },
-        async isAuthenticated(): Promise<boolean> {
-            return this.token !== '';
-        }
     },
 })

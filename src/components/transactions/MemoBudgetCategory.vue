@@ -18,7 +18,7 @@
     </el-button>
   </el-col>
   <BudgetCategoryModal
-      :memo="props.memo"
+      :memo="props.memoName"
       :isVisible="isModalVisible"
       @update:isVisible="closeModal"
       @category-updated="refetch"
@@ -34,20 +34,17 @@ import AlertComponent from "@components/shared/AlertComponent.vue";
 import BudgetCategoryModal from "@components/transactions/BudgetCategoryModal.vue";
 
 const props = defineProps({
-  memo: {
-    type: Object as PropType<Memo>,
+  memoName: {
+    type: String as PropType<Memo['name']>,
     required: true,
   },
 });
-
-console.log('props.memo', props.memo);
-console.log('typeof props.memo', typeof props.memo);
 
 const buttonCondition = computed(() => {
   return !budgetCategory.value && !isFetching.value && !isLoading.value && !isRefetching.value;
 });
 
-const {data, isLoading, isError, refetch, isRefetching, isFetching, error} = useMemoBudgetCategory(props.memo);
+const {data, isLoading, isError, refetch, isRefetching, isFetching, error} = useMemoBudgetCategory(props.memoName);
 
 const isModalVisible = ref(false);
 
@@ -72,7 +69,7 @@ const budgetCategory = computed(() => {
 });
 
 
-watch(() => props.memo, () => {
+watch(() => props.memoName, () => {
   refetch();
 });
 

@@ -22,8 +22,8 @@
           :label="column.label"
           :sortable="column.sortable"
       >
-        <template v-if="column.prop === 'memo'" #default="scope">
-          <router-link :to="{ name: 'memo', params: { memo: scope.row[column.prop] } }">
+        <template v-if="column.prop === 'name'" #default="scope">
+          <router-link :to="{ name: 'memo', params: { memoName: scope.row[column.prop] } }">
             {{ scope.row[column.prop] }}
           </router-link>
         </template>
@@ -39,7 +39,8 @@ import AlertComponent from "@components/shared/AlertComponent.vue";
 const {data, isLoading, isFetching, error, isError} = useMemos();
 
 const memoColumns = [
-  { prop: 'memo', label: 'Memo', sortable: true },
+  {prop: 'id', label: 'Id', sortable: true},
+  { prop: 'name', label: 'Name', sortable: true },
   { prop: 'budget_category', label: 'Budget Category', sortable: false },
   { prop: 'total_amount_debit', label: 'Total Amount Debit', sortable: true },
   { prop: 'necessary', label: 'Necessary', sortable: false },

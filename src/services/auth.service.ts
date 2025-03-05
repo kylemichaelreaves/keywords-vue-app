@@ -1,34 +1,38 @@
 import axios from 'axios';
 import type {User} from "@types";
+import { useAuthStore } from '@stores/auth.ts'
 
+const USERS_API = import.meta.env.VITE_LOCAL_APIGATEWAY_URL;
 
 class AuthService {
-    login(user: User) {
-        return axios
-            .post(import.meta.env.VITE_APIGATEWAY_URL + 'login', {
-                username: user.username,
-                password: user.password
+    async login(username: User['username'], password: User['password']) {
+        return await axios
+            .post(USERS_API + '/login', {
+                username: username,
+                password: password
+            }, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
             })
             .then(response => {
-                if (response.data.accessToken) {
-                    localStorage.setItem('user', JSON.stringify(response.data));
-                }
-
                 return response.data;
             });
     }
-
     logout() {
+        const authStore = useAuthStore();
         localStorage.removeItem('user');
-    }
-
-    register(user: User) {
-        return axios.post(import.meta.env.VITE_APIGATEWAY_URL + 'register', {
-            username: user.username,
-            email: user.email,
-            password: user.password
+        authStore.setUser({
+            firstName: '',
+            lastName: '',
+            username: '',
+            email: '',
+            password: '',
+            role: 'user'
         });
     }
+
 }
 
 export default new AuthService();

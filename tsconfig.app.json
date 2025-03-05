@@ -54,7 +54,10 @@
       ],
       "@main": [
         "main.ts"
-      ]
+      ],
+      "@router": [
+        "router/index.ts"
+      ],
     }
   }
 }

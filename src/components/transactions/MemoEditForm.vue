@@ -9,7 +9,7 @@
           :is="field.component"
           v-model="memo[key]"
           :placeholder="field.placeholder"
-          :disabled="field.disabledCondition ? !memo[field.disabledCondition] : false"
+          :disabled="field.disabledCondition ? field.disabledCondition : false"
       >
         <template v-if="field.component === 'el-select'">
           <el-option
@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import {defineProps, reactive, watch} from 'vue';
-import {ElMessage} from 'element-plus';
+import {ElMessage, ElOption} from 'element-plus';
 import type {MemoFormFields, Memo, MemoKeys} from '@types';
 import type {PropType} from 'vue';
 import mutateMemo from '@api/hooks/transactions/mutateMemo';
@@ -80,7 +80,7 @@ const fields: Record<MemoKeys, MemoFormFields> = {
     component: 'el-select',
     label: 'Frequency',
     placeholder: 'Select frequency',
-    disabledCondition: 'recurring',
+    disabledCondition: memo.recurring,
     options: [
       {value: 'daily', label: 'Daily'},
       {value: 'weekly', label: 'Weekly'},

@@ -17,7 +17,7 @@ import {useMonths} from "@api/hooks/transactions/useMonths";
 import type {MonthYear} from "@types";
 import {useTransactionsStore} from "@stores/transactions";
 import SelectComponent from "@components/shared/SelectComponent.vue";
-import {router} from "@main";
+import {router} from "@router";
 import AlertComponent from "@components/shared/AlertComponent.vue";
 
 

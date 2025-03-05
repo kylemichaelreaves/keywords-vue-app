@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import {ref, computed} from 'vue';
 import useGeocodeAddress from "@api/hooks/addresses/useGeocodeAddress";
-import {router} from "@main";
+import {router} from "@router";
 import AddressResults from "./AddressResults.vue";
 import type {AddressFields} from "@types";
 import {Location} from "@element-plus/icons-vue";

@@ -1,9 +1,13 @@
 import type {Transaction} from "@types";
 import {httpClient} from "@api/httpClient";
 
-export const fetchTransaction = async (transactionId: Transaction['id']): Promise<Transaction> => {
+export const fetchTransaction = async (transactionNumber: Transaction['transactionNumber']): Promise<Transaction> => {
     return await httpClient
-        .get(`/transactions/${transactionId}`)
+        .get(`/transactions/get-transaction`, {
+            params: {
+                transactionNumber
+            }
+        })
         .then((res) => res.data)
         .catch((err: Error) => {
             console.error('err:', err);

@@ -39,8 +39,8 @@
               :prop="column.prop"
               :label="column.label"
           >
-            <template v-slot="scope" v-if="column.prop === 'memo'">
-              <router-link :to="{ name: 'memo', params: { memo: scope.row[column.prop] }}">
+            <template v-slot:default="scope" v-if="column.prop === 'memo'">
+              <router-link :to="{ name: 'memo', params: { memoName: scope.row[column.prop] }}">
                 {{ scope.row.memo }}
               </router-link>
             </template>
@@ -67,7 +67,7 @@ import {
   onMounted,
   watch
 } from 'vue'
-import {ElCard, ElTable, ElTableColumn} from "element-plus";
+import {ElCard, ElTable, ElTableColumn, ElCol, ElRow} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 import useMonthSummary from "@api/hooks/transactions/useMonthSummary";
 import type {MonthYear} from "@types";
@@ -75,7 +75,7 @@ import OFSummaryTable from "@components/transactions/OFSummaryTable.vue";
 import MJSummaryTable from "@components/transactions/MJSummaryTable.vue";
 import MonthsSummaryTable from "@components/transactions/MonthsSummaryTable.vue";
 import AlertComponent from "@components/shared/AlertComponent.vue";
-import {router} from "@main";
+import {router} from "@router";
 import CarBudgetSummaryTable from "@components/transactions/CarBudgetSummaryTable.vue";
 import MonthlyAmountDebitTotal from "@components/transactions/MonthlyAmountDebitTotal.vue";
 import NavigationButtonGroup from "@components/shared/NavigationButtonGroup.vue";

@@ -3,6 +3,10 @@ import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from "path";
 import {fileURLToPath} from "node:url";
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import vueDevTools from 'vite-plugin-vue-devtools'
 
 const ALIASES: string[] = [
     'api',
@@ -12,7 +16,8 @@ const ALIASES: string[] = [
     'mocks',
     'stores',
     'test',
-    'types'
+    'types',
+    'router',
 ]
 
 export default defineConfig({
@@ -23,7 +28,14 @@ export default defineConfig({
     root: fileURLToPath(new URL('./', import.meta.url)),
     plugins: [
         vue(),
-        tsconfigPaths()
+        vueDevTools(),
+        tsconfigPaths(),
+        AutoImport({
+            resolvers: [ElementPlusResolver()],
+        }),
+        Components({
+            resolvers: [ElementPlusResolver()],
+        }),
     ],
     resolve: {
         alias: ALIASES.map(alias => (
