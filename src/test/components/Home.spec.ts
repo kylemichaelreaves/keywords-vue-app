@@ -10,6 +10,6 @@ describe('Home.vue', () => {
 
     it('renders an icon', () => {
         const wrapper = shallowMount(Home);
-        expect(wrapper.findComponent({ name: 'HomeFilled' }).exists()).toBe(true);
+        expect(wrapper.findComponent({ name: 'ElIcon' }).exists()).toBe(true);
     });
 });

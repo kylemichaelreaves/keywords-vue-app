@@ -1,4 +1,4 @@
-import {test} from 'vitest'
+import {vi, test} from 'vitest'
 import {mount} from '@vue/test-utils'
 import AddressGeocoderForm from "../../../components/address/AddressGeocoderForm.vue";
 import {ElButton, ElInput} from "element-plus";
@@ -6,6 +6,8 @@ import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from "@pinia/testing";
 
 describe('AddressGeocoderForm', () => {
+    vi.mock("element-plus/theme-chalk/base.css", () => ({}));
+
 
     const wrapper = mount(AddressGeocoderForm, {
         global: {

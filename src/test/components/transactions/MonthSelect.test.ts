@@ -1,4 +1,4 @@
-import {test} from 'vitest'
+import {vi, test} from 'vitest'
 import {waitFor, screen, render} from "@testing-library/vue";
 import MonthSelect from "@components/transactions/MonthSelect.vue";
 import {ElOption, ElSelect} from "element-plus";
