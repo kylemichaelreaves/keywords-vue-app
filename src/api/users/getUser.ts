@@ -5,9 +5,6 @@ export async function getUser(userId: User['id']) {
   const response = await httpClient.get(`/users/${userId}`, {
     baseURL: import.meta.env.VITE_LOCAL_APIGATEWAY_URL,
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
   })
 
   if (!response) {

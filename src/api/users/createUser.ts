@@ -5,10 +5,8 @@ export async function createUser(user: User) {
   const response = await httpClient.post(`/users`, {
     user
   }, {
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    baseURL: import.meta.env.VITE_LOCAL_APIGATEWAY_URL
+    baseURL: import.meta.env.VITE_LOCAL_APIGATEWAY_URL,
+    method: 'POST',
   })
 
   if (!response) {

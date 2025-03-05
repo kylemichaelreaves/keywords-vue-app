@@ -4,9 +4,7 @@ import type { User } from '@types'
 export async function deleteUser(userId: User['id']) {
   const response = await httpClient.delete(`/users/${userId}`, {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    baseURL: import.meta.env.VITE_LOCAL_APIGATEWAY_URL,
   })
 
   if (!response) {
