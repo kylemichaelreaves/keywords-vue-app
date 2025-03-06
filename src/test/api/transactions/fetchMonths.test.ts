@@ -1,16 +1,22 @@
-import {fetchMonths} from "@api/transactions/fetchMonths";
-import {vi, test} from "vitest";
-import {monthsMock} from "@mocks/transaction/"
+import { fetchMonths } from '@api/transactions/fetchMonths'
+import { vi, test } from 'vitest'
+import { monthsMock } from '@mocks/transaction/'
+import { createPinia, setActivePinia } from 'pinia'
 
 describe('fetchMonths', () => {
-    afterEach(() => {
-        vi.resetAllMocks();
-    });
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
 
-    test('fetchMonths without date parameter returns all months', async () => {
-        const months = await fetchMonths();
-        expect(months).toEqual(monthsMock);
-    });
+
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
+
+  test('fetchMonths without date parameter returns all months', async () => {
+    const months = await fetchMonths()
+    expect(months).toEqual(monthsMock)
+  })
 
 
 })

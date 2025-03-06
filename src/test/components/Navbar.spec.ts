@@ -1,18 +1,21 @@
 import {mount, VueWrapper} from '@vue/test-utils'
 import Navbar from '@components/Navbar.vue'
-import {routes} from "@main";
 import {createRouter, createWebHistory} from "vue-router";
 import {ElTabPane, ElTabs} from "element-plus";
 import {beforeEach} from "vitest";
+import { routes } from "@router";
+import { createTestingPinia } from '@pinia/testing'
 
 describe('Navbar.vue', () => {
     let wrapper: VueWrapper;
 
     beforeEach(() => {
+
         const router = createRouter({
-            history: createWebHistory(),
-            routes: routes
-        })
+              history: createWebHistory(),
+              routes: routes
+          })
+
 
         wrapper = mount(Navbar, {
             global: {
@@ -20,7 +23,7 @@ describe('Navbar.vue', () => {
                     ElTabs,
                     ElTabPane,
                 },
-                plugins: [router]
+                plugins: [router, createTestingPinia()]
             },
         });
     });

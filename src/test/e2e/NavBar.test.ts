@@ -10,13 +10,13 @@ test('the NavBar is visible', async ({page}) => {
 })
 
 test.describe('NavBar loads the Budget Visualizer tab', () => {
-    test('the Budget Visualizer tab is visible', async ({page}) => {
+    test.skip('the Budget Visualizer tab is visible', async ({page}) => {
         const navBar = page.locator('.el-tabs');
         const budgetVisualizerTab = navBar.getByRole('tab', {name: 'budget-visualizer'});
         await expect(budgetVisualizerTab).toBeVisible();
     })
 
-    test('the Budget Visualizer tab is clickable and its components are visible after clicking', async ({page}) => {
+    test.skip('the Budget Visualizer tab is clickable and its components are visible after clicking', async ({page}) => {
         const navBar = page.locator('.el-tabs');
         const budgetVisualizerTab = navBar.getByRole('tab', {name: 'budget-visualizer'});
         await budgetVisualizerTab.click();

@@ -17,6 +17,9 @@ export default mergeConfig(
             reporters: ['default', 'html'],
             typecheck: {
                 checker: 'vue-tsc'
+            },
+            deps: {
+                inline: ['element-plus']
             }
         }
     })

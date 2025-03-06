@@ -1,4 +1,4 @@
-import {router} from "@main";
+import {router} from "@router";
 import {useRoute} from "vue-router";
 import type {RouterQueryParams} from "@types";
 

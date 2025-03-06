@@ -34,7 +34,7 @@
             :data="data"
             table-layout="auto"
             size="large"
-            v-loading="isFetching || isLoading || isRefetching"
+            v-loading="isLoadingCondition"
             layout="auto"
             show-summary
         >
@@ -45,7 +45,7 @@
               :label="column.label"
           >
             <template v-if="column.prop === 'memo'" v-slot="scope">
-              <router-link :to="{ name: 'memo', params: { memo: scope.row[column.prop] }}">
+              <router-link :to="{ name: 'memo', params: { memoName: scope.row[column.prop] }}">
                 {{ scope.row.memo }}
               </router-link>
             </template>
@@ -63,12 +63,11 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, watch} from 'vue'
+import {computed, onMounted, onUnmounted, watch, reactive} from 'vue'
 import {ElCard, ElTable, ElTableColumn} from "element-plus";
 import {useTransactionsStore} from "@stores/transactions";
 import useWeekSummary from "@api/hooks/transactions/useWeekSummary";
 import WeeklyAmountDebitTotal from "./WeeklyAmountDebitTotal.vue";
-import {ArrowLeft, ArrowRight, Close} from "@element-plus/icons-vue";
 import DaySummariesForSelectedWeekTable from "@components/transactions/DaySummariesForSelectedWeekTable.vue";
 import {getWeekRange} from "@api/helpers/getWeekRange";
 import AlertComponent from "@components/shared/AlertComponent.vue";
@@ -79,6 +78,8 @@ const store = useTransactionsStore()
 const selectedWeek = computed(() => store.getSelectedWeek)
 
 const {data, isError, refetch, isFetching, isLoading, isRefetching, error} = useWeekSummary()
+
+const isLoadingCondition = reactive(isFetching || isLoading || isRefetching)
 
 const weeks = computed(() => store.getWeeks)
 

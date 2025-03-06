@@ -2,9 +2,9 @@
   <div v-if="isError">
     <el-alert type="error" :title="error"/>
   </div>
-  <el-table v-if="data" :data="data" :loading="isFetching || isLoading" size="large">
+  <el-table v-if="data" :data="data" :loading="isLoadingCondition" size="large">
     <el-table-column v-for="column in filteredColumns" :key="column.prop" :prop="column.prop" :label="column.label">
-      <template #default="scope">
+      <template v-slot:default="scope">
         <span>{{ scope.row[column.prop] }}</span>
       </template>
     </el-table-column>
@@ -14,19 +14,15 @@
 <script setup lang="ts">
 import type {Memo} from "@types";
 import useMemoTransactions from "@api/hooks/transactions/useMemoTransactions";
-import {type PropType, watch} from "vue";
+import {type PropType, reactive} from "vue";
 import {ElTableColumn} from "element-plus";
 
 const props = defineProps({
-  memo: {
-    type: Object as PropType<Memo>,
+  memoName: {
+    type: String as PropType<Memo['name']>,
     required: true,
   },
 });
-
-console.log('props.memo', props.memo);
-console.log('typeof props.memo', typeof props.memo);
-
 
 const columns = [
   {prop: 'Transaction Number', label: 'Transaction Number'},
@@ -44,11 +40,15 @@ const excludedColumns = ['Balance', 'Check Number', 'Fees', 'Memo', 'Amount Cred
 
 const filteredColumns = columns.filter(column => !excludedColumns.includes(column.prop));
 
-const {data, error, isError, refetch, isFetching, isLoading} = useMemoTransactions(props.memo);
+const {data, error, isError, isFetching, isLoading} = useMemoTransactions(props.memoName);
 
-watch(() => props.memo, () => {
-  refetch();
-});
+const isLoadingCondition = reactive(
+  isLoading || isFetching
+);
+
+// watch(() => props.memoName, () => {
+//   refetch();
+// });
 
 </script>
 

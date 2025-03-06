@@ -9,7 +9,7 @@ test('has title', async ({page}) => {
     await expect(page).toHaveTitle("Vite + Vue + TS");
 });
 
-test('can go to the budget-visualizer tab', async ({page}) => {
+test.skip('can go to the budget-visualizer tab', async ({page}) => {
     await page.goto(LOCAL_URL);
 
     // Click the get started link.

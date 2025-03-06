@@ -1,46 +1,52 @@
 <template>
+  <el-text size="large">Transaction Number:</el-text>
+  <h2>{{ props.transactionNumber }}</h2>
+  <el-text>Note: transaction numbers are not unique…</el-text>
   <div v-if="isError">
-    <el-alert tile="{{error.name + ',' + error.code}}" type="error" :description="error?.message" show-icon/>
+    <el-alert tile="{{error.name + ',' + error.code}}" type="error" :description="error?.message" show-icon />
   </div>
-  <el-table v-if="data" :data="data" style="width: 100%" border :loading="isLoading || isFetching">
+  <el-table v-if="data" :data="transaction" style="width: 100%" border :loading="isLoadingCondition" size="small">
     <el-table-column
-        v-for="(value, key) in transaction"
-        :key="key"
-        :prop="key"
-        :label="key"
+      v-for="(value, key) in transaction"
+      :key="key"
+      :prop="key"
+      :label="key"
     />
   </el-table>
+  <BackButton />
 </template>
 
 <script setup lang="ts">
-import {type PropType, watchEffect} from "vue";
-import type {Transaction} from "@types"
-import useTransaction from "@api/hooks/transactions/useTransaction";
+import { computed, type PropType, reactive } from 'vue'
+import type { Transaction } from '@types'
+import useTransaction from '@api/hooks/transactions/useTransaction'
+import BackButton from '@components/shared/BackButton.vue'
 
 const props = defineProps({
-  transaction: {
-    type: Object as unknown as PropType<Transaction>,
+  transactionNumber: {
+    type: String as PropType<Transaction['transactionNumber']>,
     required: true
   }
-});
+})
 
-console.log('props', props);
 
-const {data, isLoading, isFetching, isError, error} = useTransaction(props.transaction.transactionNumber);
+const { data, isLoading, isFetching, isError, error } = useTransaction(props.transactionNumber)
 
-console.log('data', data);
+const isLoadingCondition = reactive(
+  isLoading || isFetching
+)
 
-const displayData = [props.transaction];
-
-watchEffect(() => {
-  displayData[0] = props.transaction;
-});
-
-console.log('displayData', displayData);
+const transaction = computed(() => {
+  return data?.value
+})
 
 
 </script>
 
 <style>
+h2 {
+  margin-bottom: 20px;
+  text-decoration: underline;
+}
 </style>
 

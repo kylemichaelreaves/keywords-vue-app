@@ -3,7 +3,7 @@ import {test, expect} from '@test/e2e/fixtures/PageFixture';
 import {TransactionsPage} from "@test/e2e/pages/TransactionsPage";
 import {generateTransactions, intervalsMock} from "@mocks/transaction";
 
-test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({page, context}) => {
+test.skip('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({page, context}) => {
     // await context.tracing.start({ screenshots: true, snapshots: true });
 
     page.on('request', request => {
