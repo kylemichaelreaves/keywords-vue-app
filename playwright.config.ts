@@ -47,6 +47,10 @@ export default defineConfig({
     /* Configure projects for major browsers */
     projects: [
         {
+            name: 'setup db',
+            testMatch: /global\.setup\.ts/,
+        },
+        {
             name: 'chromium',
             use: {
                 ...devices['Desktop Chrome']
