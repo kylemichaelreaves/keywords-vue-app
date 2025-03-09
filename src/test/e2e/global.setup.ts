@@ -2,8 +2,8 @@ import { test as setup } from '@playwright/test'
 
 setup('db setup', async ({ playwright, page }) => {
 
-  const userName = import.meta.env.VITE_TEST_USERNAME
-  const password = import.meta.env.VITE_TEST_PASSWORD
+  const userName = process.env.TEST_USERNAME
+  const password = process.env.TEST_PASSWORD
 
   await page.goto('http://localhost:5173/')
   await page.getByText('budget-visualizer').click()
