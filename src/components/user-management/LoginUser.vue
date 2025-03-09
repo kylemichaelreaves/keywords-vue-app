@@ -37,6 +37,7 @@
         <el-button
           type="primary"
           @click="submitForm"
+          @keyup.enter="submitForm"
           :disabled="isDisabledCondition"
           class="button"
         >
