@@ -34,7 +34,15 @@
 
       </el-form>
       <div class="button-container">
-        <el-button type="primary" @click="submitForm" :disabled="isDisabledCondition">Login</el-button>
+        <el-button
+          type="primary"
+          @click="submitForm"
+          @keyup.enter="submitForm"
+          :disabled="isDisabledCondition"
+          class="button"
+        >
+          Login
+        </el-button>
         <!-- TODO Add a link to reset password    -->
       </div>
     </el-card>
@@ -79,7 +87,8 @@ const { mutate, isPending, isError, error } = useMutation({
     authStore.setUser(user)
     authStore.setToken(token)
     authStore.setIsUserAuthenticated(true)
-    localStorage.setItem('user', JSON.stringify(user))
+    sessionStorage.setItem('user', JSON.stringify(user))
+    sessionStorage.setItem('token', token)
     router.push('/budget-visualizer/transactions')
   },
   onError: (error) => {
@@ -121,12 +130,23 @@ const rules = {
 }
 
 onMounted(() => {
-  // check if the user is in local storage
-  if (localStorage.getItem('user')) {
-    const user = JSON.parse(localStorage.getItem('user') || '')
+  const userAndTokenInStore = authStore.user && authStore.token
+  const neitherUserNorTokenInStore = !authStore.user && !authStore.token
+  const userAndTokenInSession = sessionStorage.getItem('user') && sessionStorage.getItem('token')
+  const neitherUserNorTokenInSession = !sessionStorage.getItem('user') && !sessionStorage.getItem('token')
+
+  // check if the user and their token is in session storage but not in the store
+  const inSessionButNotInStore = userAndTokenInSession && neitherUserNorTokenInStore
+  const inStoreButNotInSession = neitherUserNorTokenInSession && userAndTokenInStore
+
+  if (inSessionButNotInStore) {
+    const user = JSON.parse(sessionStorage.getItem('user') || '')
+    authStore.setToken(sessionStorage.getItem('token') || '')
     authStore.setUser(user)
-    authStore.setToken(localStorage.getItem('token') || '')
     authStore.setIsUserAuthenticated(true)
+  } else if (inStoreButNotInSession) {
+    sessionStorage.setItem('user', JSON.stringify(authStore.user))
+    sessionStorage.setItem('token', authStore.token)
   }
 
   // check if the user is already in the store
@@ -153,12 +173,28 @@ onMounted(() => {
 .container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   height: 100vh;
 }
 
-.button-container {
+.button {
   background-color: #409EFF;
+  color: white;
+  border: none;
+  padding: 14px 45px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.button.is-disabled {
+  background-color: var(--el-button-disabled-bg-color, #c0c4cc) !important;
+  border-color: var(--el-button-disabled-border-color, #c0c4cc) !important;
+  color: #fff !important;
+  cursor: not-allowed;
+}
+
+.button-container {
   color: white;
   border: none;
   padding: 10px 20px;

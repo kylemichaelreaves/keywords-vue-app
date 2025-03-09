@@ -38,7 +38,8 @@
         <el-button
           type="primary"
           @click="submitForm"
-          :disabled="isPending"
+          @keyup.enter="submitForm"
+          :disabled="isPending || !isFormValid"
         >
           Register
         </el-button>
@@ -104,7 +105,6 @@ const { mutate, isPending, isError, error } = useMutation({
   }
 })
 
-// show reset button only if user is not null
 const isResetButtonVisible = computed(() => !!user)
 
 const formFields: Record<RegisterFormKeys, RegisterFormFields> = {
@@ -182,7 +182,7 @@ const validateUsername = (rule: any, value: string, callback: (error?: Error) =>
     return callback(new Error('Username can only contain letters, numbers, and underscores'))
   }
 
-  callback() // Validation passed
+  callback()
 }
 
 
@@ -207,27 +207,18 @@ const rules = reactive<FormRules<typeof user>>({
 })
 
 const submitForm = () => {
-  // if (formRef.value) {
   if (!formRef.value) {
     console.error('formRef is null')
     return
   }
 
-  console.log('formRef.value', formRef.value)
-
   formRef.value.validate((valid: boolean) => {
     if (valid) {
-      console.log('user', user)
       mutate({ user: user })
-      //       message.value = `User ${user.username} registered successfully!`
-      //       resetForm()
-      //       router.push('/login') // OR return home as logged in?
     } else {
       ElMessage.error('Please correct the form errors.')
     }
   })
-  // }
-  // mutate({ user: user })
 }
 
 const resetForm = () => {
