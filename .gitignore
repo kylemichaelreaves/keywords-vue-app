@@ -44,3 +44,5 @@ html/assets
 /playwright/.cache/
 
 playwright/.auth
+
+playwright/.auth
