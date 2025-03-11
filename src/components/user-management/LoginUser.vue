@@ -37,7 +37,6 @@
         <el-button
           type="primary"
           @click="submitForm"
-          @keyup.enter="submitForm"
           :disabled="isDisabledCondition"
           class="button"
         >
@@ -51,7 +50,6 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import AuthService from '../../services/auth.service.ts'
 import type { LoginFormFields, loginFormKeys } from '@types'
 import { useMutation } from '@tanstack/vue-query'
 import { useAuthStore } from '@stores/auth.ts'
@@ -78,7 +76,7 @@ const errorDescription = computed(() => {
 const { mutate, isPending, isError, error } = useMutation({
   mutationKey: ['login'],
   mutationFn: async ({ username, password }: { username: string, password: string }) => {
-    return await AuthService.login(username, password)
+    return await authStore.login(username, password)
   },
   onSuccess: (data) => {
     ElMessage.success('Login successful! Wilkommen! Bienvenue! Welcome!')
@@ -87,8 +85,8 @@ const { mutate, isPending, isError, error } = useMutation({
     authStore.setUser(user)
     authStore.setToken(token)
     authStore.setIsUserAuthenticated(true)
-    sessionStorage.setItem('user', JSON.stringify(user))
-    sessionStorage.setItem('token', token)
+    localStorage.setItem('user', JSON.stringify(user))
+    localStorage.setItem('token', token)
     router.push('/budget-visualizer/transactions')
   },
   onError: (error) => {
@@ -132,21 +130,21 @@ const rules = {
 onMounted(() => {
   const userAndTokenInStore = authStore.user && authStore.token
   const neitherUserNorTokenInStore = !authStore.user && !authStore.token
-  const userAndTokenInSession = sessionStorage.getItem('user') && sessionStorage.getItem('token')
-  const neitherUserNorTokenInSession = !sessionStorage.getItem('user') && !sessionStorage.getItem('token')
+  const userAndTokenInSession = localStorage.getItem('user') && localStorage.getItem('token')
+  const neitherUserNorTokenInSession = !localStorage.getItem('user') && !localStorage.getItem('token')
 
   // check if the user and their token is in session storage but not in the store
   const inSessionButNotInStore = userAndTokenInSession && neitherUserNorTokenInStore
   const inStoreButNotInSession = neitherUserNorTokenInSession && userAndTokenInStore
 
   if (inSessionButNotInStore) {
-    const user = JSON.parse(sessionStorage.getItem('user') || '')
-    authStore.setToken(sessionStorage.getItem('token') || '')
+    const user = JSON.parse(localStorage.getItem('user') || '')
+    authStore.setToken(localStorage.getItem('token') || '')
     authStore.setUser(user)
     authStore.setIsUserAuthenticated(true)
   } else if (inStoreButNotInSession) {
-    sessionStorage.setItem('user', JSON.stringify(authStore.user))
-    sessionStorage.setItem('token', authStore.token)
+    localStorage.setItem('user', JSON.stringify(authStore.user))
+    localStorage.setItem('token', authStore.token)
   }
 
   // check if the user is already in the store

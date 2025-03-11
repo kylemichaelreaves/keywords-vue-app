@@ -47,7 +47,6 @@ import { useRoute, useRouter } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { TabsPaneContext, ElTabs, ElTabPane } from 'element-plus'
 import { useAuthStore } from '@stores/auth'
-import AuthService from '../services/auth.service.ts'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -105,7 +104,7 @@ async function handleClick(tab: TabsPaneContext) {
 
 async function handleLoginLogout() {
   if (authStore.isUserAuthenticated) {
-    AuthService.logout()
+    authStore.logout()
     await router.push({ path: '/' })
   } else {
     await router.push({ path: '/login' })
