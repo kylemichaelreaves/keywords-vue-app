@@ -35,22 +35,6 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-// listen to beforeUnload event so we can clear local storage and the store
-window.addEventListener('beforeunload', () => {
-  localStorage.removeItem('user');
-  localStorage.removeItem('token');
-  // clear the store
-  const authStore = useAuthStore()
-  authStore.setUser({
-    id: 0,
-    username: '',
-    email: '',
-    firstName: '',
-    lastName: '',
-    role: 'guest'
-  })
-});
-
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
