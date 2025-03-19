@@ -74,6 +74,7 @@ declare module 'vue' {
     MemosCountStatistic: typeof import('./src/components/transactions/MemosCountStatistic.vue')['default']
     MemoSelect: typeof import('./src/components/transactions/MemoSelect.vue')['default']
     MemosTable: typeof import('./src/components/transactions/MemosTable.vue')['default']
+    MemosTablePagination: typeof import('./src/components/transactions/MemosTablePagination.vue')['default']
     MemoSummaryTable: typeof import('./src/components/transactions/MemoSummaryTable.vue')['default']
     MemoTransactionsTable: typeof import('./src/components/transactions/MemoTransactionsTable.vue')['default']
     MJPrevSummaries: typeof import('./src/components/transactions/MJPrevSummaries.vue')['default']

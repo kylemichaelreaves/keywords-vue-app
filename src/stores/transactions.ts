@@ -39,12 +39,14 @@ export const useTransactionsStore = defineStore('transactions', {
         transactionsPageSize: number;
         filter: Record<string, string>;
         sort: { prop: string; order: string };
-        memoLimit: number;
-        memoOffset: number;
+        memosTableLimit: number;
+        memosTableOffset: number;
+        memosByOffset: Record<number, Array<Memo>>;
         transactionsTableLimit: number;
         transactionsTableOffset: number;
         transactionsByOffset: Record<number, Array<Transaction>>;
         transactionsCount: number;
+        memosCount: number;
     } => ({
         selectedDay: '',
         selectedMonth: '',
@@ -71,13 +73,15 @@ export const useTransactionsStore = defineStore('transactions', {
         transactionsPageSize: 100,
         filter: {},
         sort: { prop: '', order: '' },
-        memoLimit: 100,
-        memoOffset: 0,
+        memosTableLimit: 100,
+        memosTableOffset: 0,
+        memosByOffset: {},
         transactionsTableLimit: 100,
         transactionsTableOffset: 0,
         transactions: [],
         transactionsByOffset: {},
         transactionsCount: 0,
+        memosCount: 0,
     }),
     getters: {
         getSelectedDay: (state) => state.selectedDay,
@@ -102,8 +106,11 @@ export const useTransactionsStore = defineStore('transactions', {
         getTransactionsPageSize: (state) => state.transactionsPageSize,
         getFilter: (state) => state.filter,
         getSort: (state) => state.sort,
-        getMemoLimit: (state) => state.memoLimit,
-        getMemoOffset: (state) => state.memoOffset,
+        getMemosTableLimit: (state) => state.memosTableLimit,
+        getMemosTableOffset: (state) => state.memosTableOffset,
+        getMemosByOffset: (state) => (offset: number) => {
+            return state.memosByOffset[offset] || [];
+        },
         getSelectedBudgetCategory: (state) => state.selectedBudgetCategory,
         getTransactionsTableLimit: (state) => state.transactionsTableLimit,
         getTransactionsTableOffset: (state) => state.transactionsTableOffset,
@@ -116,6 +123,7 @@ export const useTransactionsStore = defineStore('transactions', {
             return Object.values(state.transactionsByOffset).flat();
         },
         getTransactionsCount: (state) => state.transactionsCount,
+        getMemosCount: (state) => state.memosCount,
     },
     actions: {
         setSelectedDay(selectedDay: string) {
@@ -145,11 +153,11 @@ export const useTransactionsStore = defineStore('transactions', {
         setMemos(memos: Array<Memo>) {
             this.memos = memos;
         },
-        setMemoLimit(limit: number) {
-            this.memoLimit = limit;
+        setMemosTableLimit(limit: number) {
+            this.memosTableLimit = limit;
         },
-        setMemoOffset(offset: number) {
-            this.memoOffset = offset;
+        setMemosTableOffset(offset: number) {
+            this.memosTableOffset = offset;
         },
         setMonths(months: Array<MonthYear>) {
             this.months = months;
@@ -215,7 +223,13 @@ export const useTransactionsStore = defineStore('transactions', {
             this.transactionsByOffset = {};
         },
         setTransactionsCount(count: number) {
-            this.transactionsCount = Number(count[0].transactions_count);
+            this.transactionsCount = count;
         },
+        setMemosByOffset(offset: number, memos: Array<Memo>) {
+            this.memosByOffset[offset] = memos;
+        },
+        setMemosCount(count: number) {
+            this.memosCount = count;
+        }
     },
 });

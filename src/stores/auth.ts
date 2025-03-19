@@ -6,7 +6,6 @@ export const useAuthStore = defineStore('auth', {
     state: (): {
         token: string,
         user: User,
-        returnUrl: null | string,
         isUserAuthenticated: boolean
     } => ({
         token: '',
@@ -19,7 +18,6 @@ export const useAuthStore = defineStore('auth', {
             password: '',
             role: 'guest'
         },
-        returnUrl: null,
         isUserAuthenticated: false
     }),
     getters: {

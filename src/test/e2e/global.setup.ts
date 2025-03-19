@@ -9,7 +9,7 @@ setup('setup', async ({ playwright, page }) => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirnameESM = dirname(__filename);
 
-  const authFile = join(__dirnameESM, 'playwright/.auth/storageState.json');
+  const authFile = join(__dirnameESM, '../../playwright/.auth/storageState.json');
 
   const userName = process.env.TEST_USERNAME
   const password = process.env.TEST_PASSWORD

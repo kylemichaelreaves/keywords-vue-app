@@ -3,7 +3,7 @@
   <el-pagination
     background
     layout="prev, pager, next"
-    :total="Number(transactionsCount)"
+    :total="Number(memosCount)"
     v-model:page-size="limit"
     v-model:current-page="currentPage"
     @update:current-change="handleCurrentChange"
@@ -12,34 +12,34 @@
 </template>
 
 <script setup lang="ts">
-import useTransactionsCount from '@api/hooks/transactions/useTransactionsCount'
+import useMemosCount from '@api/hooks/transactions/useMemosCount'
 import { computed, onMounted } from 'vue'
-import AlertComponent from '@components/shared/AlertComponent.vue'
 import { useTransactionsStore } from '@stores/transactions'
+import AlertComponent from '@components/shared/AlertComponent.vue'
 
-const { data, isError, error, refetch } = useTransactionsCount()
+const { data, isError, error } = useMemosCount()
 
 const store = useTransactionsStore()
 
-const transactionsCount = computed(() => {
+const memosCount = computed(() => {
   if (!data.value) {
     return 0
   }
-  return data.value.map((item: { transactions_count: number }) => item.transactions_count)[0]
+  return data.value.map((item: { count: number }) => item.count)[0]
 })
 
 const currentPage = computed({
-  get: () => Math.floor(store.transactionsTableOffset / store.transactionsTableLimit) + 1,
+  get: () => Math.floor(store.memosTableOffset / store.memosTableLimit) + 1,
   set: (val: number) => {
-    store.updateTransactionsTableOffset((val - 1) * store.transactionsTableLimit)
+    store.setMemosTableOffset((val - 1) * store.memosTableLimit)
   }
 })
 
 const limit = computed({
-  get: () => store.transactionsTableLimit,
+  get: () => store.memosTableLimit,
   set: (val: number) => {
-    store.setTransactionsTableLimit(val)
-    store.updateTransactionsTableOffset(0)
+    store.setMemosTableLimit(val)
+    store.setMemosTableOffset(0)
   }
 })
 
@@ -53,9 +53,8 @@ function handleSizeChange(newSize: number) {
 }
 
 onMounted(() => {
-  refetch()
-  store.updateTransactionsTableOffset(0)
-  store.setTransactionsCount(data.value)
+  store.setMemosCount(memosCount.value)
+  store.setMemosTableOffset(0)
 })
 
 

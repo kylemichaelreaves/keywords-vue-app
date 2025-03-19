@@ -1,13 +1,10 @@
-import {useQuery, type UseQueryReturnType} from "@tanstack/vue-query";
-import {fetchTransactionsCount} from "@api/transactions/fetchTransactionsCount";
+import {useQuery} from "@tanstack/vue-query";
 import {useTransactionsStore} from "@stores/transactions";
+import {fetchTransactionsCount} from "@api/transactions/fetchTransactionsCount";
 
-interface TransactionsCount {
-    transactions_count: number;
-}
 
 // This hook is used for paginating the TransactionsTable
-export default function useTransactionsCount(): UseQueryReturnType<TransactionsCount, Error> {
+export default function useTransactionsCount() {
     const store = useTransactionsStore();
     return useQuery({
         queryKey: ['transactions-count'],

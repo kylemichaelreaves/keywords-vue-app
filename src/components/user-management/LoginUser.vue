@@ -128,26 +128,16 @@ const rules = {
 }
 
 onMounted(() => {
-  const userAndTokenInStore = authStore.user && authStore.token
-  const neitherUserNorTokenInStore = !authStore.user && !authStore.token
-  const userAndTokenInSession = localStorage.getItem('user') && localStorage.getItem('token')
-  const neitherUserNorTokenInSession = !localStorage.getItem('user') && !localStorage.getItem('token')
+  const localUser = localStorage.getItem('user')
+  const localToken = localStorage.getItem('token')
 
-  // check if the user and their token is in session storage but not in the store
-  const inSessionButNotInStore = userAndTokenInSession && neitherUserNorTokenInStore
-  const inStoreButNotInSession = neitherUserNorTokenInSession && userAndTokenInStore
-
-  if (inSessionButNotInStore) {
-    const user = JSON.parse(localStorage.getItem('user') || '')
-    authStore.setToken(localStorage.getItem('token') || '')
+  if (localUser && localToken) {
+    const user = JSON.parse(localUser)
     authStore.setUser(user)
+    authStore.setToken(localToken)
     authStore.setIsUserAuthenticated(true)
-  } else if (inStoreButNotInSession) {
-    localStorage.setItem('user', JSON.stringify(authStore.user))
-    localStorage.setItem('token', authStore.token)
   }
 
-  // check if the user is already in the store
   if (authStore.user && authStore.isUserAuthenticated) {
     router.push('/budget-visualizer/transactions')
   }
