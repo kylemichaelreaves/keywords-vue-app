@@ -16,6 +16,9 @@ setup('authenticate', async ({ page }) => {
   const userName = process.env.VITE_TEST_USERNAME
   const password = process.env.VITE_TEST_PASSWORD
 
+  console.log('userName:', userName)
+  console.log('password:', password)
+
   // ensure auth dir exists
   const authDir = join(__dirnameESM, 'playwright/.auth')
   if (!fs.existsSync(authDir)) {
