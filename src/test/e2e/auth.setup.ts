@@ -14,7 +14,9 @@ setup('authenticate', async ({ page }) => {
   const authFile = join(__dirnameESM, 'playwright/.auth/storageState.json')
 
   const userName = process.env.VITE_TEST_USERNAME
+  console.log('Username exists:', !!userName)
   const password = process.env.VITE_TEST_PASSWORD
+  console.log('Password exists:', !!password)
 
   console.log('userName:', userName)
   console.log('password:', password)
@@ -26,18 +28,24 @@ setup('authenticate', async ({ page }) => {
     console.log('Created auth directory:', authDir)
   }
 
+  try {
+    await page.goto('/login')
+    await page.getByRole('textbox', { name: '* Username' }).click()
+    await page.getByRole('textbox', { name: '* Username' }).fill(userName ? userName : '')
+    await page.getByRole('textbox', { name: '* Username' }).press('Tab')
+    await page.getByRole('textbox', { name: '* Password' }).fill(password ? password : '')
+    await page.getByRole('textbox', { name: '* Password' }).press('Enter')
 
-  await page.goto('/login')
+    await page.waitForURL('/budget-visualizer/transactions', {
+      timeout: 60000
+    })
 
-  await page.getByRole('textbox', { name: '* Username' }).click()
-  await page.getByRole('textbox', { name: '* Username' }).fill(userName ? userName : '')
-  await page.getByRole('textbox', { name: '* Username' }).press('Tab')
-  await page.getByRole('textbox', { name: '* Password' }).fill(password ? password : '')
-  await page.getByRole('textbox', { name: '* Password' }).press('Enter')
-
-  await page.waitForURL('/budget-visualizer/transactions', {
-    timeout: 60000,
-  })
+    await page.screenshot({ path: 'login-after-submit.png' })
+    console.log('Screenshot saved after form submission')
+    console.log('Current URL:', page.url())
+  } catch (e) {
+    console.error('Error during authentication:', e)
+  }
 
   await page.context().storageState({ path: authFile })
 
