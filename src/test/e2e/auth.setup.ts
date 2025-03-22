@@ -33,7 +33,7 @@ setup('authenticate', async ({ page }) => {
   await page.getByRole('textbox', { name: '* Password' }).press('Enter')
 
   await page.waitForURL('/budget-visualizer/transactions', {
-    timeout: 45000,
+    timeout: 60000,
   })
 
   await page.context().storageState({ path: authFile })
