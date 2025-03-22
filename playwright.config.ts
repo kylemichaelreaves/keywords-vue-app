@@ -1,5 +1,6 @@
 import process from 'node:process'
 import { defineConfig, devices } from '@playwright/test'
+import path from 'path'
 
 /**
  * Read environment variables from file.
@@ -30,6 +31,9 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+
+  // globalSetup: './src/test/e2e/auth.setup.ts',
+
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
@@ -43,19 +47,21 @@ export default defineConfig({
     /* Only on CI systems run the tests headless */
     headless: !!process.env.CI,
 
+    // storageState: path.resolve('./src/test/e2e/playwright/.auth/storageState.json'),
+
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'setup',
-      testMatch: /global\.setup\.ts/
+      testMatch: /.*\.setup\.ts/
     },
     {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'playwright/.auth/storageState.json'
+        storageState: path.resolve('./src/test/e2e/playwright/.auth/storageState.json')
       },
       dependencies: ['setup']
     },
@@ -63,7 +69,7 @@ export default defineConfig({
       name: 'firefox',
       use: {
         ...devices['Desktop Firefox'],
-        storageState: 'playwright/.auth/storageState.json'
+        storageState: path.resolve('./src/test/e2e/playwright/.auth/storageState.json')
       },
       dependencies: ['setup']
     },
@@ -71,7 +77,7 @@ export default defineConfig({
       name: 'webkit',
       use: {
         ...devices['Desktop Safari'],
-        storageState: 'playwright/.auth/storageState.json'
+        storageState: path.resolve('./src/test/e2e/playwright/.auth/storageState.json')
       },
       dependencies: ['setup']
     }

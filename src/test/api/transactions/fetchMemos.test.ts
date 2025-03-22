@@ -8,7 +8,7 @@ describe('fetchMemos', () => {
     });
 
     test('fetchMemos without date parameter returns all memos', async () => {
-        const memos = await fetchMemos();
+        const memos = await fetchMemos({});
         expect(memos).toEqual(memosMock);
     });
 

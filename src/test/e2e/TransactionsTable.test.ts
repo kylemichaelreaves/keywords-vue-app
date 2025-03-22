@@ -3,24 +3,13 @@ import {test, expect} from '@test/e2e/fixtures/PageFixture';
 import {TransactionsPage} from "@test/e2e/pages/TransactionsPage";
 import {generateTransactions, intervalsMock} from "@mocks/transaction";
 
+// test.use({
+//     storageState: 'playwright/.auth/storageState.json'
+// })
+
+
 test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({page, context}) => {
-    // await context.tracing.start({ screenshots: true, snapshots: true });
-
-    page.on('request', request => {
-        console.log('>>', request.method(), request.url());
-    });
-
-    page.on('response', response => {
-        console.log('<< Response:', response.status(), response.url());
-    });
-
-    page.on('console', msg => {
-        console.log(`Console [${msg.type()}]: ${msg.text()}`);
-    });
-
-    page.on('pageerror', error => {
-        console.log('Uncaught exception:', error);
-    });
+    await page.goto('/budget-visualizer');
 
     await page.route('**/transactions/get-transactions?*', async (route) => {
         console.log('Mocking get-transactions');

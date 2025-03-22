@@ -1,6 +1,7 @@
 <template>
   <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error" />
   <el-pagination
+    data-testid="transactions-table-pagination"
     background
     layout="prev, pager, next"
     :total="Number(transactionsCount)"

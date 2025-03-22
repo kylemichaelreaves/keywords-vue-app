@@ -79,6 +79,7 @@ const { mutate, isPending, isError, error } = useMutation({
     return await authStore.login(username, password)
   },
   onSuccess: (data) => {
+    console.log('Login successful', data)
     ElMessage.success('Login successful! Wilkommen! Bienvenue! Welcome!')
     const user = data.user
     const token = data.token
@@ -128,8 +129,15 @@ const rules = {
 }
 
 onMounted(() => {
+  const isUserAuthenticated = authStore.getIsUserAuthenticated
+
+  console.log('Is user authenticated:', isUserAuthenticated)
+
   const localUser = localStorage.getItem('user')
   const localToken = localStorage.getItem('token')
+
+  console.log('Local user:', localUser)
+  console.log('Local token:', localToken)
 
   if (localUser && localToken) {
     const user = JSON.parse(localUser)
@@ -138,7 +146,19 @@ onMounted(() => {
     authStore.setIsUserAuthenticated(true)
   }
 
-  if (authStore.user && authStore.isUserAuthenticated) {
+  // // In order for Playwright to use authentication, set the user and token in local storage
+  // if (!localUser && !localToken) {
+  //   // grab them from the store, assuming they're there
+  //   const user = authStore.getUser
+  //   console.log('user', user)
+  //   const token = authStore.getToken
+  //   console.log('token', token)
+  //   localStorage.setItem('user', JSON.stringify(user))
+  //   localStorage.setItem('token', token)
+  // }
+
+
+  if (authStore.getUser && authStore.getIsUserAuthenticated) {
     router.push('/budget-visualizer/transactions')
   }
 

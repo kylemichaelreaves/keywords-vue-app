@@ -1,5 +1,10 @@
 import {test, expect} from '@test/e2e/fixtures/PageFixture';
 
+// test.use({
+//     storageState: 'playwright/.auth/storageState.json'
+// })
+
+
 test.beforeEach(async ({page}) => {
     await page.goto('/budget-visualizer');
 })
