@@ -24,15 +24,17 @@ setup('authenticate', async ({ page }) => {
   }
 
 
-  await page.goto('/')
-  await page.getByText('budget-visualizer').click()
+  await page.goto('/login')
+
   await page.getByRole('textbox', { name: '* Username' }).click()
   await page.getByRole('textbox', { name: '* Username' }).fill(userName ? userName : '')
   await page.getByRole('textbox', { name: '* Username' }).press('Tab')
   await page.getByRole('textbox', { name: '* Password' }).fill(password ? password : '')
   await page.getByRole('textbox', { name: '* Password' }).press('Enter')
 
-  await page.waitForURL('/budget-visualizer/transactions')
+  await page.waitForURL('/budget-visualizer/transactions', {
+    timeout: 45000,
+  })
 
   await page.context().storageState({ path: authFile })
 
