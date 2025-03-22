@@ -34,15 +34,9 @@ html/assets
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+
 
 playwright/.auth
 
-playwright/.auth
+/src/test/e2e/playwright/.auth/
+/src/test/e2e/playwright/.auth/storageState.json

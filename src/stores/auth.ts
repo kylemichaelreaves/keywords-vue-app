@@ -1,23 +1,23 @@
 import {defineStore} from 'pinia'
 import type {User} from "@types";
+import { httpClient } from '@api/httpClient.ts'
 
 export const useAuthStore = defineStore('auth', {
     state: (): {
         token: string,
         user: User,
-        returnUrl: null | string,
         isUserAuthenticated: boolean
     } => ({
         token: '',
         user: {
+            id: 0,
             firstName: '',
             lastName: '',
             username: '',
             email: '',
             password: '',
-            role: 'user'
+            role: 'guest'
         },
-        returnUrl: null,
         isUserAuthenticated: false
     }),
     getters: {
@@ -40,6 +40,28 @@ export const useAuthStore = defineStore('auth', {
         },
         setIsUserAuthenticated(isUserAuthenticated: boolean) {
             this.isUserAuthenticated = isUserAuthenticated
+        },
+        async login(username: User['username'], password: User['password']) {
+            return await httpClient
+              .post('/login', {
+                  username: username,
+                  password: password
+              })
+              .then(response => {
+                  return response.data;
+              });
+        },
+        logout() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            this.setUser({
+                firstName: '',
+                lastName: '',
+                username: '',
+                email: '',
+                password: '',
+                role: 'guest'
+            });
         },
     },
 })

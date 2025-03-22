@@ -1,24 +1,36 @@
-import {useQuery} from '@tanstack/vue-query'
-import {fetchMemos} from "@api/transactions/fetchMemos";
-import type {Memo} from "@types";
-import type {UseQueryReturnType} from "@tanstack/vue-query";
-import {useTransactionsStore} from "@stores/transactions";
-import {computed} from "vue";
+import { useInfiniteQuery } from '@tanstack/vue-query'
+import { fetchMemos } from '@api/transactions/fetchMemos'
+import type { Memo } from '@types'
+import { useTransactionsStore } from '@stores/transactions'
+import { computed } from 'vue'
 
-export default function useMemos(): UseQueryReturnType<Memo[], Error> {
-    const store = useTransactionsStore();
-    const cachedMemos = computed(() => store.getMemos);
-    return useQuery<Array<Memo>>({
-        queryKey: ['memos'],
-        queryFn: async () => {
-            if (cachedMemos.value.length > 0) {
-                return cachedMemos.value
-            } else {
-                const memos = fetchMemos()
-                store.setMemos(await memos)
-                return memos
-            }
-        },
-        refetchOnWindowFocus: false,
-    })
+export default function useMemos() {
+
+  const store = useTransactionsStore()
+  const memosTableLimit = computed(() => store.getMemosTableLimit)
+
+  return useInfiniteQuery<Array<Memo>>({
+    initialPageParam: 0,
+    queryKey: ['memos', memosTableLimit.value],
+    queryFn: async ({ pageParam = 0 }) => {
+      const cachedMemos = computed(() => store.getMemosByOffset(Number(pageParam)))
+      if (cachedMemos.value.length > 0) {
+        return cachedMemos.value
+      } else {
+        const memos = await fetchMemos({
+          limit: memosTableLimit.value,
+          offset: Number(pageParam)
+        })
+        store.setMemosByOffset(Number(pageParam), memos)
+        return memos
+      }
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < memosTableLimit.value) {
+        return undefined
+      }
+      return allPages.length * memosTableLimit.value
+    },
+    refetchOnWindowFocus: false
+  })
 }

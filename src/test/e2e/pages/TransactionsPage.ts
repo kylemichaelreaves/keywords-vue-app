@@ -20,8 +20,8 @@ export class TransactionsPage {
         this.yearSelect = this.page.getByTestId('year-select')
         this.memoSelect = this.page.getByTestId('memo-select')
         this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
-        this.intervalTypeSelect = this.page.getByTestId('interval-type-select')
-        this.intervalNumberInput = this.page.getByTestId('interval-input-number')
+        this.intervalTypeSelect = this.page.getByRole('main').getByText('Month', { exact: true })
+        this.intervalNumberInput = this.page.getByRole('spinbutton', { name: 'Interval Count' })
         this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
     }
 

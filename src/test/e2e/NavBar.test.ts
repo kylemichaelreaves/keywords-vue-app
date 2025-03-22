@@ -1,5 +1,10 @@
 import {test, expect} from '@test/e2e/fixtures/PageFixture';
 
+// test.use({
+//     storageState: 'playwright/.auth/storageState.json'
+// })
+
+
 test.beforeEach(async ({page}) => {
     await page.goto('/budget-visualizer');
 })
@@ -10,13 +15,13 @@ test('the NavBar is visible', async ({page}) => {
 })
 
 test.describe('NavBar loads the Budget Visualizer tab', () => {
-    test.skip('the Budget Visualizer tab is visible', async ({page}) => {
+    test('the Budget Visualizer tab is visible', async ({page}) => {
         const navBar = page.locator('.el-tabs');
         const budgetVisualizerTab = navBar.getByRole('tab', {name: 'budget-visualizer'});
         await expect(budgetVisualizerTab).toBeVisible();
     })
 
-    test.skip('the Budget Visualizer tab is clickable and its components are visible after clicking', async ({page}) => {
+    test('the Budget Visualizer tab is clickable and its components are visible after clicking', async ({page}) => {
         const navBar = page.locator('.el-tabs');
         const budgetVisualizerTab = navBar.getByRole('tab', {name: 'budget-visualizer'});
         await budgetVisualizerTab.click();

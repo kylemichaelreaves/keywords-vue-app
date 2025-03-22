@@ -18,7 +18,6 @@
     <div class="form-row">
       <el-form-item label="Interval Count" class="form-item-inline">
         <el-input-number
-            data-testid="interval-input-number"
             v-model="numberInput"
             :min="1"
             :max="100"
@@ -30,7 +29,6 @@
       </el-form-item>
       <el-form-item label="Interval Type" class="form-item-inline">
         <el-select
-            data-testid="interval-type-select"
             v-model="intervalSelect"
             placeholder="Select interval"
             class="select-inline"

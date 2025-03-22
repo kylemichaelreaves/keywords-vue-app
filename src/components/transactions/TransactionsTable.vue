@@ -46,7 +46,7 @@
       </template>
     </el-table-column>
   </el-table>
-  <TransactionTablePagination v-if="!isPaginationDisabled" />
+  <TransactionTablePagination  v-if="!isPaginationDisabled" />
 </template>
 
 <script setup lang="ts">

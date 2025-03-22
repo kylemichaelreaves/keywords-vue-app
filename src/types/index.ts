@@ -196,7 +196,7 @@ export interface User {
   role?: UserRole;
 }
 
-export type UserRole = 'admin' | 'user';
+export type UserRole = 'admin' | 'user' | 'guest';
 
 export interface FormField {
   label: string;
@@ -278,4 +278,20 @@ export interface RegisterFormFields {
   type: string,
   showPassword?: boolean,
   labelPosition?: string
+}
+
+export interface MemosCount {
+  count: number;
+}
+
+export interface TransactionsCount {
+  count: number;
+}
+
+export interface MemoQueryParams {
+  memoName?: string;
+  date?: string;
+  timeFrame?: Timeframe;
+  limit?: number;
+  offset?: number;
 }
