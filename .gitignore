@@ -37,6 +37,7 @@ html/assets
 
 
 playwright/.auth
+/src/playwright/.auth/
 
 src/keywords-vue-app/playwright/.auth/
 /src/keywords-vue-app/playwright/.auth/
