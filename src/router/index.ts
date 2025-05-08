@@ -44,6 +44,12 @@ export const routes = [{
         meta: { requiresAuth: true }
       },
       {
+        path: 'chart-sandbox',
+        name: 'chart-sandbox',
+        component: () => import('@components/charts/BarChartWithSlider.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
         path: 'transactions',
         name: 'transactions',
         component: TransactionsTable,

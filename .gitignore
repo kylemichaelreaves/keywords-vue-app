@@ -38,5 +38,8 @@ html/assets
 
 playwright/.auth
 
+src/keywords-vue-app/playwright/.auth/
+/src/keywords-vue-app/playwright/.auth/
+
 /src/test/e2e/playwright/.auth/
 /src/test/e2e/playwright/.auth/storageState.json

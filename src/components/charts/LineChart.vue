@@ -27,10 +27,10 @@ const resizeObserver = new ResizeObserver(() => {
   }
 });
 
-// the initial draw upon mounting
 onMounted(() => {
   if (svg.value) {
-    resizeObserver.observe(svg.value.parentElement as Element);  // observing the parent container for resizing
+    // observing the parent container for resizing
+    resizeObserver.observe(svg.value.parentElement as Element);
     if (svg.value && props.summaries.length) {
       width.value = svg.value.parentElement?.getBoundingClientRect().width || 0;
       createLineChart(svg.value, props.summaries, props.handleOnClickSelection);
@@ -45,7 +45,6 @@ watchEffect(() => {
   }
 });
 
-// disconnect the resize observer when the component is unmounted
 onBeforeUnmount(() => {
   resizeObserver.disconnect();
 });

@@ -295,3 +295,14 @@ export interface MemoQueryParams {
   limit?: number;
   offset?: number;
 }
+
+export interface LineChartDataPoint {
+  date: Date;
+  total_debit: number;
+}
+
+export interface ToolTipTransactionTableProps {
+  transactions: Partial<Transaction>[];
+  month: string;
+  amount: number;
+}

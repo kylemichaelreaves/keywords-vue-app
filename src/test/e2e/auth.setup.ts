@@ -24,9 +24,9 @@ setup('authenticate', async ({ page }) => {
     id: 999,
     firstName: 'Test',
     lastName: 'User',
-    username: 'testuser',
+    username: 'testAdminUser',
     email: 'test@example.com',
-    role: 'user'
+    role: 'admin'
   }
   const token = 'playwright-test-token'
 

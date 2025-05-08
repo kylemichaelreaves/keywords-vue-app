@@ -22,31 +22,37 @@
     stripe
     show-summary
   >
-    <el-table-column v-for="columnKey in columnKeys" :key="columnKey" :prop="columnKey" :label="columnKey">
+    <el-table-column
+      v-for="column in transactionColumns"
+      :key="column.prop"
+      :prop="column.prop"
+      :label="column.label"
+      :sortable="column.sortable"
+    >
       <template v-slot:default="scope">
-        <template v-if="columnKey === 'Transaction Number'">
-          <router-link :to="{name: 'transaction', params: {transactionNumber: scope.row[columnKey]}}">
-            {{ scope.row[columnKey] }}
+        <template v-if="column.prop === 'transaction_number'">
+          <router-link :to="{name: 'transaction', params: {transactionNumber: scope.row[column.prop]}}">
+            {{ scope.row[column.prop] }}
           </router-link>
         </template>
-        <template v-else-if="columnKey === 'Date'">
+        <template v-else-if="column.prop === 'date'">
           <div>
-            {{ formatDate(scope.row[columnKey]) }}
+            {{ formatDate(scope.row[column.prop]) }}
           </div>
         </template>
-        <template v-else-if="columnKey === 'Memo'">
-          <router-link :to="`memos/${scope.row[columnKey]}`">
-            {{ scope.row[columnKey] }}
+        <template v-else-if="column.prop === 'memo'">
+          <router-link :to="`memos/${scope.row[column.prop]}`">
+            {{ scope.row[column.prop] }}
           </router-link>
         </template>
         <!-- TODO if the column is budget_category, display the budgetCategoryTreeSelect component -->
         <template v-else>
-          {{ scope.row[columnKey] }}
+          {{ scope.row[column.prop] }}
         </template>
       </template>
     </el-table-column>
   </el-table>
-  <TransactionTablePagination  v-if="!isPaginationDisabled" />
+  <TransactionTablePagination v-if="!isPaginationDisabled" />
 </template>
 
 <script setup lang="ts">
@@ -139,15 +145,17 @@ watch(
 
 
 // Define table columns
-let columnKeys = [
-  'Transaction Number',
-  'Date',
-  'Description',
-  'Memo',
-  'Amount Debit',
-  'Amount Credit',
-  'Balance',
-  'Budget Category'
+const transactionColumns = [
+  { prop: 'id', label: 'ID', sortable: true },
+  { prop: 'transaction_number', label: 'Transaction Number', sortable: true },
+  { prop: 'date', label: 'Date', sortable: true },
+  { prop: 'description', label: 'Description', sortable: false },
+  { prop: 'memo_id', label: 'Memo ID', sortable: false },
+  { prop: 'memo', label: 'Memo', sortable: false },
+  { prop: 'amount_debit', label: 'Amount Debit', sortable: false },
+  { prop: 'amount_credit', label: 'Amount Credit', sortable: false },
+  { prop: 'balance', label: 'Balance', sortable: false },
+  { prop: 'budget_category', label: 'Budget Category', sortable: false }
 ]
 
 function getRowKey(row: Transaction): string {

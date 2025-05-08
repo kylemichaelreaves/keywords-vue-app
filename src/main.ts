@@ -19,18 +19,30 @@ app.use(pinia)
 const user = localStorage.getItem('user')
 const token = localStorage.getItem('token')
 
-if (user && token) {
-  const authStore = useAuthStore()
-  authStore.setUser(JSON.parse(user))
-  authStore.setToken(token)
-  authStore.setIsUserAuthenticated(true)
+if (user && token && user !== "undefined") {
+  try {
+    const authStore = useAuthStore()
+    authStore.setUser(JSON.parse(user))
+    authStore.setToken(token)
+    authStore.setIsUserAuthenticated(true)
+  } catch (error) {
+    console.error("Failed to parse user data:", error)
+    localStorage.removeItem('user')
+    localStorage.removeItem('token')
+  }
 }
 
-// navigation guard: only authenticated users can access auth routes
+app
+  .use(router)
+  .use(VueQueryPlugin)
+  .use(ElementPlus)
+  .use(VueTippy)
+
+
+// NAV GUARD!!! only authenticated users can access auth routes
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   const isAuthenticated = authStore.getIsUserAuthenticated
-  console.log('Nav guard check. requiresAuth:', to.meta.requiresAuth, 'isAuthenticated:', authStore.getIsUserAuthenticated)
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'login' })
   } else {
@@ -42,10 +54,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-app
-  .use(router)
-  .use(VueQueryPlugin)
-  .use(ElementPlus)
-  .use(VueTippy)
-  .mount('#app')
+
+app.mount('#app')
 

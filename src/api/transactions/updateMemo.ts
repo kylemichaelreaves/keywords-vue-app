@@ -1,14 +1,21 @@
-import type {Memo} from "@types";
-import {httpClient} from "@api/httpClient";
+import type { Memo } from '@types'
+import { httpClient } from '@api/httpClient'
 
-// TODO remove route from API Gateway. use '/memos/{memoId}' instead
-export async function updateMemo(memo: Partial<Memo>): Promise<Memo> {
-    return await httpClient
-        .patch(`/memos/${memo['id']}`, {
-            memo: memo
-        })
-        .then(res => res.data)
-        .catch((err: Error) => {
-            console.error('err:', err);
-        });
+export async function updateMemo(
+  memo: Partial<Memo> & { id: string | number }
+): Promise<Memo> {
+  if (!memo.id) {
+    throw new Error('Memo ID is required for updates')
+  }
+
+  try {
+    const response = await httpClient.patch(
+      `/memos/${memo.id}`,
+      memo
+    )
+    return response.data
+  } catch (error) {
+    console.error('Error updating memo:', error)
+    throw error
+  }
 }
