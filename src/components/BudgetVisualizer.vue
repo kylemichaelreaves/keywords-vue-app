@@ -48,7 +48,8 @@ const menuItems = [
   {index: "1", name: "transactions", icon: "Money", title: "Transactions"},
   {index: "2", name: "memos", icon: "OfficeBuilding", title: "Memos"},
   {index: "3", name: "budget-categories", icon: "Files", title: "Budget Categories"},
-  {index: "4", name: "loan-calculator", icon: "Calendar", title: "Loan Calculator"}
+  {index: "4", name: "loan-calculator", icon: "Calendar", title: "Loan Calculator"},
+  {index: "5", name: "chart-sandbox", icon: "TrendCharts", title: "Chart Sandbox"},
 ]
 
 </script>

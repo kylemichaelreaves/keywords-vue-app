@@ -1,28 +1,34 @@
-import {httpClient} from "@api/httpClient";
-import type {TimeframeType, Memo} from "@types";
+import { httpClient } from '@api/httpClient'
+import type { Memo, TimeframeType } from '@types'
 
 export async function fetchTransactions(queryParams: {
-    date: Date;
-    offset: number;
-    limit: number;
-    memo: Memo['name'];
-    timeFrame: TimeframeType
+  date: Date | undefined;
+  offset: number | undefined;
+  limit: number | undefined;
+  memo: Memo['name'] | undefined;
+  timeFrame: TimeframeType | undefined;
+  oldestDate?: boolean | undefined;
+  count?: boolean | undefined;
 }) {
-    const {date, limit, offset, timeFrame, memo} = queryParams;
 
-    // TODO refactor in V2 api, remove redundant path: /get-transactions
-    return await httpClient
-        .get(`/transactions/get-transactions`, {
-            params: {
-                date: date ? date : undefined,
-                offset: offset ? offset : undefined,
-                limit: limit ? limit : undefined,
-                memo: memo ? memo : undefined,
-                timeFrame: timeFrame ? timeFrame : undefined,
-            },
-        })
-        .then((res) => res.data)
-        .catch((err: Error) => {
-            console.error('err:', err);
-        });
-};
+  const { date, offset, limit, memo, timeFrame, oldestDate, count } = queryParams
+
+  try {
+    const response = await httpClient.get('/transactions', {
+      params: {
+        date: date ? date : undefined,
+        offset: offset ? offset : undefined,
+        limit: limit ? limit : undefined,
+        memo: memo ? memo : undefined,
+        timeFrame: timeFrame ? timeFrame : undefined,
+        oldestDate: oldestDate ? oldestDate : undefined,
+        count: count ? count : undefined
+      }
+    })
+    return response.data
+  } catch (err) {
+    console.error('Error fetching transactions:', err)
+    throw err
+  }
+}
+
