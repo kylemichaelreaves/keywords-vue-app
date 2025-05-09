@@ -2,20 +2,19 @@ import { httpClient } from '@api/httpClient'
 import type { Memo, TimeframeType } from '@types'
 
 export async function fetchTransactions(queryParams: {
-  date: Date;
-  offset: number;
-  limit: number;
-  memo: Memo['name'];
-  timeFrame: TimeframeType
-  oldestDate?: boolean;
-  count?: boolean;
+  date: Date | undefined;
+  offset: number | undefined;
+  limit: number | undefined;
+  memo: Memo['name'] | undefined;
+  timeFrame: TimeframeType | undefined;
+  oldestDate?: boolean | undefined;
+  count?: boolean | undefined;
 }) {
 
   const { date, offset, limit, memo, timeFrame, oldestDate, count } = queryParams
 
-
-  return await httpClient
-    .get(`/transactions`, {
+  try {
+    const response = await httpClient.get('/transactions', {
       params: {
         date: date ? date : undefined,
         offset: offset ? offset : undefined,
@@ -26,8 +25,10 @@ export async function fetchTransactions(queryParams: {
         count: count ? count : undefined
       }
     })
-    .then((res) => res.data)
-    .catch((err: Error) => {
-      console.error('err:', err)
-    })
+    return response.data
+  } catch (err) {
+    console.error('Error fetching transactions:', err)
+    throw err
+  }
 }
+
