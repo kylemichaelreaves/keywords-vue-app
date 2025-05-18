@@ -16,7 +16,7 @@
     </template>
     <el-container>
       <el-aside width="100px">
-        <el-menu class="el-menu-vertical-demo" :default-active="$route.path" :collapse="true" router>
+        <el-menu class="el-menu-vertical-demo" :default-active="route.path" :collapse="true" router>
           <router-link v-for="item in menuItems" :key="item.index" :to="{name: item.name}">
             <el-menu-item :index="item.name" :route="item.name">
               <el-icon>
@@ -28,7 +28,7 @@
         </el-menu>
       </el-aside>
       <el-main>
-        <router-view :key="$route.fullPath"></router-view>
+        <router-view :key="route.fullPath"></router-view>
       </el-main>
     </el-container>
   </el-card>
@@ -41,8 +41,11 @@ import {TrendCharts} from "@element-plus/icons-vue";
 import {VueQueryDevtools} from '@tanstack/vue-query-devtools'
 import TransactionForm from "@components/transactions/TransactionForm.vue";
 import {ElDialog} from "element-plus";
+import {useRoute} from "vue-router";
 
 const showTransactionForm = ref(false);
+
+const route = useRoute();
 
 const menuItems = [
   {index: "1", name: "transactions", icon: "Money", title: "Transactions"},

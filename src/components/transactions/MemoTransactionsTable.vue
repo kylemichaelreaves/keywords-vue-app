@@ -25,21 +25,22 @@ const props = defineProps({
 });
 
 const columns = [
-  {prop: 'Transaction Number', label: 'Transaction Number'},
-  {prop: 'Date', label: 'Date'},
-  {prop: 'Description', label: 'Description'},
-  {prop: 'Amount Debit', label: 'Amount Debit'},
-  {prop: 'Amount Credit', label: 'Amount Credit'},
-  {prop: 'Memo', label: 'Memo'},
-  {prop: 'Balance', label: "Balance"},
-  {prop: 'Check Number', label: 'Check Number'},
-  {prop: 'Fees', label: 'Fees'},
+  {prop: 'transaction_number', label: 'Transaction Number'},
+  {prop: 'date', label: 'Date'},
+  {prop: 'description', label: 'Description'},
+  {prop: 'amount_debit', label: 'Amount Debit'},
+  {prop: 'amount_credit', label: 'Amount Credit'},
+  {prop: 'memo', label: 'Memo'},
+  {prop: 'balance', label: "Balance"},
+  {prop: 'check_number', label: 'Check Number'},
+  {prop: 'fees', label: 'Fees'},
 ];
 
-const excludedColumns = ['Balance', 'Check Number', 'Fees', 'Memo', 'Amount Credit'];
+const excludedColumns = ['balance', 'check_number', 'fees', 'memo', 'amount_credit'];
 
 const filteredColumns = columns.filter(column => !excludedColumns.includes(column.prop));
 
+// TODO we should just be able to use useTransactions here and pass in the memo
 const {data, error, isError, isFetching, isLoading} = useMemoTransactions(props.memoName);
 
 const isLoadingCondition = reactive(

@@ -74,33 +74,33 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 101,
-        transactionNumber: 'TX-2025-001',
+        transaction_number: 'TX-2025-001',
         date: '2025-01-05',
         description: 'Software License',
         memo: 'Annual software renewal',
         memo_id: 1001,
-        amountDebit: '350.00',
-        budgetCategory: 'Software'
+        amount_debit: '350.00',
+        budget_category: 'Software'
       },
       {
         id: 102,
-        transactionNumber: 'TX-2025-002',
+        transaction_number: 'TX-2025-002',
         date: '2025-01-12',
         description: 'Consulting Fee',
         memo: 'Project consultation',
         memo_id: 1002,
-        amountDebit: '450.00',
-        budgetCategory: 'Services'
+        amount_debit: '450.00',
+        budget_category: 'Services'
       },
       {
         id: 103,
-        transactionNumber: 'TX-2025-003',
+        transaction_number: 'TX-2025-003',
         date: '2025-01-25',
         description: 'Equipment Sale',
         memo: 'Used equipment',
         memo_id: 1003,
-        amountCredit: '200.00',
-        budgetCategory: 'Equipment'
+        amount_credit: '200.00',
+        budget_category: 'Equipment'
       }
     ]
   },
@@ -110,33 +110,33 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 104,
-        transactionNumber: 'TX-2025-004',
+        transaction_number: 'TX-2025-004',
         date: '2025-02-03',
         description: 'Project Payment',
         memo: 'Client project milestone',
         memo_id: 1004,
-        amountCredit: '800.00',
-        budgetCategory: 'Income'
+        amount_credit: '800.00',
+        budget_category: 'Income'
       },
       {
         id: 105,
-        transactionNumber: 'TX-2025-005',
+        transaction_number: 'TX-2025-005',
         date: '2025-02-15',
         description: 'Support Contract',
         memo: 'Quarterly support',
         memo_id: 1005,
-        amountDebit: '350.00',
-        budgetCategory: 'Services'
+        amount_debit: '350.00',
+        budget_category: 'Services'
       },
       {
         id: 106,
-        transactionNumber: 'TX-2025-006',
+        transaction_number: 'TX-2025-006',
         date: '2025-02-28',
         description: 'Training Session',
         memo: 'Staff training',
         memo_id: 1006,
-        amountDebit: '350.00',
-        budgetCategory: 'Training'
+        amount_debit: '350.00',
+        budget_category: 'Training'
       }
     ]
   },
@@ -146,33 +146,33 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 107,
-        transactionNumber: 'TX-2025-007',
+        transaction_number: 'TX-2025-007',
         date: '2025-03-07',
         description: 'Software Upgrade',
         memo: 'System upgrade',
         memo_id: 1007,
-        amountDebit: '500.00',
-        budgetCategory: 'Software'
+        amount_debit: '500.00',
+        budget_category: 'Software'
       },
       {
         id: 108,
-        transactionNumber: 'TX-2025-008',
+        transaction_number: 'TX-2025-008',
         date: '2025-03-18',
         description: 'Maintenance Fee',
         memo: 'Regular maintenance',
         memo_id: 1008,
-        amountDebit: '250.00',
-        budgetCategory: 'Maintenance'
+        amount_debit: '250.00',
+        budget_category: 'Maintenance'
       },
       {
         id: 109,
-        transactionNumber: 'TX-2025-009',
+        transaction_number: 'TX-2025-009',
         date: '2025-03-25',
         description: 'Consultation',
         memo: 'Expert consultation',
         memo_id: 1009,
-        amountDebit: '450.00',
-        budgetCategory: 'Services'
+        amount_debit: '450.00',
+        budget_category: 'Services'
       }
     ]
   },
@@ -182,23 +182,23 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 110,
-        transactionNumber: 'TX-2025-010',
+        transaction_number: 'TX-2025-010',
         date: '2025-04-10',
         description: 'New Client Setup',
         memo: 'Client onboarding',
         memo_id: 1010,
-        amountCredit: '1000.00',
-        budgetCategory: 'Income'
+        amount_credit: '1000.00',
+        budget_category: 'Income'
       },
       {
         id: 111,
-        transactionNumber: 'TX-2025-011',
+        transaction_number: 'TX-2025-011',
         date: '2025-04-22',
         description: 'Website Development',
         memo: 'Website redesign project',
         memo_id: 1011,
-        amountDebit: '800.00',
-        budgetCategory: 'Development'
+        amount_debit: '800.00',
+        budget_category: 'Development'
       }
     ]
   },
@@ -208,33 +208,33 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 112,
-        transactionNumber: 'TX-2025-012',
+        transaction_number: 'TX-2025-012',
         date: '2025-05-03',
         description: 'Annual Contract',
         memo: 'Client annual renewal',
         memo_id: 1012,
-        amountCredit: '1200.00',
-        budgetCategory: 'Income'
+        amount_credit: '1200.00',
+        budget_category: 'Income'
       },
       {
         id: 113,
-        transactionNumber: 'TX-2025-013',
+        transaction_number: 'TX-2025-013',
         date: '2025-05-14',
         description: 'Equipment Sale',
         memo: 'Hardware sale',
         memo_id: 1013,
-        amountCredit: '450.00',
-        budgetCategory: 'Equipment'
+        amount_credit: '450.00',
+        budget_category: 'Equipment'
       },
       {
         id: 114,
-        transactionNumber: 'TX-2025-014',
+        transaction_number: 'TX-2025-014',
         date: '2025-05-29',
         description: 'Support Renewal',
         memo: 'Support package renewal',
         memo_id: 1014,
-        amountDebit: '450.00',
-        budgetCategory: 'Support'
+        amount_debit: '450.00',
+        budget_category: 'Support'
       }
     ]
   },
@@ -244,23 +244,23 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 115,
-        transactionNumber: 'TX-2025-015',
+        transaction_number: 'TX-2025-015',
         date: '2025-06-08',
         description: 'Consulting Project',
         memo: 'Client consulting',
         memo_id: 1015,
-        amountDebit: '900.00',
-        budgetCategory: 'Services'
+        amount_debit: '900.00',
+        budget_category: 'Services'
       },
       {
         id: 116,
-        transactionNumber: 'TX-2025-016',
+        transaction_number: 'TX-2025-016',
         date: '2025-06-17',
         description: 'Training Workshop',
         memo: 'Team workshop',
         memo_id: 1016,
-        amountDebit: '700.00',
-        budgetCategory: 'Training'
+        amount_debit: '700.00',
+        budget_category: 'Training'
       }
     ]
   },
@@ -270,33 +270,33 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 117,
-        transactionNumber: 'TX-2025-017',
+        transaction_number: 'TX-2025-017',
         date: '2025-07-05',
         description: 'Software License',
         memo: 'New software purchase',
         memo_id: 1017,
-        amountDebit: '850.00',
-        budgetCategory: 'Software'
+        amount_debit: '850.00',
+        budget_category: 'Software'
       },
       {
         id: 118,
-        transactionNumber: 'TX-2025-018',
+        transaction_number: 'TX-2025-018',
         date: '2025-07-15',
         description: 'Equipment Upgrade',
         memo: 'Hardware upgrades',
         memo_id: 1018,
-        amountDebit: '950.00',
-        budgetCategory: 'Equipment'
+        amount_debit: '950.00',
+        budget_category: 'Equipment'
       },
       {
         id: 119,
-        transactionNumber: 'TX-2025-019',
+        transaction_number: 'TX-2025-019',
         date: '2025-07-28',
         description: 'Maintenance Contract',
         memo: 'Yearly maintenance',
         memo_id: 1019,
-        amountDebit: '400.00',
-        budgetCategory: 'Maintenance'
+        amount_debit: '400.00',
+        budget_category: 'Maintenance'
       }
     ]
   },
@@ -306,33 +306,33 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 120,
-        transactionNumber: 'TX-2025-020',
+        transaction_number: 'TX-2025-020',
         date: '2025-08-06',
         description: 'New Project',
         memo: 'Client project start',
         memo_id: 1020,
-        amountCredit: '1200.00',
-        budgetCategory: 'Income'
+        amount_credit: '1200.00',
+        budget_category: 'Income'
       },
       {
         id: 121,
-        transactionNumber: 'TX-2025-021',
+        transaction_number: 'TX-2025-021',
         date: '2025-08-14',
         description: 'Consultation Services',
         memo: 'Expert consultation',
         memo_id: 1021,
-        amountDebit: '700.00',
-        budgetCategory: 'Services'
+        amount_debit: '700.00',
+        budget_category: 'Services'
       },
       {
         id: 122,
-        transactionNumber: 'TX-2025-022',
+        transaction_number: 'TX-2025-022',
         date: '2025-08-27',
         description: 'License Renewal',
         memo: 'Software license renewal',
         memo_id: 1022,
-        amountDebit: '600.00',
-        budgetCategory: 'Software'
+        amount_debit: '600.00',
+        budget_category: 'Software'
       }
     ]
   },
@@ -342,23 +342,23 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 123,
-        transactionNumber: 'TX-2025-023',
+        transaction_number: 'TX-2025-023',
         date: '2025-09-05',
         description: 'Support Package',
         memo: 'Premium support',
         memo_id: 1023,
-        amountDebit: '800.00',
-        budgetCategory: 'Support'
+        amount_debit: '800.00',
+        budget_category: 'Support'
       },
       {
         id: 124,
-        transactionNumber: 'TX-2025-024',
+        transaction_number: 'TX-2025-024',
         date: '2025-09-19',
         description: 'Custom Development',
         memo: 'Custom software development',
         memo_id: 1024,
-        amountDebit: '1500.00',
-        budgetCategory: 'Development'
+        amount_debit: '1500.00',
+        budget_category: 'Development'
       }
     ]
   },
@@ -368,33 +368,33 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 125,
-        transactionNumber: 'TX-2025-025',
+        transaction_number: 'TX-2025-025',
         date: '2025-10-03',
         description: 'Quarterly Services',
         memo: 'Quarterly maintenance',
         memo_id: 1025,
-        amountDebit: '900.00',
-        budgetCategory: 'Services'
+        amount_debit: '900.00',
+        budget_category: 'Services'
       },
       {
         id: 126,
-        transactionNumber: 'TX-2025-026',
+        transaction_number: 'TX-2025-026',
         date: '2025-10-17',
         description: 'Software Upgrade',
         memo: 'Version upgrade',
         memo_id: 1026,
-        amountDebit: '600.00',
-        budgetCategory: 'Software'
+        amount_debit: '600.00',
+        budget_category: 'Software'
       },
       {
         id: 127,
-        transactionNumber: 'TX-2025-027',
+        transaction_number: 'TX-2025-027',
         date: '2025-10-28',
         description: 'Hardware Sale',
         memo: 'Server hardware',
         memo_id: 1027,
-        amountCredit: '400.00',
-        budgetCategory: 'Equipment'
+        amount_credit: '400.00',
+        budget_category: 'Equipment'
       }
     ]
   },
@@ -404,23 +404,23 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 128,
-        transactionNumber: 'TX-2025-028',
+        transaction_number: 'TX-2025-028',
         date: '2025-11-08',
         description: 'Annual Maintenance',
         memo: 'System maintenance',
         memo_id: 1028,
-        amountDebit: '850.00',
-        budgetCategory: 'Maintenance'
+        amount_debit: '850.00',
+        budget_category: 'Maintenance'
       },
       {
         id: 129,
-        transactionNumber: 'TX-2025-029',
+        transaction_number: 'TX-2025-029',
         date: '2025-11-21',
         description: 'Consulting Hours',
         memo: 'Professional services',
         memo_id: 1029,
-        amountDebit: '1150.00',
-        budgetCategory: 'Services'
+        amount_debit: '1150.00',
+        budget_category: 'Services'
       }
     ]
   },
@@ -430,33 +430,33 @@ const data = ref<MonthlyData[]>([
     transactions: [
       {
         id: 130,
-        transactionNumber: 'TX-2025-030',
+        transaction_number: 'TX-2025-030',
         date: '2025-12-05',
         description: 'Year-end Project',
         memo: 'Year-end implementation',
         memo_id: 1030,
-        amountDebit: '1100.00',
-        budgetCategory: 'Projects'
+        amount_debit: '1100.00',
+        budget_category: 'Projects'
       },
       {
         id: 131,
-        transactionNumber: 'TX-2025-031',
+        transaction_number: 'TX-2025-031',
         date: '2025-12-14',
         description: 'License Renewal',
         memo: 'Annual license renewal',
         memo_id: 1031,
-        amountDebit: '750.00',
-        budgetCategory: 'Software'
+        amount_debit: '750.00',
+        budget_category: 'Software'
       },
       {
         id: 132,
-        transactionNumber: 'TX-2025-032',
+        transaction_number: 'TX-2025-032',
         date: '2025-12-19',
         description: 'Support Extension',
         memo: 'Support package extension',
         memo_id: 1032,
-        amountDebit: '550.00',
-        budgetCategory: 'Support'
+        amount_debit: '550.00',
+        budget_category: 'Support'
       }
     ]
   }

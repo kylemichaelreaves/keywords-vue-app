@@ -2,28 +2,31 @@ import { httpClient } from '@api/httpClient'
 import type { Memo, TimeframeType } from '@types'
 
 export async function fetchTransactions(queryParams: {
-  date: Date | undefined;
-  offset: number | undefined;
-  limit: number | undefined;
-  memo: Memo['name'] | undefined;
-  timeFrame: TimeframeType | undefined;
-  oldestDate?: boolean | undefined;
-  count?: boolean | undefined;
+  date?: Date | null;
+  offset?: number;
+  limit?: number;
+  memo?: Memo['name'];
+  timeFrame?: TimeframeType;
+  oldestDate?: boolean;
+  count?: boolean;
 }) {
 
-  const { date, offset, limit, memo, timeFrame, oldestDate, count } = queryParams
+  function isValidParam(key: string, value: unknown): boolean {
+    if (value === undefined) return false
+    if (key === 'memo' && value === '') return false
+    return !(key === 'date' && (
+      (typeof value === 'number' && isNaN(value)) ||
+      (value instanceof Date && isNaN(value.getTime()))
+    ))
+  }
+
+  const filteredQueryParams = Object.fromEntries(
+    Object.entries(queryParams).filter(([key, value]) => isValidParam(key, value))
+  )
 
   try {
     const response = await httpClient.get('/transactions', {
-      params: {
-        date: date ? date : undefined,
-        offset: offset ? offset : undefined,
-        limit: limit ? limit : undefined,
-        memo: memo ? memo : undefined,
-        timeFrame: timeFrame ? timeFrame : undefined,
-        oldestDate: oldestDate ? oldestDate : undefined,
-        count: count ? count : undefined
-      }
+      params: filteredQueryParams
     })
     return response.data
   } catch (err) {

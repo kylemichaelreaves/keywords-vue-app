@@ -1,7 +1,7 @@
 import type {Transaction} from "@types";
 import {httpClient} from "@api/httpClient";
 
-export const fetchTransaction = async (transactionNumber: Transaction['transactionNumber']): Promise<Transaction> => {
+export const fetchTransaction = async (transactionNumber: Transaction['transaction_number']): Promise<Transaction> => {
     return await httpClient
         .get(`/transactions/get-transaction`, {
             params: {

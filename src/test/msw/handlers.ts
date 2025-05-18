@@ -15,11 +15,7 @@ const handlers: HttpHandler[] = [
         return new HttpResponse(JSON.stringify(addressesMock), {status: 200})
     }),
 
-    http.get("*/transactions/get-transactions", (info) => {
-        return new HttpResponse(JSON.stringify(transactionsMock), {status: 200})
-    }),
-
-    http.post("*/transactions/update-transaction", (info) => {
+    http.post("*/transactions/", (info) => {
         return new HttpResponse(JSON.stringify(transactionsMock[0]), {status: 200})
     }),
 

@@ -22,10 +22,10 @@ import type { Transaction, ToolTipTransactionTableProps } from '@types'
 const props = defineProps<ToolTipTransactionTableProps>()
 
 const formatAmount = (row: Partial<Transaction>) => {
-  return row.amountDebit
-    ? `$${row.amountDebit}`
-    : row.amountCredit
-      ? `$${row.amountCredit}`
+  return row.amount_debit
+    ? `$${row.amount_debit}`
+    : row.amount_credit
+      ? `$${row.amount_credit}`
       : '$0.00'
 }
 </script>

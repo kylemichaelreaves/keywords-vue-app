@@ -24,7 +24,7 @@ import BackButton from '@components/shared/BackButton.vue'
 
 const props = defineProps({
   transactionNumber: {
-    type: String as PropType<Transaction['transactionNumber']>,
+    type: String as PropType<Transaction['transaction_number']>,
     required: true
   }
 })
