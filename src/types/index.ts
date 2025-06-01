@@ -278,6 +278,18 @@ export interface MemoQueryParams {
   timeFrame?: Timeframe;
   limit?: number;
   offset?: number;
+  count?: boolean;
+}
+
+export interface TransactionQueryParams {
+  date?: Date;
+  offset?: number;
+  limit?: number;
+  memo?: Memo['name'];
+  timeFrame?: TimeframeType;
+  oldestDate?: boolean;
+  count?: boolean;
+  budgetCategory?: BudgetCategory['budget_category'];
 }
 
 export interface LineChartDataPoint {

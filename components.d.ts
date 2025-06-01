@@ -117,7 +117,7 @@ declare module 'vue' {
     WeekSummaryTable: typeof import('./src/components/transactions/WeekSummaryTable.vue')['default']
     YearSelect: typeof import('./src/components/transactions/YearSelect.vue')['default']
   }
-  export interface ComponentCustomProperties {
+  export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

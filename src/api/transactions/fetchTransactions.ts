@@ -1,15 +1,7 @@
 import { httpClient } from '@api/httpClient'
-import type { Memo, TimeframeType } from '@types'
+import type { Memo, TransactionQueryParams } from '@types'
 
-export async function fetchTransactions(queryParams: {
-  date?: Date | null;
-  offset?: number;
-  limit?: number;
-  memo?: Memo['name'];
-  timeFrame?: TimeframeType;
-  oldestDate?: boolean;
-  count?: boolean;
-}) {
+export async function fetchTransactions(queryParams: TransactionQueryParams): Promise<Array<Memo>> {
 
   function isValidParam(key: string, value: unknown): boolean {
     if (value === undefined) return false
@@ -23,6 +15,8 @@ export async function fetchTransactions(queryParams: {
   const filteredQueryParams = Object.fromEntries(
     Object.entries(queryParams).filter(([key, value]) => isValidParam(key, value))
   )
+
+  console.log('Filtered Query Params:', filteredQueryParams)
 
   try {
     const response = await httpClient.get('/transactions', {

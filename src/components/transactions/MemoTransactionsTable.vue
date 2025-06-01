@@ -2,7 +2,7 @@
   <div v-if="isError">
     <el-alert type="error" :title="error"/>
   </div>
-  <el-table v-if="data" :data="data" :loading="isLoadingCondition" size="large">
+  <el-table v-if="data" id="memo-transactions-table" :data="data" :loading="isLoadingCondition" size="large">
     <el-table-column v-for="column in filteredColumns" :key="column.prop" :prop="column.prop" :label="column.label">
       <template v-slot:default="scope">
         <span>{{ scope.row[column.prop] }}</span>
@@ -46,10 +46,6 @@ const {data, error, isError, isFetching, isLoading} = useMemoTransactions(props.
 const isLoadingCondition = reactive(
   isLoading || isFetching
 );
-
-// watch(() => props.memoName, () => {
-//   refetch();
-// });
 
 </script>
 

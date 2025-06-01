@@ -1,4 +1,4 @@
-import type { Transaction, Memo } from '@types'
+import type { Memo, Transaction } from '@types'
 import { httpClient } from '@api/httpClient'
 
 // TODO remove this redundancy…shouldn't this be covered by fetchTransactions whose memo is Memo['name']?

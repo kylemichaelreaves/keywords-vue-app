@@ -5,10 +5,11 @@ import {httpClient} from "@api/httpClient";
 export default async function fetchCarBudget(date: Date | null, timeFrame: TimeframeType): Promise<CarBudget> {
     // TODO instead of a path, pass query params to transactions route, budgetCategory
     return await httpClient
-        .get(`/transactions/get-car-budget`, {
+        .get(`/transactions`, {
             params: {
                 timeFrame: timeFrame,
-                date: date
+                date: date,
+                budgetCategory: 'car'
             }
         })
         .then(res => res.data)
