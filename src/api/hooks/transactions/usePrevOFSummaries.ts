@@ -7,7 +7,6 @@ import type {UseQueryReturnType} from "@tanstack/vue-query";
 
 export function usePrevOFSummaries(): UseQueryReturnType<OFSummary[], Error> {
     const store = useTransactionsStore()
-
     const dateType = computed(() => "month");
     const queryKey = computed(() => ['PrevOFSummaries', dateType.value]);
 

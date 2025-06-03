@@ -1,6 +1,7 @@
 import type { OFSummaryTypeBase } from '@types'
 import { httpClient } from '@api/httpClient'
 
+
 export async function fetchOFAmountDebit(timeFrame: string, date?: Date): Promise<OFSummaryTypeBase> {
   return await httpClient
     .get(`/transactions`, {

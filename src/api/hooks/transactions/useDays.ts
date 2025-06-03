@@ -5,6 +5,7 @@ import {fetchDays} from "@api/transactions/fetchDays";
 import {useTransactionsStore} from "@stores/transactions";
 import {computed} from "vue";
 
+
 export const useDays = (): UseQueryReturnType<DayYear[], Error> => {
     const store = useTransactionsStore();
     const cachedDays = computed(() => store.getDays);

@@ -282,7 +282,7 @@ export interface MemoQueryParams {
 }
 
 export interface TransactionQueryParams {
-  date?: Date;
+  date?: string | Date;
   offset?: number;
   limit?: number;
   memo?: Memo['name'];

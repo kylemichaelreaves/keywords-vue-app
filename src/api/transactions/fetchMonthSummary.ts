@@ -8,5 +8,4 @@ export async function fetchMonthSummary(monthId: string): Promise<MonthSummary[]
     .catch((err: Error) => {
       console.error('err:', err)
     })
-
 }

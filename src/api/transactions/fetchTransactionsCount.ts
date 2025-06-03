@@ -6,7 +6,7 @@ import type { Memo, TimeframeType } from '@types'
  * This is a wrapper around fetchTransactions with count: true
  */
 export async function fetchTransactionsCount(params: {
-  date?: Date | null;
+  date?: string;
   memo?: Memo['name'];
   timeFrame?: TimeframeType;
   oldestDate?: boolean;

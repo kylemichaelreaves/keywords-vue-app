@@ -1,5 +1,6 @@
 import { httpClient } from '@api/httpClient'
 
+
 export async function fetchDaysOfWeek(week: string) {
   return await httpClient
     .get(`/transactions/weeks/${week}/days`)

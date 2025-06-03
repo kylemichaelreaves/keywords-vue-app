@@ -1,7 +1,7 @@
 import type { Memo, Transaction } from '@types'
 import { httpClient } from '@api/httpClient'
 
-// TODO remove this redundancy…shouldn't this be covered by fetchTransactions whose memo is Memo['name']?
+
 export async function fetchMemoTransactions(memoName: Memo['name']): Promise<Transaction> {
   return await httpClient
     .get(`/transactions`, {
