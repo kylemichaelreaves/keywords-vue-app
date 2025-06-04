@@ -19,19 +19,19 @@ const handlers: HttpHandler[] = [
         return new HttpResponse(JSON.stringify(transactionsMock[0]), {status: 200})
     }),
 
-    http.get("*/transactions/get-months", (info) => {
+    http.get("*/transactions/months", (info) => {
         return new HttpResponse(JSON.stringify(monthsMock), {status: 200})
     }),
 
-    http.get("*/transactions/get-days", (info) => {
+    http.get("*/transactions/days", (info) => {
         return new HttpResponse(JSON.stringify(daysMock), {status: 200})
     }),
 
-    http.get("*/transactions/get-weeks", (info) => {
+    http.get("*/transactions/weeks", (info) => {
         return new HttpResponse(JSON.stringify(weeksMock), {status: 200})
     }),
 
-    http.get("*/transactions/get-memos", (info) => {
+    http.get("*/memos", (info) => {
         return new HttpResponse(JSON.stringify(memosMock), {status: 200})
     }),
 
@@ -39,15 +39,15 @@ const handlers: HttpHandler[] = [
         return new HttpResponse(JSON.stringify(memosMock[0]), {status: 200})
     }),
 
-    http.get("*/transactions/get-memo-summary", (info) => {
+    http.get("*/memos/:memoId/summary", (info) => {
         return new HttpResponse(JSON.stringify(memoSummaryMock), {status: 200})
     }),
 
-    http.get("*/transactions/get-month-summary", (info) => {
+    http.get("*/transactions/months/:monthId/summary", (info) => {
         return new HttpResponse(JSON.stringify(monthSummaryMock), {status: 200})
     }),
 
-    http.get('*/transactions/get-week-summary', (info) => {
+    http.get('*/transactions/weeks/:weekId/summary', (info) => {
         return new HttpResponse(JSON.stringify(weekSummaryMock), {status: 200})
     }),
 
