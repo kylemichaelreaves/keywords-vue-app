@@ -28,15 +28,17 @@ describe('fetchTransactions', () => {
   })
 
   it('should fetch transactions with valid parameters', async () => {
-    const transactions = await fetchTransactions({
+    const queryParms = {
       date: undefined,
       offset: undefined,
       limit: undefined,
-      memo: undefined,
+      memo: '',
       timeFrame: undefined,
       oldestDate: undefined,
       count: undefined
-    })
+    }
+
+    const transactions = await fetchTransactions(queryParms)
 
     expect(transactions).toEqual(transactionsMock)
   })

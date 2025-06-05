@@ -1,28 +1,26 @@
 <template>
-  <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error"/>
+  <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error" />
   <SelectComponent
-      data-testid="month-select"
-      :options="monthOptions"
-      :selectedValue="store.selectedMonth"
-      placeholder="select a month"
-      :disabled="isLoading || isFetching"
-      :onChange="updateSelectedMonth"
-      :on-clear="clearSelectedMonth"
+    data-testid="month-select"
+    :options="monthOptions"
+    :selectedValue="store.selectedMonth"
+    placeholder="select a month"
+    :disabled="isLoading || isFetching"
+    :onChange="updateSelectedMonth"
+    :on-clear="clearSelectedMonth"
   />
 </template>
 
 <script setup lang="ts">
-import {computed, onBeforeUnmount, watch} from 'vue'
-import {useMonths} from "@api/hooks/transactions/useMonths";
-import type {MonthYear} from "@types";
-import {useTransactionsStore} from "@stores/transactions";
-import SelectComponent from "@components/shared/SelectComponent.vue";
-import {router} from "@router";
-import AlertComponent from "@components/shared/AlertComponent.vue";
-
+import { computed, onBeforeUnmount } from 'vue'
+import { useMonths } from '@api/hooks/transactions/useMonths'
+import type { MonthYear } from '@types'
+import { useTransactionsStore } from '@stores/transactions'
+import SelectComponent from '@components/shared/SelectComponent.vue'
+import AlertComponent from '@components/shared/AlertComponent.vue'
 
 const store = useTransactionsStore()
-const {data, isFetching, isLoading, isError, error} = useMonths()
+const { data, isFetching, isLoading, isError, error } = useMonths()
 
 const monthOptions = computed(() => {
   if (!data.value) {
@@ -30,9 +28,9 @@ const monthOptions = computed(() => {
   }
   return data.value.map((item: MonthYear) => ({
     value: item.month_year,
-    label: item.month_year,
-  }));
-});
+    label: item.month_year
+  }))
+})
 
 const updateSelectedMonth = (month: string) => {
   // set the limit to 0, to return all of the months data
@@ -44,18 +42,9 @@ const clearSelectedMonth = () => {
   store.setSelectedMonth('')
 }
 
-watch(
-    () => store.getSelectedMonth,
-    (newMonth) => {
-      if (newMonth) {
-        router.push({name: 'month-summary', params: {month: newMonth}});
-      }
-    }
-);
-
 onBeforeUnmount(() => {
   store.setTransactionsTableLimit(100)
-});
+})
 
 
 </script>

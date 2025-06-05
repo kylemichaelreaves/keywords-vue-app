@@ -18,11 +18,12 @@
     </el-button>
   </el-col>
   <BudgetCategoryModal
+      v-if="isModalVisible"
       :memo="props.memoName"
       :isVisible="isModalVisible"
+      :selectedBudgetCategory="budgetCategory"
       @update:isVisible="closeModal"
-      @category-updated="refetch"
-      @update:selected-budget-category="handleCategoryUpdated"
+      @categoryUpdated="onCategoryUpdated"
   />
 </template>
 
@@ -40,41 +41,37 @@ const props = defineProps({
   },
 });
 
-const buttonCondition = computed(() => {
-  return !budgetCategory.value && !isFetching.value && !isLoading.value && !isRefetching.value;
-});
-
 const {data, isLoading, isError, refetch, isRefetching, isFetching, error} = useMemoBudgetCategory(props.memoName);
 
 const isModalVisible = ref(false);
 
-const selectedBudgetCategory = ref('');
-
 const openModal = () => {
   isModalVisible.value = true;
-
 };
 
 const closeModal = () => {
   isModalVisible.value = false;
 };
 
-const handleCategoryUpdated = (category: string) => {
-  selectedBudgetCategory.value = category;
+const onCategoryUpdated = () => {
+  refetch();
+  closeModal();
 };
 
 const budgetCategory = computed(() => {
   const budgetData = data?.value as BudgetCategory[] | undefined;
-  return budgetData ? budgetData[0]?.budget_category : null;
+  return budgetData ? budgetData[0]?.budget_category : '';
 });
 
+const buttonCondition = computed(() => {
+  return !budgetCategory.value && !isFetching.value && !isLoading.value && !isRefetching.value;
+});
 
 watch(() => props.memoName, () => {
   refetch();
 });
 
 </script>
-
 
 <style scoped>
 .category-wrapper {

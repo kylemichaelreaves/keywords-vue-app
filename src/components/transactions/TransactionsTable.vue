@@ -1,62 +1,75 @@
 <template>
   <DailyIntervalLineChart />
-
   <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error" />
-
   <MonthSummaryTable v-if="selectedMonth" />
-
   <WeekSummaryTable v-if="selectedWeek" />
-
   <TransactionsTableSelects />
 
-  <el-table
-    data-testid="transactions-table"
-    :row-key="getRowKey"
-    v-if="flattenedData"
-    v-loading="isLoadingCondition"
-    :data="paginatedData"
-    table-layout="auto"
-    height="auto"
-    size="small"
-    border
-    stripe
-    show-summary
+  <el-dialog
+    v-model="showTransactionEditModal"
+    :close-on-click-modal="false"
+    :before-close="closeTransactionEditModal"
+    width="50%"
   >
-    <el-table-column
-      v-for="column in transactionColumns"
-      :key="column.prop"
-      :prop="column.prop"
-      :label="column.label"
-      :sortable="column.sortable"
+    <TransactionEditForm
+      v-if="selectedTransaction"
+      :transaction="selectedTransaction"
+      @close="closeTransactionEditModal"
+    />
+  </el-dialog>
+
+  <div @contextmenu.prevent>
+    <el-table
+      data-testid="transactions-table"
+      :row-key="getRowKey"
+      v-if="flattenedData"
+      v-loading="isLoadingCondition"
+      :data="paginatedData"
+      table-layout="auto"
+      height="auto"
+      size="small"
+      border
+      stripe
+      show-summary
+      show-overflow-tooltip
+      @row-contextmenu="(row: Transaction) => openTransactionEditModal(row)"
     >
-      <template v-slot:default="scope">
-        <template v-if="column.prop === 'transaction_number'">
-          <router-link :to="{name: 'transaction', params: {transactionNumber: scope.row[column.prop]}}">
+      <el-table-column
+        v-for="column in transactionColumns"
+        :key="column.prop"
+        :prop="column.prop"
+        :label="column.label"
+        :sortable="column.sortable"
+      >
+        <template v-slot:default="scope">
+          <template v-if="column.prop === 'transaction_number'">
+            <router-link :to="{name: 'transaction', params: {transactionNumber: scope.row[column.prop]}}">
+              {{ scope.row[column.prop] }}
+            </router-link>
+          </template>
+          <template v-else-if="column.prop === 'date'">
+            <div>
+              {{ formatDate(scope.row[column.prop]) }}
+            </div>
+          </template>
+          <template v-else-if="column.prop === 'memo'">
+            <router-link :to="`memos/${scope.row[column.prop]}`">
+              {{ scope.row[column.prop] }}
+            </router-link>
+          </template>
+          <!-- TODO if the column is budget_category, display the budgetCategoryTreeSelect component -->
+          <template v-else>
             {{ scope.row[column.prop] }}
-          </router-link>
+          </template>
         </template>
-        <template v-else-if="column.prop === 'date'">
-          <div>
-            {{ formatDate(scope.row[column.prop]) }}
-          </div>
-        </template>
-        <template v-else-if="column.prop === 'memo'">
-          <router-link :to="`memos/${scope.row[column.prop]}`">
-            {{ scope.row[column.prop] }}
-          </router-link>
-        </template>
-        <!-- TODO if the column is budget_category, display the budgetCategoryTreeSelect component -->
-        <template v-else>
-          {{ scope.row[column.prop] }}
-        </template>
-      </template>
-    </el-table-column>
-  </el-table>
+      </el-table-column>
+    </el-table>
+  </div>
   <TransactionTablePagination v-if="!isPaginationDisabled" />
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import type { Transaction } from '@types'
 import { formatDate } from '@api/helpers/formatDate'
 import MonthSummaryTable from '@components/transactions/MonthSummaryTable.vue'
@@ -68,6 +81,7 @@ import AlertComponent from '@components/shared/AlertComponent.vue'
 import DailyIntervalLineChart from '@components/transactions/DailyIntervalLineChart.vue'
 import TransactionTablePagination from '@components/transactions/TransactionsTablePagination.vue'
 import { getDateTypeAndValue } from '@components/transactions/getDateTypeAndValue'
+import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
 
 const store = useTransactionsStore()
 
@@ -77,6 +91,19 @@ const selectedDay = computed(() => store.getSelectedDay)
 
 const dateTypeAndValue = computed(() => getDateTypeAndValue())
 const selectedValue = computed(() => dateTypeAndValue.value.selectedValue)
+
+const showTransactionEditModal = ref(false)
+const selectedTransaction = ref<Transaction | null>(null)
+
+const openTransactionEditModal = (row: Transaction) => {
+  selectedTransaction.value = { ...row }
+  showTransactionEditModal.value = true
+}
+
+const closeTransactionEditModal = () => {
+  showTransactionEditModal.value = false
+  selectedTransaction.value = null
+}
 
 // disable the pagination if day, week, or month is selected
 const isPaginationDisabled = computed(() => selectedDay.value || selectedWeek.value || selectedMonth.value)
@@ -143,7 +170,6 @@ watch(
   { immediate: true }
 )
 
-
 // Define table columns
 const transactionColumns = [
   { prop: 'id', label: 'ID', sortable: true },
@@ -159,7 +185,7 @@ const transactionColumns = [
 ]
 
 function getRowKey(row: Transaction): string {
-  return row.transactionNumber
+  return row.transaction_number
 }
 
 </script>

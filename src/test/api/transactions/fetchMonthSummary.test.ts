@@ -11,7 +11,7 @@ describe('fetchMonthSummary', () => {
 
 
     test('fetchMonthSummary should return the correct data', async () => {
-        const month = '11/2023'
+        const month = '11-2023'
 
         const result = await fetchMonthSummary(month)
         expect(result).toEqual(monthSummaryMock)
@@ -26,7 +26,7 @@ describe('fetchMonthSummary', () => {
             return new HttpResponse('Unhandled request', {status: 500})
         }));
 
-        const week = '13/2023';
+        const week = '13-2023';
         await expect(fetchMonthSummary(week)).rejects.toThrow();
     });
 

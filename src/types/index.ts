@@ -1,3 +1,5 @@
+import type { Component } from 'vue'
+
 export interface AddressFields {
   streetAddress: string;
   unitOrAptNum?: string;
@@ -8,17 +10,17 @@ export interface AddressFields {
 
 export type Transaction = {
   id: number;
-  transactionNumber: string;
+  transaction_number: string;
   date: string;
-  description?: string;
+  description: string;
   memo: string;
   memo_id: number;
-  amountDebit: string;
-  amountCredit?: string;
-  balance?: string;
-  checkNumber?: string;
-  fees?: string;
-  budgetCategory: string;
+  amount_debit: string;
+  amount_credit: string;
+  balance: string;
+  check_number: string;
+  fees: string;
+  budget_category: string;
 };
 
 export interface MemoSummary {
@@ -34,11 +36,6 @@ export interface WeekSummary {
 export interface MonthSummary {
   memo: string;
   monthly_amount_debit: number;
-}
-
-export interface MemoSumAmountDebits {
-  memo: string;
-  total_debit: number;
 }
 
 export interface DaySummary {
@@ -127,21 +124,22 @@ export interface MemoFormFields {
 export type MemoKeys = 'name' | 'recurring' | 'necessary' | 'frequency';
 
 export type TransactionKeys =
-  'transactionNumber'
+  'transaction_number'
   | 'date'
   | 'description'
   | 'memo'
-  | 'amountDebit'
-  | 'amountCredit'
+  | 'amount_debit'
+  | 'amount_credit'
   | 'balance'
-  | 'checkNumber'
+  | 'check_number'
   | 'fees'
-  | 'budgetCategory';
+  | 'budget_category';
 
 export type TransactionFormFields = {
-  component: 'el-input' | 'el-date-picker' | 'el-select' | 'BudgetCategoryTreeSelect';
+  component: 'el-input' | 'el-date-picker' | 'el-select' | 'budget-category-tree-select' | 'BudgetCategoryTreeSelect' | Component;
   label: string;
   placeholder?: string;
+  props?: Record<string, unknown>;
   disabledCondition?: boolean;
 }
 
@@ -197,12 +195,6 @@ export interface User {
 }
 
 export type UserRole = 'admin' | 'user' | 'guest';
-
-export interface FormField {
-  label: string;
-  type: string;
-  placeholder: string;
-}
 
 export interface BudgetCategory {
   budget_category: string;
@@ -280,20 +272,24 @@ export interface RegisterFormFields {
   labelPosition?: string
 }
 
-export interface MemosCount {
-  count: number;
-}
-
-export interface TransactionsCount {
-  count: number;
-}
-
 export interface MemoQueryParams {
   memoName?: string;
   date?: string;
   timeFrame?: Timeframe;
   limit?: number;
   offset?: number;
+  count?: boolean;
+}
+
+export interface TransactionQueryParams {
+  date?: string | Date;
+  offset?: number;
+  limit?: number;
+  memo?: Memo['name'];
+  timeFrame?: TimeframeType;
+  oldestDate?: boolean;
+  count?: boolean;
+  budgetCategory?: BudgetCategory['budget_category'];
 }
 
 export interface LineChartDataPoint {

@@ -38,7 +38,7 @@ const MemoBarChart = defineComponent({
 
     function sumDebits(transactions: Transaction[]): number {
       return transactions.reduce((total, transaction) => {
-        return total + parseFloat(transaction['amountDebit']);
+        return total + parseFloat(transaction['amount_debit']);
       }, 0);
     }
 

@@ -1,14 +1,11 @@
-import {httpClient} from "@api/httpClient";
+import { httpClient } from '@api/httpClient'
 
-export async function fetchDaysOfWeek(weekString: string) {
-    return await httpClient
-        .get(`/transactions/get-days-of-week`, {
-            params: {
-                week: weekString
-            }
-        })
-        .then(res => res.data)
-        .catch((err: Error) => {
-            console.error('err:', err);
-        });
+
+export async function fetchDaysOfWeek(week: string) {
+  return await httpClient
+    .get(`/transactions/weeks/${week}/days`)
+    .then(res => res.data)
+    .catch((err: Error) => {
+      console.error('err:', err)
+    })
 }
