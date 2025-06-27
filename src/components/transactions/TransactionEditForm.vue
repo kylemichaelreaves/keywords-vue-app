@@ -81,7 +81,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     label: 'Memo',
     placeholder: 'Select a memo',
     props: {
-      modelValue: transaction.memo,
+      modelValue: transaction.memo
     }
   },
   balance: {

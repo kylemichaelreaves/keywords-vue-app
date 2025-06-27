@@ -10,7 +10,7 @@ export async function fetchTransactionsCount(params: {
   memo?: Memo['name'];
   timeFrame?: TimeframeType;
   oldestDate?: boolean;
-} = {}) {
+} = {}): Promise<number> {
   return fetchTransactions({
     ...params,
     count: true

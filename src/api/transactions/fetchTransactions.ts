@@ -1,7 +1,7 @@
 import { httpClient } from '@api/httpClient'
-import type { Memo, TransactionQueryParams } from '@types'
+import type { TransactionQueryParams } from '@types'
 
-export async function fetchTransactions(queryParams: TransactionQueryParams): Promise<Array<Memo>> {
+export async function fetchTransactions(queryParams: TransactionQueryParams) {
 
   function isValidParam(key: string, value: unknown): boolean {
     if (value === undefined) return false

@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
 import type {
     Memo,
-    MJSummary,
+    SummaryTypeBase,
     MonthYear,
-    OFSummary,
+    SummaryTypeBase,
     Summaries,
     WeekYear,
     DayYear,
@@ -29,8 +29,8 @@ export const useTransactionsStore = defineStore('transactions', {
         memos: Array<Memo>;
         years: Array<Year>;
         descriptions: Array<string>;
-        OFSummaries: Array<OFSummary>;
-        MJSummaries: Array<MJSummary>;
+        OFSummaries: Array<SummaryTypeBase>;
+        MJSummaries: Array<SummaryTypeBase>;
         daysSummaries: Array<Summaries>;
         weeksSummaries: Array<Summaries>;
         monthsSummaries: Array<Summaries>;
@@ -171,10 +171,10 @@ export const useTransactionsStore = defineStore('transactions', {
         setDescriptions(descriptions: Array<string>) {
             this.descriptions = descriptions;
         },
-        setOFSummaries(summaries: Array<OFSummary>) {
+        setOFSummaries(summaries: Array<SummaryTypeBase>) {
             this.OFSummaries = summaries;
         },
-        setMJSummaries(summaries: Array<MJSummary>) {
+        setMJSummaries(summaries: Array<SummaryTypeBase>) {
             this.MJSummaries = summaries;
         },
         setDaysSummaries(summaries: Array<Summaries>) {

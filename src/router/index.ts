@@ -56,14 +56,13 @@ export const routes = [{
         meta: { requiresAuth: true },
         children: [
           {
-            path: 'summary/month/:month',
+            path: 'months/:month/summary',
             name: 'month-summary',
             component: MonthSummaryTable,
-            meta: { requiresAuth: true },
-            props: true
+            meta: { requiresAuth: true }
           },
           {
-            path: 'summary/week/:week',
+            path: 'weeks/:week/summary/',
             name: 'week-summary',
             component: WeekSummaryTable,
             meta: { requiresAuth: true },
@@ -85,7 +84,7 @@ export const routes = [{
         meta: { requiresAuth: true }
       },
       {
-        path: 'memos/:memoName',
+        path: 'memos/:memoName/summary',
         name: 'memo',
         component: MemoSummaryTable,
         props: true,
@@ -114,7 +113,6 @@ export const routes = [{
     name: 'not-found',
     component: NotFound
   }]
-
 
 
 export const router = createRouter({

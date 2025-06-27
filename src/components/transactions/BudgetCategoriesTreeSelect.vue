@@ -1,23 +1,23 @@
 <template>
-  <AlertComponent v-if="error && isError" :title="error.name" :message="error.message" type="error"/>
+  <AlertComponent v-if="error && isError" :title="error.name" :message="error.message" type="error" />
   <div class="flex-container">
     <el-row :gutter="35">
       <el-col :span="12">
         <el-tree-select
-            :placeholder="props.placeholder"
-            :data="selectTreeData"
-            v-model="model"
-            class="tree-select"
-            show-checkbox
+          :placeholder="props.placeholder"
+          :data="selectTreeData"
+          v-model="model"
+          class="tree-select"
+          show-checkbox
         />
       </el-col>
       <el-col :span="10">
         <div v-if="model" class="button-container">
           <el-button
-              type="danger"
-              @click="resetSelectedBudgetCategory"
+            type="danger"
+            @click="resetSelectedBudgetCategory"
           >
-          Reset Category
+            Reset Category
           </el-button>
         </div>
       </el-col>
@@ -26,17 +26,17 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits} from "vue";
-import {ElTreeSelect} from "element-plus";
-import {useBudgetCategories} from "@api/hooks/transactions/useBudgetCategories";
-import {convertToTree} from "@api/helpers/convertToTree";
-import {useTransactionsStore} from "@stores/transactions";
-import type {BudgetCategoryResponse, CategoryNode} from "@types";
-import AlertComponent from "@components/shared/AlertComponent.vue";
+import { computed, defineEmits } from 'vue'
+import { ElTreeSelect } from 'element-plus'
+import { useBudgetCategories } from '@api/hooks/transactions/useBudgetCategories'
+import { convertToTree } from '@api/helpers/convertToTree'
+import { useTransactionsStore } from '@stores/transactions'
+import type { BudgetCategoryResponse, CategoryNode } from '@types'
+import AlertComponent from '@components/shared/AlertComponent.vue'
 
 const props = defineProps({
   selectedBudgetCategory: {
-    type: String,
+    type: String
   },
   placeholder: {
     type: String,
@@ -46,33 +46,33 @@ const props = defineProps({
     type: String,
     default: ''
   }
-});
+})
 
 let model = defineModel({
   type: String,
   default: ''
-});
+})
 
-const emit = defineEmits(['update:selected-budget-category']);
+const emit = defineEmits(['update:selected-budget-category'])
 
-const store = useTransactionsStore();
+const store = useTransactionsStore()
 
-const {data, isError, error} = useBudgetCategories();
+const { data, isError, error } = useBudgetCategories()
 
 const selectTreeData = computed<CategoryNode[]>(() => {
   if (!data.value || !data.value.length) {
-    return [];
+    return []
   }
-  const arr = data.value as unknown as BudgetCategoryResponse[];
-  return arr.map((item) => convertToTree(item.data)).flat();
-});
+  const arr = data.value as unknown as BudgetCategoryResponse[]
+  return arr.map((item) => convertToTree(item.data)).flat()
+})
 
 
 const resetSelectedBudgetCategory = () => {
-  model.value = '';
-  store.setSelectedBudgetCategory(null);
-  emit('update:selected-budget-category', null);
-};
+  model.value = ''
+  store.setSelectedBudgetCategory(null)
+  emit('update:selected-budget-category', null)
+}
 
 
 </script>

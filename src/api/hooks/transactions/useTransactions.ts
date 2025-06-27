@@ -3,15 +3,15 @@ import { computed } from 'vue'
 import { useTransactionsStore } from '@stores/transactions'
 import { fetchTransactions } from '@api/transactions/fetchTransactions'
 import { getJSDateObject } from '@api/helpers/getJSDateObject'
-import { getDateTypeAndValue } from '@components/transactions/getDateTypeAndValue'
+import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
 import type { Transaction } from '@types'
 
 export default function useTransactions() {
 
   const store = useTransactionsStore()
   const selectedMemo = computed(() => store.getSelectedMemo)
-  const dateTypeAndValue = computed(() => getDateTypeAndValue())
-  const dateType = computed(() => dateTypeAndValue.value.dateType)
+  const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())
+  const dateType = computed(() => dateTypeAndValue.value.timeFrame)
   const selectedValue = computed(() => dateTypeAndValue.value.selectedValue)
   const limit = computed(() => store.getTransactionsTableLimit)
 

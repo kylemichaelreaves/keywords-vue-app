@@ -5,6 +5,7 @@ import {computed} from "vue";
 import {useTransactionsStore} from "@stores/transactions";
 import {fetchMonthSummary} from "@api/transactions/fetchMonthSummary";
 
+// useMonthSummary returns every memo and their total amount debit for the selected month
 export default function useMonthSummary(): UseQueryReturnType<MonthSummary[], Error> {
     const store = useTransactionsStore()
     const month = computed(() => store.getSelectedMonth)

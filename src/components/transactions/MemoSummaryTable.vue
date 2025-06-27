@@ -9,7 +9,7 @@
           {{ props.memoName }}
         </h2>
         <div>
-          <MemoBudgetCategory :memoName="props.memoName" />
+          <MemoBudgetCategory v-if="props.memoName" :key="props.memoName" :memoName="props.memoName" />
         </div>
       </div>
     </template>
@@ -76,3 +76,4 @@ watch(() => props.memoName, () => {
   font-weight: bold;
 }
 </style>
+

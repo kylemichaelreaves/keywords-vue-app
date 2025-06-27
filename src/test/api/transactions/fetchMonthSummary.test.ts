@@ -18,14 +18,6 @@ describe('fetchMonthSummary', () => {
     })
 
     test.skip('fetchMonthSummary should throw an error if the request fails', async () => {
-        server.use(
-            http.get('*/transactions/get-month-summary', (info) => {
-            //     return res(ctx.status(500),
-            //         ctx.json({data: 'Internal Server Error'}));
-            // })
-            return new HttpResponse('Unhandled request', {status: 500})
-        }));
-
         const week = '13-2023';
         await expect(fetchMonthSummary(week)).rejects.toThrow();
     });
