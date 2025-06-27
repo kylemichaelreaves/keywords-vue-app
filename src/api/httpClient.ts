@@ -1,11 +1,7 @@
 import axios from 'axios'
 
-// if local env, invoke local
-const isLocal = import.meta.env.VITE_LOCAL === 'true'
-
-
 export const httpClient = axios.create({
-  baseURL: import.meta.env.VITE_LOCAL_APIGATEWAY_URL,
+  baseURL: import.meta.env.VITE_APIGATEWAY_URL,
   headers: {
     'Content-Type': 'application/json'
   }
