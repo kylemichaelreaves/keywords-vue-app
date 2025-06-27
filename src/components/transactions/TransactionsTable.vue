@@ -80,7 +80,7 @@ import TransactionsTableSelects from '@components/transactions/TransactionsTable
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import DailyIntervalLineChart from '@components/transactions/DailyIntervalLineChart.vue'
 import TransactionTablePagination from '@components/transactions/TransactionsTablePagination.vue'
-import { getDateTypeAndValue } from '@components/transactions/getDateTypeAndValue'
+import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
 import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
 
 const store = useTransactionsStore()
@@ -89,7 +89,7 @@ const selectedMonth = computed(() => store.getSelectedMonth)
 const selectedWeek = computed(() => store.getSelectedWeek)
 const selectedDay = computed(() => store.getSelectedDay)
 
-const dateTypeAndValue = computed(() => getDateTypeAndValue())
+const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())
 const selectedValue = computed(() => dateTypeAndValue.value.selectedValue)
 
 const showTransactionEditModal = ref(false)

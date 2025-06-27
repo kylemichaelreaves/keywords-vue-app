@@ -2,7 +2,7 @@
   <el-dialog v-model="isModalVisible" :title="title">
     <AlertComponent v-if="error && isError" :title="error.name" :message="error.message" type="error"/>
     <el-text size="large">{{ props.memo }}</el-text>
-    <BudgetCategoriesTreeSelect v-model:selected-budget-category="selectedBudgetCategory"/>
+    <BudgetCategoriesTreeSelect v-model="selectedBudgetCategory"/>
     <template #footer>
       <el-button @click="closeModal">Cancel</el-button>
       <el-button type="primary" @click="saveCategory">Save</el-button>

@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 import {ref, onMounted, watchEffect, onBeforeUnmount} from 'vue';
-import type {Summary, DailyInterval} from "@types";
+import type { DailyInterval, SummaryTypeBase } from '@types'
 import {createLineChart} from "./createLineChart";
 
 const props = defineProps<{
-  summaries: Summary[] | DailyInterval[],
+  summaries: SummaryTypeBase[] | DailyInterval[],
   handleOnClickSelection: (selection: string) => void,
 }>();
 

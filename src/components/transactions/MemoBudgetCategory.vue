@@ -60,7 +60,7 @@ const onCategoryUpdated = () => {
 
 const budgetCategory = computed(() => {
   const budgetData = data?.value as BudgetCategory[] | undefined;
-  return budgetData ? budgetData[0]?.budget_category : '';
+  return budgetData ? budgetData[0]?.budget_category : null;
 });
 
 const buttonCondition = computed(() => {

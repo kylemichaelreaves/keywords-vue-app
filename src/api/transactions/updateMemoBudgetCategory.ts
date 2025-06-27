@@ -1,12 +1,10 @@
 import { httpClient } from '@api/httpClient'
-import type { BudgetCategory, Memo } from '@types'
+import type { Memo } from '@types'
 
-// TODO give budgetCategory a type, any field of the BudgetCategories Object
-export async function updateMemoBudgetCategory(memo: Memo['name'], budgetCategory: string): Promise<BudgetCategory> {
-  // TODO remove: it's redundant. And, remove route from API Gateway.
+export async function updateMemoBudgetCategory(memo: Memo['name'], budgetCategory: string): Promise<Memo> {
+  // TODO remove: it's redundant.
   return await httpClient
-    .patch(`/transactions/update-memo-budget-category`, {
-        memo: memo,
+    .patch(`/memos/${memo}`, {
         budgetCategory: budgetCategory
       }
     )

@@ -3,8 +3,8 @@ import type {ComputedRef} from "vue";
 import {useTransactionsStore} from "@stores/transactions";
 import type {TimeframeType} from "@types";
 
-export const getDateTypeAndValue = (): {
-    dateType: TimeframeType;
+export const getTimeframeTypeAndValue = (): {
+    timeFrame: TimeframeType;
     selectedValue: ComputedRef<string> | null;
 } => {
     const store = useTransactionsStore();
@@ -17,12 +17,12 @@ export const getDateTypeAndValue = (): {
 
     // Determine the date dateType and corresponding value
     if (selectedDay.value) {
-        return {dateType: "day", selectedValue: selectedDay};
+        return {timeFrame: "day", selectedValue: selectedDay};
     } else if (selectedWeek.value) {
-        return {dateType: "week", selectedValue: selectedWeek};
+        return {timeFrame: "week", selectedValue: selectedWeek};
     } else if (selectedMonth.value) {
-        return {dateType: "month", selectedValue: selectedMonth};
+        return {timeFrame: "month", selectedValue: selectedMonth};
     } else {
-        return {dateType: "year", selectedValue: selectedYear};
+        return {timeFrame: "year", selectedValue: selectedYear};
     }
 };

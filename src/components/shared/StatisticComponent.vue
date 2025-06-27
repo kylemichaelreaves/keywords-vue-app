@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-statistic size="large" :value="value" :title="title"/>
+    <el-statistic size="large" :value="value" :title="title" />
     <div v-if="previousValue !== undefined && difference" class="footer">
       <span v-if="difference > 0" class="increase">Increase</span>
       <span v-else-if="difference < 0" class="decrease">Decrease</span>
@@ -10,38 +10,37 @@
   </div>
 </template>
 
-<script lang="ts">
-import {computed, defineComponent} from "vue";
-import {ElStatistic} from "element-plus";
+<script setup lang="ts">
+import { computed } from 'vue'
 
-export default defineComponent({
-  name: "StatisticComponent",
-  props: {
-    title: {
-      type: String,
-      required: true
-    },
-    value: {
-      type: [Number, String],
-      required: true
-    },
-    previousValue: {
-      type: [Number, String],
-      required: false
-    }
+const props = defineProps({
+  title: {
+    type: String,
+    required: true
   },
-  setup(props) {
-    const difference = computed(() => {
-      if (props.previousValue !== undefined) {
-        return Number(props.value) - Number(props.previousValue);
-      }
-      return null;
-    });
-    return {
-      difference
-    }
-  }
+  value: {
+    type: [Number, String],
+    required: true
+  },
+  previousValue: {
+    type: [Number, String],
+    required: false
+  },
+  size: {
+    type: String,
+    default: 'large',
+    required: false
+  },
 })
+
+
+const difference = computed(() => {
+  if (props.previousValue !== undefined) {
+    return Number(props.value) - Number(props.previousValue)
+  }
+  return null
+})
+
 
 </script>
 

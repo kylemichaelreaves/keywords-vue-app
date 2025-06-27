@@ -8,41 +8,6 @@ export interface AddressFields {
   zipcode?: string;
 }
 
-export type Transaction = {
-  id: number;
-  transaction_number: string;
-  date: string;
-  description: string;
-  memo: string;
-  memo_id: number;
-  amount_debit: string;
-  amount_credit: string;
-  balance: string;
-  check_number: string;
-  fees: string;
-  budget_category: string;
-};
-
-export interface MemoSummary {
-  sum_amount_debit: number;
-  transactions_count: number;
-}
-
-export interface WeekSummary {
-  memo: string;
-  weekly_amount_debit: number;
-}
-
-export interface MonthSummary {
-  memo: string;
-  monthly_amount_debit: number;
-}
-
-export interface DaySummary {
-  memo: string;
-  daily_amount_debit: number;
-}
-
 export interface Address {
   house_number: string;
   road: string;
@@ -72,9 +37,94 @@ export interface AddressResponse {
   lat: string
 }
 
-export interface PieChartData {
+export type Breadcrumb = {
   label: string;
-  value: number;
+  to: string;
+}
+
+export interface BudgetCategory {
+  name: string;
+  necessary: boolean;
+  recurring: boolean;
+  frequency?: Frequency;
+}
+
+export interface BudgetCategoryData {
+  id: string;
+  name: string;
+  subcategories?: Record<string, BudgetCategoryData>;
+}
+
+export interface BudgetCategoryResponse {
+  data: BudgetCategoryData;
+}
+
+
+export interface CarBudget {
+  memo: string;
+  amountDebit: number;
+  total_amount_debit: number;
+}
+
+export interface CategoryNode {
+  id: number;
+  value: string;
+  label: string;
+  parent_id: number | null;
+  children?: CategoryNode[];
+}
+
+export interface DailyInterval {
+  day_number?: number;
+  week_number?: number;
+  month_number?: number;
+  year?: number;
+  date: Date,
+  total_amount_debit: number;
+  total_debit?: number;
+}
+
+
+export interface DaySummary {
+  memo: string;
+  daily_amount_debit: number;
+}
+
+export interface DayYear {
+  day: string;
+}
+
+export type Frequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+export type JsonObjectType = {
+  total_debit: number;
+  month_number: string;
+  year: string;
+};
+
+export interface LineChartDataPoint {
+  date: Date;
+  total_debit: number;
+}
+
+
+export type LoanFormType = {
+  loanAmount: number;
+  interestRate: number;
+  loanTerm: number;
+  startDate: Date;
+  [key: string]: number | Date;
+};
+
+
+export type loginFormKeys = 'username' | 'password'
+
+export interface LoginFormFields {
+  component: 'el-input'
+  label: string
+  placeholder: string
+  type: string
+  showPassword?: boolean
 }
 
 export interface Memo {
@@ -83,34 +133,23 @@ export interface Memo {
   recurring: boolean;
   necessary: boolean;
   frequency?: Frequency;
-  budgetCategory?: BudgetCategory['budget_category'];
+  budgetCategory?: BudgetCategory['name'];
 }
 
-export interface DayYear {
-  day: string;
+
+
+export interface MemoSummary {
+  sum_amount_debit: number;
+  transactions_count: number;
 }
 
-export interface MonthYear {
-  month_year: string;
-}
-
-export interface WeekYear {
-  week_year: string;
-}
-
-export interface Year {
-  year: string;
-}
-
-export type TimeframeType = 'day' | 'week' | 'month' | 'year';
-
-export type Frequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
-
-export enum Timeframe {
-  Day = 'day',
-  Month = 'month',
-  Week = 'week',
-  Year = 'year',
+export interface MemoQueryParams {
+  memoName?: string;
+  date?: string;
+  timeFrame?: Timeframe;
+  limit?: number;
+  offset?: number;
+  count?: boolean;
 }
 
 export interface MemoFormFields {
@@ -122,6 +161,91 @@ export interface MemoFormFields {
 }
 
 export type MemoKeys = 'name' | 'recurring' | 'necessary' | 'frequency';
+
+
+
+export interface MonthSummary {
+  memo: string;
+  monthly_amount_debit: number;
+}
+
+export interface MonthYear {
+  month_year: string;
+}
+
+
+
+export interface PieChartData {
+  label: string;
+  value: number;
+}
+
+
+
+
+export type RouterQueryParams = {
+  [key: string]: string | number | null | undefined;
+};
+
+
+export type RegisterFormKeys = 'username' | 'firstName' | 'lastName' | 'email' | 'password' | 'confirmPassword'
+
+export interface RegisterFormFields {
+  component: 'el-input',
+  label: string,
+  placeholder: string,
+  type: string,
+  showPassword?: boolean,
+  labelPosition?: string
+}
+
+
+export type SummaryTypeBase = {
+  total_debit: number;
+  total_amount_debit?: number;
+  year: string;
+  day_number?: string;
+  week_number?: string;
+  month_number?: string;
+  json?: JsonObjectType;
+  date?: string;
+}
+
+
+export type Summaries = {
+  period: string;
+  total_debit: number;
+  total_credit: number;
+  amount_difference: number;
+};
+
+
+
+export type TimeframeType = 'day' | 'week' | 'month' | 'year';
+
+
+export enum Timeframe {
+  Day = 'day',
+  Month = 'month',
+  Week = 'week',
+  Year = 'year',
+}
+
+export type Transaction = {
+  id: number;
+  transaction_number: string;
+  date: string;
+  description: string;
+  memo: string;
+  memo_id: number;
+  amount_debit: string;
+  amount_credit: string;
+  balance: string;
+  check_number: string;
+  fees: string;
+  budget_category: string;
+};
+
 
 export type TransactionKeys =
   'transaction_number'
@@ -143,45 +267,28 @@ export type TransactionFormFields = {
   disabledCondition?: boolean;
 }
 
-export type OFSummaryTypeBase = {
-  total_debit: number;
-  total_amount_debit?: number;
-  year: string;
-  day_number?: string;
-  week_number?: string;
-  month_number?: string;
-  json?: JsonObjectType;
-  date?: string;
+
+export interface TransactionQueryParams {
+  date?: string | Date;
+  offset?: number;
+  limit?: number;
+  memo?: Memo['name'];
+  timeFrame?: TimeframeType;
+  oldestDate?: boolean;
+  count?: boolean;
+  budgetCategory?: BudgetCategory['name'];
+  historical?: boolean;
+  totalAmountDebit?: boolean;
+  budgetCategorySummary?: boolean;
+  budgetCategoryHierarchySum?: boolean;
 }
 
-export type JsonObjectType = {
-  total_debit: number;
-  month_number: string;
-  year: string;
-};
 
-export type OFSummary = OFSummaryTypeBase;
-
-export type MJSummary = OFSummaryTypeBase;
-
-export type Summary = OFSummary | MJSummary;
-
-export type Summaries = {
-  period: string;
-  total_debit: number;
-  total_credit: number;
-  amount_difference: number;
-};
-
-export type CategoryTreeNode = {
-  value: string | number;
-  label: string;
-  children?: CategoryTreeNode[];
+export interface ToolTipTransactionTableProps {
+  transactions: Partial<Transaction>[];
+  month: string;
+  amount: number;
 }
-
-export type RouterQueryParams = {
-  [key: string]: string | number | null | undefined;
-};
 
 export interface User {
   id?: number;
@@ -196,109 +303,15 @@ export interface User {
 
 export type UserRole = 'admin' | 'user' | 'guest';
 
-export interface BudgetCategory {
-  budget_category: string;
-  necessary: boolean;
-  recurring: boolean;
-  frequency?: Frequency;
-}
-
-export interface BudgetCategoryData {
-  id: string;
-  name: string;
-  subcategories?: Record<string, BudgetCategoryData>;
-}
-
-export interface BudgetCategoryResponse {
-  data: BudgetCategoryData;
-}
-
-
-export type LoanFormType = {
-  loanAmount: number;
-  interestRate: number;
-  loanTerm: number;
-  startDate: Date;
-  [key: string]: number | Date;
-};
-
-export interface CarBudget {
+export interface WeekSummary {
   memo: string;
-  amountDebit: number;
-  total_amount_debit: number;
+  weekly_amount_debit: number;
 }
 
-export type Breadcrumb = {
-  label: string;
-  to: string;
+export interface WeekYear {
+  week_year: string;
 }
 
-export interface CategoryNode {
-  id: number;
-  value: string;
-  label: string;
-  parent_id: number | null;
-  children?: CategoryNode[];
-}
-
-export interface DailyInterval {
-  day_number?: number;
-  week_number?: number;
-  month_number?: number;
-  year?: number;
-  date: Date,
-  total_amount_debit: number;
-  total_debit?: number;
-}
-
-export type loginFormKeys = 'username' | 'password'
-
-export interface LoginFormFields {
-  component: 'el-input'
-  label: string
-  placeholder: string
-  type: string
-  showPassword?: boolean
-}
-
-export type RegisterFormKeys = 'username' | 'firstName' | 'lastName' | 'email' | 'password' | 'confirmPassword'
-
-export interface RegisterFormFields {
-  component: 'el-input',
-  label: string,
-  placeholder: string,
-  type: string,
-  showPassword?: boolean,
-  labelPosition?: string
-}
-
-export interface MemoQueryParams {
-  memoName?: string;
-  date?: string;
-  timeFrame?: Timeframe;
-  limit?: number;
-  offset?: number;
-  count?: boolean;
-}
-
-export interface TransactionQueryParams {
-  date?: string | Date;
-  offset?: number;
-  limit?: number;
-  memo?: Memo['name'];
-  timeFrame?: TimeframeType;
-  oldestDate?: boolean;
-  count?: boolean;
-  budgetCategory?: BudgetCategory['budget_category'];
-}
-
-export interface LineChartDataPoint {
-  date: Date;
-  total_debit: number;
-}
-
-export interface ToolTipTransactionTableProps {
-  transactions: Partial<Transaction>[];
-  month: string;
-  amount: number;
+export interface Year {
+  year: string;
 }
