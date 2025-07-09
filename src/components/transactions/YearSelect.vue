@@ -1,7 +1,12 @@
 <template>
-  <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error" />
+  <AlertComponent
+    :title="error.name"
+    :message="error.message"
+    type="error" v-if="isError && error"
+    :data-testid="errorId"
+  />
   <SelectComponent
-    data-testid="year-select"
+    :data-testid="props.dataTestId"
     :selectedValue="selectedYear"
     placeholder="select a year"
     :options="yearOptions"
@@ -13,7 +18,6 @@
     :onClear="clearSelectedYear"
     :disabled="true"
   />
-
 </template>
 
 <script setup lang="ts">
@@ -22,6 +26,15 @@ import { useYears } from '@api/hooks/transactions/useYears'
 import SelectComponent from '@components/shared/SelectComponent.vue'
 import { useTransactionsStore } from '@stores/transactions'
 import AlertComponent from '@components/shared/AlertComponent.vue'
+
+const props = defineProps({
+  dataTestId: {
+    type: String,
+    default: 'transaction-table-year-select'
+  }
+})
+
+const errorId = computed(() => `${props.dataTestId}-error`)
 
 const store = useTransactionsStore()
 const selectedYear = computed(() => store.getSelectedYear)

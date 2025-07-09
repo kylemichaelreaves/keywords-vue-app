@@ -1,51 +1,45 @@
 <template>
+  <AlertComponent
+    v-if="isError && error"
+    :title="error.name"
+    :message="error.message"
+    type="error"
+    data-testid="weekly-amount-debit-total-error"
+  />
   <el-statistic
-      v-if="data"
-      :value="data[0].week_total_amount_debit"
-      title="Weekly Total Amount Debit"
-      v-loading="isLoading || isFetching || isRefetching"
+    v-if="data"
+    :value="data.total_amount_debit"
+    title="Weekly Total Amount Debit"
+    v-loading="isLoading || isFetching || isRefetching"
   />
 </template>
 
-<script lang="ts">
-import {defineComponent, watch} from "vue";
-import {ElStatistic} from "element-plus";
-import useSumAmountDebitByDate from "@api/hooks/transactions/useSumAmountDebitByDate";
-import {useTransactionsStore} from "@stores/transactions";
+<script setup lang="ts">
+import { watch } from 'vue'
+import { ElStatistic } from 'element-plus'
+import useSumAmountDebitByDate from '@api/hooks/transactions/useSumAmountDebitByDate'
+import { useTransactionsStore } from '@stores/transactions'
+import AlertComponent from '@components/shared/AlertComponent.vue'
 
-export default defineComponent({
-  name: 'WeeklyAmountDebitTotal',
-  components: {ElStatistic},
-  setup() {
 
-    const store = useTransactionsStore();
+const store = useTransactionsStore()
 
-    const {
-      data,
-      isLoading,
-      isFetching,
-      isRefetching,
-      isError,
-      error,
-      refetch
-    } = useSumAmountDebitByDate('week', store.selectedWeek);
+const {
+  data,
+  isLoading,
+  isFetching,
+  isRefetching,
+  isError,
+  error,
+  refetch
+} = useSumAmountDebitByDate('week', store.selectedWeek)
 
-    watch(() => store.selectedWeek, (newValue) => {
-      if (newValue) {
-        refetch();
-      }
-    }, {immediate: true});
-
-    return {
-      data,
-      isLoading,
-      isFetching,
-      isRefetching,
-      isError,
-      error,
-    }
+watch(() => store.selectedWeek, (newValue) => {
+  if (newValue) {
+    refetch()
   }
-})
+}, { immediate: true })
+
 
 </script>
 

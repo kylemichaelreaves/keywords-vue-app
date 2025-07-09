@@ -1,11 +1,24 @@
 <template>
-  <el-card>
-    <AlertComponent v-if="isError && error" :title="error.name" :message="error?.message" type="error" />
+  <el-card data-testid="month-summary-card" :data-selected-month="selectedMonth">
+    <AlertComponent
+      v-if="isError && error"
+      :title="error.name"
+      :message="error?.message"
+      type="error"
+      data-testid="month-summary-table-error"
+    />
     <template #header>
-      <div class="card-header">
-        <div class="summary-left">
-          <h2>Month Summary for: {{ selectedMonth }}</h2>
-          <MonthlyAmountDebitTotal />
+      <div
+        class="card-header"
+        data-testid="month-summary-table-header"
+        :data-selected-month="selectedMonth"
+      >
+        <div class="summary-left" data-testid="month-summary-left-section">
+          <h2 data-testid="month-summary-title">Month Summary for: {{ selectedMonth }}</h2>
+          <MonthlyAmountDebitTotal
+            data-testid="monthly-amount-debit-total"
+            :data-selected-month="selectedMonth"
+          />
         </div>
         <NavigationButtonGroup
           label="Month"
@@ -14,13 +27,18 @@
           :go-to-next="goToNextMonth"
           :go-to-previous="goToPreviousMonth"
           :reset="resetSelectedMonth"
+          data-testid="month-summary-navigation-button-group"
+          :data-selected-month="selectedMonth"
+          :data-is-first="isFirstMonth"
+          :data-is-last="isLastMonth"
         />
       </div>
     </template>
-    <el-row>
-      <el-col :span="12">
-        <!-- TODO use TableComponent -->
-        <!-- TODO sortable el-column, the column is Total Amount Debit -->
+    <el-row data-testid="month-summary-content-row">
+      <el-col
+        :span="12"
+        data-testid="month-summary-table-column"
+      >
         <el-table
           v-if="data"
           :data="data"
@@ -30,27 +48,62 @@
           v-loading="isFetching || isLoading || isRefetching"
           show-summary
           sortable
+          data-testid="month-summary-transactions-table"
+          :data-selected-month="selectedMonth"
+          :data-loading="isFetching || isLoading || isRefetching"
+          :data-row-count="data?.length || 0"
+          :row-key="(row: MonthSummaryRow) => `${selectedMonth}-${row.memo}`"
         >
           <el-table-column
-            v-for="column in columns"
+            v-for="(column, columnIndex) in columns"
             :key="column.prop"
             :prop="column.prop"
             :label="column.label"
+            :data-testid="`column-${column.prop}`"
           >
-            <template v-slot:default="scope" v-if="column.prop === 'memo'">
-              <router-link :to="{ name: 'memo', params: { memoName: scope.row[column.prop] }}">
-                {{ scope.row.memo }}
-              </router-link>
+            <template #header>
+              <span :data-testid="`header-${column.prop}`">{{ column.label }}</span>
             </template>
-            <template v-slot="scope" v-else>
-              {{ scope.row[column.prop] }}
+
+            <template v-slot:default="scope">
+              <div
+                :data-testid="`cell-${scope.$index}-${columnIndex}`"
+                :data-row-id="`${selectedMonth}-${scope.row.memo}`"
+                :data-column="column.prop"
+                :data-row-index="scope.$index"
+                :data-column-index="columnIndex"
+                :data-selected-month="selectedMonth"
+                :data-memo="scope.row.memo"
+                :data-value="scope.row[column.prop]"
+              >
+                <router-link
+                  v-if="column.prop === 'memo'"
+                  :to="{ name: 'memo', params: { memoName: scope.row[column.prop] }}"
+                  :data-testid="`memo-link-${scope.row.memo}-${selectedMonth}`"
+                  :data-memo="scope.row.memo"
+                  :data-selected-month="selectedMonth"
+                >
+                  {{ scope.row.memo }}
+                </router-link>
+                <span v-else>{{ scope.row[column.prop] }}</span>
+              </div>
             </template>
           </el-table-column>
         </el-table>
       </el-col>
-      <el-col :span="12">
-        <!--        <MonthsSummaryTable />-->
-        <BudgetCategorySummaries :v-if="selectedValue" :time-frame="timeFrame" :date="selectedValue" />
+      <el-col
+        :span="12"
+        data-testid="budget-category-summaries-column"
+      >
+        <BudgetCategorySummaries
+          v-if="selectedValue"
+          :time-frame="timeFrame"
+          :date="selectedValue"
+          data-testid="budget-category-summaries"
+          :data-selected-month="selectedMonth"
+          :data-time-frame="timeFrame"
+          :data-date="selectedValue"
+        />
       </el-col>
     </el-row>
   </el-card>
@@ -69,6 +122,11 @@ import NavigationButtonGroup from '@components/shared/NavigationButtonGroup.vue'
 import BudgetCategorySummaries from '@components/transactions/BudgetCategorySummaries.vue'
 import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue'
 
+// Define the month summary row structure
+interface MonthSummaryRow {
+  memo: string
+  total_amount_debit: number
+}
 
 const store = useTransactionsStore()
 const selectedMonth = computed(() => store.getSelectedMonth)
@@ -146,10 +204,7 @@ onBeforeUnmount(() => {
   //   reset the transactionsPageLimit to the default value
   store.setTransactionsTableLimit(100)
 })
-
-
 </script>
-
 
 <style scoped>
 .card-header {

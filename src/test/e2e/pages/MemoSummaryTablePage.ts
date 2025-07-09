@@ -5,6 +5,7 @@ export class MemoSummaryTablePage {
 
   readonly errorAlert: Locator
   readonly memoSummaryTable: Locator
+  readonly memoTransactionsTable: Locator
   readonly transactionsCount: Locator
   readonly transactionsAmount: Locator
   readonly backButton: Locator
@@ -13,22 +14,22 @@ export class MemoSummaryTablePage {
   constructor(page: Page) {
     this.page = page
 
-    this.errorAlert = page.locator('.el-alert--error')
-    this.memoSummaryTable = page.getByTestId('memo-transactions-table')
-    this.transactionsCount = page.getByTestId('transactions-count').locator('div')
-    this.transactionsAmount = page.getByTestId('sum-amount-debit').locator('div')
+    this.errorAlert = page.getByRole('alert').getByTestId('memo-summary-table-error')
+    this.memoSummaryTable = page.getByTestId('memo-summary-table')
+    this.memoTransactionsTable = page.getByTestId('memo-transactions-table')
+    this.transactionsCount = page.getByTestId('transactions-count')
+    this.transactionsAmount = page.getByTestId('sum-amount-debit')
     this.backButton = page.getByRole('button', { name: 'Go Back' })
+    this.memoTitle = page.getByTestId('memo-title')
+  }
 
-    this.memoTitle = page.locator('header-content').locator('h2')
+  async goToMemos() {
+    await this.page.goto('budget-visualizer/memos')
   }
 
 
   async goTo(memoId: string) {
     await this.page.goto(`budget-visualizer/memos/${memoId}`)
-  }
-
-  async clickBackButton() {
-    await this.backButton.click()
   }
 
 
@@ -54,12 +55,16 @@ export class MemoSummaryTablePage {
     }
   }
 
-  expectTableVisible() {
+  expectSummaryTableVisible() {
     return this.memoSummaryTable.isVisible()
   }
 
   async hasError() {
     return this.errorAlert.isVisible()
+  }
+
+  async clickBackButton() {
+    await this.backButton.click()
   }
 
 

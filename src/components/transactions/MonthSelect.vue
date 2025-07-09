@@ -1,7 +1,12 @@
 <template>
-  <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error" />
+  <AlertComponent
+    :title="error.name"
+    :message="error.message"
+    type="error" v-if="isError && error"
+    :data-testid="errorId"
+  />
   <SelectComponent
-    data-testid="month-select"
+    :data-testid="props.dataTestId"
     :options="monthOptions"
     :selectedValue="store.selectedMonth"
     placeholder="select a month"
@@ -19,6 +24,15 @@ import { useTransactionsStore } from '@stores/transactions'
 import SelectComponent from '@components/shared/SelectComponent.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import { useRouter } from 'vue-router'
+
+const props = defineProps({
+  dataTestId: {
+    type: String,
+    default: 'transactions-table-month-select'
+  }
+})
+
+const errorId = computed(() => `${props.dataTestId}-error`)
 
 const store = useTransactionsStore()
 

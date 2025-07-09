@@ -1,19 +1,32 @@
 <template>
-  <el-form :model="transaction" ref="formRef" label-width="120px">
+  <el-form
+    :model="transaction"
+    ref="formRef"
+    label-width="120px"
+    :data-testid="dataTestId"
+  >
     <el-form-item
       v-for="(field, key) in fields"
       :key="key"
       :label="field.label"
+      :data-testid="`${dataTestId}-form-item-${key}`"
     >
       <component
         :is="field.component"
         v-model="transaction[key]"
         :placeholder="field.placeholder"
+        :data-testid="`${dataTestId}-input-${key}`"
         v-bind="field.props || {}"
       >
       </component>
     </el-form-item>
-    <el-button type="primary" @click="saveTransaction">Save</el-button>
+    <el-button
+      type="primary"
+      @click="saveTransaction"
+      :data-testid="`${dataTestId}-save-button`"
+    >
+      Save
+    </el-button>
   </el-form>
 </template>
 
@@ -29,6 +42,10 @@ const props = defineProps({
   transaction: {
     type: Object as PropType<Transaction>,
     required: true
+  },
+  dataTestId: {
+    type: String,
+    default: 'transaction-edit-form'
   }
 })
 
@@ -110,7 +127,6 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
 })
 
 const { mutate } = mutateTransaction()
-
 
 watch(() => props.transaction, (newTransaction) => {
   Object.assign(transaction, newTransaction)

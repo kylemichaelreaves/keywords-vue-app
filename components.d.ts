@@ -107,6 +107,7 @@ declare module 'vue' {
     TimelineBarChart: typeof import('./src/components/charts/TimelineBarChart.vue')['default']
     ToDoList: typeof import('./src/components/ToDoList.vue')['default']
     ToolTipTransactionTable: typeof import('./src/components/transactions/ToolTipTransactionTable.vue')['default']
+    TransactionCreateForm: typeof import('./src/components/transactions/TransactionCreateForm.vue')['default']
     TransactionEditForm: typeof import('./src/components/transactions/TransactionEditForm.vue')['default']
     TransactionForm: typeof import('./src/components/transactions/TransactionForm.vue')['default']
     TransactionsTable: typeof import('./src/components/transactions/TransactionsTable.vue')['default']

@@ -1,20 +1,30 @@
 <template>
-  <DailyIntervalLineChart />
-  <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error" />
-  <MonthSummaryTable v-if="selectedMonth" />
-  <WeekSummaryTable v-if="selectedWeek" />
-  <TransactionsTableSelects />
+  <DailyIntervalLineChart data-testid="daily-interval-line-chart" />
+  <AlertComponent
+    v-if="isError && error"
+    :title="error.name"
+    :message="error.message"
+    type="error"
+    data-testid="transactions-table-error-alert"
+  />
+
+  <MonthSummaryTable v-if="selectedMonth" data-testid="month-summary-table" />
+  <WeekSummaryTable v-if="selectedWeek" data-testid="week-summary-table" />
+  <TransactionsTableSelects data-testid="transactions-table-selects" />
 
   <el-dialog
     v-model="showTransactionEditModal"
     :close-on-click-modal="false"
     :before-close="closeTransactionEditModal"
     width="50%"
+    :title="editModalTitle"
+    data-testid="transaction-edit-dialog"
   >
     <TransactionEditForm
       v-if="selectedTransaction"
       :transaction="selectedTransaction"
       @close="closeTransactionEditModal"
+      data-testid="transaction-edit-form"
     />
   </el-dialog>
 
@@ -40,20 +50,24 @@
         :prop="column.prop"
         :label="column.label"
         :sortable="column.sortable"
+        :data-testid="`column-${column.prop}`"
       >
         <template v-slot:default="scope">
           <template v-if="column.prop === 'transaction_number'">
-            <router-link :to="{name: 'transaction', params: {transactionNumber: scope.row[column.prop]}}">
+            <router-link
+              :to="{name: 'transaction', params: {transactionNumber: scope.row[column.prop]}}"
+              :data-testid="`transaction-link-${scope.row[column.prop]}`"
+            >
               {{ scope.row[column.prop] }}
             </router-link>
           </template>
           <template v-else-if="column.prop === 'date'">
-            <div>
+            <div :data-testid="`date-cell-${scope.row[column.prop]}`">
               {{ formatDate(scope.row[column.prop]) }}
             </div>
           </template>
           <template v-else-if="column.prop === 'memo'">
-            <router-link :to="`memos/${scope.row[column.prop]}`">
+            <router-link :to="`memos/${scope.row[column.prop]}/summary`" data-testid="memo-link">
               {{ scope.row[column.prop] }}
             </router-link>
           </template>
@@ -65,7 +79,7 @@
       </el-table-column>
     </el-table>
   </div>
-  <TransactionTablePagination v-if="!isPaginationDisabled" />
+  <TransactionTablePagination v-if="!isPaginationDisabled" data-testid="transactions-table-pagination" />
 </template>
 
 <script setup lang="ts">
@@ -104,6 +118,12 @@ const closeTransactionEditModal = () => {
   showTransactionEditModal.value = false
   selectedTransaction.value = null
 }
+
+const editModalTitle = computed(() => {
+  return selectedTransaction.value
+    ? `Edit Transaction: ${selectedTransaction.value.transaction_number}`
+    : 'Edit Transaction'
+})
 
 // disable the pagination if day, week, or month is selected
 const isPaginationDisabled = computed(() => selectedDay.value || selectedWeek.value || selectedMonth.value)

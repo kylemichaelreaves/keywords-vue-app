@@ -1,7 +1,13 @@
 <template>
-  <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error" />
+  <AlertComponent
+    v-if="isError && error"
+    :title="error.name"
+    :message="error.message"
+    type="error"
+    data-testid="transactions-table-pagination-error"
+  />
   <el-pagination
-    data-testid="transactions-table-pagination"
+    :data-testid="props.dataTestId"
     background
     layout="prev, pager, next"
     :total="Number(transactionsCount)"
@@ -18,6 +24,14 @@ import { computed, onMounted } from 'vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import { useTransactionsStore } from '@stores/transactions'
 
+
+const props = defineProps({
+  dataTestId: {
+    type: String,
+    default: 'transactions-table-pagination'
+  }
+})
+
 const { data, isError, error, refetch } = useTransactionsCount()
 
 const store = useTransactionsStore()
@@ -26,7 +40,7 @@ const transactionsCount = computed(() => {
   if (!data.value) {
     return 0
   }
-  return data.value.map((item: { transactions_count: number }) => item.transactions_count)[0]
+  return data.value
 })
 
 const currentPage = computed({
@@ -56,12 +70,13 @@ function handleSizeChange(newSize: number) {
 onMounted(() => {
   refetch()
   store.updateTransactionsTableOffset(0)
-  store.setTransactionsCount(data.value)
+  if (data.value) {
+    store.setTransactionsCount(data.value)
+  }
 })
 
 
 </script>
 
 <style scoped>
-
 </style>

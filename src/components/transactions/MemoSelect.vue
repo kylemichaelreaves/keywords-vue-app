@@ -1,12 +1,19 @@
 <template>
-  <AlertComponent v-if="error && isError" :title="error.name" :message="error.message" type="error" />
+  <AlertComponent
+    v-if="error && isError"
+    :title="error.name"
+    :message="error.message"
+    type="error"
+    :data-test-id="errorAlertDataTestId"
+  />
   <SelectComponent
-    data-testid="memo-select"
+    :data-testid="props.dataTestId"
     :on-change="updateSelectedMemo"
     :placeholder="props.placeholder"
     :selectedValue="model"
     :options="memoOptions"
     :disabled="isFetching || isLoading || isRefetching"
+    :data-test-id="props.dataTestId"
   />
 </template>
 
@@ -32,7 +39,15 @@ const props = defineProps({
   placeholder: {
     type: String,
     default: 'Select a memo'
+  },
+  dataTestId: {
+    type: String,
+    default: 'transaction-table-memo-select'
   }
+})
+
+const errorAlertDataTestId = computed(() => {
+  return props.dataTestId ? `${props.dataTestId}-error` : ''
 })
 
 const transactionsStore = useTransactionsStore()

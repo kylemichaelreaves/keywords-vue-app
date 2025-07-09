@@ -11,7 +11,8 @@ export class BudgetVisualizerPage {
     readonly budgetCategoriesMenuItem: Locator;
 
     constructor(public readonly page: Page) {
-        this.navBar = this.page.locator('.el-tabs__nav-scroll');
+
+        this.navBar = this.page.getByTestId('navbar');
         this.budgetVisualizerTab = this.navBar.getByRole('tab', {
             name: 'budget-visualizer'
         }).locator('span').first()

@@ -1,13 +1,23 @@
 <template>
   <el-alert
-      :title="props.title"
-      :type="props.type"
-      :closable="true"
-      :show-icon="true"
-      :center="true"
-      :description="props.message"
-      @close="props.close"
-  />
+    :title="props.title"
+    :type="props.type"
+    :closable="true"
+    :show-icon="true"
+    :center="true"
+    :description="props.message"
+    @close="props.close"
+    :data-testid="props.dataTestId"
+  >
+    <!-- Add data-testid to slots if you need more granular control -->
+    <template #title>
+      <span :data-testid="`${props.dataTestId}-title`">{{ props.title }}</span>
+    </template>
+
+    <template #default>
+      <span :data-testid="`${props.dataTestId}-message`">{{ props.message }}</span>
+    </template>
+  </el-alert>
 </template>
 
 <script setup lang="ts">
@@ -28,6 +38,11 @@ const props = defineProps({
   },
   close: {
     type: Function as PropType<() => void>,
+    required: false
+  },
+  dataTestId: {
+    type: String,
+    default: 'alert',
     required: false
   }
 })

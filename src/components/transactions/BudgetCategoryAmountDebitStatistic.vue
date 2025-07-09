@@ -6,6 +6,7 @@
     :title="props.budgetCategoryName"
     v-loading="isLoading || isFetching || isRefetching"
     :precision="2"
+    data-test-id="budget-category-amount-debit-statistic"
   />
 </template>
 
@@ -14,7 +15,7 @@ import { useBudgetCategoryAmountDebit } from '@api/hooks/transactions/useBudgetC
 import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import StatisticComponent from '@components/shared/StatisticComponent.vue'
-import { onMounted, computed } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   budgetCategoryName: {
@@ -52,7 +53,7 @@ const totalAmountDebit = computed(() => {
   // If data.value is an object
   if (typeof data.value === 'object') {
     console.log('Object result:', data.value)
-    return data.value.total_amount_debit || data.value.total_debit || 0
+    return data.value.total_amount_debit ?? 0
   }
 
   return 0

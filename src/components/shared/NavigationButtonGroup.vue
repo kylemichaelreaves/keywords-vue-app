@@ -1,5 +1,5 @@
 <template>
-  <el-button-group data-testid="navigation-button-group">
+  <el-button-group :data-testid="props.dataTestId">
     <el-button
         type="primary"
         :icon="ArrowLeft"
@@ -56,6 +56,11 @@ const props = defineProps({
   label: {
     type: String,
     required: true
+  },
+  dataTestId: {
+    type: String,
+    default: '',
+    required: false
   }
 })
 </script>

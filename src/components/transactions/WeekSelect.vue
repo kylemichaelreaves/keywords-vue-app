@@ -1,7 +1,7 @@
 <template>
   <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error" />
   <SelectComponent
-    data-testid="week-select"
+    :data-testid="props.dataTestId"
     :options="weekOptions"
     :selectedValue="selectedWeek"
     placeholder="select a week"
@@ -17,6 +17,13 @@ import { useWeeks } from '@api/hooks/transactions/useWeeks'
 import { useTransactionsStore } from '@stores/transactions'
 import SelectComponent from '@components/shared/SelectComponent.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
+
+const props = defineProps({
+  dataTestId: {
+    type: String,
+    default: 'transaction-table-week-select'
+  }
+})
 
 const store = useTransactionsStore()
 

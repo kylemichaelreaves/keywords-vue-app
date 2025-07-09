@@ -133,7 +133,7 @@ export interface Memo {
   recurring: boolean;
   necessary: boolean;
   frequency?: Frequency;
-  budgetCategory?: BudgetCategory['name'];
+  budget_category?: BudgetCategory['name'];
 }
 
 
@@ -232,18 +232,18 @@ export enum Timeframe {
 }
 
 export type Transaction = {
-  id: number;
-  transaction_number: string;
+  id?: number;
+  transaction_number?: string; // Optional for new transactions
   date: string;
   description: string;
   memo: string;
-  memo_id: number;
+  memo_id?: number;
   amount_debit: string;
   amount_credit: string;
-  balance: string;
-  check_number: string;
-  fees: string;
-  budget_category: string;
+  balance?: string;
+  check_number?: string;
+  fees?: string;
+  budget_category?: string;
 };
 
 
