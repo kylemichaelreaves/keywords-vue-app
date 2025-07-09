@@ -30,7 +30,7 @@ import AlertComponent from '@components/shared/AlertComponent.vue'
 const props = defineProps({
   dataTestId: {
     type: String,
-    default: 'transaction-table-year-select'
+    default: 'transactions-table-year-select'
   }
 })
 

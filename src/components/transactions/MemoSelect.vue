@@ -42,7 +42,7 @@ const props = defineProps({
   },
   dataTestId: {
     type: String,
-    default: 'transaction-table-memo-select'
+    default: 'transactions-table-memo-select'
   }
 })
 

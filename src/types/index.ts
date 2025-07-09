@@ -134,6 +134,7 @@ export interface Memo {
   necessary: boolean;
   frequency?: Frequency;
   budget_category?: BudgetCategory['name'];
+  ambiguous?: boolean;
 }
 
 
@@ -153,14 +154,14 @@ export interface MemoQueryParams {
 }
 
 export interface MemoFormFields {
-  component: 'el-input' | 'el-switch' | 'el-select';
+  component: 'el-input' | 'el-switch' | 'el-select' | Component;
   label: string;
   placeholder?: string;
   disabledCondition?: boolean;
   options?: { value: string; label: string }[];
 }
 
-export type MemoKeys = 'name' | 'recurring' | 'necessary' | 'frequency';
+export type MemoKeys = 'name' | 'recurring' | 'necessary' | 'frequency' | 'budget_category' | 'ambiguous';
 
 
 
@@ -260,7 +261,7 @@ export type TransactionKeys =
   | 'budget_category';
 
 export type TransactionFormFields = {
-  component: 'el-input' | 'el-date-picker' | 'el-select' | 'budget-category-tree-select' | 'BudgetCategoryTreeSelect' | Component;
+  component: 'el-input' | 'el-date-picker' | 'el-select' | Component;
   label: string;
   placeholder?: string;
   props?: Record<string, unknown>;

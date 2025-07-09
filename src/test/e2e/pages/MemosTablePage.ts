@@ -51,18 +51,8 @@ export class MemosTablePage {
     await memoLink.click()
   }
 
-  // async clickBackButton() {
-  //   const backButton = this.page.getByRole('button', { name: 'Go Back' })
-  //   await backButton.click()
-  // }
-  //
-  // async clickBackButton() {
-  //   await this.backButton.click()
-  // }
-
 
   // Method 1: Using coordinate-based test ID
-  // Row 0, Column 1 (name column is the second column, index 1)
   async getFirstMemoName(): Promise<string> {
     const cell = this.page.getByTestId('cell-0-1')
     return await cell.textContent() ?? ''
@@ -77,8 +67,8 @@ export class MemosTablePage {
   // Method 3: Using table structure with role-based locators
   async getFirstMemoNameByRole(): Promise<string> {
     const table = this.page.getByTestId('memos-table')
-    const firstRow = table.getByRole('row').nth(1) // nth(1) because header is row 0
-    const nameCell = firstRow.getByRole('cell').nth(1) // name column is index 1
+    const firstRow = table.getByRole('row').nth(1)
+    const nameCell = firstRow.getByRole('cell').nth(1)
     return await nameCell.textContent() ?? ''
   }
 

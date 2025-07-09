@@ -21,7 +21,7 @@ import AlertComponent from '@components/shared/AlertComponent.vue'
 const props = defineProps({
   dataTestId: {
     type: String,
-    default: 'transaction-table-week-select'
+    default: 'transactions-table-week-select'
   }
 })
 

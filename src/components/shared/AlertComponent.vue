@@ -9,7 +9,6 @@
     @close="props.close"
     :data-testid="props.dataTestId"
   >
-    <!-- Add data-testid to slots if you need more granular control -->
     <template #title>
       <span :data-testid="`${props.dataTestId}-title`">{{ props.title }}</span>
     </template>

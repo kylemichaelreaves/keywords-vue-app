@@ -56,7 +56,7 @@ const props = defineProps({
   },
   dataTestId: {
     type: String,
-    default: 'budget-category-summary'
+    default: 'budget-category-summaries'
   }
 })
 

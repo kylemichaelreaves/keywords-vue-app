@@ -16,8 +16,6 @@
       :default-sort="{ prop: 'total_amount_debit', order: 'descending' }"
       data-testid="memos-table"
       :row-key="(row: Memo) => row.id"
-      :cell-style="getCellStyle"
-      :row-style="getRowStyle"
     >
       <el-table-column
         v-for="(column, columnIndex) in memoColumns"
@@ -78,27 +76,6 @@ const memoColumns = [
   { prop: 'frequency', label: 'Frequency', sortable: false }
 ]
 
-
-const getRowStyle = ({ row, rowIndex }: { row: Memo, rowIndex: number }) => {
-  return {
-    '--row-id': row.id,
-    '--row-index': rowIndex
-  }
-}
-
-const getCellStyle = ({ row, column, rowIndex, columnIndex }: {
-  row: Memo,
-  column: { property: string },
-  rowIndex: number,
-  columnIndex: number
-}) => {
-  return {
-    '--cell-row-id': row.id,
-    '--cell-column': column.property,
-    '--cell-row-index': rowIndex,
-    '--cell-column-index': columnIndex
-  }
-}
 </script>
 
 <style scoped>
