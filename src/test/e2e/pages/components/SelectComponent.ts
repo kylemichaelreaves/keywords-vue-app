@@ -44,12 +44,12 @@ export class SelectComponent {
   async openDropdown() {
     await this.select.click()
     // Wait a moment for dropdown animation
-    await this.page.waitForTimeout(100)
+    await this.page.waitForSelector('[data-testid^="option-"]', { state: 'visible' })
   }
 
   async closeDropdown() {
     await this.page.keyboard.press('Escape')
-    await this.page.waitForTimeout(100)
+    await this.page.waitForSelector('[data-testid^="option-"]', { state: 'hidden' })
   }
 
   async selectOption(value: string) {
@@ -253,7 +253,7 @@ export class SelectComponent {
     expect(selectedLabel).toBe(placeholder)
   }
 
-  // Convenience methods for common scenarios
+
   async selectAndVerify(value: string, expectedLabel: string) {
     await this.selectOption(value)
     await this.expectToHaveSelectedLabel(expectedLabel)
@@ -270,20 +270,4 @@ export class SelectComponent {
     await this.selectOption(value)
   }
 
-  // Static factory methods for common patterns
-  static forUser(page: Page, testId: string = 'user-select') {
-    return new SelectComponent(page, testId)
-  }
-
-  static forCountry(page: Page, testId: string = 'country-select') {
-    return new SelectComponent(page, testId)
-  }
-
-  static forCategory(page: Page, testId: string = 'category-select') {
-    return new SelectComponent(page, testId)
-  }
-
-  static forStatus(page: Page, testId: string = 'status-select') {
-    return new SelectComponent(page, testId)
-  }
 }
