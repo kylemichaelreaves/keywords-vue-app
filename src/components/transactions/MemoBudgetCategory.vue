@@ -8,7 +8,7 @@
   />
   <el-col
     class="category-wrapper"
-    :data-testid="props.dataTestId"
+    data-testid="budget-category-column"
     :data-memo-name="props.memoName"
     :data-has-category="!!budgetCategory"
     :data-budget-category="budgetCategory || ''"
@@ -28,7 +28,7 @@
       size="large"
       effect="dark"
       round
-      :data-testid="`budget-category-tag-${props.memoName}`"
+      data-testid="budget-category-tag"
       :data-memo-name="props.memoName"
       :data-category-value="budgetCategory"
     >
@@ -43,7 +43,7 @@
       type="danger"
       effect="dark"
       @click="openModal"
-      :data-testid="`assign-budget-category-button-${props.memoName}`"
+      data-testid="budget-category-button"
       :data-memo-name="props.memoName"
       :data-action="'assign-category'"
     >
@@ -58,7 +58,7 @@
     :selectedBudgetCategory="budgetCategory || ''"
     @update:isVisible="closeModal"
     @categoryUpdated="onCategoryUpdated"
-    :data-testid="`budget-category-modal-${props.memoName}`"
+    data-testid="budget-category-modal"
     :data-memo-name="props.memoName"
     :data-selected-category="budgetCategory || ''"
   />

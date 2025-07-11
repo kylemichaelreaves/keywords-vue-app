@@ -10,6 +10,7 @@ export class MemoSummaryTablePage {
   readonly transactionsAmount: Locator
   readonly backButton: Locator
   readonly memoTitle: Locator
+  readonly budgetCategoryButton: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -21,6 +22,7 @@ export class MemoSummaryTablePage {
     this.transactionsAmount = page.getByTestId('sum-amount-debit')
     this.backButton = page.getByRole('button', { name: 'Go Back' })
     this.memoTitle = page.getByTestId('memo-title')
+    this.budgetCategoryButton = page.getByTestId('budget-category-button')
   }
 
   async goToMemos() {

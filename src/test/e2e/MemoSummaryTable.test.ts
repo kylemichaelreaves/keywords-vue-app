@@ -98,4 +98,14 @@ test.describe('Memo Summary Table', () => {
     await memoSummaryTablePage.clickBackButton()
     await expect(memoSummaryTablePage.page).toHaveURL(/\/budget-visualizer\/memos/)
   })
+
+  test('the budget category button should be visible', async () => {
+    await expect(memoSummaryTablePage.budgetCategoryButton).toBeVisible()
+  })
+
+  test('clicking on the budget category opens the budget category modal', async () => {
+    await memoSummaryTablePage.budgetCategoryButton.click()
+    await expect(memoSummaryTablePage.page.getByTestId('budget-category-modal')).toBeVisible()
+  })
+
 })

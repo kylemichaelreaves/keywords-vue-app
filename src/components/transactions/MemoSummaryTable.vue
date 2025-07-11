@@ -17,7 +17,7 @@
             v-if="props.memoName"
             :key="props.memoName"
             :memoName="props.memoName"
-            data-testid="memo-budget-category"
+            data-testid="memo-budget-category-button"
           />
         </div>
       </div>
