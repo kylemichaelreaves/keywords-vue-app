@@ -8,6 +8,7 @@ export class MemosTablePage {
   readonly errorAlert: Locator
   readonly memosTable: Locator
   readonly memosPageTitle: Locator
+  readonly memoEditModal: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -15,6 +16,7 @@ export class MemosTablePage {
     this.errorAlert = page.getByTestId('memo-summary-table-error')
     this.memosTable = page.getByTestId('memos-table')
     this.memosPageTitle = page.getByTestId('memos-table-title')
+    this.memoEditModal = page.getByTestId('memo-edit-dialog')
 
   }
 
@@ -90,6 +92,12 @@ export class MemosTablePage {
     const cell = this.page.locator('[data-row-index="0"][data-column="name"]')
     const link = cell.locator('a')
     await link.click()
+  }
+
+  async rightClickOnFirstMemo() {
+    const cell = this.page.locator('[data-row-index="0"][data-column="name"]')
+    const link = cell.locator('a')
+    await link.click({ button: 'right' })
   }
 
 }

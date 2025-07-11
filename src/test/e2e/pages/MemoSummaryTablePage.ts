@@ -11,6 +11,7 @@ export class MemoSummaryTablePage {
   readonly backButton: Locator
   readonly memoTitle: Locator
   readonly budgetCategoryButton: Locator
+  readonly budgetCategoryModal: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -23,6 +24,8 @@ export class MemoSummaryTablePage {
     this.backButton = page.getByRole('button', { name: 'Go Back' })
     this.memoTitle = page.getByTestId('memo-title')
     this.budgetCategoryButton = page.getByTestId('budget-category-button')
+    this.budgetCategoryModal = page.getByTestId('budget-category-modal')
+
   }
 
   async goToMemos() {
