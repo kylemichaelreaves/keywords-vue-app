@@ -9,13 +9,14 @@
       filterable
       :loading="props.loading"
       :loading-text="props.loadingText"
+      :data-testid="props.dataTestId"
   >
     <el-option
         v-for="option in options"
         :key="option.value"
         :label="option.label"
         :value="option.value"
-        :data-test="'option-' + option.value"
+        :data-testid="'option-' + option.value"
     />
   </el-select>
 </template>
@@ -57,6 +58,10 @@ const props = defineProps({
     type: String,
     default: 'Loading...'
   },
+  dataTestId: {
+    type: String,
+    default: ''
+  }
 });
 </script>
 

@@ -132,8 +132,9 @@ export interface Memo {
   name: string
   recurring: boolean;
   necessary: boolean;
-  frequency?: Frequency;
-  budgetCategory?: BudgetCategory['name'];
+  frequency: Frequency;
+  budget_category: BudgetCategory['name'];
+  ambiguous: boolean;
 }
 
 
@@ -153,14 +154,14 @@ export interface MemoQueryParams {
 }
 
 export interface MemoFormFields {
-  component: 'el-input' | 'el-switch' | 'el-select';
+  component: 'el-input' | 'el-switch' | 'el-select' | Component;
   label: string;
   placeholder?: string;
   disabledCondition?: boolean;
   options?: { value: string; label: string }[];
 }
 
-export type MemoKeys = 'name' | 'recurring' | 'necessary' | 'frequency';
+export type MemoKeys = 'name' | 'recurring' | 'necessary' | 'frequency' | 'budget_category' | 'ambiguous';
 
 
 
@@ -232,18 +233,17 @@ export enum Timeframe {
 }
 
 export type Transaction = {
-  id: number;
-  transaction_number: string;
-  date: string;
+  id?: number;
+  transaction_number?: string;
   description: string;
   memo: string;
-  memo_id: number;
+  memo_id?: number;
   amount_debit: string;
   amount_credit: string;
-  balance: string;
-  check_number: string;
-  fees: string;
-  budget_category: string;
+  balance?: string;
+  check_number?: string;
+  fees?: string;
+  budget_category?: string;
 };
 
 
@@ -260,7 +260,7 @@ export type TransactionKeys =
   | 'budget_category';
 
 export type TransactionFormFields = {
-  component: 'el-input' | 'el-date-picker' | 'el-select' | 'budget-category-tree-select' | 'BudgetCategoryTreeSelect' | Component;
+  component: 'el-input' | 'el-date-picker' | 'el-select' | Component;
   label: string;
   placeholder?: string;
   props?: Record<string, unknown>;
@@ -314,4 +314,14 @@ export interface WeekYear {
 
 export interface Year {
   year: string;
+}
+
+export interface BudgetCategoryHierarchySummaryResponse {
+  category_id: number;
+  category_name: string;
+  full_path: string;
+  level: number;
+  parent_id: number | null;
+  source_id: number;
+  total_amount_debit: number;
 }

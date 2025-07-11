@@ -1,6 +1,6 @@
 <template>
   <!--  TODO add log-in, user, log-out functionality and corresponding style to keep the div on the rightside of the window-->
-  <div class='navbar-container'>
+  <div class='navbar-container' data-test-id="navbar">
     <el-tabs :active-index="activeTab" @tab-click="handleClick">
       <el-tab-pane v-for="(route, index) in routes" :key="index" :label="String(index)" :name="index">
         <template v-slot:label>

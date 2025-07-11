@@ -1,7 +1,7 @@
 <template>
   <AlertComponent v-if="isError && error" :message="error.message" :title="error.name" type="error"/>
   <SelectComponent
-      data-testid="day-select"
+      :data-testid="props.dataTestId"
       :options="dayOptions"
       :selectedValue="selectedDay"
       placeholder="select a day"
@@ -18,6 +18,13 @@ import {useTransactionsStore} from "@stores/transactions";
 import type {DayYear} from "@types";
 import SelectComponent from "@components/shared/SelectComponent.vue";
 import AlertComponent from "@components/shared/AlertComponent.vue";
+
+const props = defineProps({
+  dataTestId: {
+    type: String,
+    default: 'transactions-table-day-select'
+  }
+})
 
 const store = useTransactionsStore()
 const selectedDay = computed(() => store.getSelectedDay)

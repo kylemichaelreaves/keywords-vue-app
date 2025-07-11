@@ -88,6 +88,11 @@ const props = defineProps({
     required: false,
     default: () => ({}),
   },
+  dataTestId: {
+    type: String,
+    default: '',
+    required: false,
+  },
 })
 
 const store = useTransactionsStore();

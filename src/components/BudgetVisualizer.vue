@@ -10,7 +10,7 @@
         </h1>
         <el-button type="primary" @click="showTransactionForm = true">Add New Transaction</el-button>
         <el-dialog v-model="showTransactionForm" title="Add New Transaction">
-          <TransactionForm @close="showTransactionForm = false"/>
+          <TransactionCreateForm @close="showTransactionForm = false"/>
         </el-dialog>
       </div>
     </template>
@@ -39,9 +39,9 @@
 import {ref} from "vue";
 import {TrendCharts} from "@element-plus/icons-vue";
 import {VueQueryDevtools} from '@tanstack/vue-query-devtools'
-import TransactionForm from "@components/transactions/TransactionForm.vue";
 import {ElDialog} from "element-plus";
 import {useRoute} from "vue-router";
+import TransactionCreateForm from "@components/transactions/TransactionCreateForm.vue";
 
 const showTransactionForm = ref(false);
 

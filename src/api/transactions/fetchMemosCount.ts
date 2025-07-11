@@ -1,13 +1,12 @@
 import { httpClient } from '@api/httpClient'
 
-export async function fetchMemosCount(timeFrame?: string, date?: Date, distinct?: boolean, count?: boolean): Promise<number> {
+export async function fetchMemosCount(timeFrame?: string, date?: Date, distinct?: boolean, count=true): Promise<number> {
   return await httpClient
-    .get(`/memos`, {
+    .get(`/memos?count=true`, {
       params: {
         timeFrame: timeFrame,
         date: date,
         distinct: distinct,
-        count: count
       }
     })
     .then(res => res.data)

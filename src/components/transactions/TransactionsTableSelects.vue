@@ -1,29 +1,29 @@
 <template>
-  <el-row class="selects">
+  <el-row class="selects" data-testid="transactions-table-selects-row">
     <el-col :span="4">
-      <DaySelect/>
+      <DaySelect data-testid="transactions-table-day-select" />
     </el-col>
     <el-col :span="4">
-      <WeekSelect/>
+      <WeekSelect data-testid="transactions-table-week-select" />
     </el-col>
     <el-col :span="4">
-      <MonthSelect/>
+      <MonthSelect data-testid="transactions-table-month-select" />
     </el-col>
     <el-col :span="4">
-      <YearSelect/>
+      <YearSelect data-testid="transactions-table-year-select" />
     </el-col>
     <el-col :span="8">
-      <MemoSelect/>
+      <MemoSelect data-testid="transactions-table-memo-select" />
     </el-col>
   </el-row>
 </template>
 
 <script setup lang="ts">
-import MemoSelect from "@components/transactions/MemoSelect.vue";
-import MonthSelect from "@components/transactions/MonthSelect.vue";
-import WeekSelect from "@components/transactions/WeekSelect.vue";
-import DaySelect from "@components/transactions/DaySelect.vue";
-import YearSelect from "@components/transactions/YearSelect.vue";
+import MemoSelect from '@components/transactions/MemoSelect.vue'
+import MonthSelect from '@components/transactions/MonthSelect.vue'
+import WeekSelect from '@components/transactions/WeekSelect.vue'
+import DaySelect from '@components/transactions/DaySelect.vue'
+import YearSelect from '@components/transactions/YearSelect.vue'
 </script>
 
 <style scoped>

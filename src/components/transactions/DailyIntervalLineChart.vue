@@ -1,11 +1,17 @@
 <template>
-  <AlertComponent v-if="isError && error" :message="error.message" :title="error.name" type="error"/>
+  <AlertComponent
+    v-if="isError && error"
+    :message="error.message"
+    :title="error.name"
+    type="error"
+    :data-testid="errorAlertDataTestId"
+  />
   <IntervalForm
-      data-testid="interval-form"
+      :data-testid="intervalFormDataTestId"
       @update:interval-value="handleIntervalChange"
   />
   <LineChart
-      data-testid="daily-interval-line-chart"
+      :data-testid="props.dataTestId"
       v-if="data"
       :summaries="data"
       :loading="isLoading || isFetching"
@@ -22,6 +28,21 @@ import LineChart from "@components/charts/LineChart.vue";
 import {useTransactionsStore} from "@stores/transactions";
 import {parseDateMMYYYY} from "@api/helpers/parseDateMMYYYY";
 import {parseDateIWIYYY} from "@api/helpers/parseDateIWIYYY";
+
+const props = defineProps({
+  dataTestId: {
+    type: String,
+    default: 'daily-interval-line-chart'
+  }
+});
+
+const intervalFormDataTestId = computed(() => {
+  return props.dataTestId ? `${props.dataTestId}-form` : '';
+});
+
+const errorAlertDataTestId = computed(() => {
+  return props.dataTestId ? `${props.dataTestId}-error` : '';
+});
 
 const store = useTransactionsStore();
 const intervalValue = ref("1 months");

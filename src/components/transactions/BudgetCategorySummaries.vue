@@ -1,23 +1,39 @@
 <template>
-  <AlertComponent
-    :title="error.name"
-    :message="error.message"
-    type="error"
-    v-if="isError && error"
-  />
-
-  <el-space direction="vertical" class="w-full">
-    <el-text size="large">Sums of the amount_debit column for a budget_category</el-text>
-  </el-space>
-  <div v-for="category in hierarchicalSummaries" :key="category.budget_category">
-    <StatisticComponent
-      :value="category.total_amount_debit"
-      :title="category.category_name"
-      v-loading="isLoading || isFetching || isRefetching"
-      :precision="2"
-      :style="{ marginLeft: `${category.level * 20}px` }"
-      :class="{ 'child-category': category.level > 1 }"
+  <div :data-testid="dataTestId">
+    <AlertComponent
+      :title="error.name"
+      :message="error.message"
+      type="error"
+      :data-testid="`${dataTestId}-error-alert`"
+      v-if="isError && error"
     />
+    <el-space
+      direction="vertical"
+      class="w-full"
+      :data-testid="`${dataTestId}-header`"
+    >
+      <el-text
+        size="large"
+        :data-testid="`${dataTestId}-title`"
+      >
+        Sums of the amount_debit column for a budget_category
+      </el-text>
+    </el-space>
+    <div
+      v-for="category in hierarchicalSummaries"
+      :key="category.budget_category"
+      :data-testid="`${dataTestId}-category-${category.category_id}`"
+    >
+      <StatisticComponent
+        :value="category.total_amount_debit"
+        :title="category.category_name"
+        :data-testid="`${dataTestId}-statistic-${category.category_id}`"
+        v-loading="isLoading || isFetching || isRefetching"
+        :precision="2"
+        :style="{ marginLeft: `${category.level * 20}px` }"
+        :class="{ 'child-category': category.level > 1 }"
+      />
+    </div>
   </div>
 </template>
 
@@ -37,6 +53,10 @@ const props = defineProps({
   timeFrame: {
     type: String as PropType<TimeframeType>,
     required: true
+  },
+  dataTestId: {
+    type: String,
+    default: 'budget-category-summaries'
   }
 })
 
@@ -66,7 +86,6 @@ const categorySummaries = computed((): BudgetCategorySummary[] => {
 
   return data.value.map((item: BudgetCategorySummary) => item)
 })
-
 
 const hierarchicalSummaries = computed((): BudgetCategorySummary[] => {
   if (!categorySummaries.value.length) {
@@ -106,6 +125,7 @@ const hierarchicalSummaries = computed((): BudgetCategorySummary[] => {
   // start with root, AKA parentless, AKA null, categories
   return buildHierarchy(null)
 })
+
 </script>
 
 <style scoped>

@@ -31,6 +31,11 @@ const props = defineProps({
     default: 'large',
     required: false
   },
+  dataTestId: {
+    type: String,
+    default: '',
+    required: false
+  },
 })
 
 

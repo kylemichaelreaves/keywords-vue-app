@@ -1,5 +1,5 @@
 <template>
-  <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error"/>
+  <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error" />
   <el-card>
     <template #header>
       <div class="header-container">
@@ -14,15 +14,15 @@
             </el-text>
           </div>
         </div>
-        <WeeklyAmountDebitTotal/>
+        <WeeklyAmountDebitTotal />
         <div class="header-right">
           <NavigationButtonGroup
-              label="Week"
-              :is-last="isLastWeek"
-              :is-first="isFirstWeek"
-              :go-to-next="goToNextWeek"
-              :go-to-previous="goToPreviousWeek"
-              :reset="resetSelectedWeek"
+            label="Week"
+            :is-last="isLastWeek"
+            :is-first="isFirstWeek"
+            :go-to-next="goToNextWeek"
+            :go-to-previous="goToPreviousWeek"
+            :reset="resetSelectedWeek"
           />
         </div>
       </div>
@@ -30,19 +30,19 @@
     <el-row :gutter="5">
       <el-col :span="14">
         <el-table
-            v-if='data'
-            :data="data"
-            table-layout="auto"
-            size="large"
-            v-loading="isLoadingCondition"
-            layout="auto"
-            show-summary
+          v-if='data'
+          :data="data"
+          table-layout="auto"
+          size="large"
+          v-loading="isLoadingCondition"
+          layout="auto"
+          show-summary
         >
           <el-table-column
-              v-for="column in columns"
-              :key="column.prop"
-              :prop="column.prop"
-              :label="column.label"
+            v-for="column in columns"
+            :key="column.prop"
+            :prop="column.prop"
+            :label="column.label"
           >
             <template v-if="column.prop === 'memo'" v-slot="scope">
               <router-link :to="{ name: 'memo', params: { memoName: scope.row[column.prop] }}">
@@ -56,28 +56,28 @@
         </el-table>
       </el-col>
       <el-col :span="10">
-        <DaySummariesForSelectedWeekTable/>
+        <DaySummariesForSelectedWeekTable />
       </el-col>
     </el-row>
   </el-card>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, watch, reactive} from 'vue'
-import {ElCard, ElTable, ElTableColumn} from "element-plus";
-import {useTransactionsStore} from "@stores/transactions";
-import useWeekSummary from "@api/hooks/transactions/useWeekSummary";
-import WeeklyAmountDebitTotal from "./WeeklyAmountDebitTotal.vue";
-import DaySummariesForSelectedWeekTable from "@components/transactions/DaySummariesForSelectedWeekTable.vue";
-import {getWeekRange} from "@api/helpers/getWeekRange";
-import AlertComponent from "@components/shared/AlertComponent.vue";
-import NavigationButtonGroup from "@components/shared/NavigationButtonGroup.vue";
+import { computed, onMounted, onUnmounted, reactive, watch } from 'vue'
+import { ElCard, ElTable, ElTableColumn } from 'element-plus'
+import { useTransactionsStore } from '@stores/transactions'
+import useWeekSummary from '@api/hooks/transactions/useWeekSummary'
+import WeeklyAmountDebitTotal from './WeeklyAmountDebitTotal.vue'
+import DaySummariesForSelectedWeekTable from '@components/transactions/DaySummariesForSelectedWeekTable.vue'
+import { getWeekRange } from '@api/helpers/getWeekRange'
+import AlertComponent from '@components/shared/AlertComponent.vue'
+import NavigationButtonGroup from '@components/shared/NavigationButtonGroup.vue'
 
 const store = useTransactionsStore()
 
 const selectedWeek = computed(() => store.getSelectedWeek)
 
-const {data, isError, refetch, isFetching, isLoading, isRefetching, error} = useWeekSummary()
+const { data, isError, refetch, isFetching, isLoading, isRefetching, error } = useWeekSummary()
 
 const isLoadingCondition = reactive(isFetching || isLoading || isRefetching)
 
@@ -95,44 +95,44 @@ const isLastWeek = computed(() => {
 })
 
 const adjustSelectedWeek = (adjustment: number) => {
-  const selectedWeek = store.getSelectedWeek;
-  const weeks = store.getWeeks;
+  const selectedWeek = store.getSelectedWeek
+  const weeks = store.getWeeks
 
   if (selectedWeek && weeks.some(week => week.week_year === selectedWeek)) {
-    const currentIndex = weeks.findIndex(week => week.week_year === selectedWeek);
-    const newIndex = currentIndex + adjustment;
+    const currentIndex = weeks.findIndex(week => week.week_year === selectedWeek)
+    const newIndex = currentIndex + adjustment
 
     if (newIndex >= 0 && newIndex < weeks.length) {
-      const adjustedWeek = weeks[newIndex].week_year;
-      store.setSelectedWeek(adjustedWeek);
+      const adjustedWeek = weeks[newIndex].week_year
+      store.setSelectedWeek(adjustedWeek)
     }
   }
-};
+}
 
 const goToPreviousWeek = () => {
-  adjustSelectedWeek(1);
-};
+  adjustSelectedWeek(1)
+}
 
 const goToNextWeek = () => {
-  adjustSelectedWeek(-1);
-};
+  adjustSelectedWeek(-1)
+}
 
 
 const resetSelectedWeek = () => {
-  store.setSelectedWeek('');
+  store.setSelectedWeek('')
 }
 
 const columns = [
-  {prop: 'memo', label: 'Memo'},
-  {prop: 'total_amount_debit', label: 'Weekly Amount Debit'},
-];
+  { prop: 'memo', label: 'Memo' },
+  { prop: 'total_amount_debit', label: 'Weekly Amount Debit' }
+]
 
 watch(() => store.selectedWeek, () => {
-  refetch();
-});
+  refetch()
+})
 
 onMounted(() => {
-  refetch();
+  refetch()
 })
 
 onUnmounted(() => {
