@@ -105,7 +105,7 @@ test.describe('Memo Summary Table', () => {
 
   test('clicking on the budget category opens the budget category modal', async () => {
     await memoSummaryTablePage.budgetCategoryButton.click()
-    await expect(memoSummaryTablePage.page.getByTestId('budget-category-modal')).toBeVisible()
+    await expect(memoSummaryTablePage.budgetCategoryModal).toBeVisible()
   })
 
 })

@@ -50,4 +50,8 @@ test.describe('Memos Table', () => {
     // await memosPage.expectError('An error occurred while loading memos')
   })
 
+  test('right clicking within a cell should open the edit modal', async () => {
+    await memosPage.rightClickOnFirstMemo()
+    await expect(memosPage.memoEditModal).toBeVisible()
+  })
 })
