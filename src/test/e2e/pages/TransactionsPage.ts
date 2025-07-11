@@ -19,11 +19,11 @@ export class TransactionsPage {
 
   constructor(public readonly page: Page) {
     this.transactionsTable = this.page.getByTestId('transactions-table')
-    this.daySelect = this.page.getByTestId('transaction-table-day-select')
-    this.weekSelect = this.page.getByTestId('transaction-table-week-select')
+    this.daySelect = this.page.getByTestId('transactions-table-day-select')
+    this.weekSelect = this.page.getByTestId('transactions-table-week-select')
     this.monthSelect = this.page.getByTestId('transactions-table-month-select')
-    this.yearSelect = this.page.getByTestId('transaction-table-year-select')
-    this.memoSelect = this.page.getByTestId('transaction-table-memo-select')
+    this.yearSelect = this.page.getByTestId('transactions-table-year-select')
+    this.memoSelect = this.page.getByTestId('transactions-table-memo-select')
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
     this.intervalTypeSelect = this.page.getByRole('main').getByText('Month', { exact: true })
     this.intervalNumberInput = this.page.getByRole('spinbutton', { name: 'Interval Count' })

@@ -1,6 +1,9 @@
 // import {test, expect} from '@playwright/test';
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
+import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
+import { mockTransactionsTableSelects } from '@test/e2e/helpers/mockTransactionsTableSelects.ts'
+import { generateDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 
 
 test.describe('Transactions Table', () => {
@@ -8,8 +11,47 @@ test.describe('Transactions Table', () => {
 
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
-    await transactionsPage.goto()
-    await page.waitForLoadState('networkidle')
+
+    // mock transactions?limit=100&offset=0&timeFrame=year
+    await page.route('**/transactions?limit=100&offset=0&timeFrame=year', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(generateTransactionsArray(100))
+      })
+    })
+
+
+    // mock the transaction selects
+    await mockTransactionsTableSelects(page)
+
+    // mock the transactions count
+    await page.route('**/transactions?count=true', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ count: 200 })
+      })
+    })
+
+    // mock the daily total intervals, with and without date
+    await page.route('**/transactions?dailyTotals=true&interval=1+months',  route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(generateDailyIntervals(30))
+      })
+    })
+
+    await page.route('**/transactions?interval=1+months&dailyTotals=true', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(generateDailyIntervals(30))
+      })
+    })
+
+
   })
 
 
@@ -65,5 +107,3 @@ test.describe('Transactions Table', () => {
 
 
 })
-
-

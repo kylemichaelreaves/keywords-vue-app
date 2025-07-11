@@ -132,9 +132,9 @@ export interface Memo {
   name: string
   recurring: boolean;
   necessary: boolean;
-  frequency?: Frequency;
-  budget_category?: BudgetCategory['name'];
-  ambiguous?: boolean;
+  frequency: Frequency;
+  budget_category: BudgetCategory['name'];
+  ambiguous: boolean;
 }
 
 
@@ -234,8 +234,7 @@ export enum Timeframe {
 
 export type Transaction = {
   id?: number;
-  transaction_number?: string; // Optional for new transactions
-  date: string;
+  transaction_number?: string;
   description: string;
   memo: string;
   memo_id?: number;
@@ -315,4 +314,14 @@ export interface WeekYear {
 
 export interface Year {
   year: string;
+}
+
+export interface BudgetCategoryHierarchySummaryResponse {
+  category_id: number;
+  category_name: string;
+  full_path: string;
+  level: number;
+  parent_id: number | null;
+  source_id: number;
+  total_amount_debit: number;
 }
