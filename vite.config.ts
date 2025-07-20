@@ -12,6 +12,7 @@ const ALIASES: string[] = [
     'api',
     'constants',
     'components',
+    'composables',
     'main',
     'mocks',
     'stores',
@@ -29,7 +30,9 @@ export default defineConfig({
     plugins: [
         vue(),
         vueDevTools(),
-        tsconfigPaths(),
+        tsconfigPaths({
+          configNames: ['tsconfig.app.json'],
+        }),
         AutoImport({
             resolvers: [ElementPlusResolver()],
         }),

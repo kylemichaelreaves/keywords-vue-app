@@ -27,7 +27,7 @@
           </router-link>
         </el-menu>
       </el-aside>
-      <el-main>
+      <el-main class="main-container">
         <router-view :key="route.fullPath"></router-view>
       </el-main>
     </el-container>
@@ -67,5 +67,9 @@ const menuItems = [
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.main-container {
+  padding: 0;
 }
 </style>

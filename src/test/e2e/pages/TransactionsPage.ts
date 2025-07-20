@@ -7,9 +7,12 @@ export class TransactionsPage {
   readonly monthSelect: Locator
   readonly yearSelect: Locator
   readonly memoSelect: Locator
+
   readonly intervalTypeSelect: Locator
   readonly intervalNumberInput: Locator
   readonly intervalLineChart: Locator
+  readonly intervalLineChartTooltip: Locator
+
   readonly transactionsTablePagination: Locator
   readonly transactionEditModal: Locator
 
@@ -24,9 +27,12 @@ export class TransactionsPage {
     this.monthSelect = this.page.getByTestId('transactions-table-month-select')
     this.yearSelect = this.page.getByTestId('transactions-table-year-select')
     this.memoSelect = this.page.getByTestId('transactions-table-memo-select')
+
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
     this.intervalTypeSelect = this.page.getByRole('main').getByText('Month', { exact: true })
     this.intervalNumberInput = this.page.getByRole('spinbutton', { name: 'Interval Count' })
+    this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')
+
     this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
     this.transactionEditModal = this.page.getByTestId('transaction-edit-dialog')
 
@@ -61,9 +67,36 @@ export class TransactionsPage {
     return await firstCell.textContent()
   }
 
+  // Method to get the value of the month select
+  async getMonthSelectValue(): Promise<string> {
+    // Try to get the input value first (most reliable)
+    const input = this.monthSelect.locator('input')
+    if (await input.count() > 0) {
+      const value = await input.inputValue()
+      if (value) return value
+    }
+
+    // Check the visible text content of the select
+    const selectText = await this.monthSelect.textContent()
+    const trimmedText = selectText?.trim() ?? ''
+
+    // If it shows the placeholder text, consider it empty
+    if (trimmedText === 'select a month' || trimmedText === '' || trimmedText.includes('select')) {
+      return ''
+    }
+
+    return trimmedText
+  }
+
   async rightClickOnFirstTransaction() {
     const firstRow = this.transactionsTable.getByRole('row').first()
     const firstCell = firstRow.getByRole('cell').first()
     await firstCell.click({ button: 'right' })
+  }
+
+  async clickOnMemoFromTable() {
+    const firstRow = this.transactionsTable.getByRole('row').nth(1)
+    const memoCellLink = firstRow.getByRole('cell').nth(5).getByRole('link')
+    await memoCellLink.click()
   }
 }

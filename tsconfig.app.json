@@ -31,8 +31,14 @@
     ],
     "baseUrl": "./src",
     "paths": {
+      "@/*": [
+        "/*"
+      ],
       "@components/*": [
         "components/*"
+      ],
+      "@composables/*": [
+        "composables/*"
       ],
       "@types": [
         "types/index.ts"
@@ -57,7 +63,7 @@
       ],
       "@router": [
         "router/index.ts"
-      ],
+      ]
     }
   }
 }

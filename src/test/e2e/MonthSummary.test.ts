@@ -153,6 +153,13 @@ test.describe('Month Summary Page', () => {
 
   test('should handle reset button click', async () => {
     await monthSummaryPage.clickResetButton()
-    await expect(monthSummaryPage.page).toHaveURL(/\/budget-visualizer\/transactions/)
+
+    // waitFor
+    await transactionsPage.page.waitForLoadState('networkidle')
+
+    await expect(transactionsPage.page).toHaveURL(/\/budget-visualizer\/transactions/)
+    // the monthSelect should be reset when we're back on the TransactionsPage
+    const monthSelect = await transactionsPage.getMonthSelectValue()
+    expect(monthSelect).toBe('')
   })
 })

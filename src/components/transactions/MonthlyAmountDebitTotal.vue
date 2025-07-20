@@ -44,7 +44,7 @@ const statisticValue = computed(() => {
   if (!dataItems.value) {
     return 0
   } else {
-    return dataItems.value.total_amount_debit
+    return dataItems.value[0].total_amount_debit
   }
 })
 

@@ -6,8 +6,8 @@
     :total="Number(memosCount)"
     v-model:page-size="limit"
     v-model:current-page="currentPage"
-    @update:current-change="handleCurrentChange"
-    @update:size-change="handleSizeChange"
+    @current-change="handleCurrentChange"
+    @size-change="handleSizeChange"
   />
 </template>
 
@@ -25,9 +25,10 @@ const memosCount = computed(() => {
   if (!data.value) {
     return 0
   }
-  return data.value.map((item: { count: number }) => item.count)[0]
+  return data.value[0].count
 })
 
+// Same pattern as transactions - both components use identical currentPage computed
 const currentPage = computed({
   get: () => Math.floor(store.memosTableOffset / store.memosTableLimit) + 1,
   set: (val: number) => {
@@ -39,27 +40,26 @@ const limit = computed({
   get: () => store.memosTableLimit,
   set: (val: number) => {
     store.setMemosTableLimit(val)
-    store.setMemosTableOffset(0)
+    store.setMemosTableOffset(0) // Reset to first page when limit changes
   }
 })
 
 function handleCurrentChange(newPage: number) {
+  // This updates the store offset via the currentPage setter
   currentPage.value = newPage
 }
 
 function handleSizeChange(newSize: number) {
+  // Update limit (which resets offset to 0) then set page to 1
   limit.value = newSize
   currentPage.value = 1
 }
 
 onMounted(() => {
-  store.setMemosCount(memosCount.value)
+  // Initialize pagination state
   store.setMemosTableOffset(0)
 })
-
-
 </script>
 
 <style scoped>
-
 </style>

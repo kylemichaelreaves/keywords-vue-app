@@ -5,6 +5,7 @@
       <div v-if="dayData && dayData.length > 0">
         <h3>{{ formatDate(dayData[0]?.Date) }}</h3>
         <TableComponent
+            :data-testid="`day-summaries-table-${index}`"
             :columns="columns"
             :table-data="dayData"
             :is-fetching="isFetching || isLoading || isRefetching"
@@ -34,9 +35,9 @@ const formatDate = (dateString: string) => {
 };
 
 const allColumns = [
-  {prop: 'Date', label: 'Date'},
-  {prop: 'Memo', label: 'Memo'},
-  {prop: 'Amount Debit', label: 'Amount Debit'},
+  {prop: 'date', label: 'Date'},
+  {prop: 'memo', label: 'Memo'},
+  {prop: 'amount_debit', label: 'Amount Debit'},
 ];
 
 const columns = allColumns.filter(column => column.prop !== 'Date');

@@ -3,13 +3,14 @@ import { faker } from '@faker-js/faker'
 
 
 // Function to generate a single transaction
-function generateTransaction(memo?:string): Transaction {
+function generateTransaction(memo?:string, date?: string): Transaction {
   const isDebit = faker.datatype.boolean()
   const amount = faker.finance.amount({ min: 1, max: 5000, dec: 2 })
 
   return {
     id: faker.number.int({ min: 1, max: 100000 }),
     transaction_number: faker.string.alphanumeric({ length: 8 }).toUpperCase(),
+    date: date ?? faker.date.past({ years: 1 }).toISOString(),
     description: faker.finance.transactionDescription(),
     memo: memo ?? faker.lorem.sentence({ min: 3, max: 8 }),
     memo_id: faker.number.int({ min: 1, max: 1000 }),
@@ -34,6 +35,6 @@ function generateTransaction(memo?:string): Transaction {
 }
 
 // Generate an array of transactions
-export function generateTransactionsArray(count: number, memo?: string): Transaction[] {
-  return Array.from({ length: count }, () => generateTransaction(memo))
+export function generateTransactionsArray(count: number, memo?: string, date?: string): Transaction[] {
+  return Array.from({ length: count }, () => generateTransaction(memo, date))
 }

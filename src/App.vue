@@ -16,6 +16,6 @@ const route = useRoute();
 
 <style scoped>
 #app {
-  width: 95vw;
+  width: 100vw;
 }
 </style>

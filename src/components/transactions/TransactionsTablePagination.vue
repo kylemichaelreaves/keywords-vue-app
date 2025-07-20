@@ -40,7 +40,7 @@ const transactionsCount = computed(() => {
   if (!data.value) {
     return 0
   }
-  return data.value
+  return data.value[0].count
 })
 
 const currentPage = computed({

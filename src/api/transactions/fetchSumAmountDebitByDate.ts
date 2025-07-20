@@ -1,6 +1,6 @@
 import { httpClient } from '@api/httpClient'
 
-export async function fetchSumAmountDebitByDate(timeFrame: string, date: Date | null | undefined, totalAmountDebit=true): Promise<{ total_amount_debit: number }> {
+export async function fetchSumAmountDebitByDate(timeFrame: string, date: Date | null | undefined, totalAmountDebit=true): Promise<Array<{ total_amount_debit: number }>> {
   return await httpClient
     .get(`/transactions`, {
       params: {

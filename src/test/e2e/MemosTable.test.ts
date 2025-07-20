@@ -35,7 +35,6 @@ test.describe('Memos Table', () => {
 
   test('should display the memos table', async () => {
     await memosPage.memosTable.waitFor({ state: 'visible' })
-    await memosPage.page.waitForLoadState('networkidle')
     expect(memosPage.memosTable.isVisible()).toBeTruthy()
   })
 

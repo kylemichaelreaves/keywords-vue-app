@@ -1,4 +1,4 @@
-import type { LineChartDataPoint, DailyInterval, SummaryTypeBase } from '@types'
+import type { DailyInterval, LineChartDataPoint, SummaryTypeBase } from '@types'
 import * as d3 from 'd3'
 import { useTippy } from 'vue-tippy'
 import 'tippy.js/animations/scale.css'
@@ -7,7 +7,7 @@ import 'tippy.js/themes/translucent.css'
 
 export const createLineChart = (
   el: unknown,
-  summaries: (  SummaryTypeBase | DailyInterval)[],
+  summaries: (SummaryTypeBase | DailyInterval)[],
   onDateSelected: (date: string) => void
 ) => {
   const svgElement = el as SVGSVGElement
@@ -22,15 +22,37 @@ export const createLineChart = (
 
   const parseDateUTC = d3.utcParse('%Y-%m-%dT%H:%M:%S.%LZ')
 
-  const chartData = summaries.flat().map((item: SummaryTypeBase | DailyInterval) => {
-    const date = item.date
-      ? parseDateUTC(<string>item.date)
-      : item.day_number
-        ? new Date(Number(item.year), Number(item.month_number) - 1, Number(item.day_number))
-        : item.week_number
-          ? new Date(Number(item.year), 0, 1 + (Number(item.week_number) - 1) * 7)
-          : new Date(Number(item.year), Number(item.month_number) - 1, 1)
+  const createDateFromItem = (item: SummaryTypeBase | DailyInterval): Date => {
+    if (item.date) {
+      return <Date>parseDateUTC(item.date as string)
+    }
 
+    if (item.day_number) {
+      return new Date(
+        Number(item.year),
+        Number(item.month_number) - 1,
+        Number(item.day_number)
+      )
+    }
+
+    if (item.week_number) {
+      return new Date(
+        Number(item.year),
+        0,
+        1 + (Number(item.week_number) - 1) * 7
+      )
+    }
+
+    // Default: first day of the month
+    return new Date(
+      Number(item.year),
+      Number(item.month_number) - 1,
+      1
+    )
+  }
+
+  const chartData = summaries.flat().map((item: SummaryTypeBase | DailyInterval) => {
+    const date = createDateFromItem(item)
     const total_debit = item.total_amount_debit ?? item.total_debit
 
     return {
@@ -104,24 +126,28 @@ export const createLineChart = (
     .enter()
     .append('circle')
     .attr('class', 'dot')
-    .attr('cx', (d) => x(d.date as Date))
+    .attr('data-testid', (d, i) => `chart-dot-${i}`)
+    .attr('cx', (d) => x(d.date))
     .attr('cy', (d) => y(d.total_debit as number))
     .attr('r', 4)
     .attr('fill', 'red')
     .on('click', (event, d) => {
-      const clickedDate = d.date as Date
+      const clickedDate = d.date
       const dateString = d3.utcFormat('%Y-%m-%d')(clickedDate)
       onDateSelected(dateString)
     })
     .each(function(d) {
       useTippy(this, {
-        content: `${d3.utcFormat('%Y-%m-%d')(d.date as Date)}<br>$${d?.total_debit?.toFixed(2)}`,
+        content: `${d3.utcFormat('%Y-%m-%d')(d.date)}<br>$${d?.total_debit?.toFixed(2)}`,
         allowHTML: true,
         theme: 'translucent',
         placement: 'top-start',
-        animation: 'scale'
+        animation: 'scale',
+        onMount(instance) {
+          // place above all elements
+          instance.popper.style.zIndex = '10000'
+          instance.popper.setAttribute('data-testid', 'line-chart-tooltip')
+        }
       })
     })
-
-
 }

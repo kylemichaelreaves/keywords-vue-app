@@ -108,4 +108,5 @@ test.describe('Memo Summary Table', () => {
     await expect(memoSummaryTablePage.budgetCategoryModal).toBeVisible()
   })
 
+
 })

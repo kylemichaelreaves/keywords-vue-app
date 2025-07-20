@@ -76,6 +76,7 @@ declare module 'vue' {
     Login: typeof import('./src/components/transactions/Login.vue')['default']
     LoginComponent: typeof import('./src/components/user-management/LoginComponent.vue')['default']
     LoginUser: typeof import('./src/components/user-management/LoginUser.vue')['default']
+    MemoAvatar: typeof import('./src/components/transactions/MemoAvatar.vue')['default']
     MemoBarChart: typeof import('./src/components/charts/MemoBarChart.vue')['default']
     MemoBudgetCategory: typeof import('./src/components/transactions/MemoBudgetCategory.vue')['default']
     MemoEditForm: typeof import('./src/components/transactions/MemoEditForm.vue')['default']

@@ -2,10 +2,11 @@
 import { nextTick, onMounted, watch } from 'vue'
 import type { LocationQuery } from 'vue-router'
 import { useRoute, useRouter } from 'vue-router'
-import { useTransactionsStore } from '@stores/transactions'
-import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue'
+import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
+import { useTransactionsStore } from '@stores/transactions.ts'
 
-export function useURLSync() {
+
+export default function useURLSync() {
   const route = useRoute()
   const router = useRouter()
   const store = useTransactionsStore()

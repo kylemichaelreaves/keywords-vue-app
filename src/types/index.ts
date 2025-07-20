@@ -135,8 +135,10 @@ export interface Memo {
   frequency: Frequency;
   budget_category: BudgetCategory['name'];
   ambiguous: boolean;
+  total_amount_debit?: number;
+  transactions_count?: number;
+  avatar_s3_url?: string;
 }
-
 
 
 export interface MemoSummary {
@@ -161,8 +163,14 @@ export interface MemoFormFields {
   options?: { value: string; label: string }[];
 }
 
-export type MemoKeys = 'name' | 'recurring' | 'necessary' | 'frequency' | 'budget_category' | 'ambiguous';
-
+export type MemoKeys =
+  'name'
+  | 'recurring'
+  | 'necessary'
+  | 'frequency'
+  | 'budget_category'
+  | 'ambiguous'
+  | 'avatar_s3_url';
 
 
 export interface MonthSummary {
@@ -175,13 +183,10 @@ export interface MonthYear {
 }
 
 
-
 export interface PieChartData {
   label: string;
   value: number;
 }
-
-
 
 
 export type RouterQueryParams = {
@@ -221,7 +226,6 @@ export type Summaries = {
 };
 
 
-
 export type TimeframeType = 'day' | 'week' | 'month' | 'year';
 
 
@@ -235,6 +239,7 @@ export enum Timeframe {
 export type Transaction = {
   id?: number;
   transaction_number?: string;
+  date: string;
   description: string;
   memo: string;
   memo_id?: number;

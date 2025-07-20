@@ -8,9 +8,9 @@ export default function useMemosCount() {
   return useQuery({
     queryKey: ['memos-count'],
     queryFn: async () => {
-      const count = await fetchMemosCount()
-      store.setMemosCount(count)
-      return count
+      const data = await fetchMemosCount()
+      store.setMemosCount(data[0].count)
+      return data
     },
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5

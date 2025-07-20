@@ -35,7 +35,7 @@ test.describe('Transactions Table', () => {
     })
 
     // mock the daily total intervals, with and without date
-    await page.route('**/transactions?dailyTotals=true&interval=1+months',  route => {
+    await page.route('**/transactions?dailyTotals=true&interval=1+months', route => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -52,6 +52,8 @@ test.describe('Transactions Table', () => {
     })
 
 
+    await transactionsPage.goto()
+    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
   })
 
 
@@ -73,8 +75,6 @@ test.describe('Transactions Table', () => {
   })
 
   test('right clicking on a cell in the TransactionsTable opens the context menu', async () => {
-    await transactionsPage.goto()
-    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
     // select the row after the header row
     const firstRow = transactionsPage.transactionsTable.getByRole('row').nth(1)
     const firstCell = firstRow.getByRole('cell').nth(1)
@@ -94,7 +94,7 @@ test.describe('Transactions Table', () => {
     const expectedTitle = 'Edit Transaction: ' + firstTransactionNumber
     expect(modalTitle).toBe(expectedTitle)
 
-    // the use shouldn't ever be able to edit the transactionNumber
+    // the user shouldn't ever be able to edit the transactionNumber
     const transactionNumberInput = transactionsPage.modalTransactionNumberInput
     await expect(transactionNumberInput).toBeVisible()
     await expect(transactionNumberInput).toBeDisabled()
@@ -105,5 +105,57 @@ test.describe('Transactions Table', () => {
     await expect(editTransactionForm).not.toBeVisible()
   })
 
+  test('should display the tooltip of the point on the linechart when hovering over it', async () => {
+
+    // hover over the first chart-dot on the line chart
+    const tenthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-10')
+    await tenthPoint.hover()
+
+    const toolTip = transactionsPage.intervalLineChartTooltip
+    await expect(toolTip).toBeVisible()
+
+    // check that the tooltip has the correct text
+    const tooltipText = await toolTip.textContent()
+    expect(tooltipText).toBeDefined()
+
+  })
+
+  test('clicking on a point in the line chart loads the transactions for that date', async () => {
+
+    const fifthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-5')
+
+    // hover over the fifth chart-dot on the line chart
+    await fifthPoint.hover()
+    await expect(transactionsPage.intervalLineChartTooltip).toBeVisible()
+
+    // grab the date from the tooltip text content
+    const textContent = await transactionsPage.intervalLineChartTooltip.textContent()
+
+
+    const fifthPointDate = textContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
+    await fifthPoint.click()
+
+    //  intercept the request for transactions
+    // transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}
+    await transactionsPage.page.route(`**/transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}`, route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(generateTransactionsArray(10, '', fifthPointDate))
+      })
+    })
+
+
+    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
+
+    // compare the date in the date column in the transactions table to the date of the point clicked
+    const dateRow = transactionsPage.transactionsTable.getByRole('row').nth(1)
+
+    const dateCell = dateRow.getByRole('cell').nth(2) // the date is in the second cell
+    const dateText = await dateCell.textContent()
+
+    expect(dateText).toBe(fifthPointDate)
+
+  })
 
 })
