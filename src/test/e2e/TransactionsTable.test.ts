@@ -1,16 +1,16 @@
 // import {test, expect} from '@playwright/test';
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
-import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
+import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { mockTransactionsTableSelects } from '@test/e2e/helpers/mockTransactionsTableSelects.ts'
-import { generateDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
+import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 
 
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
-  const intervals = generateDailyIntervals(30)
-  const transactions = generateTransactionsArray(100)
+  // const intervals = generateDailyIntervals(30)
+  // const transactions = generateTransactionsArray(100)
 
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
@@ -21,7 +21,7 @@ test.describe('Transactions Table', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(transactions)
+        body: JSON.stringify(staticTransactions)
       })
     })
 
@@ -43,7 +43,7 @@ test.describe('Transactions Table', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(intervals)
+        body: JSON.stringify(staticDailyIntervals)
       })
     })
 
@@ -51,7 +51,7 @@ test.describe('Transactions Table', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(intervals)
+        body: JSON.stringify(staticDailyIntervals)
       })
     })
 
@@ -144,7 +144,7 @@ test.describe('Transactions Table', () => {
     //  intercept the request for transactions
     //  transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}
 
-    const fifthPointDateTransactions = generateTransactionsArray(15, '', fifthPointDate)
+    const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
 
     await transactionsPage.page.route(`**/transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}`, route => {
       route.fulfill({
