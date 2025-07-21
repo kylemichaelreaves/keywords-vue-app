@@ -172,7 +172,7 @@ const updateURL = () => {
   }
 
   // Only add limit if different from default
-  if (LIMIT.value !== 100) { // Assuming 10 is your default
+  if (LIMIT.value !== 100) {
     query.limit = LIMIT.value.toString()
   }
 

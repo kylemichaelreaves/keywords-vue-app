@@ -137,11 +137,14 @@ test.describe('Transactions Table', () => {
 
     //  intercept the request for transactions
     // transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}
+
+    const fifthPointDateTransactions = generateTransactionsArray(10, '', fifthPointDate)
+
     await transactionsPage.page.route(`**/transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}`, route => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(generateTransactionsArray(10, '', fifthPointDate))
+        body: JSON.stringify(fifthPointDateTransactions)
       })
     })
 

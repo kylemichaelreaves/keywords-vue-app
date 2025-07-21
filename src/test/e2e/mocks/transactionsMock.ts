@@ -12,7 +12,7 @@ function generateTransaction(memo?:string, date?: string): Transaction {
     transaction_number: faker.string.alphanumeric({ length: 8 }).toUpperCase(),
     date: date ?? faker.date.past({ years: 1 }).toISOString(),
     description: faker.finance.transactionDescription(),
-    memo: memo ?? faker.lorem.sentence({ min: 3, max: 8 }),
+    memo: memo && memo.trim() !== '' ? memo : faker.lorem.sentence({ min: 3, max: 8 }),
     memo_id: faker.number.int({ min: 1, max: 1000 }),
     amount_debit: isDebit ? amount : '0.00',
     amount_credit: isDebit ? '0.00' : amount,
