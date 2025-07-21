@@ -148,11 +148,6 @@ test.describe('Transactions Table', () => {
       throw new Error('Could not extract date from tooltip text content')
     }
 
-    await fifthPoint.click()
-
-    //  intercept the request for transactions
-    //  transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}
-
     const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
 
     await transactionsPage.page.route(`**/transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}`, route => {
@@ -162,6 +157,21 @@ test.describe('Transactions Table', () => {
         body: JSON.stringify(fifthPointDateTransactions)
       })
     })
+
+    const requestPromise = transactionsPage.page.waitForRequest(request => {
+      const url = request.url()
+      console.log('Request detected:', url)
+      return url.includes('transactions') && url.includes(`date=${fifthPointDate}`)
+    })
+
+    await fifthPoint.click()
+
+    const request = await requestPromise
+    console.log('Request made for transactions:', request.url())
+
+    //  intercept the request for transactions
+    //  transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}
+
 
     await transactionsPage.page.waitForLoadState('networkidle')
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
