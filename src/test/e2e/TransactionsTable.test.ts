@@ -4,6 +4,7 @@ import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
 import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
 import { mockTransactionsTableSelects } from '@test/e2e/helpers/mockTransactionsTableSelects.ts'
 import { generateDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
+import { generateRandomPastDate } from '@api/helpers/generateRandomPastDate.ts'
 
 
 test.describe('Transactions Table', () => {
@@ -138,7 +139,7 @@ test.describe('Transactions Table', () => {
     //  intercept the request for transactions
     // transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}
 
-    const fifthPointDateTransactions = generateTransactionsArray(10, '', fifthPointDate)
+    const fifthPointDateTransactions = generateTransactionsArray(10, '', generateRandomPastDate(1))
 
     await transactionsPage.page.route(`**/transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}`, route => {
       route.fulfill({
