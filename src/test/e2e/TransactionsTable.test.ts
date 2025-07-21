@@ -136,7 +136,7 @@ test.describe('Transactions Table', () => {
     await fifthPoint.click()
 
     //  intercept the request for transactions
-    // transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}
+    //  transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}
 
     const fifthPointDateTransactions = generateTransactionsArray(15, '', fifthPointDate)
 
@@ -148,7 +148,7 @@ test.describe('Transactions Table', () => {
       })
     })
 
-
+    await transactionsPage.page.waitForLoadState('networkidle')
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
 
     // compare the date in the date column in the transactions table to the date of the point clicked
