@@ -66,6 +66,9 @@ test.describe('Transactions Table', () => {
 
     await transactionsPage.goto()
 
+    await transactionsPage.page.waitForLoadState('networkidle')
+    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
+
     await expect(transactionsPage.transactionsTable).toBeVisible()
     await expect(transactionsPage.daySelect).toBeVisible()
     await expect(transactionsPage.weekSelect).toBeVisible()
@@ -136,14 +139,14 @@ test.describe('Transactions Table', () => {
 
     // grab the date from the tooltip text content
     const textContent = await transactionsPage.intervalLineChartTooltip.textContent()
-    console.log('Tooltip text content:', textContent)
+
     if (!textContent) {
       throw new Error('Tooltip text content is empty or undefined')
     }
 
 
     const fifthPointDate = textContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
-    console.log('Extracted date from tooltip:', fifthPointDate)
+
     if (!fifthPointDate) {
       throw new Error('Could not extract date from tooltip text content')
     }
@@ -158,19 +161,8 @@ test.describe('Transactions Table', () => {
       })
     })
 
-    const requestPromise = transactionsPage.page.waitForRequest(request => {
-      const url = request.url()
-      console.log('Request detected:', url)
-      return url.includes('transactions') && url.includes(`date=${fifthPointDate}`)
-    })
 
     await fifthPoint.click()
-
-    const request = await requestPromise
-    console.log('Request made for transactions:', request.url())
-
-    //  intercept the request for transactions
-    //  transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}
 
 
     await transactionsPage.page.waitForLoadState('networkidle')
@@ -178,22 +170,10 @@ test.describe('Transactions Table', () => {
 
     // compare the date in the date column in the transactions table to the date of the point clicked
     const dateRow = transactionsPage.transactionsTable.getByRole('row').nth(1)
-    console.log('Date row:', dateRow)
-    if (!dateRow) {
-      throw new Error('Date row not found in transactions table')
-    }
 
     const dateCell = dateRow.getByRole('cell').nth(2) // the date is in the second cell
-    console.log('Date cell:', dateCell)
-    if (!dateCell) {
-      throw new Error('Date cell not found in transactions table')
-    }
 
     const dateText = await dateCell.textContent()
-    console.log('Date text:', dateText)
-    if (!dateText) {
-      throw new Error('Date text content is empty or undefined')
-    }
 
     expect(dateText).toBe(fifthPointDate)
 
