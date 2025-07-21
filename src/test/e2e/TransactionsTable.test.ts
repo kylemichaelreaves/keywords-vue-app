@@ -9,15 +9,19 @@ import { generateDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
+  const intervals = generateDailyIntervals(30)
+  const transactions = generateTransactionsArray(100)
+
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
+
 
     // mock transactions?limit=100&offset=0&timeFrame=year
     await page.route('**/transactions?limit=100&offset=0&timeFrame=year', route => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(generateTransactionsArray(100))
+        body: JSON.stringify(transactions)
       })
     })
 
@@ -39,7 +43,7 @@ test.describe('Transactions Table', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(generateDailyIntervals(30))
+        body: JSON.stringify(intervals)
       })
     })
 
@@ -47,7 +51,7 @@ test.describe('Transactions Table', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(generateDailyIntervals(30))
+        body: JSON.stringify(intervals)
       })
     })
 
@@ -126,6 +130,8 @@ test.describe('Transactions Table', () => {
 
     // hover over the fifth chart-dot on the line chart
     await fifthPoint.hover()
+    // wait for the intervalLineChartTooltip to be visible
+    await transactionsPage.intervalLineChart.waitFor({ state: 'visible' })
     await expect(transactionsPage.intervalLineChartTooltip).toBeVisible()
 
     // grab the date from the tooltip text content
