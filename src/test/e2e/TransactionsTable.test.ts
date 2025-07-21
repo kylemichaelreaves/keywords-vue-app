@@ -150,7 +150,7 @@ test.describe('Transactions Table', () => {
 
     const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
 
-    await transactionsPage.page.route(`**/transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}`, route => {
+    await transactionsPage.page.route(`**/transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}T00:00:00.000Z`, route => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
