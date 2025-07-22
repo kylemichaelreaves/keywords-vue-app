@@ -76,7 +76,7 @@ const memoOptions = computed(() => {
 })
 
 const clearSelectedMemo = () => {
-  // transactionsStore.setSelectedMemo('')
+  transactionsStore.setSelectedMemo('')
   emit('update:modelValue', '')
   router.push('/budget-visualizer/memos')
 }
