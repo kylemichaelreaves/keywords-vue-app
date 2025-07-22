@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test'
+import { expect } from '@playwright/test'
 
 export class TransactionsPage {
   readonly transactionsTable: Locator
@@ -61,10 +62,12 @@ export class TransactionsPage {
     await this.page.locator('button').filter({ hasText: /^Decrease Interval$/ }).click()
   }
 
-  async getFirstTransactionNumber() {
-    const firstRow = this.transactionsTable.getByRole('row').nth(1) // Skip header row
-    const firstCell = firstRow.getByRole('cell').nth(1)
-    return await firstCell.textContent()
+  // get the text content of a given cell and row index
+  async getCellTextContent(rowIndex: number, cellIndex: number): Promise<string> {
+    const row = this.transactionsTable.getByRole('row').nth(rowIndex)
+    const cell = row.getByRole('cell').nth(cellIndex)
+    await expect(cell).not.toBeEmpty()
+    return await cell.textContent() ?? ''
   }
 
   // Method to get the value of the month select
@@ -89,14 +92,25 @@ export class TransactionsPage {
   }
 
   async rightClickOnFirstTransaction() {
-    const firstRow = this.transactionsTable.getByRole('row').first()
-    const firstCell = firstRow.getByRole('cell').first()
-    await firstCell.click({ button: 'right' })
+    await this.clickOnTableCell({ rowIndex: 1, cellIndex: 1, clickOptions: { button: 'right' } })
   }
 
   async clickOnMemoFromTable() {
-    const firstRow = this.transactionsTable.getByRole('row').nth(1)
-    const memoCellLink = firstRow.getByRole('cell').nth(5).getByRole('link')
-    await memoCellLink.click()
+    await this.clickOnTableCell({ rowIndex: 1, cellIndex: 5, clickOptions: { button: 'left' } })
   }
+
+  async clickOnTableCell(options: {
+    rowIndex?: number
+    cellIndex?: number
+    clickOptions?: { button?: 'left' | 'right' | 'middle' }
+  } = {}) {
+    const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
+
+    const row = this.transactionsTable.getByRole('row').nth(rowIndex)
+    const cell = row.getByRole('cell').nth(cellIndex)
+    await cell.click(clickOptions)
+  }
+
 }
+
+

@@ -9,12 +9,8 @@ import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
-  // const intervals = generateDailyIntervals(30)
-  // const transactions = generateTransactionsArray(100)
-
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
-
 
     // mock transactions?limit=100&offset=0&timeFrame=year
     await page.route('**/transactions?limit=100&offset=0&timeFrame=year', route => {
@@ -24,7 +20,6 @@ test.describe('Transactions Table', () => {
         body: JSON.stringify(staticTransactions)
       })
     })
-
 
     // mock the transaction selects
     await mockTransactionsTableSelects(page)
@@ -83,10 +78,11 @@ test.describe('Transactions Table', () => {
 
   test('right clicking on a cell in the TransactionsTable opens the context menu', async () => {
     // select the row after the header row
-    const firstRow = transactionsPage.transactionsTable.getByRole('row').nth(1)
-    const firstCell = firstRow.getByRole('cell').nth(1)
-    await firstCell.click({ button: 'right' })
-
+    await transactionsPage.clickOnTableCell({
+      rowIndex: 1,
+      cellIndex: 1,
+      clickOptions: { button: 'right' }
+    })
 
     const editTransactionForm = transactionsPage.transactionEditModal
     await expect(editTransactionForm).toBeVisible()
@@ -97,7 +93,7 @@ test.describe('Transactions Table', () => {
       .getByRole('heading', { name: 'Edit Transaction' })
       .textContent()
 
-    const firstTransactionNumber = await transactionsPage.getFirstTransactionNumber()
+    const firstTransactionNumber = await transactionsPage.getCellTextContent(1, 1)
     const expectedTitle = 'Edit Transaction: ' + firstTransactionNumber
     expect(modalTitle).toBe(expectedTitle)
 
@@ -137,19 +133,9 @@ test.describe('Transactions Table', () => {
     await transactionsPage.intervalLineChart.waitFor({ state: 'visible' })
     await expect(transactionsPage.intervalLineChartTooltip).toBeVisible()
 
-    // grab the date from the tooltip text content
     const textContent = await transactionsPage.intervalLineChartTooltip.textContent()
 
-    if (!textContent) {
-      throw new Error('Tooltip text content is empty or undefined')
-    }
-
-
     const fifthPointDate = textContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
-
-    if (!fifthPointDate) {
-      throw new Error('Could not extract date from tooltip text content')
-    }
 
     const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
 
@@ -161,22 +147,20 @@ test.describe('Transactions Table', () => {
       })
     })
 
+    const requestPromise = transactionsPage.page.waitForRequest(request =>
+      request.url().includes('transactions') && request.url().includes(`date=${fifthPointDate}`)
+    )
 
     await fifthPoint.click()
 
+    await requestPromise
 
     await transactionsPage.page.waitForLoadState('networkidle')
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
 
-    // compare the date in the date column in the transactions table to the date of the point clicked
-    const dateRow = transactionsPage.transactionsTable.getByRole('row').nth(1)
-
-    const dateCell = dateRow.getByRole('cell').nth(2) // the date is in the second cell
-
-    const dateText = await dateCell.textContent()
+    const dateText = await transactionsPage.getCellTextContent(1, 2)
 
     expect(dateText).toBe(fifthPointDate)
-
   })
 
 })
