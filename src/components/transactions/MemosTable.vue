@@ -120,12 +120,12 @@ const editModalTitle = computed(() => {
   return selectedMemo.value ? `Edit Memo: ${selectedMemo.value.name}` : 'Create New Memo'
 })
 
-const isLoadingCondition = reactive(
-  isLoading ||
-  isFetching ||
-  isRefetching ||
-  isFetchingNextPage ||
-  isFetchingPreviousPage
+const isLoadingCondition = computed(() => 
+  isLoading.value ||
+  isFetching.value ||
+  isRefetching.value ||
+  isFetchingNextPage.value ||
+  isFetchingPreviousPage.value
 )
 
 const flattenedData = computed(() => {
