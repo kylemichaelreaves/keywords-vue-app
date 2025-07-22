@@ -319,8 +319,7 @@ export const staticTransactions: Transaction[] = [
     balance: '12280.00',
     check_number: undefined,
     fees: undefined,
-    budget_category:
-      'Business Services'
+    budget_category: 'Business Services'
   },
   {
     id: 21,
