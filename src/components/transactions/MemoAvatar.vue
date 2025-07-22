@@ -146,6 +146,7 @@ const uploadFile = async (file: File) => {
 
     if (!response.data) {
       ElMessage.error(`Upload failed: ${response.statusText}`)
+      return
     }
 
     const result = await response.data
