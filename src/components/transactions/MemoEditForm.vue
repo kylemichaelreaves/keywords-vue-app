@@ -41,6 +41,7 @@ import { ElMessage, ElOption } from 'element-plus'
 import type { Memo, MemoFormFields, MemoKeys } from '@types'
 import mutateMemo from '@api/hooks/transactions/mutateMemo'
 import BudgetCategoryTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
+import MemoAvatar from '@components/transactions/MemoAvatar.vue'
 
 const props = defineProps({
   memo: {
@@ -59,7 +60,8 @@ const memo = reactive({
   necessary: props.memo.necessary,
   frequency: props.memo.frequency,
   budget_category: props.memo.budget_category,
-  ambiguous: props.memo.ambiguous
+  ambiguous: props.memo.ambiguous,
+  avatar_s3_url: props.memo.avatar_s3_url
 })
 
 const { mutate } = mutateMemo()
@@ -73,6 +75,7 @@ watch(
     memo.frequency = newVal.frequency
     memo.budget_category = newVal.budget_category
     memo.ambiguous = newVal.ambiguous
+    memo.avatar_s3_url = newVal.avatar_s3_url
   },
   {
     deep: true,
@@ -82,19 +85,27 @@ watch(
 
 // Extended fields configuration with optional custom test IDs
 const fields: Record<MemoKeys, MemoFormFields & { dataTestId?: string }> = {
+  avatar_s3_url: {
+    component: MemoAvatar,
+    label: 'Logo',
+    placeholder: 'Upload a logo for this vendor',
+    dataTestId: `${props.dataTestId}-avatar`
+  },
   name: {
     component: 'el-input',
     label: 'Memo Name',
     placeholder: 'Enter a memo name',
-    dataTestId: `${props.dataTestId}-name-input` // Custom test ID
+    dataTestId: `${props.dataTestId}-name-input`
   },
   recurring: {
     component: 'el-switch',
-    label: 'Recurring'
+    label: 'Recurring',
+    dataTestId: `${props.dataTestId}-recurring-switch`
   },
   necessary: {
     component: 'el-switch',
-    label: 'Necessary'
+    label: 'Necessary',
+    dataTestId: `${props.dataTestId}-necessary-switch`,
   },
   frequency: {
     component: 'el-select',
@@ -106,16 +117,19 @@ const fields: Record<MemoKeys, MemoFormFields & { dataTestId?: string }> = {
       { value: 'weekly', label: 'Weekly' },
       { value: 'monthly', label: 'Monthly' },
       { value: 'yearly', label: 'Yearly' }
-    ]
+    ],
+    dataTestId: `${props.dataTestId}-frequency-select`
   },
   budget_category: {
     component: BudgetCategoryTreeSelect,
     label: 'Budget Category',
-    placeholder: 'Select a budget category'
+    placeholder: 'Select a budget category',
+    dataTestId: `${props.dataTestId}-budget-category-tree-select`,
   },
   ambiguous: {
     component: 'el-switch',
-    label: 'Ambiguous'
+    label: 'Ambiguous',
+    dataTestId: `${props.dataTestId}-ambiguous-switch`
   }
 }
 

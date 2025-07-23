@@ -137,12 +137,12 @@ test.describe('Month Summary Page', () => {
 
   test('should display the budget categories summary component', async () => {
     await monthSummaryPage.budgetCategorySummaries.waitFor({ state: 'visible' })
-    expect(monthSummaryPage.budgetCategorySummaries.isVisible()).toBeTruthy()
+    await expect(monthSummaryPage.budgetCategorySummaries).toBeVisible()
   })
 
   test('the navigation button group should be visible', async () => {
     await monthSummaryPage.navigationButtonGroup.waitFor({ state: 'visible' })
-    expect(monthSummaryPage.navigationButtonGroup.isVisible()).toBeTruthy()
+    await expect(monthSummaryPage.navigationButtonGroup).toBeVisible()
   })
 
   test('the next month button should be disabled when on the latest month', async () => {
@@ -153,6 +153,13 @@ test.describe('Month Summary Page', () => {
 
   test('should handle reset button click', async () => {
     await monthSummaryPage.clickResetButton()
-    await expect(monthSummaryPage.page).toHaveURL(/\/budget-visualizer\/transactions/)
+
+    // waitFor
+    await transactionsPage.page.waitForLoadState('networkidle')
+
+    await expect(transactionsPage.page).toHaveURL(/\/budget-visualizer\/transactions/)
+    // the monthSelect should be reset when we're back on the TransactionsPage
+    const monthSelect = await transactionsPage.getMonthSelectValue()
+    expect(monthSelect).toBe('')
   })
 })

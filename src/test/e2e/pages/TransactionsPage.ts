@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test'
+import { expect } from '@playwright/test'
 
 export class TransactionsPage {
   readonly transactionsTable: Locator
@@ -7,9 +8,12 @@ export class TransactionsPage {
   readonly monthSelect: Locator
   readonly yearSelect: Locator
   readonly memoSelect: Locator
+
   readonly intervalTypeSelect: Locator
   readonly intervalNumberInput: Locator
   readonly intervalLineChart: Locator
+  readonly intervalLineChartTooltip: Locator
+
   readonly transactionsTablePagination: Locator
   readonly transactionEditModal: Locator
 
@@ -24,9 +28,12 @@ export class TransactionsPage {
     this.monthSelect = this.page.getByTestId('transactions-table-month-select')
     this.yearSelect = this.page.getByTestId('transactions-table-year-select')
     this.memoSelect = this.page.getByTestId('transactions-table-memo-select')
+
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
     this.intervalTypeSelect = this.page.getByRole('main').getByText('Month', { exact: true })
     this.intervalNumberInput = this.page.getByRole('spinbutton', { name: 'Interval Count' })
+    this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')
+
     this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
     this.transactionEditModal = this.page.getByTestId('transaction-edit-dialog')
 
@@ -55,15 +62,55 @@ export class TransactionsPage {
     await this.page.locator('button').filter({ hasText: /^Decrease Interval$/ }).click()
   }
 
-  async getFirstTransactionNumber() {
-    const firstRow = this.transactionsTable.getByRole('row').nth(1) // Skip header row
-    const firstCell = firstRow.getByRole('cell').nth(1)
-    return await firstCell.textContent()
+  // get the text content of a given cell and row index
+  async getCellTextContent(rowIndex: number, cellIndex: number): Promise<string> {
+    const row = this.transactionsTable.getByRole('row').nth(rowIndex)
+    const cell = row.getByRole('cell').nth(cellIndex)
+    await expect(cell).not.toBeEmpty()
+    return await cell.textContent() ?? ''
+  }
+
+  // Method to get the value of the month select
+  async getMonthSelectValue(): Promise<string> {
+    // Try to get the input value first (most reliable)
+    const input = this.monthSelect.locator('input')
+    if (await input.count() > 0) {
+      const value = await input.inputValue()
+      if (value) return value
+    }
+
+    // Check the visible text content of the select
+    const selectText = await this.monthSelect.textContent()
+    const trimmedText = selectText?.trim() ?? ''
+
+    // If it shows the placeholder text, consider it empty
+    if (trimmedText === 'select a month' || trimmedText === '' || trimmedText.includes('select')) {
+      return ''
+    }
+
+    return trimmedText
   }
 
   async rightClickOnFirstTransaction() {
-    const firstRow = this.transactionsTable.getByRole('row').first()
-    const firstCell = firstRow.getByRole('cell').first()
-    await firstCell.click({ button: 'right' })
+    await this.clickOnTableCell({ rowIndex: 1, cellIndex: 1, clickOptions: { button: 'right' } })
   }
+
+  async clickOnMemoFromTable() {
+    await this.clickOnTableCell({ rowIndex: 1, cellIndex: 5, clickOptions: { button: 'left' } })
+  }
+
+  async clickOnTableCell(options: {
+    rowIndex?: number
+    cellIndex?: number
+    clickOptions?: { button?: 'left' | 'right' | 'middle' }
+  } = {}) {
+    const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
+
+    const row = this.transactionsTable.getByRole('row').nth(rowIndex)
+    const cell = row.getByRole('cell').nth(cellIndex)
+    await cell.click(clickOptions)
+  }
+
 }
+
+

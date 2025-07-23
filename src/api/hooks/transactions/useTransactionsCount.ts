@@ -10,7 +10,7 @@ export default function useTransactionsCount() {
         queryKey: ['transactions-count'],
         queryFn: async () => {
             const count = await fetchTransactionsCount();
-            store.setTransactionsCount(count);
+            store.setTransactionsCount(count[0].count);
             return count;
         },
         refetchOnWindowFocus: false,

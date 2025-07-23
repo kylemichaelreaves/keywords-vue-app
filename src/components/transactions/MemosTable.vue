@@ -26,10 +26,10 @@
 
     <div @contextmenu.prevent>
       <el-table
-        v-if="flattenedData"
-        :data="flattenedData"
+        v-if="paginatedData"
+        :data="paginatedData"
         table-layout="auto"
-        :loading="isFetching || isLoading"
+        :loading="isLoadingCondition"
         size="large"
         :default-sort="{ prop: 'total_amount_debit', order: 'descending' }"
         data-testid="memos-table"
@@ -74,16 +74,34 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import useMemos from '@api/hooks/transactions/useMemos'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import MemosTablePagination from '@components/transactions/MemosTablePagination.vue'
 import MemoEditForm from '@components/transactions/MemoEditForm.vue'
 import type { Memo } from '@types'
+import { useTransactionsStore } from '@stores/transactions'
+import { useRoute, useRouter } from 'vue-router'
 
+const store = useTransactionsStore()
+const router = useRouter()
+const route = useRoute()
 
-const { data, isLoading, isFetching, error, isError } = useMemos()
+// Track if we're updating from URL to prevent loops
+let updatingFromURL = false
 
+const {
+  data,
+  isLoading,
+  isFetching,
+  isFetchingNextPage,
+  isFetchingPreviousPage,
+  isRefetching,
+  error,
+  isError,
+  fetchNextPage,
+  hasNextPage
+} = useMemos()
 
 const showMemoEditModal = ref(false)
 const selectedMemo = ref<Memo | null>(null)
@@ -102,8 +120,93 @@ const editModalTitle = computed(() => {
   return selectedMemo.value ? `Edit Memo: ${selectedMemo.value.name}` : 'Create New Memo'
 })
 
+const isLoadingCondition = computed(() => 
+  isLoading.value ||
+  isFetching.value ||
+  isRefetching.value ||
+  isFetchingNextPage.value ||
+  isFetchingPreviousPage.value
+)
+
 const flattenedData = computed(() => {
   return data?.value?.pages.flat() ?? []
+})
+
+const currentPage = computed({
+  get: () => Math.floor(store.memosTableOffset / store.memosTableLimit) + 1,
+  set: (val: number) => {
+    store.setMemosTableOffset((val - 1) * store.memosTableLimit)
+  }
+})
+
+const LIMIT = computed(() => store.memosTableLimit)
+
+
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * LIMIT.value
+  const end = start + LIMIT.value
+  return flattenedData.value.slice(start, end)
+})
+
+
+const loadMorePagesIfNeeded = async () => {
+  const requiredDataCount = currentPage.value * LIMIT.value
+  while (flattenedData.value.length < requiredDataCount && hasNextPage.value) {
+    await fetchNextPage()
+  }
+}
+
+watch(currentPage, () => {
+  loadMorePagesIfNeeded()
+})
+
+// URL Sync Logic
+const updateURL = () => {
+  if (updatingFromURL) return
+
+  const query: Record<string, string> = {}
+
+  // Only add page if not page 1
+  if (currentPage.value > 1) {
+    query.page = currentPage.value.toString()
+  }
+
+  // Only add limit if different from default
+  if (LIMIT.value !== 100) {
+    query.limit = LIMIT.value.toString()
+  }
+
+  router.replace({
+    name: route.name,
+    params: route.params,
+    query: Object.keys(query).length > 0 ? query : undefined
+  })
+}
+
+// Watch for pagination changes and update URL
+watch([currentPage, LIMIT], () => {
+  updateURL()
+}, { flush: 'post' })
+
+// Initialize from URL on mount
+onMounted(() => {
+  updatingFromURL = true
+
+  const urlPage = parseInt(route.query.page as string) || 1
+  const urlLimit = parseInt(route.query.limit as string) || store.memosTableLimit
+
+  // Update store if URL has different values
+  if (urlLimit !== store.memosTableLimit) {
+    store.setMemosTableLimit(urlLimit)
+  }
+
+  if (urlPage !== currentPage.value) {
+    store.setMemosTableOffset((urlPage - 1) * urlLimit)
+  }
+
+  nextTick(() => {
+    updatingFromURL = false
+  })
 })
 
 const memoColumns = [
@@ -113,9 +216,9 @@ const memoColumns = [
   { prop: 'total_amount_debit', label: 'Total Amount Debit', sortable: true },
   { prop: 'necessary', label: 'Necessary', sortable: false },
   { prop: 'recurring', label: 'Recurring', sortable: false },
-  { prop: 'frequency', label: 'Frequency', sortable: false }
+  { prop: 'frequency', label: 'Frequency', sortable: false },
+  { prop: 'ambiguous', label: 'Ambiguous', sortable: false }
 ]
-
 </script>
 
 <style scoped>

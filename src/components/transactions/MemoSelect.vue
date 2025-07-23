@@ -8,6 +8,7 @@
   />
   <SelectComponent
     :data-testid="props.dataTestId"
+    :on-clear="clearSelectedMemo"
     :on-change="updateSelectedMemo"
     :placeholder="props.placeholder"
     :selectedValue="model"
@@ -24,6 +25,7 @@ import { useTransactionsStore } from '@stores/transactions'
 import type { Memo } from '@types'
 import SelectComponent from '@components/shared/SelectComponent.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
+import { router } from '@router'
 
 const model = defineModel({
   type: String,
@@ -72,6 +74,12 @@ const memoOptions = computed(() => {
     label: memo.name
   }))
 })
+
+const clearSelectedMemo = () => {
+  transactionsStore.setSelectedMemo('')
+  emit('update:modelValue', '')
+  router.push('/budget-visualizer/memos')
+}
 
 const updateSelectedMemo = (memo: string) => {
   // transactionsStore.setSelectedMemo(memo)

@@ -1,98 +1,66 @@
 <template>
-  <AlertComponent v-if="error && isError" :title="error.name" :message="error.message" type="error" />
-  <div class="flex-container">
-    <el-row :gutter="35">
-      <el-col :span="12">
-        <el-tree-select
-          :placeholder="props.placeholder"
-          :data="selectTreeData"
-          v-model="model"
-          class="tree-select"
-          show-checkbox
-        />
-      </el-col>
-      <el-col :span="10">
-        <div v-if="model" class="button-container">
-          <el-button
-            type="danger"
-            @click="resetSelectedBudgetCategory"
-          >
-            Reset Category
-          </el-button>
-        </div>
-      </el-col>
-    </el-row>
+  <AlertComponent
+    v-if="error && isError"
+    :title="error.name"
+    :message="error.message"
+    type="error"
+  />
+  <div class="budget-category-selector">
+    <el-tree-select
+      :placeholder="props.placeholder"
+      :data="selectTreeData"
+      v-model="model"
+      class="tree-select"
+      show-checkbox
+      :data-testid="props.dataTestId"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, defineEmits } from 'vue'
+import { computed } from 'vue'
 import { ElTreeSelect } from 'element-plus'
 import { useBudgetCategories } from '@api/hooks/transactions/useBudgetCategories'
 import { convertToTree } from '@api/helpers/convertToTree'
-import { useTransactionsStore } from '@stores/transactions'
-import type { BudgetCategoryResponse, CategoryNode } from '@types'
+import type { BudgetCategoryResponse } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
-const props = defineProps({
-  selectedBudgetCategory: {
-    type: String
-  },
-  placeholder: {
-    type: String,
-    default: 'Select a budget category'
-  },
-  modelValue: {
-    type: String,
-    default: ''
-  }
+interface Props {
+  placeholder?: string
+  dataTestId?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  placeholder: 'Select a budget category',
+  dataTestId: 'budget-category-tree-select'
 })
 
-let model = defineModel({
-  type: String,
+
+const model = defineModel<string>({
   default: ''
 })
 
-const emit = defineEmits(['update:selected-budget-category'])
+const { data, isError, error } = useBudgetCategories(undefined, undefined, false)
 
-const store = useTransactionsStore()
+const selectTreeData = computed(() => {
+  if (!data.value?.length) return []
 
-const { data, isError, error } = useBudgetCategories()
-
-const selectTreeData = computed<CategoryNode[]>(() => {
-  if (!data.value || !data.value.length) {
-    return []
-  }
-  const arr = data.value as unknown as BudgetCategoryResponse[]
-  return arr.map((item) => convertToTree(item.data)).flat()
+  return data.value
+    .map((item: BudgetCategoryResponse) => convertToTree(item.data))
+    .flat()
 })
-
-
-const resetSelectedBudgetCategory = () => {
-  model.value = ''
-  store.setSelectedBudgetCategory(null)
-  emit('update:selected-budget-category', null)
-}
-
-
 </script>
 
 <style scoped>
-.text {
-  align-self: start;
-}
-
-.flex-container {
+.budget-category-selector {
   display: flex;
-  align-items: start;
   flex-direction: column;
-}
-
-.button-container {
-  margin-left: auto;
+  align-items: flex-start;
+  width: 100%;
 }
 
 .tree-select {
-  width: 10vw;
+  width: 100%;
+  min-width: 200px;
 }
 </style>

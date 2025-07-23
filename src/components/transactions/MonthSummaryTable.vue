@@ -1,5 +1,5 @@
 <template>
-  <el-card data-testid="month-summary-card" :data-selected-month="selectedMonth">
+  <el-card data-testid="month-summary-card">
     <AlertComponent
       v-if="isError && error"
       :title="error.name"
@@ -15,10 +15,7 @@
       >
         <div class="summary-left" data-testid="month-summary-left-section">
           <h2 data-testid="month-summary-title">Month Summary for: {{ selectedMonth }}</h2>
-          <MonthlyAmountDebitTotal
-            data-testid="monthly-amount-debit-total"
-            :data-selected-month="selectedMonth"
-          />
+          <MonthlyAmountDebitTotal data-testid="monthly-amount-debit-total" />
         </div>
         <NavigationButtonGroup
           label="Month"
@@ -28,9 +25,6 @@
           :go-to-previous="goToPreviousMonth"
           :reset="resetSelectedMonth"
           data-testid="month-summary-navigation-button-group"
-          :data-selected-month="selectedMonth"
-          :data-is-first="isFirstMonth"
-          :data-is-last="isLastMonth"
         />
       </div>
     </template>
@@ -48,6 +42,7 @@
           v-loading="isFetching || isLoading || isRefetching"
           show-summary
           sortable
+          show-overflow-tooltip
           data-testid="month-summary-transactions-table"
           :data-selected-month="selectedMonth"
           :data-loading="isFetching || isLoading || isRefetching"
@@ -100,9 +95,6 @@
           :time-frame="timeFrame"
           :date="selectedValue"
           data-testid="budget-category-summaries"
-          :data-selected-month="selectedMonth"
-          :data-time-frame="timeFrame"
-          :data-date="selectedValue"
         />
       </el-col>
     </el-row>

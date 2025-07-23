@@ -59,6 +59,7 @@ const updateSelectedMonth = (month: string) => {
 
 const clearSelectedMonth = () => {
   store.setSelectedMonth('')
+  router.push('/budget-visualizer/transactions')
 }
 
 onBeforeUnmount(() => {

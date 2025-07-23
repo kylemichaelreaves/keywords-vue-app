@@ -1,5 +1,5 @@
 <template>
-  <DailyIntervalLineChart data-testid="daily-interval-line-chart" />
+  <DailyIntervalLineChart data-testid="daily-interval-line-chart" v-if="!selectedDay" />
   <AlertComponent
     v-if="isError && error"
     :title="error.name"
@@ -35,7 +35,6 @@
       v-if="flattenedData"
       v-loading="isLoadingCondition"
       :data="paginatedData"
-      table-layout="auto"
       height="auto"
       size="small"
       border
@@ -51,6 +50,7 @@
         :label="column.label"
         :sortable="column.sortable"
         :data-testid="`column-${column.prop}`"
+        width="auto"
       >
         <template v-slot:default="scope">
           <template v-if="column.prop === 'transaction_number'">
@@ -71,7 +71,6 @@
               {{ scope.row[column.prop] }}
             </router-link>
           </template>
-          <!-- TODO if the column is budget_category, display the budgetCategoryTreeSelect component -->
           <template v-else>
             {{ scope.row[column.prop] }}
           </template>
@@ -96,6 +95,8 @@ import DailyIntervalLineChart from '@components/transactions/DailyIntervalLineCh
 import TransactionTablePagination from '@components/transactions/TransactionsTablePagination.vue'
 import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
 import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
+import useURLSync from '@composables/useURLSync.ts'
+
 
 const store = useTransactionsStore()
 
@@ -180,6 +181,10 @@ watch(currentPage, () => {
   loadMorePagesIfNeeded()
 })
 
+
+useURLSync()
+
+
 // this block allows the DailyIntervalLineChart to set the selectedDay and trigger a refetch
 watch(
   [selectedValue],
@@ -187,7 +192,7 @@ watch(
     store.clearTransactionsByOffset()
     refetch()
   },
-  { immediate: true }
+  { immediate: false }
 )
 
 // Define table columns
@@ -205,7 +210,7 @@ const transactionColumns = [
 ]
 
 function getRowKey(row: Transaction): string {
-  return row.transaction_number
+  return row.transaction_number ?? ''
 }
 
 </script>

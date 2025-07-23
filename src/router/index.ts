@@ -12,7 +12,10 @@ import MemoSummaryTable from '@components/transactions/MemoSummaryTable.vue'
 import BudgetCategoriesTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
 import NotFound from '@components/NotFound.vue'
 import LoginUser from '@components/user-management/LoginUser.vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
+import { useTransactionsStore } from '@stores/transactions.ts'
+
+
 
 export const routes = [{
   path: '/',
@@ -59,14 +62,35 @@ export const routes = [{
             path: 'months/:month/summary',
             name: 'month-summary',
             component: MonthSummaryTable,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
+            beforeEnter: (to: RouteLocationNormalized) => {
+              const store = useTransactionsStore()
+              // Clear any previous selections
+              store.setSelectedDay('')
+              store.setSelectedWeek('')
+              store.setSelectedYear('')
+              store.setSelectedMemo('')
+
+              store.setSelectedMonth(to.params.month as string)
+            }
           },
           {
             path: 'weeks/:week/summary/',
             name: 'week-summary',
             component: WeekSummaryTable,
             meta: { requiresAuth: true },
-            props: true
+            props: true,
+            beforeEnter: (to: RouteLocationNormalized) => {
+              const store = useTransactionsStore()
+              // clear any previous selections
+              store.setSelectedDay('')
+              store.setSelectedMonth('')
+              store.setSelectedYear('')
+              store.setSelectedMemo('')
+
+
+              store.setSelectedWeek(to.params.week as string)
+            },
           }
         ]
       },
@@ -88,7 +112,18 @@ export const routes = [{
         name: 'memo',
         component: MemoSummaryTable,
         props: true,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
+        beforeEnter: (to: RouteLocationNormalized) => {
+          const store = useTransactionsStore()
+          // clear any previous selections
+          store.setSelectedDay('')
+          store.setSelectedWeek('')
+          store.setSelectedMonth('')
+          store.setSelectedYear('')
+
+
+          store.setSelectedMemo(to.params.memoName as string)
+        }
       },
       {
         path: 'budget-categories',

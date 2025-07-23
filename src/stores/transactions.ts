@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import type {
     Memo,
-    SummaryTypeBase,
     MonthYear,
     SummaryTypeBase,
     Summaries,

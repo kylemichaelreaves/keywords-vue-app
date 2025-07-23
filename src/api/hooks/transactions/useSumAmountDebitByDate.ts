@@ -7,9 +7,11 @@ import { parseDateYYYY } from '@api/helpers/parseDateYYYY'
 import { useTransactionsStore } from '@stores/transactions'
 import { computed } from 'vue'
 
-export default function useSumAmountDebitByDate(timeFrame: string, date: string): UseQueryReturnType<{
+
+
+export default function useSumAmountDebitByDate(timeFrame: string, date: string): UseQueryReturnType<Array<{
   total_amount_debit: number
-}, Error> {
+}>, Error> {
 
   const store = useTransactionsStore()
   const selectedDay = computed(() => store.getSelectedDay)
@@ -25,7 +27,7 @@ export default function useSumAmountDebitByDate(timeFrame: string, date: string)
     if (selectedYear.value) return 'year'
   })
 
-  return useQuery<{ total_amount_debit: number }>({
+  return useQuery({
     queryKey: ['sumAmountDebitByDate', timeFrame, date],
     queryFn: () => {
       let dateObj: Date | null | undefined

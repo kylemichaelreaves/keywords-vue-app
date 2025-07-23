@@ -1,9 +1,9 @@
 // import {test, expect} from '@playwright/test';
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
-import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
+import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { mockTransactionsTableSelects } from '@test/e2e/helpers/mockTransactionsTableSelects.ts'
-import { generateDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
+import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 
 
 test.describe('Transactions Table', () => {
@@ -17,10 +17,9 @@ test.describe('Transactions Table', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(generateTransactionsArray(100))
+        body: JSON.stringify(staticTransactions)
       })
     })
-
 
     // mock the transaction selects
     await mockTransactionsTableSelects(page)
@@ -35,11 +34,11 @@ test.describe('Transactions Table', () => {
     })
 
     // mock the daily total intervals, with and without date
-    await page.route('**/transactions?dailyTotals=true&interval=1+months',  route => {
+    await page.route('**/transactions?dailyTotals=true&interval=1+months', route => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(generateDailyIntervals(30))
+        body: JSON.stringify(staticDailyIntervals)
       })
     })
 
@@ -47,11 +46,13 @@ test.describe('Transactions Table', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(generateDailyIntervals(30))
+        body: JSON.stringify(staticDailyIntervals)
       })
     })
 
 
+    await transactionsPage.goto()
+    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
   })
 
 
@@ -59,6 +60,9 @@ test.describe('Transactions Table', () => {
     await page.goto('/budget-visualizer')
 
     await transactionsPage.goto()
+
+    await transactionsPage.page.waitForLoadState('networkidle')
+    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
 
     await expect(transactionsPage.transactionsTable).toBeVisible()
     await expect(transactionsPage.daySelect).toBeVisible()
@@ -73,13 +77,12 @@ test.describe('Transactions Table', () => {
   })
 
   test('right clicking on a cell in the TransactionsTable opens the context menu', async () => {
-    await transactionsPage.goto()
-    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
     // select the row after the header row
-    const firstRow = transactionsPage.transactionsTable.getByRole('row').nth(1)
-    const firstCell = firstRow.getByRole('cell').nth(1)
-    await firstCell.click({ button: 'right' })
-
+    await transactionsPage.clickOnTableCell({
+      rowIndex: 1,
+      cellIndex: 1,
+      clickOptions: { button: 'right' }
+    })
 
     const editTransactionForm = transactionsPage.transactionEditModal
     await expect(editTransactionForm).toBeVisible()
@@ -90,11 +93,11 @@ test.describe('Transactions Table', () => {
       .getByRole('heading', { name: 'Edit Transaction' })
       .textContent()
 
-    const firstTransactionNumber = await transactionsPage.getFirstTransactionNumber()
+    const firstTransactionNumber = await transactionsPage.getCellTextContent(1, 1)
     const expectedTitle = 'Edit Transaction: ' + firstTransactionNumber
     expect(modalTitle).toBe(expectedTitle)
 
-    // the use shouldn't ever be able to edit the transactionNumber
+    // the user shouldn't ever be able to edit the transactionNumber
     const transactionNumberInput = transactionsPage.modalTransactionNumberInput
     await expect(transactionNumberInput).toBeVisible()
     await expect(transactionNumberInput).toBeDisabled()
@@ -105,5 +108,59 @@ test.describe('Transactions Table', () => {
     await expect(editTransactionForm).not.toBeVisible()
   })
 
+  test('should display the tooltip of the point on the linechart when hovering over it', async () => {
+
+    // hover over the first chart-dot on the line chart
+    const tenthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-10')
+    await tenthPoint.hover()
+
+    const toolTip = transactionsPage.intervalLineChartTooltip
+    await expect(toolTip).toBeVisible()
+
+    // check that the tooltip has the correct text
+    const tooltipText = await toolTip.textContent()
+    expect(tooltipText).toBeDefined()
+
+  })
+
+  test('clicking on a point in the line chart loads the transactions for that date', async () => {
+
+    const fifthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-5')
+
+    // hover over the fifth chart-dot on the line chart
+    await fifthPoint.hover()
+    // wait for the intervalLineChartTooltip to be visible
+    await transactionsPage.intervalLineChart.waitFor({ state: 'visible' })
+    await expect(transactionsPage.intervalLineChartTooltip).toBeVisible()
+
+    const textContent = await transactionsPage.intervalLineChartTooltip.textContent()
+
+    const fifthPointDate = textContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
+
+    const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
+
+    await transactionsPage.page.route(`**/transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}T00:00:00.000Z`, route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(fifthPointDateTransactions)
+      })
+    })
+
+    const requestPromise = transactionsPage.page.waitForRequest(request =>
+      request.url().includes('transactions') && request.url().includes(`date=${fifthPointDate}`)
+    )
+
+    await fifthPoint.click()
+
+    await requestPromise
+
+    await transactionsPage.page.waitForLoadState('networkidle')
+    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
+
+    const dateText = await transactionsPage.getCellTextContent(1, 2)
+
+    expect(dateText).toBe(fifthPointDate)
+  })
 
 })
