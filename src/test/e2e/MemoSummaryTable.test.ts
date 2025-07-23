@@ -84,8 +84,7 @@ test.describe('Memo Summary Table', () => {
   })
 
   test('should display the memo summary table', async () => {
-    await memoSummaryTablePage.memoSummaryTable.waitFor({ state: 'visible' })
-    expect(await memoSummaryTablePage.expectSummaryTableVisible()).toBeTruthy()
+    await memoSummaryTablePage.expectSummaryTableVisible()
   })
 
   test.skip('should display correct stats', async () => {
@@ -107,6 +106,4 @@ test.describe('Memo Summary Table', () => {
     await memoSummaryTablePage.budgetCategoryButton.click()
     await expect(memoSummaryTablePage.budgetCategoryModal).toBeVisible()
   })
-
-
 })

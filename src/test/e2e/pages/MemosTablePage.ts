@@ -9,6 +9,16 @@ export class MemosTablePage {
   readonly memosTable: Locator
   readonly memosPageTitle: Locator
   readonly memoEditModal: Locator
+  // MemoEditForm elements
+  readonly memoEditForm: Locator
+
+  readonly memoEditFormAvatar: Locator
+  readonly memoEditFormNameInput: Locator
+  readonly memoEditFormRecurringSwitch: Locator
+  readonly memoEditFormNecessarySwitch: Locator
+  readonly memoEditFormFrequencySelect: Locator
+  readonly memoEditFormBudgetCategoryTreeSelect: Locator
+  readonly memoEditFormAmbiguousSwitch: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -17,6 +27,18 @@ export class MemosTablePage {
     this.memosTable = page.getByTestId('memos-table')
     this.memosPageTitle = page.getByTestId('memos-table-title')
     this.memoEditModal = page.getByTestId('memo-edit-dialog')
+
+
+    this.memoEditForm = this.page.getByTestId('memo-edit-form')
+    this.memoEditFormAvatar = this.memoEditForm.getByTestId('memo-edit-form-avatar')
+    this.memoEditFormNameInput = this.memoEditForm.getByTestId('memo-edit-form-name-input')
+    this.memoEditFormRecurringSwitch = this.memoEditForm.getByTestId('memo-edit-form-recurring-switch')
+    this.memoEditFormNecessarySwitch = this.memoEditForm.getByTestId('memo-edit-form-necessary-switch')
+    this.memoEditFormFrequencySelect = this.memoEditForm.getByTestId('memo-edit-form-frequency-select')
+    this.memoEditFormBudgetCategoryTreeSelect = this.memoEditForm
+      .getByTestId('memo-edit-form-budget_category-form-item')
+      .getByTestId('budget-category-tree-select')
+    this.memoEditFormAmbiguousSwitch = this.memoEditForm.getByTestId('memo-edit-form-ambiguous-switch')
 
   }
 
@@ -53,20 +75,16 @@ export class MemosTablePage {
     await memoLink.click()
   }
 
-
-  // Method 1: Using coordinate-based test ID
   async getFirstMemoName(): Promise<string> {
     const cell = this.page.getByTestId('cell-0-1')
     return await cell.textContent() ?? ''
   }
 
-  // Method 2: Using data attributes
   async getFirstMemoNameByDataAttributes(): Promise<string> {
     const cell = this.page.locator('[data-row-index="0"][data-column="name"]')
     return await cell.textContent() ?? ''
   }
 
-  // Method 3: Using table structure with role-based locators
   async getFirstMemoNameByRole(): Promise<string> {
     const table = this.page.getByTestId('memos-table')
     const firstRow = table.getByRole('row').nth(1)
@@ -74,20 +92,24 @@ export class MemosTablePage {
     return await nameCell.textContent() ?? ''
   }
 
-  // Method 4: More flexible - get any cell value by row and column name
+  async getCellTextContent(rowIndex: number, columnIndex: number): Promise<string> {
+    const table = this.page.getByTestId('memos-table')
+    const row = table.getByRole('row').nth(rowIndex)
+    const cell = row.getByRole('cell').nth(columnIndex)
+    return await cell.textContent() ?? ''
+  }
+
   async getCellValueByPosition(rowIndex: number, columnName: string): Promise<string> {
     const cell = this.page.locator(`[data-row-index="${rowIndex}"][data-column="${columnName}"]`)
     return await cell.textContent() ?? ''
   }
 
-  // Method 5: Get the router-link text specifically (since name column has a link)
   async getFirstMemoNameLink(): Promise<string> {
     const cell = this.page.locator('[data-row-index="0"][data-column="name"]')
     const link = cell.locator('a') // The router-link renders as an <a> tag
     return await link.textContent() ?? ''
   }
 
-  // Method 6: Get first memo name and click the link
   async clickFirstMemoLink(): Promise<void> {
     const cell = this.page.locator('[data-row-index="0"][data-column="name"]')
     const link = cell.locator('a')
@@ -98,6 +120,21 @@ export class MemosTablePage {
     const cell = this.page.locator('[data-row-index="0"][data-column="name"]')
     const link = cell.locator('a')
     await link.click({ button: 'right' })
+  }
+
+  async expectMemoEditModalToBeVisible() {
+    await expect(this.memoEditModal).toBeVisible()
+  }
+
+  async expectMemoEditFormElementsToBeVisible() {
+    await expect(this.memoEditForm).toBeVisible()
+    await expect(this.memoEditFormAvatar).toBeVisible()
+    await expect(this.memoEditFormNameInput).toBeVisible()
+    await expect(this.memoEditFormRecurringSwitch).toBeVisible()
+    await expect(this.memoEditFormNecessarySwitch).toBeVisible()
+    await expect(this.memoEditFormFrequencySelect).toBeVisible()
+    await expect(this.memoEditFormBudgetCategoryTreeSelect).toBeVisible()
+    await expect(this.memoEditFormAmbiguousSwitch).toBeVisible()
   }
 
 }

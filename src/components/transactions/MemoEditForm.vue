@@ -99,11 +99,13 @@ const fields: Record<MemoKeys, MemoFormFields & { dataTestId?: string }> = {
   },
   recurring: {
     component: 'el-switch',
-    label: 'Recurring'
+    label: 'Recurring',
+    dataTestId: `${props.dataTestId}-recurring-switch`
   },
   necessary: {
     component: 'el-switch',
-    label: 'Necessary'
+    label: 'Necessary',
+    dataTestId: `${props.dataTestId}-necessary-switch`,
   },
   frequency: {
     component: 'el-select',
@@ -115,16 +117,19 @@ const fields: Record<MemoKeys, MemoFormFields & { dataTestId?: string }> = {
       { value: 'weekly', label: 'Weekly' },
       { value: 'monthly', label: 'Monthly' },
       { value: 'yearly', label: 'Yearly' }
-    ]
+    ],
+    dataTestId: `${props.dataTestId}-frequency-select`
   },
   budget_category: {
     component: BudgetCategoryTreeSelect,
     label: 'Budget Category',
-    placeholder: 'Select a budget category'
+    placeholder: 'Select a budget category',
+    dataTestId: `${props.dataTestId}-budget-category-tree-select`,
   },
   ambiguous: {
     component: 'el-switch',
-    label: 'Ambiguous'
+    label: 'Ambiguous',
+    dataTestId: `${props.dataTestId}-ambiguous-switch`
   }
 }
 

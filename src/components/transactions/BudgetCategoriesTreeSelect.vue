@@ -5,29 +5,15 @@
     :message="error.message"
     type="error"
   />
-
   <div class="budget-category-selector">
-    <el-row :gutter="24">
-      <el-col :span="18">
-        <el-tree-select
-          :placeholder="props.placeholder"
-          :data="selectTreeData"
-          v-model="model"
-          class="tree-select"
-          show-checkbox
-        />
-      </el-col>
-      <el-col :span="6">
-        <el-button
-          v-if="model"
-          type="danger"
-          @click="resetSelection"
-          class="reset-button"
-        >
-          Reset Category
-        </el-button>
-      </el-col>
-    </el-row>
+    <el-tree-select
+      :placeholder="props.placeholder"
+      :data="selectTreeData"
+      v-model="model"
+      class="tree-select"
+      show-checkbox
+      :data-testid="props.dataTestId"
+    />
   </div>
 </template>
 
@@ -41,10 +27,12 @@ import AlertComponent from '@components/shared/AlertComponent.vue'
 
 interface Props {
   placeholder?: string
+  dataTestId?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: 'Select a budget category'
+  placeholder: 'Select a budget category',
+  dataTestId: 'budget-category-tree-select'
 })
 
 
@@ -61,10 +49,6 @@ const selectTreeData = computed(() => {
     .map((item: BudgetCategoryResponse) => convertToTree(item.data))
     .flat()
 })
-
-const resetSelection = () => {
-  model.value = ''
-}
 </script>
 
 <style scoped>
@@ -72,14 +56,11 @@ const resetSelection = () => {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
 }
 
 .tree-select {
   width: 100%;
   min-width: 200px;
-}
-
-.reset-button {
-  width: 100%;
 }
 </style>

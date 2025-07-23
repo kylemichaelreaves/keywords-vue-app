@@ -30,11 +30,11 @@ test.describe('Memos Table', () => {
 
 
     await memosPage.goTo()
+    await memosPage.memosTable.waitFor({ state: 'visible' })
     await page.waitForLoadState('networkidle')
   })
 
   test('should display the memos table', async () => {
-    await memosPage.memosTable.waitFor({ state: 'visible' })
     await expect(memosPage.memosTable).toBeVisible()
   })
 
@@ -50,7 +50,11 @@ test.describe('Memos Table', () => {
   })
 
   test('right clicking within a cell should open the edit modal', async () => {
+    // right-clicking on the first cell opens the edit modal
     await memosPage.rightClickOnFirstMemo()
-    await expect(memosPage.memoEditModal).toBeVisible()
+    // the modal is visible
+    await memosPage.expectMemoEditModalToBeVisible()
+    // everything we expect to be in the form is in fact actually there
+    await memosPage.expectMemoEditFormElementsToBeVisible()
   })
 })

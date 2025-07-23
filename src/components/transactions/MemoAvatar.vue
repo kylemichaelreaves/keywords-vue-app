@@ -25,9 +25,9 @@
     <div class="avatar-actions">
       <el-upload
         :show-file-list="false"
-        :before-upload="handleFileSelect"
-        accept="image/*"
-        :disabled="isUploading"
+        :http-request="handleCustomUpload"
+        accept="image/jpeg,image/png,image/webp,image/svg+xml"
+        :disabled="isUploading || props.disabled"
         :data-testid="`${dataTestId}-upload`"
       >
         <el-button
@@ -50,18 +50,36 @@
       >
         Remove
       </el-button>
+
+      <!-- Cancel button during upload -->
+      <el-button
+        v-if="isUploading && abortController"
+        size="small"
+        @click="cancelUpload"
+        :data-testid="`${dataTestId}-cancel-button`"
+      >
+        Cancel
+      </el-button>
     </div>
 
     <div class="upload-progress" v-if="isUploading">
-      <el-progress :percentage="uploadProgress" :show-text="false" />
-      <el-text size="small">Uploading...</el-text>
+      <el-progress :percentage="uploadProgress" />
+      <el-text size="small">{{ uploadStatusText }}</el-text>
+    </div>
+
+    <!-- Error retry option -->
+    <div v-if="uploadError" class="upload-error">
+      <el-text type="danger" size="small">{{ uploadError }}</el-text>
+      <el-button size="small" type="primary" @click="retryUpload">
+        Retry
+      </el-button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, inject, ref } from 'vue'
-import type { UploadRawFile } from 'element-plus'
+import { computed, inject, onUnmounted, ref } from 'vue'
+import type { UploadRequestOptions } from 'element-plus'
 import { ElAvatar, ElButton, ElIcon, ElMessage, ElProgress, ElText, ElUpload } from 'element-plus'
 import { Check } from '@element-plus/icons-vue'
 import { httpClient } from '@api/httpClient.ts'
@@ -70,20 +88,26 @@ interface Props {
   placeholder?: string;
   disabled?: boolean;
   dataTestId?: string;
+  maxSizeMB?: number;
+  allowedTypes?: string[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  dataTestId: 'memo-avatar'
+  dataTestId: 'memo-avatar',
+  maxSizeMB: 5, // 5MB default
+  allowedTypes: () => ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
 })
 
-
 const model = defineModel<string | undefined>()
-
-
 const memoName = inject<string>('memoName', '')
 
+// Upload state
 const isUploading = ref(false)
 const uploadProgress = ref(0)
+const uploadStatusText = ref('')
+const uploadError = ref('')
+const abortController = ref<AbortController | null>(null)
+const pendingFile = ref<File | null>(null)
 
 const avatarFallbackText = computed(() => {
   if (!memoName) return '??'
@@ -94,93 +118,183 @@ const avatarFallbackText = computed(() => {
     .join('')
 })
 
-const handleFileSelect = async (file: UploadRawFile) => {
-  if (props.disabled) return false
+// Cleanup on unmount
+onUnmounted(() => {
+  if (abortController.value) {
+    abortController.value.abort()
+  }
+})
 
-  // Validate file size (2MB limit)
-  if (file.size > 2 * 1024 * 1024) {
-    ElMessage.error('Logo file size must be less than 2MB')
-    return false
+const validateFile = (file: File): { valid: boolean; error?: string } => {
+  // Check file size
+  const maxSize = props.maxSizeMB * 1024 * 1024
+  if (file.size > maxSize) {
+    return { valid: false, error: `File size must be less than ${props.maxSizeMB}MB` }
   }
 
-  // Validate file type
-  if (!file.type.startsWith('image/')) {
-    ElMessage.error('Please select an image file')
-    return false
+  // Check file type
+  if (!props.allowedTypes.includes(file.type)) {
+    return { valid: false, error: 'Unsupported file type. Please use JPEG, PNG, WebP, or SVG.' }
   }
 
-  try {
-    await uploadFile(file)
-    return true // Allow the upload to proceed
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    ElMessage.error(`Logo upload failed: ${errorMessage}`)
-    return false // Prevent the upload
+  // Additional client-side checks
+  if (file.size < 100) {
+    return { valid: false, error: 'File appears to be corrupted or empty' }
   }
+
+  return { valid: true }
 }
 
-const uploadFile = async (file: File) => {
-  isUploading.value = true
-  uploadProgress.value = 0
-
-  try {
-    // Convert the file to base64
-    const fileBase64 = await convertFileToBase64(file)
-    const base64Data = fileBase64.split(',')[1] // Remove data:image/jpeg;base64, prefix
-
-    // Simulate progress for better UX
-    const progressInterval = setInterval(() => {
-      if (uploadProgress.value < 90) {
-        uploadProgress.value += 10
-      }
-    }, 100)
-
-    const response = await httpClient.patch(`/memos/${encodeURIComponent(memoName)}`, {
-      file_data: base64Data,
-      file_name: file.name,
-      file_type: file.type
-    })
-
-    clearInterval(progressInterval)
-    uploadProgress.value = 100
-
-    if (!response.data) {
-      ElMessage.error(`Upload failed: ${response.statusText}`)
-      return
-    }
-
-    const result = await response.data
-
-    if (result.success && result.avatarUrl) {
-      model.value = result.avatarUrl
-      ElMessage.success('Logo uploaded successfully')
-    } else {
-      ElMessage.error(result.error || 'Upload failed')
-    }
-
-  } catch (error) {
-    console.error('Upload error:', error)
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    ElMessage.error(`Failed to upload logo: ${errorMessage}`)
-  } finally {
-    isUploading.value = false
-    uploadProgress.value = 0
-  }
+const matchesSignature = (bytes: Uint8Array, signature: number[]): boolean => {
+  return signature.every((byte, index) => bytes[index] === byte)
 }
 
-const convertFileToBase64 = (file: File): Promise<string> => {
+const isValidImageSignature = (bytes: Uint8Array): boolean => {
+  const signatures = [
+    [0xFF, 0xD8, 0xFF], // JPEG
+    [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A], // PNG
+    [0x52, 0x49, 0x46, 0x46], // WebP (RIFF)
+    [0x3C] // SVG (XML start)
+  ]
+
+  return signatures.some(signature => matchesSignature(bytes, signature))
+}
+
+const readFileBytesAsync = (file: File): Promise<Uint8Array> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = reject
-    reader.readAsDataURL(file)
+    reader.onload = (e) => {
+      const arrayBuffer = e.target?.result as ArrayBuffer
+      resolve(new Uint8Array(arrayBuffer, 0, 8))
+    }
+    reader.onerror = () => reject(new Error('Failed to read file'))
+    reader.readAsArrayBuffer(file.slice(0, 8))
   })
 }
 
-const removeAvatar = () => {
+const validateFileContent = async (file: File): Promise<boolean> => {
+  try {
+    const bytes = await readFileBytesAsync(file)
+    return isValidImageSignature(bytes)
+  } catch {
+    return false
+  }
+}
+
+const handleCustomUpload = async (options: UploadRequestOptions) => {
+  const file = options.file as File
+
+  // Reset error state
+  uploadError.value = ''
+
+  // Validate file
+  const validation = validateFile(file)
+  if (!validation.valid) {
+    ElMessage.error(validation.error!)
+    return
+  }
+
+  // Store file for retry capability
+  pendingFile.value = file
+
+  // Validate file content
+  const isValidContent = await validateFileContent(file)
+  if (!isValidContent) {
+    ElMessage.error('File does not appear to be a valid image')
+    return
+  }
+
+  await performUpload(file)
+}
+
+const performUpload = async (file: File) => {
+  isUploading.value = true
+  uploadProgress.value = 0
+  uploadStatusText.value = 'Preparing upload...'
+
+  // Create abort controller for cancellation
+  abortController.value = new AbortController()
+
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('memoName', memoName)
+
+    uploadStatusText.value = 'Uploading...'
+
+    const response = await httpClient.post(
+      `/memos/${encodeURIComponent(memoName)}/avatar`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        signal: abortController.value.signal,
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            uploadProgress.value = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            )
+          }
+        }
+      }
+    )
+
+    if (response.data?.success && response.data?.avatarUrl) {
+      model.value = response.data.avatarUrl
+      uploadStatusText.value = 'Upload complete!'
+      ElMessage.success('Logo uploaded successfully')
+    } else {
+      ElMessage.error(response.data?.error || 'Upload failed')
+    }
+
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      uploadStatusText.value = 'Upload cancelled'
+      ElMessage.info('Upload cancelled')
+    } else {
+      const errorMessage = error instanceof Error ? error.message : 'Upload failed'
+      uploadError.value = errorMessage
+      uploadStatusText.value = 'Upload failed'
+      ElMessage.error(`Failed to upload logo: ${errorMessage}`)
+    }
+  } finally {
+    isUploading.value = false
+    abortController.value = null
+
+    // Clear progress after delay
+    setTimeout(() => {
+      if (!isUploading.value) {
+        uploadProgress.value = 0
+        uploadStatusText.value = ''
+      }
+    }, 2000)
+  }
+}
+
+const cancelUpload = () => {
+  if (abortController.value) {
+    abortController.value.abort()
+  }
+}
+
+const retryUpload = () => {
+  if (pendingFile.value) {
+    uploadError.value = ''
+    performUpload(pendingFile.value)
+  }
+}
+
+const removeAvatar = async () => {
   if (props.disabled) return
-  model.value = undefined
-  ElMessage.success('Logo removed')
+
+  try {
+    await httpClient.delete(`/memos/${encodeURIComponent(memoName)}/avatar`)
+    model.value = undefined
+    ElMessage.success('Logo removed')
+  } catch (error) {
+    ElMessage.error(`Failed to remove logo: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
 }
 </script>
 
@@ -218,5 +332,14 @@ const removeAvatar = () => {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.upload-error {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  background: var(--el-color-danger-light-9);
+  border-radius: 4px;
 }
 </style>
