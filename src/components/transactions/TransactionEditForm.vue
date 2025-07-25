@@ -3,7 +3,7 @@
     :model="transaction"
     ref="formRef"
     label-width="120px"
-    :data-testid="dataTestId"
+    :data-testid="props.dataTestId"
   >
     <el-form-item
       v-for="(field, key) in fields"
