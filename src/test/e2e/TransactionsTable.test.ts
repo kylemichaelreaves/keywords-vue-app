@@ -84,12 +84,12 @@ test.describe('Transactions Table', () => {
       clickOptions: { button: 'right' }
     })
 
-    const editTransactionForm = transactionsPage.transactionEditModal
-    await expect(editTransactionForm).toBeVisible()
+    const editTransactionModal = transactionsPage.transactionEditModal
+    await expect(editTransactionModal).toBeVisible()
 
     // check that the transactionEditModal has the correct title, ie, it has the transactionNumber in it
     // get the first transaction number from the table
-    const modalTitle = await editTransactionForm
+    const modalTitle = await editTransactionModal
       .getByRole('heading', { name: 'Edit Transaction' })
       .textContent()
 
@@ -97,15 +97,17 @@ test.describe('Transactions Table', () => {
     const expectedTitle = 'Edit Transaction: ' + firstTransactionNumber
     expect(modalTitle).toBe(expectedTitle)
 
+    await transactionsPage.expectTransactionEditFormElementsToBeVisible()
+
     // the user shouldn't ever be able to edit the transactionNumber
-    const transactionNumberInput = transactionsPage.modalTransactionNumberInput
-    await expect(transactionNumberInput).toBeVisible()
-    await expect(transactionNumberInput).toBeDisabled()
+    const numberInput = transactionsPage.transactionNumberInput
+    await expect(numberInput).toBeVisible()
+    await expect(numberInput).toBeDisabled()
 
     //   close the Transaction Edit modal
     const closeButton = transactionsPage.modalCloseButton
     await closeButton.click()
-    await expect(editTransactionForm).not.toBeVisible()
+    await expect(editTransactionModal).not.toBeVisible()
   })
 
   test('should display the tooltip of the point on the linechart when hovering over it', async () => {

@@ -62,7 +62,8 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Enter a transaction number',
     props: {
       disabled: true
-    }
+    },
+    dataTestId: `${props.dataTestId}-transaction_number-input`
   },
   date: {
     component: 'el-date-picker',
@@ -70,7 +71,8 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Select a date',
     props: {
       valueFormat: 'YYYY-MM-DD'
-    }
+    },
+    dataTestId: `${props.dataTestId}-date-picker`
   },
   amount_debit: {
     component: 'el-input',
@@ -78,7 +80,8 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Enter a debit amount',
     props: {
       disabled: !!transaction.amount_credit
-    }
+    },
+    dataTestId: 'transaction-amount-debit-input'
   },
   amount_credit: {
     component: 'el-input',
@@ -86,12 +89,14 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Enter a credit amount',
     props: {
       disabled: !!transaction.amount_debit
-    }
+    },
+    dataTestId: 'transaction-amount-credit-input'
   },
   description: {
     component: 'el-input',
     label: 'Description',
-    placeholder: 'Enter a description'
+    placeholder: 'Enter a description',
+    dataTestId: 'transaction-description-input'
   },
   memo: {
     component: MemoSelect,
@@ -99,12 +104,14 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Select a memo',
     props: {
       modelValue: transaction.memo
-    }
+    },
+    dataTestId: 'transaction-memo-select'
   },
   balance: {
     component: 'el-input',
     label: 'Balance',
-    placeholder: 'Enter a balance'
+    placeholder: 'Enter a balance',
+    dataTestId: 'transaction-balance-input',
   },
   check_number: {
     component: 'el-input',
@@ -112,17 +119,20 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Enter a check number',
     props: {
       disabled: transaction.description !== 'CHECK'
-    }
+    },
+    dataTestId: 'transaction-check-number-input'
   },
   budget_category: {
     component: BudgetCategoryTreeSelect,
     label: 'Budget Category',
-    placeholder: 'Select a budget category'
+    placeholder: 'Select a budget category',
+    dataTestId: 'transaction-budget-category-tree-select',
   },
   fees: {
     component: 'el-input',
     label: 'Fees',
-    placeholder: 'Enter fees'
+    placeholder: 'Enter fees',
+    dataTestId: 'transaction-fees-input'
   }
 })
 

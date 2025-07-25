@@ -270,6 +270,7 @@ export type TransactionFormFields = {
   placeholder?: string;
   props?: Record<string, unknown>;
   disabledCondition?: boolean;
+  dataTestId?: string;
 }
 
 
