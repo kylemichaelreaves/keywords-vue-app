@@ -81,7 +81,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     props: {
       disabled: !!transaction.amount_credit
     },
-    dataTestId: 'transaction-amount-debit-input'
+    dataTestId: `${props.dataTestId}-amount-debit-input`
   },
   amount_credit: {
     component: 'el-input',
@@ -90,13 +90,13 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     props: {
       disabled: !!transaction.amount_debit
     },
-    dataTestId: 'transaction-amount-credit-input'
+    dataTestId: `${props.dataTestId}-amount-credit-input`
   },
   description: {
     component: 'el-input',
     label: 'Description',
     placeholder: 'Enter a description',
-    dataTestId: 'transaction-description-input'
+    dataTestId: `${props.dataTestId}-description-input`
   },
   memo: {
     component: MemoSelect,
@@ -105,34 +105,34 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     props: {
       modelValue: transaction.memo
     },
-    dataTestId: 'transaction-memo-select'
+    dataTestId: `${props.dataTestId}-memo-select`
   },
   balance: {
     component: 'el-input',
     label: 'Balance',
     placeholder: 'Enter a balance',
-    dataTestId: 'transaction-balance-input',
+    dataTestId: `${props.dataTestId}-balance-input`,
   },
   check_number: {
     component: 'el-input',
     label: 'Check Number',
     placeholder: 'Enter a check number',
+    dataTestId: `${props.dataTestId}-check-number-input`,
     props: {
       disabled: transaction.description !== 'CHECK'
     },
-    dataTestId: 'transaction-check-number-input'
   },
   budget_category: {
     component: BudgetCategoryTreeSelect,
     label: 'Budget Category',
     placeholder: 'Select a budget category',
-    dataTestId: 'transaction-budget-category-tree-select',
+    dataTestId: `${props.dataTestId}-budget-category-tree-select`,
   },
   fees: {
     component: 'el-input',
     label: 'Fees',
     placeholder: 'Enter fees',
-    dataTestId: 'transaction-fees-input'
+    dataTestId: `${props.dataTestId}-fees-input`
   }
 })
 
