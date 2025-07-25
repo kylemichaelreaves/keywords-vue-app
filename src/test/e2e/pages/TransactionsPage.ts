@@ -25,12 +25,13 @@ export class TransactionsPage {
   readonly transactionAmountCreditInput: Locator
   readonly transactionDescriptionInput: Locator
   readonly transactionMemoInput: Locator
-  readonly transactionBudgetCategoryInput: Locator
+  readonly transactionBudgetCategoryTreeSelect: Locator
   readonly transactionCheckNumberInput: Locator
   readonly transactionFeesInput: Locator
   readonly transactionBalanceInput: Locator
 
   readonly modalCloseButton: Locator
+  readonly modalSaveButton: Locator
 
   constructor(public readonly page: Page) {
     this.transactionsTable = this.page.getByTestId('transactions-table')
@@ -50,19 +51,20 @@ export class TransactionsPage {
     this.transactionEditForm = this.transactionEditModal.getByTestId('transaction-edit-form')
 
     // transaction edit form inputs
-    this.transactionNumberInput = this.transactionEditForm.getByTestId('transaction-edit-form-form-transaction_number-input')
-    this.transactionDatePicker = this.transactionEditForm.getByTestId('transaction-edit-form-transaction-date-picker')
-    this.transactionAmountDebitInput = this.transactionEditForm.getByTestId('transaction-edit-form-amount_debit-input')
-    this.transactionAmountCreditInput = this.transactionEditForm.getByTestId('transaction-edit-form-amount_credit-input')
-    this.transactionDescriptionInput = this.transactionEditForm.getByTestId('transaction-edit-form-description-input')
-    this.transactionMemoInput = this.transactionEditForm.getByTestId('transaction-edit-form-memo-input')
-    this.transactionBudgetCategoryInput = this.transactionEditForm.getByTestId('transaction-edit-form-budget_category-input')
-    this.transactionCheckNumberInput = this.transactionEditForm.getByTestId('transaction-edit-form-check_number-input')
-    this.transactionFeesInput = this.transactionEditForm.getByTestId('transaction-edit-form-fees-input')
-    this.transactionBalanceInput = this.transactionEditForm.getByTestId('transaction-edit-form-balance-input')
+    this.transactionNumberInput = this.transactionEditForm.getByRole('textbox', { name: 'Transaction Number' })
+    this.transactionDatePicker = this.transactionEditForm.getByRole('combobox', { name: 'Date' })
+    this.transactionAmountDebitInput = this.transactionEditForm.getByRole('textbox', { name: 'Amount Debit' })
+    this.transactionAmountCreditInput = this.transactionEditForm.getByRole('textbox', { name: 'Amount Credit' })
+    this.transactionDescriptionInput = this.transactionEditForm.getByRole('textbox', { name: 'Description' })
+    this.transactionMemoInput = this.transactionEditForm.getByRole('combobox', { name: 'Memo' })
+    this.transactionBudgetCategoryTreeSelect = this.transactionEditForm.getByRole('combobox', { name: 'Budget Category' })
+    this.transactionCheckNumberInput = this.transactionEditForm.getByRole('textbox', { name: 'Check Number' })
+    this.transactionFeesInput = this.transactionEditForm.getByRole('textbox', { name: 'Fees' })
+    this.transactionBalanceInput = this.transactionEditForm.getByRole('textbox', { name: 'Balance' })
 
 
     this.modalCloseButton = this.transactionEditModal.getByRole('button', { name: 'Close this dialog' })
+    this.modalSaveButton = this.transactionEditModal.getByRole('button', { name: 'Save' })
 
   }
 
@@ -138,10 +140,12 @@ export class TransactionsPage {
     await expect(this.transactionAmountCreditInput).toBeVisible()
     await expect(this.transactionDescriptionInput).toBeVisible()
     await expect(this.transactionMemoInput).toBeVisible()
-    await expect(this.transactionBudgetCategoryInput).toBeVisible()
+    await expect(this.transactionBudgetCategoryTreeSelect).toBeVisible()
     await expect(this.transactionCheckNumberInput).toBeVisible()
     await expect(this.transactionFeesInput).toBeVisible()
     await expect(this.transactionBalanceInput).toBeVisible()
+    await expect(this.modalCloseButton).toBeVisible()
+    await expect(this.modalSaveButton).toBeVisible()
   }
 
 }

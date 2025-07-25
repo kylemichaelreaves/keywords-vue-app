@@ -5,17 +5,12 @@
     label-width="120px"
     :data-testid="props.dataTestId"
   >
-    <el-form-item
-      v-for="(field, key) in fields"
-      :key="key"
-      :label="field.label"
-      :data-testid="`${dataTestId}-form-item-${key}`"
-    >
+    <el-form-item v-for="(field, key) in fields" :key="key" :label="field.label">
       <component
         :is="field.component"
         v-model="transaction[key]"
         :placeholder="field.placeholder"
-        :data-testid="`${dataTestId}-input-${key}`"
+        :data-testid="`${dataTestId}-${key}`"
         v-bind="field.props || {}"
       >
       </component>
@@ -81,7 +76,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     props: {
       disabled: !!transaction.amount_credit
     },
-    dataTestId: `${props.dataTestId}-amount-debit-input`
+    dataTestId: `${props.dataTestId}-amount_debit-input`
   },
   amount_credit: {
     component: 'el-input',
@@ -90,7 +85,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     props: {
       disabled: !!transaction.amount_debit
     },
-    dataTestId: `${props.dataTestId}-amount-credit-input`
+    dataTestId: `${props.dataTestId}-amount_credit-input`
   },
   description: {
     component: 'el-input',
@@ -126,7 +121,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     component: BudgetCategoryTreeSelect,
     label: 'Budget Category',
     placeholder: 'Select a budget category',
-    dataTestId: `${props.dataTestId}-budget-category-tree-select`,
+    dataTestId: `${props.dataTestId}-budget_category-tree-select`,
   },
   fees: {
     component: 'el-input',
