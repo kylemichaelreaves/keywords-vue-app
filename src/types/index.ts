@@ -161,6 +161,7 @@ export interface MemoFormFields {
   placeholder?: string;
   disabledCondition?: boolean;
   options?: { value: string; label: string }[];
+  dataTestId?: string;
 }
 
 export type MemoKeys =
@@ -270,6 +271,7 @@ export type TransactionFormFields = {
   placeholder?: string;
   props?: Record<string, unknown>;
   disabledCondition?: boolean;
+  dataTestId?: string;
 }
 
 
@@ -286,13 +288,6 @@ export interface TransactionQueryParams {
   totalAmountDebit?: boolean;
   budgetCategorySummary?: boolean;
   budgetCategoryHierarchySum?: boolean;
-}
-
-
-export interface ToolTipTransactionTableProps {
-  transactions: Partial<Transaction>[];
-  month: string;
-  amount: number;
 }
 
 export interface User {

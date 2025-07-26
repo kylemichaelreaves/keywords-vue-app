@@ -16,10 +16,22 @@ export class TransactionsPage {
 
   readonly transactionsTablePagination: Locator
   readonly transactionEditModal: Locator
+  readonly transactionEditForm: Locator
 
   // edit modal locators
-  readonly modalTransactionNumberInput: Locator
+  readonly transactionNumberInput: Locator
+  readonly transactionDatePicker: Locator
+  readonly transactionAmountDebitInput: Locator
+  readonly transactionAmountCreditInput: Locator
+  readonly transactionDescriptionInput: Locator
+  readonly transactionMemoInput: Locator
+  readonly transactionBudgetCategoryTreeSelect: Locator
+  readonly transactionCheckNumberInput: Locator
+  readonly transactionFeesInput: Locator
+  readonly transactionBalanceInput: Locator
+
   readonly modalCloseButton: Locator
+  readonly modalSaveButton: Locator
 
   constructor(public readonly page: Page) {
     this.transactionsTable = this.page.getByTestId('transactions-table')
@@ -36,14 +48,24 @@ export class TransactionsPage {
 
     this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
     this.transactionEditModal = this.page.getByTestId('transaction-edit-dialog')
+    this.transactionEditForm = this.transactionEditModal.getByTestId('transaction-edit-form')
 
-    this.modalTransactionNumberInput = this.page
-      .getByTestId('transaction-edit-form-form-item-transaction_number')
-      .getByText('Transaction Number')
+    // transaction edit form inputs
+    this.transactionNumberInput = this.transactionEditForm.getByRole('textbox', { name: 'Transaction Number' })
+    this.transactionDatePicker = this.transactionEditForm.getByRole('combobox', { name: 'Date' })
+    this.transactionAmountDebitInput = this.transactionEditForm.getByRole('textbox', { name: 'Amount Debit' })
+    this.transactionAmountCreditInput = this.transactionEditForm.getByRole('textbox', { name: 'Amount Credit' })
+    this.transactionDescriptionInput = this.transactionEditForm.getByRole('textbox', { name: 'Description' })
+    this.transactionMemoInput = this.transactionEditForm.getByRole('combobox', { name: 'Memo' })
+    this.transactionBudgetCategoryTreeSelect = this.transactionEditForm.getByRole('combobox', { name: 'Budget Category' })
+    this.transactionCheckNumberInput = this.transactionEditForm.getByRole('textbox', { name: 'Check Number' })
+    this.transactionFeesInput = this.transactionEditForm.getByRole('textbox', { name: 'Fees' })
+    this.transactionBalanceInput = this.transactionEditForm.getByRole('textbox', { name: 'Balance' })
+
 
     this.modalCloseButton = this.transactionEditModal.getByRole('button', { name: 'Close this dialog' })
+    this.modalSaveButton = this.transactionEditModal.getByRole('button', { name: 'Save' })
 
-    // Ensure all locators are initialized
   }
 
   async goto() {
@@ -109,6 +131,21 @@ export class TransactionsPage {
     const row = this.transactionsTable.getByRole('row').nth(rowIndex)
     const cell = row.getByRole('cell').nth(cellIndex)
     await cell.click(clickOptions)
+  }
+
+  async expectTransactionEditFormElementsToBeVisible() {
+    await expect(this.transactionNumberInput).toBeVisible()
+    await expect(this.transactionDatePicker).toBeVisible()
+    await expect(this.transactionAmountDebitInput).toBeVisible()
+    await expect(this.transactionAmountCreditInput).toBeVisible()
+    await expect(this.transactionDescriptionInput).toBeVisible()
+    await expect(this.transactionMemoInput).toBeVisible()
+    await expect(this.transactionBudgetCategoryTreeSelect).toBeVisible()
+    await expect(this.transactionCheckNumberInput).toBeVisible()
+    await expect(this.transactionFeesInput).toBeVisible()
+    await expect(this.transactionBalanceInput).toBeVisible()
+    await expect(this.modalCloseButton).toBeVisible()
+    await expect(this.modalSaveButton).toBeVisible()
   }
 
 }

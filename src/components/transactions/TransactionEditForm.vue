@@ -3,19 +3,14 @@
     :model="transaction"
     ref="formRef"
     label-width="120px"
-    :data-testid="dataTestId"
+    :data-testid="props.dataTestId"
   >
-    <el-form-item
-      v-for="(field, key) in fields"
-      :key="key"
-      :label="field.label"
-      :data-testid="`${dataTestId}-form-item-${key}`"
-    >
+    <el-form-item v-for="(field, key) in fields" :key="key" :label="field.label">
       <component
         :is="field.component"
         v-model="transaction[key]"
         :placeholder="field.placeholder"
-        :data-testid="`${dataTestId}-input-${key}`"
+        :data-testid="`${dataTestId}-${key}`"
         v-bind="field.props || {}"
       >
       </component>
@@ -62,7 +57,8 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Enter a transaction number',
     props: {
       disabled: true
-    }
+    },
+    dataTestId: `${props.dataTestId}-transaction_number-input`
   },
   date: {
     component: 'el-date-picker',
@@ -70,7 +66,8 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Select a date',
     props: {
       valueFormat: 'YYYY-MM-DD'
-    }
+    },
+    dataTestId: `${props.dataTestId}-date-picker`
   },
   amount_debit: {
     component: 'el-input',
@@ -78,7 +75,8 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Enter a debit amount',
     props: {
       disabled: !!transaction.amount_credit
-    }
+    },
+    dataTestId: `${props.dataTestId}-amount_debit-input`
   },
   amount_credit: {
     component: 'el-input',
@@ -86,12 +84,14 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Enter a credit amount',
     props: {
       disabled: !!transaction.amount_debit
-    }
+    },
+    dataTestId: `${props.dataTestId}-amount_credit-input`
   },
   description: {
     component: 'el-input',
     label: 'Description',
-    placeholder: 'Enter a description'
+    placeholder: 'Enter a description',
+    dataTestId: `${props.dataTestId}-description-input`
   },
   memo: {
     component: MemoSelect,
@@ -99,30 +99,35 @@ const fields: Record<TransactionKeys, TransactionFormFields> = ({
     placeholder: 'Select a memo',
     props: {
       modelValue: transaction.memo
-    }
+    },
+    dataTestId: `${props.dataTestId}-memo-select`
   },
   balance: {
     component: 'el-input',
     label: 'Balance',
-    placeholder: 'Enter a balance'
+    placeholder: 'Enter a balance',
+    dataTestId: `${props.dataTestId}-balance-input`,
   },
   check_number: {
     component: 'el-input',
     label: 'Check Number',
     placeholder: 'Enter a check number',
+    dataTestId: `${props.dataTestId}-check-number-input`,
     props: {
       disabled: transaction.description !== 'CHECK'
-    }
+    },
   },
   budget_category: {
     component: BudgetCategoryTreeSelect,
     label: 'Budget Category',
-    placeholder: 'Select a budget category'
+    placeholder: 'Select a budget category',
+    dataTestId: `${props.dataTestId}-budget_category-tree-select`,
   },
   fees: {
     component: 'el-input',
     label: 'Fees',
-    placeholder: 'Enter fees'
+    placeholder: 'Enter fees',
+    dataTestId: `${props.dataTestId}-fees-input`
   }
 })
 
