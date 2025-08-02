@@ -98,7 +98,7 @@ watch(
 )
 
 // Extended fields configuration with optional custom test IDs
-const fields: Record<MemoKeys, MemoFormFields & { dataTestId?: string }> = {
+const fields: Record<MemoKeys, MemoFormFields> = {
   avatar_s3_url: {
     component: MemoAvatar,
     label: 'Logo',
