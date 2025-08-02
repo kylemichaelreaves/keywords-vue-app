@@ -1,5 +1,5 @@
 <template>
-  <DailyIntervalLineChart data-testid="daily-interval-line-chart" v-if="!selectedDay" />
+  <DailyIntervalLineChart data-testid="daily-interval-line-chart" :first-day="firstDay" />
   <AlertComponent
     v-if="isError && error"
     :title="error.name"
@@ -103,6 +103,11 @@ const store = useTransactionsStore()
 const selectedMonth = computed(() => store.getSelectedMonth)
 const selectedWeek = computed(() => store.getSelectedWeek)
 const selectedDay = computed(() => store.getSelectedDay)
+
+const firstDay = computed(() => {
+  const days = store.getDays
+  return days.length > 0 ? days[0].day : ''
+})
 
 const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())
 const selectedValue = computed(() => dateTypeAndValue.value.selectedValue)

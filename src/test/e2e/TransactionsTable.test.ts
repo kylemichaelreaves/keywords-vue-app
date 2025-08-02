@@ -50,17 +50,35 @@ test.describe('Transactions Table', () => {
       })
     })
 
+    // mock transactions?dailyTotals=true&interval=1+month&date=
+    await page.route('**/transactions?dailyTotals=true&interval=1+month&date=*', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(staticDailyIntervals)
+      })
+    })
+
+    // mock transactions?interval=1+month&dailyTotals=true
+    await page.route('**/transactions?interval=1+month&dailyTotals=true', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(staticDailyIntervals)
+      })
+    })
+
 
     await transactionsPage.goto()
+    await transactionsPage.page.waitForLoadState('networkidle')
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
   })
 
 
   test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({ page }) => {
     await page.goto('/budget-visualizer')
-
+    await transactionsPage.page.waitForLoadState('networkidle')
     await transactionsPage.goto()
-
     await transactionsPage.page.waitForLoadState('networkidle')
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
 

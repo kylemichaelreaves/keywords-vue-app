@@ -13,7 +13,6 @@ export default function useSummaries() {
   const { timeFrame, selectedValue } = getTimeframeTypeAndValue()
   const store = useTransactionsStore()
 
-  // eslint-disable-next-line vue/return-in-computed-property
   const cachedSummaries = computed(() => {
     switch (timeFrame) {
       case 'day':
@@ -21,38 +20,40 @@ export default function useSummaries() {
       case 'week':
         return store.getWeeksSummaries
       case 'month':
-        // console.log('store.getMonthsSummaries', store.getMonthsSummaries);
         return store.getMonthsSummaries
+      default:
+        return null
     }
   })
 
 
-  return useQuery<Array<Summaries>>({
-    queryKey: ['summaries', timeFrame, selectedValue],
-    queryFn: () => {
-      if (cachedSummaries.value && cachedSummaries?.value?.length > 0) {
-        // console.log('cachedSummaries.value', cachedSummaries.value);
-        return cachedSummaries.value
+  return useQuery({
+    queryKey: ['summaries', timeFrame, selectedValue] as const,
+    queryFn: async (): Promise<Summaries[]> => {
+      if (cachedSummaries.value && cachedSummaries.value.length > 0) {
+        return Promise.resolve(cachedSummaries.value)
       } else {
-        return fetchSummaries(timeFrame)
-          .then((summaries) => {
-            switch (timeFrame) {
-              case 'day':
-                store.setDaysSummaries(summaries)
-                break
-              case 'week':
-                store.setWeeksSummaries(summaries)
-                break
-              case 'month':
-                store.setMonthsSummaries(summaries)
-                break
-            }
-            return summaries
-          })
+        const summaries = await fetchSummaries(timeFrame)
+
+        if (!summaries || !Array.isArray(summaries)) {
+          return []
+        }
+
+        switch (timeFrame) {
+          case 'day':
+            store.setDaysSummaries(summaries)
+            break
+          case 'week':
+            store.setWeeksSummaries(summaries)
+            break
+          case 'month':
+            store.setMonthsSummaries(summaries)
+            break
+        }
+        return summaries
       }
     },
     refetchOnWindowFocus: false,
     enabled: !!selectedValue
-    // staleTime: 1000 * 60 * 5, // five minutes
   })
 }

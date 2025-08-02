@@ -8,83 +8,78 @@
       data-testid="month-summary-table-error"
     />
     <template #header>
-      <div
-        class="card-header"
-        data-testid="month-summary-table-header"
-        :data-selected-month="selectedMonth"
-      >
-        <div class="summary-left" data-testid="month-summary-left-section">
-          <h2 data-testid="month-summary-title">Month Summary for: {{ selectedMonth }}</h2>
-          <MonthlyAmountDebitTotal data-testid="monthly-amount-debit-total" />
-        </div>
-        <NavigationButtonGroup
-          label="Month"
-          :is-last="isLastMonth"
-          :is-first="isFirstMonth"
-          :go-to-next="goToNextMonth"
-          :go-to-previous="goToPreviousMonth"
-          :reset="resetSelectedMonth"
-          data-testid="month-summary-navigation-button-group"
-        />
-      </div>
+      <MonthSummaryHeader
+        :selected-month="selectedMonth"
+        :is-last-month="isLastMonth"
+        :is-first-month="isFirstMonth"
+        :go-to-next-month="goToNextMonth"
+        :go-to-previous-month="goToPreviousMonth"
+        :reset-selected-month="resetSelectedMonth"
+      />
     </template>
+
+    <MemoEditModal ref="memoEditModal" />
+
     <el-row data-testid="month-summary-content-row">
       <el-col
         :span="12"
         data-testid="month-summary-table-column"
       >
-        <el-table
-          v-if="data"
-          :data="data"
-          :default-sort="{prop: 'total_amount_debit', order: 'ascending'}"
-          size="small"
-          table-layout="fixed"
-          v-loading="isFetching || isLoading || isRefetching"
-          show-summary
-          sortable
-          show-overflow-tooltip
-          data-testid="month-summary-transactions-table"
-          :data-selected-month="selectedMonth"
-          :data-loading="isFetching || isLoading || isRefetching"
-          :data-row-count="data?.length || 0"
-          :row-key="(row: MonthSummaryRow) => `${selectedMonth}-${row.memo}`"
-        >
-          <el-table-column
-            v-for="(column, columnIndex) in columns"
-            :key="column.prop"
-            :prop="column.prop"
-            :label="column.label"
-            :data-testid="`column-${column.prop}`"
+        <div @contextmenu.prevent>
+          <el-table
+            v-if="data"
+            :data="data"
+            :default-sort="{prop: 'total_amount_debit', order: 'ascending'}"
+            size="small"
+            table-layout="fixed"
+            v-loading="isFetching || isLoading || isRefetching"
+            show-summary
+            sortable
+            show-overflow-tooltip
+            data-testid="month-summary-transactions-table"
+            :data-selected-month="selectedMonth"
+            :data-loading="isFetching || isLoading || isRefetching"
+            :data-row-count="data?.length || 0"
+            :row-key="(row: MonthSummaryRow) => `${selectedMonth}-${row.memo}`"
+            @row-contextmenu="(row: MonthSummaryRow) => openMemoEditModal(row)"
           >
-            <template #header>
-              <span :data-testid="`header-${column.prop}`">{{ column.label }}</span>
-            </template>
+            <el-table-column
+              v-for="(column, columnIndex) in columns"
+              :key="column.prop"
+              :prop="column.prop"
+              :label="column.label"
+              :data-testid="`column-${column.prop}`"
+            >
+              <template #header>
+                <span :data-testid="`header-${column.prop}`">{{ column.label }}</span>
+              </template>
 
-            <template v-slot:default="scope">
-              <div
-                :data-testid="`cell-${scope.$index}-${columnIndex}`"
-                :data-row-id="`${selectedMonth}-${scope.row.memo}`"
-                :data-column="column.prop"
-                :data-row-index="scope.$index"
-                :data-column-index="columnIndex"
-                :data-selected-month="selectedMonth"
-                :data-memo="scope.row.memo"
-                :data-value="scope.row[column.prop]"
-              >
-                <router-link
-                  v-if="column.prop === 'memo'"
-                  :to="{ name: 'memo', params: { memoName: scope.row[column.prop] }}"
-                  :data-testid="`memo-link-${scope.row.memo}-${selectedMonth}`"
-                  :data-memo="scope.row.memo"
+              <template v-slot:default="scope">
+                <div
+                  :data-testid="`cell-${scope.$index}-${columnIndex}`"
+                  :data-row-id="`${selectedMonth}-${scope.row.memo}`"
+                  :data-column="column.prop"
+                  :data-row-index="scope.$index"
+                  :data-column-index="columnIndex"
                   :data-selected-month="selectedMonth"
+                  :data-memo="scope.row.memo"
+                  :data-value="scope.row[column.prop]"
                 >
-                  {{ scope.row.memo }}
-                </router-link>
-                <span v-else>{{ scope.row[column.prop] }}</span>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
+                  <router-link
+                    v-if="column.prop === 'memo'"
+                    :to="{ name: 'memo', params: { memoName: scope.row[column.prop] }}"
+                    :data-testid="`memo-link-${scope.row.memo}-${selectedMonth}`"
+                    :data-memo="scope.row.memo"
+                    :data-selected-month="selectedMonth"
+                  >
+                    {{ scope.row.memo }}
+                  </router-link>
+                  <span v-else>{{ scope.row[column.prop] }}</span>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </el-col>
       <el-col
         :span="12"
@@ -102,27 +97,31 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElCard, ElCol, ElRow, ElTable, ElTableColumn } from 'element-plus'
 import { useTransactionsStore } from '@stores/transactions'
 import useMonthSummary from '@api/hooks/transactions/useMonthSummary'
-import type { MonthYear } from '@types'
+import type { MonthYear, Memo } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import { router } from '@router'
-import MonthlyAmountDebitTotal from '@components/transactions/MonthlyAmountDebitTotal.vue'
-import NavigationButtonGroup from '@components/shared/NavigationButtonGroup.vue'
+import MonthSummaryHeader from '@components/transactions/MonthSummaryHeader.vue'
+import MemoEditModal from '@components/transactions/MemoEditModal.vue'
 import BudgetCategorySummaries from '@components/transactions/BudgetCategorySummaries.vue'
 import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue'
+import { fetchMemo } from '@api/transactions/fetchMemo'
 
 // Define the month summary row structure
 interface MonthSummaryRow {
   memo: string
   total_amount_debit: number
+  budget_category?: string
 }
 
 const store = useTransactionsStore()
 const selectedMonth = computed(() => store.getSelectedMonth)
 const months = computed(() => store.getMonths)
+
+const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
 
 // useMonthSummary returns every memo and their total amount debit for the selected month
 const { data, isError, refetch, isFetching, isRefetching, isLoading, error } = useMonthSummary()
@@ -131,7 +130,8 @@ const { timeFrame, selectedValue } = getTimeframeTypeAndValue()
 
 const columns = [
   { prop: 'memo', label: 'Memo' },
-  { prop: 'total_amount_debit', label: 'Total Amount Debit' }
+  { prop: 'total_amount_debit', label: 'Total Amount Debit' },
+  { prop: 'budget_category', label: 'Budget Category' }
 ]
 
 const firstMonth = months.value[0]?.month_year
@@ -196,18 +196,22 @@ onBeforeUnmount(() => {
   //   reset the transactionsPageLimit to the default value
   store.setTransactionsTableLimit(100)
 })
+
+const openMemoEditModal = async (row: MonthSummaryRow) => {
+  try {
+    // Fetch the complete memo data and pass it to the modal
+    const memoArray = await fetchMemo(row.memo)
+
+    // Extract the first memo from the array
+    const memoToEdit = memoArray[0]
+
+    if (memoToEdit) {
+      memoEditModal.value?.openModal(memoToEdit)
+    } else {
+      console.error('Failed to fetch memo data for:', row.memo)
+    }
+  } catch (error) {
+    console.error('Error fetching memo:', error)
+  }
+}
 </script>
-
-<style scoped>
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.summary-left {
-  display: flex;
-  align-items: center;
-  gap: 2.5rem;
-}
-</style>

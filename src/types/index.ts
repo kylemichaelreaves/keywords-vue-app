@@ -59,19 +59,22 @@ export interface BudgetCategoryResponse {
   data: BudgetCategoryData;
 }
 
-
-export interface CarBudget {
-  memo: string;
-  amountDebit: number;
-  total_amount_debit: number;
+/**
+ * CategoryNode interface represents a node in the category tree.
+ * Each node has a value, a label, and optionally an array of child nodes.
+ */
+export interface CategoryNode {
+  value: string; // The value of the node
+  label: string; // The label of the node
+  children?: CategoryNode[]; // The child nodes of the node
 }
 
-export interface CategoryNode {
-  id: number;
-  value: string;
-  label: string;
-  parent_id: number | null;
-  children?: CategoryNode[];
+/**
+ * Categories interface represents the nested structure of budget categories.
+ * Each category is a key-value pair where the value can contain subcategories.
+ */
+export interface Categories {
+  [key: string]: Categories;
 }
 
 export interface DailyInterval {
@@ -132,12 +135,12 @@ export interface Memo {
   name: string
   recurring: boolean;
   necessary: boolean;
-  frequency: Frequency;
-  budget_category: BudgetCategory['name'];
+  frequency?: Frequency | null;
+  budget_category?: string | null;
   ambiguous: boolean;
   total_amount_debit?: number;
   transactions_count?: number;
-  avatar_s3_url?: string;
+  avatar_s3_url?: string | null;
 }
 
 
@@ -274,7 +277,7 @@ export type TransactionFormFields = {
 
 
 export interface TransactionQueryParams {
-  date?: string | Date;
+  date?: string;
   offset?: number;
   limit?: number;
   memo?: Memo['name'];
@@ -286,13 +289,6 @@ export interface TransactionQueryParams {
   totalAmountDebit?: boolean;
   budgetCategorySummary?: boolean;
   budgetCategoryHierarchySum?: boolean;
-}
-
-
-export interface ToolTipTransactionTableProps {
-  transactions: Partial<Transaction>[];
-  month: string;
-  amount: number;
 }
 
 export interface User {

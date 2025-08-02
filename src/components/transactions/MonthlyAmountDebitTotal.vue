@@ -57,6 +57,3 @@ watch(() => store.selectedMonth, (newValue) => {
 
 
 </script>
-
-<style scoped>
-</style>

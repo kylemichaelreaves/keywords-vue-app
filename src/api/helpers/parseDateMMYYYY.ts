@@ -1,10 +1,10 @@
 import { DateTime } from 'luxon'
 
-// TODO — to be deleted! frontend shouldn't be parsing dates
+// used by the DailyIntervalLineChart
 export function parseDateMMYYYY(input: string) {
   // regex to match the format MM/YYYY
   const regex = /^(\d{2})-(\d{4})$/
-  const match = input.match(regex)
+  const match = RegExp(regex).exec(input)
 
   if (!match) {
     return null

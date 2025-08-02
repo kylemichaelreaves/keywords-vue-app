@@ -6,6 +6,7 @@ export function isValidURL(url: string | null | undefined) {
         new URL(url);
         return true;
     } catch (e) {
+        console.error(e);
         return false;
     }
 }

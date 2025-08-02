@@ -6,6 +6,7 @@ import {DateTime} from "luxon";
  * @param weekString - The week string in "IW-YYYY" format.
  * @returns An object containing the start and end dates of the week.
  */
+// used by the WeekSummaryTable
 export function getWeekRange(weekString: string) {
     const [week, year] = weekString.split('-').map(Number);
     const startDate = DateTime.fromObject({

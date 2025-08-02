@@ -11,8 +11,8 @@ export interface SelectOption {
  * Encapsulates all interactions with select components
  */
 export class SelectComponent {
-  private page: Page
-  private testId: string
+  private readonly page: Page
+  private readonly testId: string
 
   constructor(page: Page, testId: string = 'select') {
     this.page = page

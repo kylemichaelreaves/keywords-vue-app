@@ -14,7 +14,9 @@
       :row-key="data[0].period"
       stripe
       border
-      style="width: 100%">
+      style="width: 100%"
+      data-testid="weeks-summary-table"
+    >
       <el-table-column
         v-for="column in columns"
         :key="column.prop"
@@ -27,16 +29,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { ElCard, ElTable, ElTableColumn } from 'element-plus'
 import useSummaries from '@api/hooks/transactions/useSummaries'
-import { useTransactionsStore } from '@stores/transactions'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
 
-const store = useTransactionsStore()
-
-const { data, isError, refetch, isFetching, isLoading, isRefetching, error } = useSummaries()
+const { data, isError, isFetching, isLoading, isRefetching, error } = useSummaries()
 
 const columns = [
   { prop: 'period', label: 'Period' },
@@ -45,14 +43,6 @@ const columns = [
   { prop: 'amountDifference', label: 'Amount Difference' }
 ]
 
-onMounted(() => {
-  refetch()
-  if (data.value) {
-    store.setWeeksSummaries(data.value)
-  }
-})
 
 </script>
 
-<style scoped>
-</style>

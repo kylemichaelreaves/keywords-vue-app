@@ -106,6 +106,27 @@ test.describe('Month Summary Page', () => {
       })
     })
 
+    // mock individual memo API calls for the context menu functionality
+    await page.route('**/memos/*', async route => {
+      const url = new URL(route.request().url())
+      const memoName = url.pathname.split('/').pop()
+      
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{
+          id: 1,
+          name: memoName,
+          budget_category: 'Groceries',
+          total_amount_debit: -150.00,
+          necessary: true,
+          recurring: false,
+          frequency: null,
+          ambiguous: false
+        }])
+      })
+    })
+
     // mock transactions table selects
     await mockTransactionsTableSelects(page)
 
@@ -114,7 +135,6 @@ test.describe('Month Summary Page', () => {
 
     await transactionsPage.monthSelect.click()
     const firstMonth = await transactionsPage.page.getByRole('option').first().textContent() ?? ''
-
     const firstOption = transactionsPage.page.getByRole('option', { name: firstMonth }).first()
 
     selectedMonth = firstMonth
@@ -161,5 +181,67 @@ test.describe('Month Summary Page', () => {
     // the monthSelect should be reset when we're back on the TransactionsPage
     const monthSelect = await transactionsPage.getMonthSelectValue()
     expect(monthSelect).toBe('')
+  })
+
+  test.describe('Memo Edit Context Menu', () => {
+    test('right clicking on a table row opens the memo edit modal', async ({ page }) => {
+      await transactionsPage.goTo()
+      await mockTransactionsTableSelects(page)
+      selectedMonth = await transactionsPage.selectFirstMonth()
+      await page.waitForLoadState('networkidle')
+
+      // Initially modal should be hidden
+      await monthSummaryPage.expectMemoEditModalHidden()
+
+      // Right click on the first row
+      await monthSummaryPage.rightClickOnTableRow(0)
+      await monthSummaryPage.page.waitForLoadState('networkidle')
+
+      // Modal should now be visible
+      await monthSummaryPage.expectMemoEditModalVisible()
+    })
+
+    test('memo edit modal displays the correct title for the selected memo', async ({ page }) => {
+      await transactionsPage.goTo()
+      await mockTransactionsTableSelects(page)
+      selectedMonth = await transactionsPage.selectFirstMonth()
+      await page.waitForLoadState('networkidle')
+
+      // Right click on the first row
+      await monthSummaryPage.rightClickOnTableRow(0)
+
+      // Check that the modal title contains "Edit Memo:"
+      await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
+    })
+
+    test('memo edit form is visible when modal opens', async ({ page }) => {
+      await transactionsPage.goTo()
+      await mockTransactionsTableSelects(page)
+      selectedMonth = await transactionsPage.selectFirstMonth()
+      await page.waitForLoadState('networkidle')
+
+      // Right click on the first row
+      await monthSummaryPage.rightClickOnTableRow(0)
+
+      // Form should be visible
+      await monthSummaryPage.expectMemoEditFormVisible()
+    })
+
+    test('closing the memo edit modal hides it', async ({ page }) => {
+      await transactionsPage.goTo()
+      await mockTransactionsTableSelects(page)
+      selectedMonth = await transactionsPage.selectFirstMonth()
+      await page.waitForLoadState('networkidle')
+
+      // Right click to open modal
+      await monthSummaryPage.rightClickOnTableRow(0)
+      await monthSummaryPage.expectMemoEditModalVisible()
+
+      // Close the modal
+      await monthSummaryPage.closeMemoEditModal()
+
+      // Modal should be hidden
+      await monthSummaryPage.expectMemoEditModalHidden()
+    })
   })
 })

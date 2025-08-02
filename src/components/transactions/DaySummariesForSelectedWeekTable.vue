@@ -27,6 +27,7 @@ import AlertComponent from "@components/shared/AlertComponent.vue";
 
 const {data, isError, refetch, isFetching, isLoading, isRefetching, error} = useDaySummariesForSelectedWeek()
 const store = useTransactionsStore()
+
 const selectedWeek = computed(() => store.getSelectedWeek)
 
 

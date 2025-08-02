@@ -13,7 +13,7 @@
     :placeholder="props.placeholder"
     :selectedValue="model"
     :options="memoOptions"
-    :disabled="isFetching || isLoading || isRefetching"
+    :disabled="isFetching || isLoading"
     :data-test-id="props.dataTestId"
   />
 </template>
@@ -58,7 +58,7 @@ const transactionsStore = useTransactionsStore()
 
 const emit = defineEmits(['update:modelValue'])
 
-const { data, isLoading, isFetching, isError, error, refetch, isRefetching } = useMemos()
+const { data, isLoading, isFetching, isError, error } = useMemos()
 
 const memoOptions = computed(() => {
   if (!data.value) {

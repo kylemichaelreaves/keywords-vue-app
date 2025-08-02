@@ -8,21 +8,7 @@
       Along with the total Amount Debit and Budget Category, if there is one assigned to it
     </el-text>
 
-    <el-dialog
-      v-model="showMemoEditModal"
-      :title="editModalTitle"
-      :close-on-click-modal="false"
-      width="50%"
-      data-testid="memo-edit-dialog"
-      :before-close="closeMemoEditModal"
-    >
-      <MemoEditForm
-        v-if="selectedMemo"
-        :memo="selectedMemo"
-        data-testid="memo-edit-form"
-        @close="closeMemoEditModal"
-      />
-    </el-dialog>
+    <MemoEditModal ref="memoEditModal" />
 
     <div @contextmenu.prevent>
       <el-table
@@ -34,7 +20,7 @@
         :default-sort="{ prop: 'total_amount_debit', order: 'descending' }"
         data-testid="memos-table"
         :row-key="(row: Memo) => row.id"
-        @row-contextmenu="(row: Memo) => openMemoEditModal(row)"
+        @row-contextmenu="(row: Memo) => memoEditModal?.openModal(row)"
       >
         <el-table-column
           v-for="(column, columnIndex) in memoColumns"
@@ -74,14 +60,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import useMemos from '@api/hooks/transactions/useMemos'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import MemosTablePagination from '@components/transactions/MemosTablePagination.vue'
-import MemoEditForm from '@components/transactions/MemoEditForm.vue'
-import type { Memo } from '@types'
+import MemoEditModal from '@components/transactions/MemoEditModal.vue'
 import { useTransactionsStore } from '@stores/transactions'
 import { useRoute, useRouter } from 'vue-router'
+import type { Memo } from '@types'
 
 const store = useTransactionsStore()
 const router = useRouter()
@@ -89,6 +75,8 @@ const route = useRoute()
 
 // Track if we're updating from URL to prevent loops
 let updatingFromURL = false
+
+const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
 
 const {
   data,
@@ -103,22 +91,6 @@ const {
   hasNextPage
 } = useMemos()
 
-const showMemoEditModal = ref(false)
-const selectedMemo = ref<Memo | null>(null)
-
-const openMemoEditModal = (memo: Memo) => {
-  selectedMemo.value = memo
-  showMemoEditModal.value = true
-}
-
-const closeMemoEditModal = () => {
-  showMemoEditModal.value = false
-  selectedMemo.value = null
-}
-
-const editModalTitle = computed(() => {
-  return selectedMemo.value ? `Edit Memo: ${selectedMemo.value.name}` : 'Create New Memo'
-})
 
 const isLoadingCondition = computed(() => 
   isLoading.value ||
@@ -220,6 +192,3 @@ const memoColumns = [
   { prop: 'ambiguous', label: 'Ambiguous', sortable: false }
 ]
 </script>
-
-<style scoped>
-</style>

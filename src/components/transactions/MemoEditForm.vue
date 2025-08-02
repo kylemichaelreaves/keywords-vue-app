@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="memo" label-width="120px" :data-testid="dataTestId">
+  <el-form :model="formData" label-width="120px" :data-testid="dataTestId">
     <el-form-item
       v-for="(field, key) in fields"
       :key="key"
@@ -8,7 +8,7 @@
     >
       <component
         :is="field.component"
-        v-model="memo[key]"
+        v-model="formData[key]"
         :placeholder="field.placeholder"
         :disabled="field.disabledCondition ? field.disabledCondition : false"
         :data-testid="field.dataTestId || `${dataTestId}-${key}`"
@@ -38,7 +38,7 @@
 import type { PropType } from 'vue'
 import { defineProps, reactive, watch } from 'vue'
 import { ElMessage, ElOption } from 'element-plus'
-import type { Memo, MemoFormFields, MemoKeys } from '@types'
+import type { Memo, MemoFormFields, MemoKeys, Frequency } from '@types'
 import mutateMemo from '@api/hooks/transactions/mutateMemo'
 import BudgetCategoryTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
 import MemoAvatar from '@components/transactions/MemoAvatar.vue'
@@ -54,28 +54,42 @@ const props = defineProps({
   }
 })
 
-const memo = reactive({
-  name: props.memo.name,
-  recurring: props.memo.recurring,
-  necessary: props.memo.necessary,
-  frequency: props.memo.frequency,
-  budget_category: props.memo.budget_category,
-  ambiguous: props.memo.ambiguous,
-  avatar_s3_url: props.memo.avatar_s3_url
+const formData = reactive<{
+  name: string
+  recurring: boolean
+  necessary: boolean
+  frequency: Frequency | null
+  budget_category: string | null
+  ambiguous: boolean
+  avatar_s3_url: string | null
+}>({
+  name: '',
+  recurring: false,
+  necessary: false,
+  frequency: null,
+  budget_category: null,
+  ambiguous: false,
+  avatar_s3_url: null
 })
 
 const { mutate } = mutateMemo()
 
+// Watch for changes to the memo prop and update the reactive form data
 watch(
   () => props.memo,
-  (newVal) => {
-    memo.name = newVal.name
-    memo.recurring = newVal.recurring
-    memo.necessary = newVal.necessary
-    memo.frequency = newVal.frequency
-    memo.budget_category = newVal.budget_category
-    memo.ambiguous = newVal.ambiguous
-    memo.avatar_s3_url = newVal.avatar_s3_url
+  (newMemo) => {
+    console.log('MemoEditForm received memo prop:', newMemo) // Debug log
+    if (newMemo) {
+      formData.name = newMemo.name || ''
+      formData.recurring = newMemo.recurring || false
+      formData.necessary = newMemo.necessary || false
+      formData.frequency = newMemo.frequency || null
+      formData.budget_category = newMemo.budget_category || null
+      formData.ambiguous = newMemo.ambiguous || false
+      formData.avatar_s3_url = newMemo.avatar_s3_url || null
+
+      console.log('Updated formData:', formData) // Debug log
+    }
   },
   {
     deep: true,
@@ -105,13 +119,13 @@ const fields: Record<MemoKeys, MemoFormFields & { dataTestId?: string }> = {
   necessary: {
     component: 'el-switch',
     label: 'Necessary',
-    dataTestId: `${props.dataTestId}-necessary-switch`,
+    dataTestId: `${props.dataTestId}-necessary-switch`
   },
   frequency: {
     component: 'el-select',
     label: 'Frequency',
     placeholder: 'Select frequency',
-    disabledCondition: memo.recurring,
+    disabledCondition: formData.recurring,
     options: [
       { value: 'daily', label: 'Daily' },
       { value: 'weekly', label: 'Weekly' },
@@ -124,7 +138,7 @@ const fields: Record<MemoKeys, MemoFormFields & { dataTestId?: string }> = {
     component: BudgetCategoryTreeSelect,
     label: 'Budget Category',
     placeholder: 'Select a budget category',
-    dataTestId: `${props.dataTestId}-budget-category-tree-select`,
+    dataTestId: `${props.dataTestId}-budget-category-tree-select`
   },
   ambiguous: {
     component: 'el-switch',
@@ -149,6 +163,3 @@ const saveMemo = () => {
   )
 }
 </script>
-
-<style scoped>
-</style>

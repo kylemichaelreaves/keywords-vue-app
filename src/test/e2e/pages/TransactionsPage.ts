@@ -9,6 +9,7 @@ export class TransactionsPage {
   readonly yearSelect: Locator
   readonly memoSelect: Locator
 
+  readonly intervalForm: Locator
   readonly intervalTypeSelect: Locator
   readonly intervalNumberInput: Locator
   readonly intervalLineChart: Locator
@@ -30,8 +31,9 @@ export class TransactionsPage {
     this.memoSelect = this.page.getByTestId('transactions-table-memo-select')
 
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
-    this.intervalTypeSelect = this.page.getByRole('main').getByText('Month', { exact: true })
-    this.intervalNumberInput = this.page.getByRole('spinbutton', { name: 'Interval Count' })
+    this.intervalForm = this.page.getByTestId('interval-form')
+    this.intervalTypeSelect = this.page.getByText('Interval Type')
+    this.intervalNumberInput = this.page.getByText('Interval Count')
     this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')
 
     this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
@@ -48,6 +50,30 @@ export class TransactionsPage {
 
   async goto() {
     await this.page.goto('budget-visualizer/transactions')
+  }
+
+  async goTo() {
+    await this.goto()
+  }
+
+  async selectFirstMonth(): Promise<string> {
+    await this.monthSelect.click()
+    const firstMonth = await this.page.getByRole('option').first().textContent() ?? ''
+    const firstOption = this.page.getByRole('option', { name: firstMonth }).first()
+    await firstOption.click()
+    return firstMonth
+  }
+
+  async selectFirstWeek(): Promise<string> {
+    await this.weekSelect.click()
+    // wait for the week select options to be visible
+    await this.page.getByRole('option').first().waitFor({ state: 'visible' })
+
+    // get the text content of the first option
+    const firstWeekText = await this.page.getByRole('option').first().textContent() ?? ''
+    const firstOption = this.page.getByRole('option', { name: firstWeekText }).first()
+    await firstOption.click()
+    return firstWeekText
   }
 
   async clickOnDaySelect() {
@@ -91,6 +117,36 @@ export class TransactionsPage {
     return trimmedText
   }
 
+
+  // getWeekSelectValue method to get the value of the week select
+  async getWeekSelectValue(): Promise<string> {
+    return this.getSelectValue(this.weekSelect, 'select a week')
+  }
+
+  private async getSelectValue(
+    selector: Locator,
+    expectedPlaceholder?: string
+  ): Promise<string> {
+    // Try to get the input value first (most reliable)
+    const input = selector.locator('input')
+    if (await input.count() > 0) {
+      const value = await input.inputValue()
+      if (value) return value
+    }
+
+    // Check the visible text content of the select
+    const selectText = await selector.textContent()
+    const trimmedText = selectText?.trim() ?? ''
+
+    // If it shows placeholder text, consider it empty
+    const isPlaceholder = trimmedText === '' ||
+      trimmedText.includes('select') ||
+      (expectedPlaceholder && trimmedText === expectedPlaceholder)
+
+    return isPlaceholder ? '' : trimmedText
+  }
+
+
   async rightClickOnFirstTransaction() {
     await this.clickOnTableCell({ rowIndex: 1, cellIndex: 1, clickOptions: { button: 'right' } })
   }
@@ -112,5 +168,3 @@ export class TransactionsPage {
   }
 
 }
-
-

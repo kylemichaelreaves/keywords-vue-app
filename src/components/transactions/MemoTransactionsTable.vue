@@ -82,5 +82,3 @@ const isLoadingCondition = reactive(
 
 </script>
 
-<style scoped>
-</style>

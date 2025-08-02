@@ -1,19 +1,18 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
-export class MonthSummaryPage {
+export class WeekSummaryPage {
   readonly page: Page
 
   readonly errorAlert: Locator
-  readonly monthSummaryTable: Locator
+  readonly weekSummaryTable: Locator
   readonly budgetCategorySummaries: Locator
-  readonly transactionsCount: Locator
-  readonly transactionsAmount: Locator
   readonly resetButton: Locator
-  readonly monthTitle: Locator
+  readonly weekTitle: Locator
   readonly navigationButtonGroup: Locator
+  readonly daySummariesTable: Locator
 
-
+  // New selectors for memo edit modal and form
   readonly memoEditDialog: Locator
   readonly memoEditForm: Locator
   readonly memoEditFormTitle: Locator
@@ -22,23 +21,22 @@ export class MonthSummaryPage {
   constructor(page: Page) {
     this.page = page
 
-    this.errorAlert = page.getByTestId('month-summary-table-error')
-    this.monthSummaryTable = page.getByTestId('month-summary-transactions-table')
-    this.transactionsCount = page.getByTestId('transactions-count').locator('div')
-    this.transactionsAmount = page.getByTestId('sum-amount-debit').locator('div')
-    this.resetButton = page.getByRole('button', { name: 'Reset Month' })
-    this.monthTitle = page.getByTestId('month-summary-table-header').locator('h2')
-    this.budgetCategorySummaries = page.getByTestId('budget-category-summaries')
-    this.navigationButtonGroup = page.getByTestId('month-summary-navigation-button-group')
+    this.errorAlert = page.getByTestId('week-error-alert')
+    this.weekSummaryTable = page.getByTestId('week-summary-table')
+    this.resetButton = page.getByRole('button', { name: 'Reset Week' })
+    this.weekTitle = page.locator('h2')
+    this.budgetCategorySummaries = page.getByTestId('budget-category-summaries-for-week')
+    this.navigationButtonGroup = page.getByTestId('week-navigation-button-group')
+    this.daySummariesTable = page.getByTestId('day-summaries-for-selected-week-table')
 
     this.memoEditDialog = page.getByTestId('memo-edit-dialog')
-    this.memoEditForm = page.getByTestId('memo-edit-form')
+    this.memoEditForm = this.memoEditDialog.getByTestId('memo-edit-form')
     this.memoEditFormTitle = this.memoEditDialog.getByRole('heading')
     this.memoEditFormCloseButton = this.memoEditDialog.getByRole('button', { name: /close/i })
   }
 
-  async goTo(monthId: string) {
-    await this.page.goto(`budget-visualizer/transactions/months/${monthId}/summary`)
+  async goTo(weekId: string) {
+    await this.page.goto(`budget-visualizer/transactions/weeks/${weekId}/summary`)
   }
 
   async clickResetButton() {
@@ -57,23 +55,23 @@ export class MonthSummaryPage {
     expect(this.errorAlert.isHidden())
   }
 
-  async getMonthTitle() {
-    return this.monthTitle.textContent()
+  async getWeekTitle() {
+    return this.weekTitle.textContent()
   }
 
-  async getStats() {
-    return {
-      transactionsCount: await this.transactionsCount.textContent(),
-      transactionsAmount: await this.transactionsAmount.textContent()
-    }
-  }
+  // async getStats() {
+  //   return {
+  //     transactionsCount: await this.transactionsCount.textContent(),
+  //     transactionsAmount: await this.transactionsAmount.textContent()
+  //   }
+  // }
 
   expectTableVisible() {
-    return this.monthSummaryTable.isVisible()
+    return this.weekSummaryTable.isVisible()
   }
 
   async rightClickOnTableRow(rowIndex: number = 0) {
-    const tableRow = this.monthSummaryTable.locator('tbody tr').nth(rowIndex)
+    const tableRow = this.weekSummaryTable.locator('tbody tr').nth(rowIndex)
     await tableRow.click({ button: 'right' })
   }
 

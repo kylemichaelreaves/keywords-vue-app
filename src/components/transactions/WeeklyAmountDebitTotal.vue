@@ -8,14 +8,14 @@
   />
   <el-statistic
     v-if="data"
-    :value="data.total_amount_debit"
+    :value="weekTotalAmountDebit"
     title="Weekly Total Amount Debit"
     v-loading="isLoading || isFetching || isRefetching"
   />
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue'
+import { watch, computed } from 'vue'
 import { ElStatistic } from 'element-plus'
 import useSumAmountDebitByDate from '@api/hooks/transactions/useSumAmountDebitByDate'
 import { useTransactionsStore } from '@stores/transactions'
@@ -33,6 +33,10 @@ const {
   error,
   refetch
 } = useSumAmountDebitByDate('week', store.selectedWeek)
+
+const weekTotalAmountDebit = computed(() => {
+  return data.value ? data.value[0].total_amount_debit : 0
+})
 
 watch(() => store.selectedWeek, (newValue) => {
   if (newValue) {

@@ -1,31 +1,35 @@
-// generate an array of weeks WW-YYYY where WW is the week number and YYYY is the year
-// the week is the ISO week number, starting from 01-2025
-// specify the years
 import { DateTime } from 'luxon'
 
 /**
- * Generates an array of objects representing ISO weeks for testing
+ * Generates an array of objects representing ISO weeks for testing.
+ * Stops at the last week starting in the previous month.
  * @param {number} startYear - The starting year
  * @param {number} endYear - The ending year (inclusive)
- * @returns {Array} Array of objects with week property in WW-YYYY format
+ * @returns {Array} Array of objects with week_year property in WW-YYYY format
  */
-export function generateWeeksArray(startYear=2021, endYear=DateTime.now().year) {
+export function generateWeeksArray(startYear = 2021, endYear = DateTime.now().year) {
   const weeks = []
 
+  // Find the last day of the previous month from today
+  const today = DateTime.now()
+  const prevMonth = today.minus({ months: 1 })
+  const lastDayPrevMonth = prevMonth.endOf('month')
+
   for (let year = startYear; year <= endYear; year++) {
-    // Start from January 1st of the current year
-    let currentDate = DateTime.fromObject({ year, month: 1, day: 1 })
+    // Start from the first day of the year
+    let currentDate = DateTime.fromObject({ year, month: 1, day: 1 }).startOf('week')
 
-    // Find the first Monday of the year (start of first week)
-    currentDate = currentDate.startOf('week')
-
-    // Generate all weeks for this year
+    // Generate all weeks, but stop if the week starts after lastDayPrevMonth
     while (currentDate.weekYear <= year) {
+      if (currentDate > lastDayPrevMonth) {
+        break
+      }
+
       const weekNum = currentDate.weekNumber.toString().padStart(2, '0')
       const weekYear = currentDate.weekYear
 
       weeks.push({
-        week: `${weekNum}-${weekYear}`
+        week_year: `${weekNum}-${weekYear}`
       })
 
       // Move to next week
@@ -33,5 +37,5 @@ export function generateWeeksArray(startYear=2021, endYear=DateTime.now().year) 
     }
   }
 
-  return weeks
+  return weeks.reverse()
 }

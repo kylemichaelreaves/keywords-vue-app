@@ -1,11 +1,11 @@
 import { httpClient } from '@api/httpClient'
 
-export async function fetchSumAmountDebitByDate(timeFrame: string, date: Date | null | undefined, totalAmountDebit=true): Promise<Array<{ total_amount_debit: number }>> {
+export async function fetchSumAmountDebitByDate(timeFrame: string, date: string, totalAmountDebit=true): Promise<Array<{ total_amount_debit: number }>> {
   return await httpClient
     .get(`/transactions`, {
       params: {
         timeFrame,
-        date: date?.toISOString().split('T')[0],
+        date: date,
         totalAmountDebit
       }
     })
