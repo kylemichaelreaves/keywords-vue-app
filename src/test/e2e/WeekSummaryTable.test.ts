@@ -34,7 +34,6 @@ test.describe('Week Summary Table', () => {
     })
 
 
-
     // Mock the transactions for the week summary
     // await page.route('**/transactions?limit=*&offset=0&timeFrame=week&date=*', route => {
     //   route.fulfill({
@@ -110,52 +109,33 @@ test.describe('Week Summary Table', () => {
     })
 
 
-
-
     await mockTransactionsTableSelects(page)
 
-
     await transactionsPage.goto()
-
     // click on week select
     await transactionsPage.weekSelect.click()
     // wait for the week select options to be visible
     await transactionsPage.page.getByRole('option').first().waitFor({ state: 'visible' })
-
     // get the text content of the first option
     const firstWeekText = await transactionsPage.page.getByRole('option').first().textContent() ?? ''
     const firstOption = transactionsPage.page.getByRole('option', { name: firstWeekText }).first()
 
     selectedWeek = await firstOption.textContent() ?? null
 
-    // selectedWeek = firstOption
-
     await firstOption.click()
-
-    await weekSummaryPage.page.waitForLoadState('networkidle')
   })
 
   test('should display the week summary table', async () => {
-    await weekSummaryPage.expectTableVisible();
+    await weekSummaryPage.expectTableVisible()
   })
 
   test('should show selected week in the title header', async () => {
     const weekTitle = await weekSummaryPage.getWeekTitle()
-    // get the selectedWeek from the week select
-
     expect(weekTitle).toContain(selectedWeek)
-
-
-
-    // expect(stats.transactionsCount).toBe('10')
-    // expect(stats.transactionsAmount).toBe('-5000')
   })
 
   test('should reset the week when reset button is clicked', async () => {
     await weekSummaryPage.clickResetButton()
-    // waitFor
-    await transactionsPage.page.waitForLoadState('networkidle')
-
     const weekSelectValue = await transactionsPage.getWeekSelectValue()
     expect(weekSelectValue).toBe('')
   })
@@ -165,66 +145,18 @@ test.describe('Week Summary Table', () => {
   })
 
   test.describe('Memo Edit Context Menu', () => {
-    test('right clicking on a table row opens the memo edit modal', async ({ page }) => {
-      await transactionsPage.goto()
-      await mockTransactionsTableSelects(page)
-      selectedWeek = await transactionsPage.selectFirstWeek()
-      await page.waitForLoadState('networkidle')
-
-      // Initially modal should be hidden
+    test('memo edit modal workflow: open, display content, and close', async () => {
+      // Initially hidden
       await weekSummaryPage.expectMemoEditModalHidden()
 
-      // Right click on the first row
+      // Right click opens modal with correct content
       await weekSummaryPage.rightClickOnTableRow(0)
-      await page.waitForLoadState('networkidle')
-
-
-      // Modal should now be visible
       await weekSummaryPage.expectMemoEditModalVisible()
-    })
-
-    test('memo edit modal displays the correct title for the selected memo', async ({ page }) => {
-      await transactionsPage.goTo()
-      await mockTransactionsTableSelects(page)
-      selectedWeek = await transactionsPage.selectFirstWeek()
-      await page.waitForLoadState('networkidle')
-
-      // Right click on the first row
-      await weekSummaryPage.rightClickOnTableRow(0)
-      await page.waitForLoadState('networkidle')
-
-      // Check that the modal title contains "Edit Memo:"
       await weekSummaryPage.expectMemoEditFormTitle('Edit Memo:')
-    })
-
-    test('memo edit form is visible when modal opens', async ({ page }) => {
-      await transactionsPage.goTo()
-      await mockTransactionsTableSelects(page)
-      selectedWeek = await transactionsPage.selectFirstWeek()
-      await page.waitForLoadState('networkidle')
-
-      // Right click on the first row
-      await weekSummaryPage.rightClickOnTableRow(0)
-
-      // Form should be visible
       await weekSummaryPage.expectMemoEditFormVisible()
-    })
 
-    test('closing the memo edit modal hides it', async ({ page }) => {
-      await transactionsPage.goTo()
-      await mockTransactionsTableSelects(page)
-      selectedWeek = await transactionsPage.selectFirstWeek()
-      await page.waitForLoadState('networkidle')
-
-      // Right click to open modal
-      await weekSummaryPage.rightClickOnTableRow(0)
-      await page.waitForLoadState('networkidle')
-      await weekSummaryPage.expectMemoEditModalVisible()
-
-      // Close the modal
+      // Closing hides modal
       await weekSummaryPage.closeMemoEditModal()
-
-      // Modal should be hidden
       await weekSummaryPage.expectMemoEditModalHidden()
     })
   })

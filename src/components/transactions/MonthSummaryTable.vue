@@ -101,7 +101,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElCard, ElCol, ElRow, ElTable, ElTableColumn } from 'element-plus'
 import { useTransactionsStore } from '@stores/transactions'
 import useMonthSummary from '@api/hooks/transactions/useMonthSummary'
-import type { MonthYear, Memo } from '@types'
+import type { MonthYear } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import { router } from '@router'
 import MonthSummaryHeader from '@components/transactions/MonthSummaryHeader.vue'
@@ -207,11 +207,9 @@ const openMemoEditModal = async (row: MonthSummaryRow) => {
 
     if (memoToEdit) {
       memoEditModal.value?.openModal(memoToEdit)
-    } else {
-      console.error('Failed to fetch memo data for:', row.memo)
     }
   } catch (error) {
-    console.error('Error fetching memo:', error)
+    throw new Error(`Error fetching memo: ${error}`)
   }
 }
 </script>

@@ -26,6 +26,26 @@ test.describe('Month Summary Page', () => {
       })
     })
 
+    // mock transactions?dailyTotals=true&interval=1+month&date=2025-07-01
+    await page.route('**/transactions?dailyTotals=true&interval=1+month&date=*', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(generateDailyIntervals(30))
+      })
+    })
+
+    // mock budget-categories?flatten=false
+    await page.route('**/budget-categories?flatten=false', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(generateBudgetCategoryHierarchy())
+      })
+    })
+
+
+
     // mock /transactions?limit=100&offset=0&timeFrame=month&date=2025-06-01T00:00:00.000Z
     await page.route('**/transactions?limit=*&offset=0&timeFrame=month&date=*', route => {
       route.fulfill({
@@ -145,37 +165,29 @@ test.describe('Month Summary Page', () => {
   })
 
   test('should display the month title', async () => {
-    await monthSummaryPage.monthSummaryTable.waitFor({ state: 'visible' })
     const title = await monthSummaryPage.getMonthTitle()
     expect(title).toContain('Month Summary for:' + ' ' + selectedMonth)
   })
 
   test('should display the month summary table', async () => {
-    await monthSummaryPage.monthSummaryTable.waitFor({ state: 'visible' })
-    expect(await monthSummaryPage.expectTableVisible()).toBeTruthy()
+    await expect(monthSummaryPage.monthSummaryTable).toBeVisible()
   })
 
   test('should display the budget categories summary component', async () => {
-    await monthSummaryPage.budgetCategorySummaries.waitFor({ state: 'visible' })
     await expect(monthSummaryPage.budgetCategorySummaries).toBeVisible()
   })
 
   test('the navigation button group should be visible', async () => {
-    await monthSummaryPage.navigationButtonGroup.waitFor({ state: 'visible' })
     await expect(monthSummaryPage.navigationButtonGroup).toBeVisible()
   })
 
   test('the next month button should be disabled when on the latest month', async () => {
-    await monthSummaryPage.navigationButtonGroup.waitFor({ state: 'visible' })
     const nextButton = monthSummaryPage.navigationButtonGroup.getByRole('button', { name: 'Next Month' })
     expect(await nextButton.isDisabled()).toBeTruthy()
   })
 
   test('should handle reset button click', async () => {
     await monthSummaryPage.clickResetButton()
-
-    // waitFor
-    await transactionsPage.page.waitForLoadState('networkidle')
 
     await expect(transactionsPage.page).toHaveURL(/\/budget-visualizer\/transactions/)
     // the monthSelect should be reset when we're back on the TransactionsPage
@@ -184,63 +196,14 @@ test.describe('Month Summary Page', () => {
   })
 
   test.describe('Memo Edit Context Menu', () => {
-    test('right clicking on a table row opens the memo edit modal', async ({ page }) => {
-      await transactionsPage.goTo()
-      await mockTransactionsTableSelects(page)
-      selectedMonth = await transactionsPage.selectFirstMonth()
-      await page.waitForLoadState('networkidle')
-
-      // Initially modal should be hidden
+    test('right clicking on a table row opens the memo edit modal', async () => {
+      // Initially, modal should be hidden
       await monthSummaryPage.expectMemoEditModalHidden()
-
-      // Right click on the first row
       await monthSummaryPage.rightClickOnTableRow(0)
-      await monthSummaryPage.page.waitForLoadState('networkidle')
-
-      // Modal should now be visible
       await monthSummaryPage.expectMemoEditModalVisible()
-    })
-
-    test('memo edit modal displays the correct title for the selected memo', async ({ page }) => {
-      await transactionsPage.goTo()
-      await mockTransactionsTableSelects(page)
-      selectedMonth = await transactionsPage.selectFirstMonth()
-      await page.waitForLoadState('networkidle')
-
-      // Right click on the first row
-      await monthSummaryPage.rightClickOnTableRow(0)
-
-      // Check that the modal title contains "Edit Memo:"
-      await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
-    })
-
-    test('memo edit form is visible when modal opens', async ({ page }) => {
-      await transactionsPage.goTo()
-      await mockTransactionsTableSelects(page)
-      selectedMonth = await transactionsPage.selectFirstMonth()
-      await page.waitForLoadState('networkidle')
-
-      // Right click on the first row
-      await monthSummaryPage.rightClickOnTableRow(0)
-
-      // Form should be visible
       await monthSummaryPage.expectMemoEditFormVisible()
-    })
-
-    test('closing the memo edit modal hides it', async ({ page }) => {
-      await transactionsPage.goTo()
-      await mockTransactionsTableSelects(page)
-      selectedMonth = await transactionsPage.selectFirstMonth()
-      await page.waitForLoadState('networkidle')
-
-      // Right click to open modal
-      await monthSummaryPage.rightClickOnTableRow(0)
-      await monthSummaryPage.expectMemoEditModalVisible()
-
-      // Close the modal
+      await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
       await monthSummaryPage.closeMemoEditModal()
-
-      // Modal should be hidden
       await monthSummaryPage.expectMemoEditModalHidden()
     })
   })

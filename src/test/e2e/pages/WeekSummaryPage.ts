@@ -31,7 +31,7 @@ export class WeekSummaryPage {
 
     this.memoEditDialog = page.getByTestId('memo-edit-dialog')
     this.memoEditForm = this.memoEditDialog.getByTestId('memo-edit-form')
-    this.memoEditFormTitle = this.memoEditDialog.getByRole('heading')
+    this.memoEditFormTitle = this.memoEditDialog.getByRole('heading', { name: /edit memo/i })
     this.memoEditFormCloseButton = this.memoEditDialog.getByRole('button', { name: /close/i })
   }
 

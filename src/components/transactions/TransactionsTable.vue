@@ -219,6 +219,3 @@ function getRowKey(row: Transaction): string {
 }
 
 </script>
-
-<style scoped>
-</style>

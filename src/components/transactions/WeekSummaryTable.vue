@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { computed, onUnmounted, reactive, ref, watch } from 'vue'
-import { ElCard, ElTable, ElTableColumn } from 'element-plus'
+import { ElCard, ElTable, ElTableColumn, ElMessage } from 'element-plus'
 import { useTransactionsStore } from '@stores/transactions'
 import useWeekSummary from '@api/hooks/transactions/useWeekSummary'
 import AlertComponent from '@components/shared/AlertComponent.vue'
@@ -72,7 +72,6 @@ import DaySummariesForSelectedWeekTable from '@components/transactions/DaySummar
 import WeekSummaryHeader from './WeekSummaryHeader.vue'
 import MemoEditModal from '@components/transactions/MemoEditModal.vue'
 import { fetchMemo } from '@api/transactions/fetchMemo'
-import type { Memo } from '@types'
 
 // Define the week summary row structure
 interface WeekSummaryRow {
@@ -150,18 +149,16 @@ const openMemoEditModal = async (row: WeekSummaryRow) => {
   try {
     // Fetch the complete memo data and pass it to the modal
     const memoArray = await fetchMemo(row.memo)
-    console.log('Fetched memo data:', memoArray) // Debug log
-    
+
     // Extract the first memo from the array
     const memoToEdit = memoArray[0]
-    
+
     if (memoToEdit) {
       memoEditModal.value?.openModal(memoToEdit)
-    } else {
-      console.error('Failed to fetch memo data for:', row.memo)
     }
   } catch (error) {
-    console.error('Error fetching memo:', error)
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+    ElMessage.error(`Failed to fetch memo: ${errorMessage}`)
   }
 }
 
