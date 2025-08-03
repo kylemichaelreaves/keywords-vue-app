@@ -1,9 +1,7 @@
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { WeekSummaryPage } from '@test/e2e/pages/WeekSummaryPage'
-import { mockTransactionsTableSelects } from '@test/e2e/helpers/mockTransactionsTableSelects.ts'
-import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
-import { generateMonthSummaryArray } from '@test/e2e/mocks/monthSummaryMock.ts'
+import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 
 test.describe('Week Summary Table', () => {
   let transactionsPage: TransactionsPage
@@ -14,102 +12,7 @@ test.describe('Week Summary Table', () => {
     transactionsPage = new TransactionsPage(page)
     weekSummaryPage = new WeekSummaryPage(page)
 
-
-    // mock transactions?limit=100&offset=0&timeFrame=year
-    await page.route('**/transactions?limit=100&offset=0&timeFrame=year', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(generateTransactionsArray(100))
-      })
-    })
-
-    // mock /transactions?limit=100&offset=0&timeFrame=week&date=2025-06-30T00:00:00.000Z
-    await page.route('**/transactions?limit=*&offset=0&timeFrame=week&date=*', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(generateTransactionsArray(25))
-      })
-    })
-
-
-    // Mock the transactions for the week summary
-    // await page.route('**/transactions?limit=*&offset=0&timeFrame=week&date=*', route => {
-    //   route.fulfill({
-    //     status: 200,
-    //     contentType: 'application/json',
-    //     body: JSON.stringify(generateMonthSummaryArray(20))
-    //   })
-    // })
-
-    // Mock the week summary data
-    await page.route('**/transactions/weeks/**/summary', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(generateMonthSummaryArray(20))
-      })
-    })
-
-    // mock individual memo API calls for the context menu functionality
-    await page.route('**/memos/*', async route => {
-      const url = new URL(route.request().url())
-      const memoName = url.pathname.split('/').pop()
-
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([{
-          id: 1,
-          name: memoName,
-          budget_category: 'Groceries',
-          total_amount_debit: -150.00,
-          necessary: true,
-          recurring: false,
-          frequency: null,
-          ambiguous: false
-        }])
-      })
-    })
-
-    // mock the transactions count
-    await page.route('**/transactions?count=true', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ count: 200 })
-      })
-    })
-
-    // mock the total_amount_debit for the week
-    await page.route(url => {
-      const urlObj = new URL(url)
-      return urlObj.pathname.endsWith('/transactions') &&
-        urlObj.searchParams.get('timeFrame') === 'week' &&
-        urlObj.searchParams.get('totalAmountDebit') === 'true' &&
-        urlObj.searchParams.has('date')
-    }, route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(
-          [{ total_amount_debit: -700 }]
-        )
-      })
-    })
-
-    // mock transactions/weeks/27-2025/days
-    await page.route('**/transactions/weeks/**/days', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([]) // Empty array for simplicity
-      })
-    })
-
-
-    await mockTransactionsTableSelects(page)
+    await setupWeekSummaryMocks(page)
 
     await transactionsPage.goto()
     // click on week select
