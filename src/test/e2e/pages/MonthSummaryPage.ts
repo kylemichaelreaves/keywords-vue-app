@@ -27,7 +27,7 @@ export class MonthSummaryPage {
     this.transactionsCount = page.getByTestId('transactions-count').locator('div')
     this.transactionsAmount = page.getByTestId('sum-amount-debit').locator('div')
     this.resetButton = page.getByRole('button', { name: 'Reset Month' })
-    this.monthTitle = page.getByTestId('month-summary-table-header').locator('h2')
+    this.monthTitle = page.getByTestId('month-summary-header').locator('h2')
     this.budgetCategorySummaries = page.getByTestId('budget-category-summaries')
     this.navigationButtonGroup = page.getByTestId('month-summary-navigation-button-group')
 
@@ -74,6 +74,7 @@ export class MonthSummaryPage {
 
   async rightClickOnTableRow(rowIndex: number = 0) {
     const tableRow = this.monthSummaryTable.locator('tbody tr').nth(rowIndex)
+    await expect(tableRow).toBeVisible()
     await tableRow.click({ button: 'right' })
   }
 

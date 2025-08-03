@@ -107,6 +107,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SelectComponent: typeof import('./src/components/shared/SelectComponent.vue')['default']
     StatisticComponent: typeof import('./src/components/shared/StatisticComponent.vue')['default']
+    SummaryHeader: typeof import('./src/components/shared/SummaryHeader.vue')['default']
     TableComponent: typeof import('./src/components/shared/TableComponent.vue')['default']
     TimeframeToggle: typeof import('./src/components/shared/TimeframeToggle.vue')['default']
     TimelineBarChart: typeof import('./src/components/charts/TimelineBarChart.vue')['default']

@@ -183,7 +183,6 @@ export class TransactionsPage {
     clickOptions?: { button?: 'left' | 'right' | 'middle' }
   } = {}) {
     const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
-
     const row = this.transactionsTable.getByRole('row').nth(rowIndex)
     const cell = row.getByRole('cell').nth(cellIndex)
     await cell.click(clickOptions)

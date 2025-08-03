@@ -14,7 +14,6 @@ test.describe('Transactions Table', () => {
     await setupTransactionsTableWithStaticMocks(page, staticTransactions, staticDailyIntervals)
 
     await transactionsPage.goto()
-    await transactionsPage.page.waitForLoadState('networkidle')
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
   })
 
@@ -86,13 +85,13 @@ test.describe('Transactions Table', () => {
   })
 
   test('clicking on a point in the line chart loads the transactions for that date', async () => {
+    await transactionsPage.intervalLineChart.waitFor({ state: 'visible' })
 
     const fifthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-5')
 
     // hover over the fifth chart-dot on the line chart
     await fifthPoint.hover()
     // wait for the intervalLineChartTooltip to be visible
-    await transactionsPage.intervalLineChart.waitFor({ state: 'visible' })
     await expect(transactionsPage.intervalLineChartTooltip).toBeVisible()
 
     const textContent = await transactionsPage.intervalLineChartTooltip.textContent()

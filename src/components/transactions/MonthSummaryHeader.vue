@@ -7,7 +7,6 @@
     :go-to-next="goToNextMonth"
     :go-to-previous="goToPreviousMonth"
     :reset="resetSelectedMonth"
-    data-testid="month-summary-header"
   >
     <template #amount-total>
       <MonthlyAmountDebitTotal data-testid="monthly-amount-debit-total" />

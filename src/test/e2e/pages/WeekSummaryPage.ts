@@ -72,6 +72,7 @@ export class WeekSummaryPage {
 
   async rightClickOnTableRow(rowIndex: number = 0) {
     const tableRow = this.weekSummaryTable.locator('tbody tr').nth(rowIndex)
+    await expect(tableRow).toBeVisible()
     await tableRow.click({ button: 'right' })
   }
 
