@@ -22,6 +22,15 @@ test.describe('Month Summary Page', () => {
 
     selectedMonth = firstMonth
     await firstOption.click()
+
+    // Wait for navigation to summary page after selecting month
+    await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/)
+
+    // Wait for the page to fully load after navigation
+    await page.waitForLoadState('networkidle')
+
+    // Wait for the summary table to be visible before proceeding
+    await monthSummaryPage.monthSummaryTable.waitFor({ state: 'visible' })
   })
 
   test('should display the month title', async () => {

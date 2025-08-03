@@ -26,6 +26,15 @@ test.describe('Week Summary Table', () => {
     selectedWeek = await firstOption.textContent() ?? null
 
     await firstOption.click()
+
+    // Wait for navigation to summary page after selecting week
+    await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/)
+
+    // Wait for the page to fully load after navigation
+    await page.waitForLoadState('networkidle')
+
+    // Wait for the summary table to be visible before proceeding
+    await weekSummaryPage.weekSummaryTable.waitFor({ state: 'visible' })
   })
 
   test('should display the week summary table', async () => {

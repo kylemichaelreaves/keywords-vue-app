@@ -85,7 +85,7 @@ export abstract class BaseSummaryPage {
   }
 
   // Common table visibility check
-  expectTableVisible() {
-    return this.getSummaryTable().isVisible()
+  async expectTableVisible() {
+    return await expect(this.getSummaryTable()).toBeVisible()
   }
 }
