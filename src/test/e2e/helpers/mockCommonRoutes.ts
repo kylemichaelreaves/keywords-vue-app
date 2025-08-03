@@ -6,13 +6,15 @@ import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategorie
 /**
  * Mock basic transaction routes that are commonly used across tests
  */
-export async function mockBasicTransactionRoutes(page: Page) {
+export async function mockBasicTransactionRoutes(page: Page, staticData?: any[]) {
+  const transactions = staticData || generateTransactionsArray(100)
+
   // Mock transactions with year timeframe
   await page.route('**/transactions?limit=100&offset=0&timeFrame=year', route => {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(generateTransactionsArray(100))
+      body: JSON.stringify(transactions)
     })
   })
 
@@ -29,8 +31,8 @@ export async function mockBasicTransactionRoutes(page: Page) {
 /**
  * Mock daily interval routes with various parameter orders
  */
-export async function mockDailyIntervalRoutes(page: Page, days: number = 30) {
-  const intervals = generateDailyIntervals(days)
+export async function mockDailyIntervalRoutes(page: Page, days: number = 30, staticData?: any[]) {
+  const intervals = staticData || generateDailyIntervals(days)
 
   // Various parameter orders for daily totals
   await page.route('**/transactions?dailyTotals=true&interval=1+month&date=*', route => {

@@ -14,8 +14,8 @@ import {
 import { mockMemoTableRoutes } from './mockMemoRoutes'
 
 export interface TestMockOptions {
-  basicTransactions?: boolean
-  dailyIntervals?: boolean | number // boolean or number of days
+  basicTransactions?: boolean | any[] // Can pass static data
+  dailyIntervals?: boolean | number | any[] // boolean, number of days, or static data
   budgetCategories?: boolean
   memos?: boolean
   transactionSelects?: boolean
@@ -47,12 +47,21 @@ export async function setupTestMocks(page: Page, options: TestMockOptions = {}) 
   const config = { ...DEFAULT_MOCK_OPTIONS, ...options }
 
   if (config.basicTransactions) {
-    await mockBasicTransactionRoutes(page)
+    const staticData = Array.isArray(config.basicTransactions) ? config.basicTransactions : undefined
+    await mockBasicTransactionRoutes(page, staticData)
   }
 
   if (config.dailyIntervals) {
-    const days = typeof config.dailyIntervals === 'number' ? config.dailyIntervals : 30
-    await mockDailyIntervalRoutes(page, days)
+    if (Array.isArray(config.dailyIntervals)) {
+      // Static data provided
+      await mockDailyIntervalRoutes(page, 30, config.dailyIntervals)
+    } else if (typeof config.dailyIntervals === 'number') {
+      // Number of days provided
+      await mockDailyIntervalRoutes(page, config.dailyIntervals)
+    } else {
+      // Boolean true, use defaults
+      await mockDailyIntervalRoutes(page)
+    }
   }
 
   if (config.budgetCategories) {
@@ -123,3 +132,13 @@ export const setupMonthSummaryMocks = (page: Page) => setupTestMocks(page, MOCK_
 export const setupWeekSummaryMocks = (page: Page) => setupTestMocks(page, MOCK_PRESETS.WEEK_SUMMARY)
 export const setupTransactionsTableMocks = (page: Page) => setupTestMocks(page, MOCK_PRESETS.TRANSACTIONS_TABLE)
 export const setupMemosTableMocks = (page: Page) => setupTestMocks(page, MOCK_PRESETS.MEMOS_TABLE)
+
+/**
+ * Setup mocks with static data for TransactionsTable tests
+ */
+export const setupTransactionsTableWithStaticMocks = (page: Page, staticTransactions: any[], staticIntervals: any[]) =>
+  setupTestMocks(page, {
+    basicTransactions: staticTransactions,
+    dailyIntervals: staticIntervals,
+    transactionSelects: true
+  })

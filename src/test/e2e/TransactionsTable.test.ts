@@ -2,9 +2,8 @@
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
 import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
-import { mockTransactionsTableSelects } from '@test/e2e/helpers/mockTransactionsTableSelects.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
-
+import { setupTransactionsTableWithStaticMocks } from '@test/e2e/helpers/setupTestMocks'
 
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
@@ -12,62 +11,7 @@ test.describe('Transactions Table', () => {
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
 
-    // mock transactions?limit=100&offset=0&timeFrame=year
-    await page.route('**/transactions?limit=100&offset=0&timeFrame=year', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(staticTransactions)
-      })
-    })
-
-    // mock the transaction selects
-    await mockTransactionsTableSelects(page)
-
-    // mock the transactions count
-    await page.route('**/transactions?count=true', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ count: 200 })
-      })
-    })
-
-    // mock the daily total intervals, with and without date
-    await page.route('**/transactions?dailyTotals=true&interval=1+months', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(staticDailyIntervals)
-      })
-    })
-
-    await page.route('**/transactions?interval=1+months&dailyTotals=true', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(staticDailyIntervals)
-      })
-    })
-
-    // mock transactions?dailyTotals=true&interval=1+month&date=
-    await page.route('**/transactions?dailyTotals=true&interval=1+month&date=*', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(staticDailyIntervals)
-      })
-    })
-
-    // mock transactions?interval=1+month&dailyTotals=true
-    await page.route('**/transactions?interval=1+month&dailyTotals=true', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(staticDailyIntervals)
-      })
-    })
-
+    await setupTransactionsTableWithStaticMocks(page, staticTransactions, staticDailyIntervals)
 
     await transactionsPage.goto()
     await transactionsPage.page.waitForLoadState('networkidle')
@@ -77,9 +21,7 @@ test.describe('Transactions Table', () => {
 
   test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({ page }) => {
     await page.goto('/budget-visualizer')
-    await transactionsPage.page.waitForLoadState('networkidle')
     await transactionsPage.goto()
-    await transactionsPage.page.waitForLoadState('networkidle')
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
 
     await expect(transactionsPage.transactionsTable).toBeVisible()
