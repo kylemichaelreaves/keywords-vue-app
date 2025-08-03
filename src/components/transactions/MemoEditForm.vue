@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue'
-import { defineProps, reactive, watch } from 'vue'
+import { defineProps, reactive, watch, computed } from 'vue'
 import { ElMessage, ElOption } from 'element-plus'
 import type { Memo, MemoFormFields, MemoKeys } from '@types'
 import mutateMemo from '@api/hooks/transactions/mutateMemo'
@@ -109,7 +109,7 @@ const fields: Record<MemoKeys, MemoFormFields> = {
     component: 'el-select',
     label: 'Frequency',
     placeholder: 'Select frequency',
-    disabledCondition: formData.recurring,
+    disabledCondition: computed(() => !formData.recurring),
     options: [
       { value: 'daily', label: 'Daily' },
       { value: 'weekly', label: 'Weekly' },
@@ -134,7 +134,7 @@ const fields: Record<MemoKeys, MemoFormFields> = {
 const saveMemo = () => {
   mutate(
     {
-      memo: props.memo
+      memo: formData
     },
     {
       onSuccess: () => {

@@ -1,4 +1,4 @@
-import type { Component } from 'vue'
+import type { Component, ComputedRef } from 'vue'
 
 export interface AddressFields {
   streetAddress: string;
@@ -162,7 +162,7 @@ export interface MemoFormFields {
   component: 'el-input' | 'el-switch' | 'el-select' | Component;
   label: string;
   placeholder?: string;
-  disabledCondition?: boolean;
+  disabledCondition?: boolean | ComputedRef<boolean>;
   options?: { value: string; label: string }[];
   dataTestId?: string;
 }
