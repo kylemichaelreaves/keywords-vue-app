@@ -10,36 +10,41 @@ export async function waitForPageReady(page: Page) {
 }
 
 /**
- * Wait for a table to be fully loaded and interactive
+ * Wait for a table to be fully loaded and interactive using semantic selectors
  */
 export async function waitForTableReady(table: Locator) {
   await expect(table).toBeVisible()
+  await expect(table).toBeAttached()
 
+  // Wait for table body to be present using semantic approach
   const tableBody = table.locator('tbody')
   await expect(tableBody).toBeVisible()
 
-  // Ensure at least one row exists and is interactive
-  const firstRow = tableBody.locator('tr').first()
+  // Ensure at least one data row exists using role-based selectors
+  const firstRow = table.getByRole('row').first()
   await expect(firstRow).toBeVisible()
   await expect(firstRow).toBeAttached()
 
-  // Wait for row content to be loaded (not just empty cells)
-  await expect(firstRow.locator('td').first()).toBeVisible()
+  // Wait for row content to be loaded using semantic cell selector
+  const firstCell = firstRow.getByRole('cell').first()
+  await expect(firstCell).toBeVisible()
+  await expect(firstCell).not.toBeEmpty()
 
-  // Ensure table is not in a loading state
-  await expect(table).not.toHaveClass(/loading|skeleton/)
+  // Ensure table is interactive (not in loading state)
+  await expect(table).not.toHaveAttribute('aria-busy', 'true')
 }
 
 /**
- * Wait for element to be interactive (visible, attached, and ready for clicks)
+ * Wait for element to be interactive using semantic checks
  */
 export async function waitForElementInteractive(element: Locator) {
   await expect(element).toBeVisible()
   await expect(element).toBeAttached()
   await expect(element).toBeEnabled()
 
-  // Ensure element is not in loading/disabled state
-  await expect(element).not.toHaveClass(/loading|disabled|pending/)
+  // Use semantic attributes to check loading state
+  await expect(element).not.toHaveAttribute('aria-busy', 'true')
+  await expect(element).not.toHaveAttribute('aria-disabled', 'true')
 }
 
 /**
@@ -51,14 +56,14 @@ export async function navigateAndWait(page: Page, url: string | RegExp, options?
 }
 
 /**
- * Wait for dropdown options to be available
+ * Wait for dropdown options to be available using semantic selectors
  */
 export async function waitForDropdownOptions(page: Page) {
   await page.getByRole('option').first().waitFor({ state: 'visible' })
 }
 
 /**
- * Wait for dropdown to be ready with options loaded
+ * Wait for dropdown to be ready with options loaded using semantic selectors
  */
 export async function waitForDropdownReady(dropdown: Locator, page: Page) {
   await expect(dropdown).toBeVisible()
@@ -67,39 +72,127 @@ export async function waitForDropdownReady(dropdown: Locator, page: Page) {
   // Click to open dropdown
   await dropdown.click()
 
-  // Wait for options to be available
+  // Wait for options to be available using semantic role
   await expect(page.getByRole('option').first()).toBeVisible()
 
-  // Ensure options have loaded (not just loading placeholders)
+  // Ensure options have loaded (not loading placeholders)
   const firstOption = page.getByRole('option').first()
   await expect(firstOption).not.toHaveText(/loading|\.\.\./)
 }
 
 /**
- * Wait for modal to be fully ready for interaction
+ * Wait for modal to be fully ready using semantic selectors
  */
 export async function waitForModalReady(modal: Locator) {
   await expect(modal).toBeVisible()
 
-  // Wait for modal content to be loaded
-  const modalContent = modal.locator('[role="dialog"], .modal-content, .dialog-content').first()
-  await expect(modalContent).toBeVisible()
+  // Wait for modal dialog content using semantic role
+  const dialogContent = modal.getByRole('dialog').first()
+  await expect(dialogContent).toBeVisible()
 
-  // Ensure modal is not in loading state
-  await expect(modal).not.toHaveClass(/loading|opening/)
+  // Ensure modal is not in loading state using semantic attributes
+  await expect(modal).not.toHaveAttribute('aria-busy', 'true')
 }
 
 /**
- * Robust table row interaction with proper waits
+ * Robust table row interaction using semantic selectors
  */
 export async function rightClickTableRow(table: Locator, rowIndex: number = 0) {
   await waitForTableReady(table)
 
-  const tableRow = table.locator('tbody tr').nth(rowIndex)
+  const tableRow = table.getByRole('row').nth(rowIndex)
   await waitForElementInteractive(tableRow)
 
-  // Ensure row has actual content before clicking
-  await expect(tableRow.locator('td').first()).not.toBeEmpty()
+  // Ensure row has actual content using semantic cell selector
+  await expect(tableRow.getByRole('cell').first()).not.toBeEmpty()
 
   await tableRow.click({ button: 'right' })
+}
+
+/**
+ * Wait for loading to complete using network activity - simplified version
+ */
+export async function waitForLoadingToComplete(page: Page, options: {
+  timeout?: number
+} = {}) {
+  const { timeout = 30000 } = options
+
+  // Just wait for network to be idle - this is usually sufficient
+  await page.waitForLoadState('networkidle', { timeout })
+}
+
+/**
+ * Wait for table to be fully loaded using semantic selectors only
+ */
+export async function waitForElementTableReady(table: Locator, page: Page, options: {
+  timeout?: number
+  minRows?: number
+} = {}) {
+  const { timeout = 60000, minRows = 1 } = options
+
+  // Ensure table is visible and has proper role
+  await expect(table).toBeVisible({ timeout })
+  await expect(table).not.toHaveAttribute('aria-busy', 'true', { timeout })
+
+  // Wait for table content using semantic row selectors
+  const rows = table.getByRole('row')
+
+  // Ensure first data row has content using semantic cell selectors
+  const firstRow = rows.first()
+  await expect(firstRow).toBeVisible({ timeout })
+  await expect(firstRow).toBeAttached({ timeout })
+
+  const firstCell = firstRow.getByRole('cell').first()
+  await expect(firstCell).toBeVisible({ timeout })
+  await expect(firstCell).not.toBeEmpty({ timeout })
+
+  // Wait for network activity to settle
+  await page.waitForLoadState('networkidle', { timeout })
+
+  // Final semantic check: ensure table is not marked as busy
+  await expect(table).not.toHaveAttribute('aria-busy', 'true', { timeout })
+}
+
+/**
+ * Safe table row interaction using semantic selectors - simplified version
+ */
+export async function rightClickElementTableRow(table: Locator, page: Page, rowIndex: number = 0) {
+  await waitForElementTableReady(table, page)
+
+  // Use semantic row selector
+  const tableRow = table.getByRole('row').nth(rowIndex)
+
+  // Ensure row is ready for interaction using semantic checks
+  await expect(tableRow).toBeVisible()
+  await expect(tableRow).toBeAttached()
+
+  // Ensure row has actual content using semantic cell selector
+  await expect(tableRow.getByRole('cell').first()).not.toBeEmpty()
+
+  // Simple right click - the waitForElementTableReady already ensures it's clickable
+  await tableRow.click({ button: 'right' })
+}
+
+/**
+ * Safe table cell click using semantic selectors - simplified version
+ */
+export async function clickElementTableCell(
+  table: Locator,
+  page: Page,
+  rowIndex: number = 1,
+  cellIndex: number = 1,
+  clickOptions: { button?: 'left' | 'right' | 'middle' } = {}
+) {
+  await waitForElementTableReady(table, page)
+
+  // Use semantic selectors for row and cell
+  const row = table.getByRole('row').nth(rowIndex)
+  const cell = row.getByRole('cell').nth(cellIndex)
+
+  // Ensure cell is ready for interaction using semantic checks
+  await expect(cell).toBeVisible()
+  await expect(cell).toBeAttached()
+
+  // Simple click - the waitForElementTableReady already ensures it's clickable
+  await cell.click(clickOptions)
 }

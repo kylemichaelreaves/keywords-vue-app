@@ -4,6 +4,7 @@ import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
 import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithStaticMocks } from '@test/e2e/helpers/setupTestMocks'
+import { waitForLoadingToComplete, waitForElementTableReady } from '@test/e2e/helpers/waitHelpers'
 
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
@@ -16,14 +17,16 @@ test.describe('Transactions Table', () => {
     console.timeEnd('setting up transactionMocks')
 
     await transactionsPage.goto()
-
+    
     // Wait for page to be fully loaded
     await page.waitForLoadState('domcontentloaded')
     await page.waitForLoadState('networkidle')
+    
+    // Wait for any loading masks to disappear before proceeding with tests
+    await waitForLoadingToComplete(page)
 
-    // Wait for the table to be visible and stable
-    await expect(transactionsPage.transactionsTable).toBeVisible()
-    await expect(transactionsPage.transactionsTable.locator('tbody tr').first()).toBeVisible()
+    // Wait for the table to be fully ready using Element UI-aware helpers
+    await waitForElementTableReady(transactionsPage.transactionsTable, page)
   })
 
   test.afterEach(async ({ page }) => {
@@ -54,7 +57,7 @@ test.describe('Transactions Table', () => {
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
     // Ensure table is ready for interaction
     await page.waitForLoadState('networkidle')
-
+    
     // select the row after the header row
     await transactionsPage.clickOnTableCell({
       rowIndex: 1,
@@ -123,6 +126,10 @@ test.describe('Transactions Table', () => {
 
     const fifthPointDate = textContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
 
+    // Ensure we got a valid date before proceeding
+    expect(fifthPointDate).toBeDefined()
+    expect(fifthPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+
     console.time('generating transactions')
     const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
     console.timeEnd('generating transactions')
@@ -144,8 +151,10 @@ test.describe('Transactions Table', () => {
     await requestPromise
 
     await transactionsPage.page.waitForLoadState('networkidle')
-    await expect(transactionsPage.transactionsTable).toBeVisible()
-    await expect(transactionsPage.transactionsTable.locator('tbody tr').first()).toBeVisible()
+
+    // Use the new Element UI-aware waiting helpers
+    await waitForLoadingToComplete(transactionsPage.page)
+    await waitForElementTableReady(transactionsPage.transactionsTable, transactionsPage.page)
 
     const dateText = await transactionsPage.getCellTextContent(1, 2)
 

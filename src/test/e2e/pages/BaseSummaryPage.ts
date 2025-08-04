@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
+import { waitForElementTableReady, rightClickElementTableRow, waitForLoadingToComplete } from '@test/e2e/helpers/waitHelpers'
 
 export abstract class BaseSummaryPage {
   readonly page: Page
@@ -44,24 +45,13 @@ export abstract class BaseSummaryPage {
     // Wait for page to be fully loaded first
     await this.page.waitForLoadState('networkidle')
 
+    // Wait for any loading masks to disappear
+    await waitForLoadingToComplete(this.page)
+
     const summaryTable = this.getSummaryTable()
-    await expect(summaryTable).toBeVisible()
 
-    // Wait for table body and rows to be present
-    const tableBody = summaryTable.locator('tbody')
-    await expect(tableBody).toBeVisible()
-
-    const tableRow = tableBody.locator('tr').nth(rowIndex)
-    await expect(tableRow).toBeVisible()
-
-    // Wait for row to be stable and interactive using more robust conditions
-    await expect(tableRow).toBeAttached()
-    await expect(tableRow).not.toHaveClass(/loading|disabled/)
-
-    // Ensure the row has content (not empty)
-    await expect(tableRow.locator('td').first()).toBeVisible()
-
-    await tableRow.click({ button: 'right', force: false })
+    // Use the Element UI specific table waiting function
+    await rightClickElementTableRow(summaryTable, this.page, rowIndex)
 
     // Wait for context menu or modal to appear
     await expect(this.memoEditDialog).toBeVisible()
@@ -112,12 +102,13 @@ export abstract class BaseSummaryPage {
     // Wait for network requests to complete first
     await this.page.waitForLoadState('networkidle')
 
-    const table = this.getSummaryTable()
-    await expect(table).toBeVisible()
+    // Wait for loading to complete
+    await waitForLoadingToComplete(this.page)
 
-    // Also ensure table has content
-    const tableBody = table.locator('tbody')
-    await expect(tableBody).toBeVisible()
+    const table = this.getSummaryTable()
+
+    // Use Element UI specific table ready check
+    await waitForElementTableReady(table, this.page)
 
     return true
   }

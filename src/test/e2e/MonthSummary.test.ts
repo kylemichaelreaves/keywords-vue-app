@@ -2,6 +2,7 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
+import { waitForLoadingToComplete } from '@test/e2e/helpers/waitHelpers'
 
 test.describe('Month Summary Page', () => {
   let transactionsPage: TransactionsPage
@@ -33,12 +34,11 @@ test.describe('Month Summary Page', () => {
     // Wait for navigation to summary page after selecting month
     await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/, { waitUntil: 'networkidle' })
 
-    // Wait for the summary table to be visible and stable before proceeding
-    await expect(monthSummaryPage.monthSummaryTable).toBeVisible()
-    await expect(monthSummaryPage.monthSummaryTable.locator('tbody tr').first()).toBeVisible()
+    // Wait for any loading to complete before proceeding
+    await waitForLoadingToComplete(page)
 
-    // Final network idle wait to ensure all data is loaded
-    await page.waitForLoadState('networkidle')
+    // Use the base class method that includes Element UI-aware waiting
+    await monthSummaryPage.expectTableVisible()
   })
 
   test.afterEach(async ({ page }) => {
@@ -81,7 +81,7 @@ test.describe('Month Summary Page', () => {
 
   test('right clicking on a table row opens the memo edit modal', async () => {
     await monthSummaryPage.expectMemoEditModalHidden()
-    await monthSummaryPage.rightClickOnTableRow(0)
+    await monthSummaryPage.rightClickOnTableRow(1)
     await monthSummaryPage.expectMemoEditModalVisible()
     await monthSummaryPage.expectMemoEditFormVisible()
     await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')

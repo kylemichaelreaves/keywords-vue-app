@@ -25,10 +25,10 @@ test.describe('Week Summary Table', () => {
 
     // click on week select
     await transactionsPage.weekSelect.click()
-
+    
     // wait for the week select options to be visible
     await transactionsPage.page.getByRole('option').first().waitFor({ state: 'visible' })
-
+    
     // get the text content of the first option
     const firstWeekText = await transactionsPage.page.getByRole('option').first().textContent() ?? ''
     const firstOption = transactionsPage.page.getByRole('option', { name: firstWeekText }).first()
@@ -42,14 +42,14 @@ test.describe('Week Summary Table', () => {
 
     // Wait for the summary table to be visible and stable
     await expect(weekSummaryPage.weekSummaryTable).toBeVisible()
-
+    
     // Wait for table content to be loaded
     const tableBody = weekSummaryPage.weekSummaryTable.locator('tbody')
     await expect(tableBody).toBeVisible()
-
+    
     // Ensure at least one row is present before continuing
     await expect(tableBody.locator('tr').first()).toBeVisible()
-
+    
     // Final network idle wait to ensure all data is loaded
     await page.waitForLoadState('networkidle')
   })
@@ -87,7 +87,7 @@ test.describe('Week Summary Table', () => {
     await weekSummaryPage.expectMemoEditModalHidden()
 
     // Right click opens modal with correct content
-    await weekSummaryPage.rightClickOnTableRow(0)
+    await weekSummaryPage.rightClickOnTableRow(1)
     await weekSummaryPage.expectMemoEditModalVisible()
     await weekSummaryPage.expectMemoEditFormTitle('Edit Memo:')
     await weekSummaryPage.expectMemoEditFormVisible()

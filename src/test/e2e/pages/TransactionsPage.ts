@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
+import { clickElementTableCell } from '@test/e2e/helpers/waitHelpers'
 
 export class TransactionsPage {
   readonly transactionsTable: Locator
@@ -183,9 +184,15 @@ export class TransactionsPage {
     clickOptions?: { button?: 'left' | 'right' | 'middle' }
   } = {}) {
     const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
-    const row = this.transactionsTable.getByRole('row').nth(rowIndex)
-    const cell = row.getByRole('cell').nth(cellIndex)
-    await cell.click(clickOptions)
+
+    // Use the Element UI-aware helper function instead of direct click
+    await clickElementTableCell(
+      this.transactionsTable,
+      this.page,
+      rowIndex,
+      cellIndex,
+      clickOptions
+    )
   }
 
   async expectTransactionEditFormElementsToBeVisible() {
