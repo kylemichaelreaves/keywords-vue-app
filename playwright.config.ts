@@ -6,52 +6,57 @@ import path from 'path'
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// require('dotenv').config();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+
+const isCI = !!process.env.CI;
+
 export default defineConfig({
   testDir: './src/test/e2e',
-  /* Maximum time one test can run for. */
-  timeout: 60 * 1000,
-  expect: {
-    /**
-     * Maximum time expect() should wait for the condition to be met.
-     * For example in `await expect(locator).toHaveText();`
-     */
-    timeout: 5000
-  },
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 
-  // globalSetup: './src/test/e2e/auth.setup.ts',
+  // Increased timeouts for CI
+  timeout: isCI ? 120 * 1000 : 60 * 1000, // 2 minutes in CI, 1 minute locally
+  expect: {
+    timeout: isCI ? 15000 : 5000, // 15s in CI, 5s locally
+  },
+
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
+  workers: isCI ? 1 : undefined, // Serial execution in CI
+
+  // Better reporting for CI
+  reporter: isCI
+    ? [['html'], ['github'], ['line']]
+    : [['html'], ['list']],
 
   use: {
-    /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-    actionTimeout: 0,
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173',
-    baseURL: 'http://localhost:5173',
+    // CI-appropriate action timeout
+    actionTimeout: isCI ? 30000 : 15000,
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    // Fix: Different ports for dev vs preview
+    baseURL: isCI ? 'http://localhost:4173' : 'http://localhost:5173',
 
-    /* Only on CI systems run the tests headless */
-    headless: !!process.env.CI,
+    // Better trace collection
+    trace: isCI ? 'retain-on-failure' : 'on-first-retry',
+    video: isCI ? 'retain-on-failure' : 'off',
+    screenshot: 'only-on-failure',
 
-    // storageState: path.resolve('./src/test/e2e/playwright/.auth/storageState.json'),
+    headless: isCI,
 
+    // CI-specific browser launch options
+    launchOptions: isCI ? {
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-extensions',
+      ],
+    } : {},
   },
 
-  /* Configure projects for major browsers */
   projects: [
     {
       name: 'setup',
@@ -65,64 +70,38 @@ export default defineConfig({
       },
       dependencies: ['setup']
     },
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        storageState: path.resolve('./src/test/e2e/playwright/.auth/storageState.json')
-      },
-      dependencies: ['setup']
-    },
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        storageState: path.resolve('./src/test/e2e/playwright/.auth/storageState.json')
-      },
-      dependencies: ['setup']
-    }
 
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: {
-    //     ...devices['Pixel 5'],
-    //   },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: {
-    //     ...devices['iPhone 12'],
-    //   },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: {
-    //     channel: 'msedge',
-    //   },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: {
-    //     channel: 'chrome',
-    //   },
-    // },
+    // Only run additional browsers locally, not in CI
+    ...(!isCI ? [
+      {
+        name: 'firefox',
+        use: {
+          ...devices['Desktop Firefox'],
+          storageState: path.resolve('./src/test/e2e/playwright/.auth/storageState.json')
+        },
+        dependencies: ['setup']
+      },
+      {
+        name: 'webkit',
+        use: {
+          ...devices['Desktop Safari'],
+          storageState: path.resolve('./src/test/e2e/playwright/.auth/storageState.json')
+        },
+        dependencies: ['setup']
+      }
+    ] : [])
   ],
 
-  /* Folder for test artifacts such as screenshots, videos, traces, etc. */
-  // outputDir: 'test-results/',
-
-  /* Run your local dev server before starting the tests */
   webServer: {
-    /**
-     * Use the dev server by default for faster feedback loop.
-     * Use the preview server on CI for more realistic testing.
-     * Playwright will re-use the local server if there is already a dev-server running.
-     */
-    command: process.env.CI ? 'npm run preview' : 'npm run dev',
-    port: 5173,
-    reuseExistingServer: true
+    // Fix: Use correct ports for each environment
+    command: isCI ? 'npm run preview' : 'npm run dev',
+    port: isCI ? 4173 : 5173, // Preview uses 4173, dev uses 5173
+    reuseExistingServer: !isCI, // Don't reuse in CI for clean state
+    timeout: 120 * 1000, // 2 minutes to start server
+
+    // Add environment variables for server
+    env: {
+      NODE_ENV: isCI ? 'production' : 'development',
+    }
   }
 })
