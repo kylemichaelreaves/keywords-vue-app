@@ -11,7 +11,9 @@ test.describe('Transactions Table', () => {
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
 
+    console.time('setting up transactionMocks')
     await setupTransactionsTableWithStaticMocks(page, staticTransactions, staticDailyIntervals)
+    console.timeEnd('finished setting up transactionMocks')
 
     await transactionsPage.goto()
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
@@ -105,7 +107,9 @@ test.describe('Transactions Table', () => {
 
     const fifthPointDate = textContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
 
+    console.time('generating transactions')
     const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
+    console.timeEnd('finished generating transactions')
 
     await transactionsPage.page.route(`**/transactions?limit=100&offset=0&timeFrame=day&date=${fifthPointDate}T00:00:00.000Z`, route => {
       route.fulfill({
