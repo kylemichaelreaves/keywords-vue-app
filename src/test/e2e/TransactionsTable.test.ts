@@ -17,6 +17,13 @@ test.describe('Transactions Table', () => {
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
   })
 
+  test.afterEach(async ({ page }) => {
+    await page.evaluate(() => {
+      localStorage.clear()
+      sessionStorage.clear()
+    })
+  })
+
 
   test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({ page }) => {
     await page.goto('/budget-visualizer')

@@ -14,7 +14,17 @@ test.describe('Week Summary Table', () => {
 
     await setupWeekSummaryMocks(page)
 
+    // Clear any existing state first
+    await page.evaluate(() => {
+      localStorage.clear()
+      sessionStorage.clear()
+    })
+
     await transactionsPage.goto()
+
+    // Wait for page to be fully loaded before interacting
+    await page.waitForLoadState('domcontentloaded')
+
     // click on week select
     await transactionsPage.weekSelect.click()
     // wait for the week select options to be visible
@@ -30,11 +40,20 @@ test.describe('Week Summary Table', () => {
     // Wait for navigation to summary page after selecting week
     await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/)
 
-    // Wait for the page to fully load after navigation
+    // Wait for network requests to complete
     await page.waitForLoadState('networkidle')
 
-    // Wait for the summary table to be visible before proceeding
-    await weekSummaryPage.weekSummaryTable.waitFor({ state: 'visible' })
+    // Wait for the summary table to be visible and stable
+    await expect(weekSummaryPage.weekSummaryTable).toBeVisible()
+    await expect(weekSummaryPage.weekSummaryTable.locator('tbody tr').first()).toBeVisible()
+  })
+
+  test.afterEach(async ({ page }) => {
+    // Clean up after each test
+    await page.evaluate(() => {
+      localStorage.clear()
+      sessionStorage.clear()
+    })
   })
 
   test('should display the week summary table', async () => {
@@ -48,6 +67,7 @@ test.describe('Week Summary Table', () => {
 
   test('should reset the week when reset button is clicked', async () => {
     await weekSummaryPage.clickResetButton()
+    await weekSummaryPage.page.waitForURL('/budget-visualizer/transactions')
     const weekSelectValue = await transactionsPage.getWeekSelectValue()
     expect(weekSelectValue).toBe('')
   })

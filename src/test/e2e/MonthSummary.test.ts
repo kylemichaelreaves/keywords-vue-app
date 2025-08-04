@@ -22,15 +22,20 @@ test.describe('Month Summary Page', () => {
 
     selectedMonth = firstMonth
     await firstOption.click()
-
     // Wait for navigation to summary page after selecting month
     await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/)
-
-    // Wait for the page to fully load after navigation
-    await page.waitForLoadState('networkidle')
-
     // Wait for the summary table to be visible before proceeding
     await monthSummaryPage.monthSummaryTable.waitFor({ state: 'visible' })
+    // Wait for the page to fully load after navigation
+    await page.waitForLoadState('networkidle')
+  })
+
+  test.afterEach(async ({ page }) => {
+    // Clean up after each test
+    await page.evaluate(() => {
+      localStorage.clear()
+      sessionStorage.clear()
+    })
   })
 
   test('should display the month title', async () => {
@@ -57,9 +62,7 @@ test.describe('Month Summary Page', () => {
 
   test('should handle reset button click', async () => {
     await monthSummaryPage.clickResetButton()
-
     await monthSummaryPage.page.waitForURL('/budget-visualizer/transactions')
-
     await expect(transactionsPage.page).toHaveURL(/\/budget-visualizer\/transactions/)
     // the monthSelect should be reset when we're back on the TransactionsPage
     const monthSelect = await transactionsPage.getMonthSelectValue()

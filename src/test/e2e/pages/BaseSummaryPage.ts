@@ -43,10 +43,18 @@ export abstract class BaseSummaryPage {
   async rightClickOnTableRow(rowIndex: number = 0) {
     const tableRow = this.getSummaryTable().locator('tbody tr').nth(rowIndex)
     await expect(tableRow).toBeVisible()
+
+    // Wait for table to be stable and interactive instead of hardcoded timeout
+    await expect(tableRow).toBeEnabled()
+
     await tableRow.click({ button: 'right' })
+
+    // Wait for context menu or modal to appear instead of hardcoded timeout
+    await expect(this.memoEditDialog).toBeVisible()
   }
 
   async expectMemoEditModalVisible() {
+    // Use Playwright's built-in retry logic instead of hardcoded timeout
     await expect(this.memoEditDialog).toBeVisible()
   }
 
@@ -82,6 +90,7 @@ export abstract class BaseSummaryPage {
   // Common reset functionality
   async clickResetButton() {
     await this.resetButton.click()
+    await this.page.waitForURL(/\/budget-visualizer\/transactions/)
   }
 
   // Common table visibility check
