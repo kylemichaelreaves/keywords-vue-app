@@ -21,11 +21,14 @@ test.describe('Week Summary Table', () => {
 
     // Wait for page to be fully loaded before interacting
     await page.waitForLoadState('domcontentloaded')
+    await page.waitForLoadState('networkidle')
 
     // click on week select
     await transactionsPage.weekSelect.click()
+
     // wait for the week select options to be visible
     await transactionsPage.page.getByRole('option').first().waitFor({ state: 'visible' })
+
     // get the text content of the first option
     const firstWeekText = await transactionsPage.page.getByRole('option').first().textContent() ?? ''
     const firstOption = transactionsPage.page.getByRole('option', { name: firstWeekText }).first()
@@ -35,14 +38,20 @@ test.describe('Week Summary Table', () => {
     await firstOption.click()
 
     // Wait for navigation to summary page after selecting week
-    await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'domcontentloaded' })
-
-    // Wait for network requests to complete
-    await page.waitForLoadState('networkidle')
+    await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'networkidle' })
 
     // Wait for the summary table to be visible and stable
     await expect(weekSummaryPage.weekSummaryTable).toBeVisible()
-    await expect(weekSummaryPage.weekSummaryTable.locator('tbody tr').first()).toBeVisible()
+
+    // Wait for table content to be loaded
+    const tableBody = weekSummaryPage.weekSummaryTable.locator('tbody')
+    await expect(tableBody).toBeVisible()
+
+    // Ensure at least one row is present before continuing
+    await expect(tableBody.locator('tr').first()).toBeVisible()
+
+    // Final network idle wait to ensure all data is loaded
+    await page.waitForLoadState('networkidle')
   })
 
   test.afterEach(async ({ page }) => {

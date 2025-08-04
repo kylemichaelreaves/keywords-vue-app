@@ -17,18 +17,27 @@ test.describe('Month Summary Page', () => {
     console.timeEnd('setting up monthSummaryMocks')
 
     await transactionsPage.goto()
+    // Wait for page to be fully loaded before interactions
+    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     await transactionsPage.monthSelect.click()
+    // Wait for options to be visible before trying to get text
+    await page.getByRole('option').first().waitFor({ state: 'visible' })
+
     const firstMonth = await transactionsPage.page.getByRole('option').first().textContent() ?? ''
     const firstOption = transactionsPage.page.getByRole('option', { name: firstMonth }).first()
 
     selectedMonth = firstMonth
     await firstOption.click()
     // Wait for navigation to summary page after selecting month
-    await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/)
-    // Wait for the summary table to be visible before proceeding
-    await monthSummaryPage.monthSummaryTable.waitFor({ state: 'visible' })
-    // Wait for the page to fully load after navigation
+    await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/, { waitUntil: 'networkidle' })
+
+    // Wait for the summary table to be visible and stable before proceeding
+    await expect(monthSummaryPage.monthSummaryTable).toBeVisible()
+    await expect(monthSummaryPage.monthSummaryTable.locator('tbody tr').first()).toBeVisible()
+
+    // Final network idle wait to ensure all data is loaded
     await page.waitForLoadState('networkidle')
   })
 
@@ -63,7 +72,7 @@ test.describe('Month Summary Page', () => {
 
   test('should handle reset button click', async () => {
     await monthSummaryPage.clickResetButton()
-    await monthSummaryPage.page.waitForURL('/budget-visualizer/transactions')
+    await monthSummaryPage.page.waitForURL('/budget-visualizer/transactions', { waitUntil: 'networkidle' })
     await expect(transactionsPage.page).toHaveURL(/\/budget-visualizer\/transactions/)
     // the monthSelect should be reset when we're back on the TransactionsPage
     const monthSelect = await transactionsPage.getMonthSelectValue()

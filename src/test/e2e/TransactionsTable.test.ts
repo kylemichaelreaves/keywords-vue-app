@@ -16,7 +16,14 @@ test.describe('Transactions Table', () => {
     console.timeEnd('setting up transactionMocks')
 
     await transactionsPage.goto()
-    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
+
+    // Wait for page to be fully loaded
+    await page.waitForLoadState('domcontentloaded')
+    await page.waitForLoadState('networkidle')
+
+    // Wait for the table to be visible and stable
+    await expect(transactionsPage.transactionsTable).toBeVisible()
+    await expect(transactionsPage.transactionsTable.locator('tbody tr').first()).toBeVisible()
   })
 
   test.afterEach(async ({ page }) => {
@@ -44,7 +51,10 @@ test.describe('Transactions Table', () => {
     await expect(transactionsPage.transactionsTablePagination).toBeVisible()
   })
 
-  test('right clicking on a cell in the TransactionsTable opens the context menu', async () => {
+  test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
+    // Ensure table is ready for interaction
+    await page.waitForLoadState('networkidle')
+
     // select the row after the header row
     await transactionsPage.clickOnTableCell({
       rowIndex: 1,
@@ -78,10 +88,14 @@ test.describe('Transactions Table', () => {
     await expect(editTransactionModal).not.toBeVisible()
   })
 
-  test('should display the tooltip of the point on the linechart when hovering over it', async () => {
+  test('should display the tooltip of the point on the linechart when hovering over it', async ({ page }) => {
+    // Wait for chart to be fully loaded
+    await page.waitForLoadState('networkidle')
+    await expect(transactionsPage.intervalLineChart).toBeVisible()
 
     // hover over the first chart-dot on the line chart
     const tenthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-10')
+    await expect(tenthPoint).toBeVisible()
     await tenthPoint.hover()
 
     const toolTip = transactionsPage.intervalLineChartTooltip
@@ -90,13 +104,15 @@ test.describe('Transactions Table', () => {
     // check that the tooltip has the correct text
     const tooltipText = await toolTip.textContent()
     expect(tooltipText).toBeDefined()
-
   })
 
-  test('clicking on a point in the line chart loads the transactions for that date', async () => {
-    await transactionsPage.intervalLineChart.waitFor({ state: 'visible' })
+  test('clicking on a point in the line chart loads the transactions for that date', async ({ page }) => {
+    // Wait for chart to be fully loaded
+    await page.waitForLoadState('networkidle')
+    await expect(transactionsPage.intervalLineChart).toBeVisible()
 
     const fifthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-5')
+    await expect(fifthPoint).toBeVisible()
 
     // hover over the fifth chart-dot on the line chart
     await fifthPoint.hover()
@@ -128,7 +144,8 @@ test.describe('Transactions Table', () => {
     await requestPromise
 
     await transactionsPage.page.waitForLoadState('networkidle')
-    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
+    await expect(transactionsPage.transactionsTable).toBeVisible()
+    await expect(transactionsPage.transactionsTable.locator('tbody tr').first()).toBeVisible()
 
     const dateText = await transactionsPage.getCellTextContent(1, 2)
 

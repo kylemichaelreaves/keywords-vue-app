@@ -41,15 +41,29 @@ export abstract class BaseSummaryPage {
 
   // Common memo edit modal functionality
   async rightClickOnTableRow(rowIndex: number = 0) {
-    const tableRow = this.getSummaryTable().locator('tbody tr').nth(rowIndex)
+    // Wait for page to be fully loaded first
+    await this.page.waitForLoadState('networkidle')
+
+    const summaryTable = this.getSummaryTable()
+    await expect(summaryTable).toBeVisible()
+
+    // Wait for table body and rows to be present
+    const tableBody = summaryTable.locator('tbody')
+    await expect(tableBody).toBeVisible()
+
+    const tableRow = tableBody.locator('tr').nth(rowIndex)
     await expect(tableRow).toBeVisible()
 
-    // Wait for table to be stable and interactive instead of hardcoded timeout
-    await expect(tableRow).toBeEnabled()
+    // Wait for row to be stable and interactive using more robust conditions
+    await expect(tableRow).toBeAttached()
+    await expect(tableRow).not.toHaveClass(/loading|disabled/)
 
-    await tableRow.click({ button: 'right' })
+    // Ensure the row has content (not empty)
+    await expect(tableRow.locator('td').first()).toBeVisible()
 
-    // Wait for context menu or modal to appear instead of hardcoded timeout
+    await tableRow.click({ button: 'right', force: false })
+
+    // Wait for context menu or modal to appear
     await expect(this.memoEditDialog).toBeVisible()
   }
 
@@ -93,8 +107,18 @@ export abstract class BaseSummaryPage {
     await this.page.waitForURL(/\/budget-visualizer\/transactions/)
   }
 
-  // Common table visibility check
+  // Common table visibility check with better waits
   async expectTableVisible() {
-    return await expect(this.getSummaryTable()).toBeVisible()
+    // Wait for network requests to complete first
+    await this.page.waitForLoadState('networkidle')
+
+    const table = this.getSummaryTable()
+    await expect(table).toBeVisible()
+
+    // Also ensure table has content
+    const tableBody = table.locator('tbody')
+    await expect(tableBody).toBeVisible()
+
+    return true
   }
 }
