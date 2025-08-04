@@ -31,7 +31,6 @@ test.describe('Month Summary Page', () => {
   })
 
   test.afterEach(async ({ page }) => {
-    // Clean up after each test
     await page.evaluate(() => {
       localStorage.clear()
       sessionStorage.clear()

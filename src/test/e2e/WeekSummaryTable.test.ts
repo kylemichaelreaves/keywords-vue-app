@@ -15,11 +15,6 @@ test.describe('Week Summary Table', () => {
     await setupWeekSummaryMocks(page)
 
     // Clear any existing state first
-    await page.evaluate(() => {
-      localStorage.clear()
-      sessionStorage.clear()
-    })
-
     await transactionsPage.goto()
 
     // Wait for page to be fully loaded before interacting

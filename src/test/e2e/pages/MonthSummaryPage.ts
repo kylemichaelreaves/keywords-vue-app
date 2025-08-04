@@ -15,7 +15,7 @@ export class MonthSummaryPage extends BaseSummaryPage {
     this.monthSummaryTable = page.getByTestId('month-summary-transactions-table')
     this.transactionsCount = page.getByTestId('transactions-count').locator('div')
     this.transactionsAmount = page.getByTestId('sum-amount-debit').locator('div')
-    this.monthTitle = page.getByTestId('month-summary-header').locator('h2')
+    this.monthTitle = page.locator('h2')
   }
 
   // Implement abstract methods from base class
