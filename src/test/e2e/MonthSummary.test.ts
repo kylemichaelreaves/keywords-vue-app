@@ -66,15 +66,13 @@ test.describe('Month Summary Page', () => {
     expect(monthSelect).toBe('')
   })
 
-  test.describe('Memo Edit Context Menu', () => {
-    test('right clicking on a table row opens the memo edit modal', async () => {
-      await monthSummaryPage.expectMemoEditModalHidden()
-      await monthSummaryPage.rightClickOnTableRow(0)
-      await monthSummaryPage.expectMemoEditModalVisible()
-      await monthSummaryPage.expectMemoEditFormVisible()
-      await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
-      await monthSummaryPage.closeMemoEditModal()
-      await monthSummaryPage.expectMemoEditModalHidden()
-    })
+  test('right clicking on a table row opens the memo edit modal', async () => {
+    await monthSummaryPage.expectMemoEditModalHidden()
+    await monthSummaryPage.rightClickOnTableRow(0)
+    await monthSummaryPage.expectMemoEditModalVisible()
+    await monthSummaryPage.expectMemoEditFormVisible()
+    await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
+    await monthSummaryPage.closeMemoEditModal()
+    await monthSummaryPage.expectMemoEditModalHidden()
   })
 })

@@ -56,20 +56,18 @@ test.describe('Week Summary Table', () => {
     await weekSummaryPage.page.getByRole('button', { name: 'Next Week' }).isDisabled()
   })
 
-  test.describe('Memo Edit Context Menu', () => {
-    test('memo edit modal workflow: open, display content, and close', async () => {
-      // Initially hidden
-      await weekSummaryPage.expectMemoEditModalHidden()
+  test('memo edit modal workflow: open, display content, and close', async () => {
+    // Initially hidden
+    await weekSummaryPage.expectMemoEditModalHidden()
 
-      // Right click opens modal with correct content
-      await weekSummaryPage.rightClickOnTableRow(0)
-      await weekSummaryPage.expectMemoEditModalVisible()
-      await weekSummaryPage.expectMemoEditFormTitle('Edit Memo:')
-      await weekSummaryPage.expectMemoEditFormVisible()
+    // Right click opens modal with correct content
+    await weekSummaryPage.rightClickOnTableRow(0)
+    await weekSummaryPage.expectMemoEditModalVisible()
+    await weekSummaryPage.expectMemoEditFormTitle('Edit Memo:')
+    await weekSummaryPage.expectMemoEditFormVisible()
 
-      // Closing hides modal
-      await weekSummaryPage.closeMemoEditModal()
-      await weekSummaryPage.expectMemoEditModalHidden()
-    })
+    // Closing hides modal
+    await weekSummaryPage.closeMemoEditModal()
+    await weekSummaryPage.expectMemoEditModalHidden()
   })
 })
