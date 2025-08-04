@@ -14,7 +14,7 @@ test.describe('Week Summary Table', () => {
 
     console.time('setting up weekSummaryMocks')
     await setupWeekSummaryMocks(page)
-    console.timeEnd('finished setting up weekSummaryMocks')
+    console.timeEnd('setting up weekSummaryMocks')
 
     // Clear any existing state first
     await transactionsPage.goto()

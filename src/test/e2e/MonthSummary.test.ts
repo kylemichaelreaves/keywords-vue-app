@@ -14,7 +14,7 @@ test.describe('Month Summary Page', () => {
 
     console.time('setting up monthSummaryMocks')
     await setupMonthSummaryMocks(page)
-    console.timeEnd('finished setting up monthSummaryMocks')
+    console.timeEnd('setting up monthSummaryMocks')
 
     await transactionsPage.goto()
 
