@@ -49,7 +49,7 @@ const statisticValue = computed(() => {
 })
 
 
-watch(() => store.selectedMonth, (newValue) => {
+watch(() => selectedMonth, (newValue) => {
   if (newValue) {
     refetch()
   }

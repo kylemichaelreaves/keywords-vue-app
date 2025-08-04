@@ -5,7 +5,7 @@ export async function fetchSumAmountDebitByDate(timeFrame: string, date: string,
     .get(`/transactions`, {
       params: {
         timeFrame,
-        date: date,
+        date,
         totalAmountDebit
       }
     })

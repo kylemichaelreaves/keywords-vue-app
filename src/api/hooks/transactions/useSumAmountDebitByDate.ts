@@ -9,6 +9,7 @@ export default function useSumAmountDebitByDate(timeFrame: string, date: string)
     queryFn: () => {
       return fetchSumAmountDebitByDate(timeFrame, date)
     },
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    enabled: !!date && date.trim() !== ''
   })
 }

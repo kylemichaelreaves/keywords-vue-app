@@ -23,6 +23,7 @@ import AlertComponent from '@components/shared/AlertComponent.vue'
 
 
 const store = useTransactionsStore()
+const selectedWeek = computed(() => store.getSelectedWeek)
 
 const {
   data,
@@ -32,13 +33,13 @@ const {
   isError,
   error,
   refetch
-} = useSumAmountDebitByDate('week', store.selectedWeek)
+} = useSumAmountDebitByDate('week', selectedWeek.value)
 
 const weekTotalAmountDebit = computed(() => {
   return data.value ? data.value[0].total_amount_debit : 0
 })
 
-watch(() => store.selectedWeek, (newValue) => {
+watch(() => selectedWeek, (newValue) => {
   if (newValue) {
     refetch()
   }
