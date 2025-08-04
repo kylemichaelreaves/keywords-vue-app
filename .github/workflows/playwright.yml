@@ -9,6 +9,7 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
+      CI: true
       VITE_TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
       VITE_TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
     steps:
@@ -18,14 +19,27 @@ jobs:
           node-version: lts/*
       - name: Install dependencies
         run: npm ci
+      - name: Install wait-on globally
+        run: npm install -g wait-on
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Start Dev Server
-        run: npm run dev &
-      - name: Wait for Playwright Server
-        run: npx wait-on http://localhost:5173
+      - name: Build and Start Server
+        run: |
+          npm run build
+          npm run preview &
+          echo $! > .server.pid
+      - name: Wait for Server
+        run: npx wait-on http://localhost:5173 --timeout 60000 --interval 1000 --verbose
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --reporter=list --verbose
+        env:
+          DEBUG: pw:api
+      - name: Stop Server
+        if: always()
+        run: |
+          if [ -f .server.pid ]; then
+            kill $(cat .server.pid) || true
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -40,4 +54,3 @@ jobs:
           path: |
             **/test-results/**/*.zip
           retention-days: 30
-

@@ -35,7 +35,7 @@ test.describe('Week Summary Table', () => {
     await firstOption.click()
 
     // Wait for navigation to summary page after selecting week
-    await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/)
+    await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'domcontentloaded' })
 
     // Wait for network requests to complete
     await page.waitForLoadState('networkidle')
@@ -64,7 +64,7 @@ test.describe('Week Summary Table', () => {
 
   test('should reset the week when reset button is clicked', async () => {
     await weekSummaryPage.clickResetButton()
-    await weekSummaryPage.page.waitForURL('/budget-visualizer/transactions')
+    await weekSummaryPage.page.waitForURL('/budget-visualizer/transactions', { waitUntil: 'domcontentloaded' })
     const weekSelectValue = await transactionsPage.getWeekSelectValue()
     expect(weekSelectValue).toBe('')
   })
