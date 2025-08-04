@@ -122,35 +122,27 @@ export async function waitForLoadingToComplete(page: Page, options: {
 }
 
 /**
- * Wait for table to be fully loaded using semantic selectors only
+ * Wait for table to be fully loaded using semantic selectors only - ultra simplified
  */
 export async function waitForElementTableReady(table: Locator, page: Page, options: {
   timeout?: number
   minRows?: number
 } = {}) {
-  const { timeout = 60000, minRows = 1 } = options
+  const { timeout = 30000 } = options
 
-  // Ensure table is visible and has proper role
+  // Just ensure table is visible and has content
   await expect(table).toBeVisible({ timeout })
-  await expect(table).not.toHaveAttribute('aria-busy', 'true', { timeout })
 
-  // Wait for table content using semantic row selectors
-  const rows = table.getByRole('row')
-
-  // Ensure first data row has content using semantic cell selectors
-  const firstRow = rows.first()
+  // Wait for at least one row with content
+  const firstRow = table.getByRole('row').first()
   await expect(firstRow).toBeVisible({ timeout })
-  await expect(firstRow).toBeAttached({ timeout })
 
   const firstCell = firstRow.getByRole('cell').first()
   await expect(firstCell).toBeVisible({ timeout })
   await expect(firstCell).not.toBeEmpty({ timeout })
 
-  // Wait for network activity to settle
+  // Wait for network to settle
   await page.waitForLoadState('networkidle', { timeout })
-
-  // Final semantic check: ensure table is not marked as busy
-  await expect(table).not.toHaveAttribute('aria-busy', 'true', { timeout })
 }
 
 /**

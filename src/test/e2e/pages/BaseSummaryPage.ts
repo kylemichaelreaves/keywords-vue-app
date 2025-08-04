@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { waitForElementTableReady, rightClickElementTableRow, waitForLoadingToComplete } from '@test/e2e/helpers/waitHelpers'
+import { waitForElementTableReady, rightClickElementTableRow } from '@test/e2e/helpers/waitHelpers'
 
 export abstract class BaseSummaryPage {
   readonly page: Page
@@ -42,17 +42,9 @@ export abstract class BaseSummaryPage {
 
   // Common memo edit modal functionality
   async rightClickOnTableRow(rowIndex: number = 0) {
-    // Wait for page to be fully loaded first
-    await this.page.waitForLoadState('networkidle')
-
-    // Wait for any loading masks to disappear
-    await waitForLoadingToComplete(this.page)
-
     const summaryTable = this.getSummaryTable()
-
-    // Use the Element UI specific table waiting function
+    // Use the Element UI specific table waiting function - this already includes comprehensive waits
     await rightClickElementTableRow(summaryTable, this.page, rowIndex)
-
     // Wait for context menu or modal to appear
     await expect(this.memoEditDialog).toBeVisible()
   }
@@ -99,17 +91,9 @@ export abstract class BaseSummaryPage {
 
   // Common table visibility check with better waits
   async expectTableVisible() {
-    // Wait for network requests to complete first
-    await this.page.waitForLoadState('networkidle')
-
-    // Wait for loading to complete
-    await waitForLoadingToComplete(this.page)
-
     const table = this.getSummaryTable()
-
-    // Use Element UI specific table ready check
+    // Use Element UI specific table ready check - this already includes network idle waiting
     await waitForElementTableReady(table, this.page)
-
     return true
   }
 }

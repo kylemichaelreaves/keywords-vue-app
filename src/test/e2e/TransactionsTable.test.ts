@@ -18,14 +18,7 @@ test.describe('Transactions Table', () => {
 
     await transactionsPage.goto()
     
-    // Wait for page to be fully loaded
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForLoadState('networkidle')
-    
-    // Wait for any loading masks to disappear before proceeding with tests
-    await waitForLoadingToComplete(page)
-
-    // Wait for the table to be fully ready using Element UI-aware helpers
+    // Single comprehensive wait instead of multiple redundant waits
     await waitForElementTableReady(transactionsPage.transactionsTable, page)
   })
 
