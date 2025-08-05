@@ -4,6 +4,7 @@ import { WeekSummaryPage } from '@test/e2e/pages/WeekSummaryPage'
 import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import { debugTableLoadingState, waitForElementUILoadingToComplete, waitForPageReady } from '@test/e2e/helpers/waitHelpers.ts'
 import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
+import { setupMemoRouteInterceptor, MEMO_PRESETS } from '@test/e2e/helpers/memoRouteHelper'
 
 test.describe('Week Summary Table', () => {
   let transactionsPage: TransactionsPage
@@ -14,15 +15,20 @@ test.describe('Week Summary Table', () => {
     transactionsPage = new TransactionsPage(page)
     weekSummaryPage = new WeekSummaryPage(page)
 
+    console.time('setting up weekSummaryMocks')
+    await setupWeekSummaryMocks(page)
+    console.timeEnd('setting up weekSummaryMocks')
+
+    // DRY: Use reusable memo route helper
+    await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
 
     // Add route interceptor for budget category hierarchy sum request
     await page.route('**/transactions?budgetCategoryHierarchySum=true&timeFrame=week&date=*', async route => {
       const url = new URL(route.request().url())
       console.log('Intercepted budget category hierarchy request:', url.toString())
 
-      // Use the budget categories mock generator instead of hardcoded data
       const mockBudgetCategories = generateBudgetCategoryHierarchy({
-        includeChildren: false, // Only parent categories for summary
+        includeChildren: false,
         maxParentCategories: 5,
         sourceId: 1
       })
@@ -33,11 +39,6 @@ test.describe('Week Summary Table', () => {
         body: JSON.stringify(mockBudgetCategories)
       })
     })
-
-
-    console.time('setting up weekSummaryMocks')
-    await setupWeekSummaryMocks(page)
-    console.timeEnd('setting up weekSummaryMocks')
 
     // Use comprehensive page ready waiting
     await transactionsPage.goto()
@@ -84,14 +85,20 @@ test.describe('Week Summary Table', () => {
 
 
   test('memo edit modal workflow: open, display content, and close', async ({ page }) => {
+    // DRY: Use reusable memo route helper with specific preset and clear existing routes
+    await setupMemoRouteInterceptor(page, MEMO_PRESETS.weekly, true)
+
     await debugTableLoadingState(page, 'week-summary-table')
 
     // Initially hidden
     await weekSummaryPage.expectMemoEditModalHidden()
 
-    // wait for the week summary table to be ready
-    await weekSummaryPage.expectTableVisible()
+    // Wait for the week summary table to be ready with comprehensive loading checks
+    await weekSummaryPage.waitForSummaryTableReady()
+    await waitForElementUILoadingToComplete(page)
+
     await debugTableLoadingState(page, 'week-summary-table')
+
     // Right click opens modal with correct content
     await weekSummaryPage.rightClickOnTableRow(1)
     await weekSummaryPage.expectMemoEditModalVisible()

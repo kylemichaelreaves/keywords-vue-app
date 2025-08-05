@@ -136,12 +136,15 @@ test.describe('Transactions Table', () => {
     const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
     console.timeEnd('generating transactions')
 
-    // Single route handler for all transactions requests - eliminates duplication
+    // CRITICAL FIX: Unroute existing handlers first to prevent conflicts
+    await page.unroute('**/transactions**')
+
+    // Set up the route handler BEFORE clicking to ensure it catches the request
     await page.route('**/transactions**', async route => {
       const url = new URL(route.request().url())
       const params = url.searchParams
 
-      console.log('Intercepted transactions request:', {
+      console.log('Chart click interceptor - transactions request:', {
         limit: params.get('limit'),
         offset: params.get('offset'),
         timeFrame: params.get('timeFrame'),
@@ -152,40 +155,47 @@ test.describe('Transactions Table', () => {
       const dateParam = params.get('date')
       const timeFrame = params.get('timeFrame')
 
-      if (dateParam && dateParam.includes(fifthPointDate!) && timeFrame === 'day') {
-        // This is our chart click request for a specific date
+      // More robust date matching - check if the date parameter contains our target date
+      if (fifthPointDate && dateParam && dateParam.includes(fifthPointDate) && timeFrame === 'day') {
+        console.log(`Fulfilling chart click request for date: ${fifthPointDate}`)
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(fifthPointDateTransactions)
         })
-      } else if (timeFrame === 'year' && (!dateParam || dateParam === '')) {
-        // This is the initial page load request - use static transactions
+      } else {
+        // For any other request, use static transactions as fallback
+        console.log('Using static transactions as fallback')
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(staticTransactions)
         })
-      } else {
-        // Let other requests fall through to existing mocks
-        await route.continue()
       }
     })
 
-    const requestPromise = transactionsPage.page.waitForRequest(request =>
-      request.url().includes('transactions') && request.url().includes(`date=${fifthPointDate}`)
-    )
+    // Set up request promise to wait for the specific chart click request
+    const requestPromise = page.waitForRequest(request => {
+      const url = request.url()
+      return url.includes('transactions') &&
+             url.includes(`date=${fifthPointDate}`) &&
+             url.includes('timeFrame=day')
+    })
 
+    // Click the chart point
     await fifthPoint.click()
 
+    // Wait for the specific request we're expecting
     await requestPromise
 
-    await transactionsPage.page.waitForLoadState('networkidle')
+    // Wait for UI to update
+    await page.waitForLoadState('networkidle')
 
-    // Use the new Element UI-aware waiting helpers
-    await waitForLoadingToComplete(transactionsPage.page)
-    await waitForElementTableReady(transactionsPage.transactionsTable, transactionsPage.page)
+    // Use the Element UI-aware waiting helpers
+    await waitForLoadingToComplete(page)
+    await waitForElementTableReady(transactionsPage.transactionsTable, page)
 
+    // Verify the table shows the correct date
     const dateText = await transactionsPage.getCellTextContent(1, 2)
 
     expect(dateText).toBe(fifthPointDate)

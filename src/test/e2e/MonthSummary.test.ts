@@ -4,6 +4,7 @@ import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import { waitForElementUILoadingToComplete, waitForPageReady } from '@test/e2e/helpers/waitHelpers'
 import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
+import { setupMemoRouteInterceptor, MEMO_PRESETS } from '@test/e2e/helpers/memoRouteHelper'
 
 test.describe('Month Summary Page', () => {
   let transactionsPage: TransactionsPage
@@ -13,6 +14,13 @@ test.describe('Month Summary Page', () => {
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
     monthSummaryPage = new MonthSummaryPage(page)
+
+    console.time('setting up monthSummaryMocks')
+    await setupMonthSummaryMocks(page)
+    console.timeEnd('setting up monthSummaryMocks')
+
+    // DRY: Use reusable memo route helper
+    await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
 
     // Add route interceptor for budget category hierarchy sum request
     await page.route('**/transactions?budgetCategoryHierarchySum=true&timeFrame=month&date=*', async route => {
@@ -31,10 +39,6 @@ test.describe('Month Summary Page', () => {
         body: JSON.stringify(mockBudgetCategories)
       })
     })
-
-    console.time('setting up monthSummaryMocks')
-    await setupMonthSummaryMocks(page)
-    console.timeEnd('setting up monthSummaryMocks')
 
     // Use comprehensive page ready waiting
     await transactionsPage.goto()
@@ -93,7 +97,14 @@ test.describe('Month Summary Page', () => {
     expect(monthSelect).toBe('')
   })
 
-  test('right clicking on a table row opens the memo edit modal', async () => {
+  test('right clicking on a table row opens the memo edit modal', async ({ page }) => {
+    // DRY: Use reusable memo route helper with specific preset and clear existing routes
+    await setupMemoRouteInterceptor(page, MEMO_PRESETS.monthly, true)
+
+    // Wait for the month summary table to be ready with comprehensive loading checks
+    await monthSummaryPage.waitForSummaryTableReady()
+    await waitForElementUILoadingToComplete(page)
+
     await monthSummaryPage.expectMemoEditModalHidden()
     await monthSummaryPage.rightClickOnTableRow(1)
     await monthSummaryPage.expectMemoEditModalVisible()
