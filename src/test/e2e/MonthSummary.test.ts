@@ -2,15 +2,11 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
+import { waitForPageReady, waitForSpinnersToDisappear } from '@test/e2e/helpers/waitHelpers'
 import {
-  waitForElementUILoadingToComplete,
-  waitForPageReady,
-  waitForSpinnersToDisappear
-} from '@test/e2e/helpers/waitHelpers'
-import {
-  setupMemoRouteInterceptor,
+  MEMO_PRESETS,
   setupBudgetCategoryHierarchyInterceptor,
-  MEMO_PRESETS
+  setupMemoRouteInterceptor
 } from '@test/e2e/helpers/memoRouteHelper'
 
 test.describe('Month Summary Page', () => {
@@ -88,10 +84,12 @@ test.describe('Month Summary Page', () => {
 
     await monthSummaryPage.expectMemoEditModalHidden()
     await monthSummaryPage.rightClickOnTableRow(1)
+    await page.waitForLoadState('networkidle')
     await monthSummaryPage.expectMemoEditModalVisible()
     await monthSummaryPage.expectMemoEditFormVisible()
     await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
     await monthSummaryPage.closeMemoEditModal()
+    await page.waitForLoadState('networkidle')
     await monthSummaryPage.expectMemoEditModalHidden()
   })
 })

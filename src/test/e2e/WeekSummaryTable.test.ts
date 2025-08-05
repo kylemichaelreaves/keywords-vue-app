@@ -4,7 +4,6 @@ import { WeekSummaryPage } from '@test/e2e/pages/WeekSummaryPage'
 import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import {
   debugTableLoadingState,
-  waitForElementUILoadingToComplete,
   waitForPageReady,
   waitForSpinnersToDisappear
 } from '@test/e2e/helpers/waitHelpers.ts'

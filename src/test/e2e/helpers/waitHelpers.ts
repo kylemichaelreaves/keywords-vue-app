@@ -44,9 +44,9 @@ export async function waitForSpinnersToDisappear(page: Page, timeout: number = 1
         const maskHidden = masks.length === 0 || Array.from(masks).every(mask => {
           const style = window.getComputedStyle(mask)
           return style.display === 'none' ||
-                 style.visibility === 'hidden' ||
-                 style.opacity === '0' ||
-                 !document.body.contains(mask)
+            style.visibility === 'hidden' ||
+            style.opacity === '0' ||
+            !document.body.contains(mask)
         })
 
         // Check for loading spinners
@@ -54,16 +54,16 @@ export async function waitForSpinnersToDisappear(page: Page, timeout: number = 1
         const spinnersHidden = spinners.length === 0 || Array.from(spinners).every(spinner => {
           const style = window.getComputedStyle(spinner)
           return style.display === 'none' ||
-                 style.visibility === 'hidden' ||
-                 style.opacity === '0' ||
-                 !document.body.contains(spinner)
+            style.visibility === 'hidden' ||
+            style.opacity === '0' ||
+            !document.body.contains(spinner)
         })
 
         // Check for v-loading directive elements
         const loadingElements = document.querySelectorAll('[class*="is-loading"]')
         const vLoadingHidden = Array.from(loadingElements).every(el => {
           return !el.classList.contains('is-loading') ||
-                 !el.className.includes('el-')
+            !el.className.includes('el-')
         })
 
         return maskHidden && spinnersHidden && vLoadingHidden
@@ -98,6 +98,9 @@ export async function waitForElementTableReady(table: Locator, page: Page, optio
 
   // Step 4: Network settle
   await page.waitForLoadState('networkidle', { timeout: 10000 })
+
+
+  await table.locator('.el-loading-mask').waitFor({ state: 'hidden', timeout: 10000 })
 
 
   // Double-check no loading masks are present on the table specifically
@@ -351,28 +354,3 @@ export async function withRetry<T>(
   throw new Error(`Operation failed after ${retries} attempts: ${lastError?.message || 'Unknown error'}`)
 }
 
-/**
- * Use this wrapper in CI for flaky operations
- */
-export async function ciSafeOperation<T>(
-  page: Page,
-  operation: () => Promise<T>
-): Promise<T> {
-  if (process.env.CI) {
-    return withRetry(operation, {
-      retries: 3,
-      onRetry: (attempt, error) => {
-        console.log(`CI retry attempt ${attempt} after error:`, error.message)
-        // Take screenshot for debugging - fire and forget
-        page.screenshot({
-          path: `ci-retry-${Date.now()}.png`,
-          fullPage: true
-        }).catch((e) => {
-          console.error('Failed to take screenshot during CI retry:', e.message)
-        })
-        // No return value - void as expected
-      }
-    })
-  }
-  return operation()
-}
