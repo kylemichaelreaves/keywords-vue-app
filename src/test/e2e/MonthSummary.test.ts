@@ -2,7 +2,7 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
-import { waitForLoadingToComplete } from '@test/e2e/helpers/waitHelpers'
+import { waitForElementUILoadingToComplete, waitForPageReady } from '@test/e2e/helpers/waitHelpers'
 import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
 
 test.describe('Month Summary Page', () => {
@@ -19,9 +19,8 @@ test.describe('Month Summary Page', () => {
       const url = new URL(route.request().url())
       console.log('Intercepted budget category hierarchy request:', url.toString())
 
-      // Use the budget categories mock generator instead of hardcoded data
       const mockBudgetCategories = generateBudgetCategoryHierarchy({
-        includeChildren: false, // Only parent categories for summary
+        includeChildren: false,
         maxParentCategories: 5,
         sourceId: 1
       })
@@ -37,28 +36,26 @@ test.describe('Month Summary Page', () => {
     await setupMonthSummaryMocks(page)
     console.timeEnd('setting up monthSummaryMocks')
 
+    // Use comprehensive page ready waiting
     await transactionsPage.goto()
-    // Wait for page to be fully loaded before interactions
-    await page.waitForLoadState('networkidle')
-    await page.waitForLoadState('domcontentloaded')
+    await waitForPageReady(page)
 
-    await transactionsPage.monthSelect.click()
-    // Wait for options to be visible before trying to get text
-    await page.getByRole('option').first().waitFor({ state: 'visible' })
+    // Wait for Element UI components to be fully loaded
+    await waitForElementUILoadingToComplete(page)
 
-    const firstMonth = await transactionsPage.page.getByRole('option').first().textContent() ?? ''
-    const firstOption = transactionsPage.page.getByRole('option', { name: firstMonth }).first()
+    // Use the transactions page method that includes proper Element UI waiting
+    await transactionsPage.waitForTransactionsTableReady()
 
-    selectedMonth = firstMonth
-    await firstOption.click()
-    // Wait for navigation to summary page after selecting month
+    // Select month with proper Element UI handling
+    selectedMonth = await transactionsPage.selectFirstMonth()
+
+    // Wait for navigation and Element UI loading to complete
     await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/, { waitUntil: 'networkidle' })
+    await waitForPageReady(page)
+    await waitForElementUILoadingToComplete(page)
 
-    // Wait for any loading to complete before proceeding
-    await waitForLoadingToComplete(page)
-
-    // Use the base class method that includes Element UI-aware waiting
-    await monthSummaryPage.expectTableVisible()
+    // Ensure we're on the month summary page and it's fully loaded
+    await monthSummaryPage.waitForSummaryTableReady()
   })
 
   test.afterEach(async ({ page }) => {

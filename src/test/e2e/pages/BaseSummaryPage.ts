@@ -104,4 +104,10 @@ export abstract class BaseSummaryPage {
 
     return true
   }
+
+  // Wait for summary table to be ready with Element UI considerations
+  async waitForSummaryTableReady() {
+    const summaryTable = this.getSummaryTable()
+    await waitForElementTableReady(summaryTable, this.page)
+  }
 }

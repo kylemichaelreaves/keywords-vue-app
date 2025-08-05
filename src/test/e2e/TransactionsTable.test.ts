@@ -52,14 +52,13 @@ test.describe('Transactions Table', () => {
   })
 
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
+    // Use comprehensive Element UI-aware waiting
+    await transactionsPage.waitForTransactionsTableReady()
+
+    // Additional debug info for CI troubleshooting
     await debugTableLoadingState(page, 'transactions-table')
 
-    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
-
-    // Ensure table is ready for interaction
-    await page.waitForLoadState('networkidle')
-
-    // select the row after the header row
+    // Use the improved click method that handles Element UI loading
     await transactionsPage.clickOnTableCell({
       rowIndex: 1,
       cellIndex: 1,
@@ -113,37 +112,6 @@ test.describe('Transactions Table', () => {
   test('clicking on a point in the line chart loads the transactions for that date', async ({ page }) => {
     await debugTableLoadingState(page, 'transactions-table')
 
-    // IMPORTANT: Register the flexible route BEFORE chart interactions
-    // This needs to be done early to catch the initial page requests
-    await page.route('**/transactions**', async route => {
-      const url = new URL(route.request().url())
-      const params = url.searchParams
-
-      console.log('Intercepted transactions request:', {
-        limit: params.get('limit'),
-        offset: params.get('offset'),
-        timeFrame: params.get('timeFrame'),
-        date: params.get('date'),
-        full_url: url.toString()
-      })
-
-      const dateParam = params.get('date')
-      const timeFrame = params.get('timeFrame')
-
-      if (timeFrame === 'year' && (!dateParam || dateParam === '')) {
-        // This is the initial page load request - use static transactions
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(staticTransactions)
-        })
-        return
-      }
-
-      // Let other requests continue to existing mocks for now
-      await route.continue()
-    })
-
     // Wait for chart to be fully loaded
     await page.waitForLoadState('networkidle')
     await expect(transactionsPage.intervalLineChart).toBeVisible()
@@ -168,12 +136,12 @@ test.describe('Transactions Table', () => {
     const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
     console.timeEnd('generating transactions')
 
-    // Now update the route to handle the chart click request
+    // Single route handler for all transactions requests - eliminates duplication
     await page.route('**/transactions**', async route => {
       const url = new URL(route.request().url())
       const params = url.searchParams
 
-      console.log('Updated interceptor - transactions request:', {
+      console.log('Intercepted transactions request:', {
         limit: params.get('limit'),
         offset: params.get('offset'),
         timeFrame: params.get('timeFrame'),
@@ -184,14 +152,7 @@ test.describe('Transactions Table', () => {
       const dateParam = params.get('date')
       const timeFrame = params.get('timeFrame')
 
-      // check if fifthPointDate is defined
-      if (!fifthPointDate) {
-        console.error('fifthPointDate is not defined')
-        await route.continue()
-        return
-      }
-
-      if (dateParam && dateParam.includes(fifthPointDate) && timeFrame === 'day') {
+      if (dateParam && dateParam.includes(fifthPointDate!) && timeFrame === 'day') {
         // This is our chart click request for a specific date
         await route.fulfill({
           status: 200,

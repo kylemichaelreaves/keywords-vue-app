@@ -2,7 +2,7 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { WeekSummaryPage } from '@test/e2e/pages/WeekSummaryPage'
 import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
-import { debugTableLoadingState } from '@test/e2e/helpers/waitHelpers.ts'
+import { debugTableLoadingState, waitForElementUILoadingToComplete, waitForPageReady } from '@test/e2e/helpers/waitHelpers.ts'
 import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
 
 test.describe('Week Summary Table', () => {
@@ -39,42 +39,25 @@ test.describe('Week Summary Table', () => {
     await setupWeekSummaryMocks(page)
     console.timeEnd('setting up weekSummaryMocks')
 
-    // Clear any existing state first
+    // Use comprehensive page ready waiting
     await transactionsPage.goto()
+    await waitForPageReady(page)
 
-    // Wait for page to be fully loaded before interacting
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForLoadState('networkidle')
+    // Wait for Element UI components to be fully loaded
+    await waitForElementUILoadingToComplete(page)
 
-    // click on week select
-    await transactionsPage.weekSelect.click()
+    // Use the transactions page method that includes proper Element UI waiting
+    await transactionsPage.waitForTransactionsTableReady()
 
-    // wait for the week select options to be visible
-    await transactionsPage.page.getByRole('option').first().waitFor({ state: 'visible' })
+    // Select week with proper Element UI handling
+    selectedWeek = await transactionsPage.selectFirstWeek()
 
-    // get the text content of the first option
-    const firstWeekText = await transactionsPage.page.getByRole('option').first().textContent() ?? ''
-    const firstOption = transactionsPage.page.getByRole('option', { name: firstWeekText }).first()
+    // Wait for navigation and Element UI loading to complete
+    await waitForPageReady(page)
+    await waitForElementUILoadingToComplete(page)
 
-    selectedWeek = await firstOption.textContent() ?? null
-
-    await firstOption.click()
-
-    // Wait for navigation to summary page after selecting week
-    await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'networkidle' })
-
-    // Wait for the summary table to be visible and stable
-    await expect(weekSummaryPage.weekSummaryTable).toBeVisible()
-
-    // Wait for table content to be loaded
-    const tableBody = weekSummaryPage.weekSummaryTable.locator('tbody')
-    await expect(tableBody).toBeVisible()
-
-    // Ensure at least one row is present before continuing
-    await expect(tableBody.locator('tr').first()).toBeVisible()
-
-    // Final network idle wait to ensure all data is loaded
-    await page.waitForLoadState('networkidle')
+    // Ensure we're on the week summary page and it's fully loaded
+    await weekSummaryPage.waitForSummaryTableReady()
   })
 
   test.afterEach(async ({ page }) => {
