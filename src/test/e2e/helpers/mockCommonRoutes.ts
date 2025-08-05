@@ -26,6 +26,24 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
       body: JSON.stringify({ count: 200 })
     })
   })
+
+  // mock **/transactions?limit=100&offset=0&timeFrame=day&date=
+  await page.route('**/transactions?limit=100&offset=0&timeFrame=day&date=*', route => {
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(transactions)
+    })
+  })
+
+  //   transactions?limit=100&offset=0&timeFrame=year&date=
+  await page.route('**/transactions?limit=100&offset=0&timeFrame=year&date=', route => {
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(transactions)
+    })
+  })
 }
 
 /**
