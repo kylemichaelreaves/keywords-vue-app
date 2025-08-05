@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock'
 
 export interface MockMemoOptions {
   id?: number
@@ -9,6 +10,13 @@ export interface MockMemoOptions {
   budget_category?: string | null
   ambiguous?: boolean
   avatar_s3_url?: string | null
+}
+
+export interface BudgetCategoryHierarchyOptions {
+  timeFrame: 'week' | 'month' | 'day'
+  includeChildren?: boolean
+  maxParentCategories?: number
+  sourceId?: number
 }
 
 /**
@@ -48,6 +56,39 @@ export async function setupMemoRouteInterceptor(
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify([mockMemo]) // Always return as array for consistency
+    })
+  })
+}
+
+/**
+ * Creates a budget category hierarchy route interceptor
+ */
+export async function setupBudgetCategoryHierarchyInterceptor(
+  page: Page,
+  options: BudgetCategoryHierarchyOptions,
+  clearExisting: boolean = false
+) {
+  const { timeFrame, includeChildren = false, maxParentCategories = 5, sourceId = 1 } = options
+
+  // Clear existing route handlers if requested
+  if (clearExisting) {
+    await page.unroute(`**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`)
+  }
+
+  await page.route(`**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`, async route => {
+    const url = new URL(route.request().url())
+    console.log(`Intercepted budget category hierarchy request (${timeFrame}):`, url.toString())
+
+    const mockBudgetCategories = generateBudgetCategoryHierarchy({
+      includeChildren,
+      maxParentCategories,
+      sourceId
+    })
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(mockBudgetCategories)
     })
   })
 }

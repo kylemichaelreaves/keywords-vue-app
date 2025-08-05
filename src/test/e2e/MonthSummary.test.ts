@@ -3,8 +3,11 @@ import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import { waitForElementUILoadingToComplete, waitForPageReady } from '@test/e2e/helpers/waitHelpers'
-import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
-import { setupMemoRouteInterceptor, MEMO_PRESETS } from '@test/e2e/helpers/memoRouteHelper'
+import {
+  setupMemoRouteInterceptor,
+  setupBudgetCategoryHierarchyInterceptor,
+  MEMO_PRESETS
+} from '@test/e2e/helpers/memoRouteHelper'
 
 test.describe('Month Summary Page', () => {
   let transactionsPage: TransactionsPage
@@ -15,30 +18,10 @@ test.describe('Month Summary Page', () => {
     transactionsPage = new TransactionsPage(page)
     monthSummaryPage = new MonthSummaryPage(page)
 
-    console.time('setting up monthSummaryMocks')
+
     await setupMonthSummaryMocks(page)
-    console.timeEnd('setting up monthSummaryMocks')
-
-    // DRY: Use reusable memo route helper
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
-
-    // Add route interceptor for budget category hierarchy sum request
-    await page.route('**/transactions?budgetCategoryHierarchySum=true&timeFrame=month&date=*', async route => {
-      const url = new URL(route.request().url())
-      console.log('Intercepted budget category hierarchy request:', url.toString())
-
-      const mockBudgetCategories = generateBudgetCategoryHierarchy({
-        includeChildren: false,
-        maxParentCategories: 5,
-        sourceId: 1
-      })
-
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(mockBudgetCategories)
-      })
-    })
+    await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'month' })
 
     // Use comprehensive page ready waiting
     await transactionsPage.goto()
