@@ -18,31 +18,21 @@ test.describe('Month Summary Page', () => {
     transactionsPage = new TransactionsPage(page)
     monthSummaryPage = new MonthSummaryPage(page)
 
-
+    // Setup all mocks first
     await setupMonthSummaryMocks(page)
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
     await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'month' })
 
-    // Use comprehensive page ready waiting
+    // Simplified setup - reduce redundant waits
     await transactionsPage.goto()
-    await waitForPageReady(page)
+    await waitForPageReady(page) // This includes networkidle
 
-    // Wait for Element UI components to be fully loaded
-    await waitForElementUILoadingToComplete(page)
-
-    // Use the transactions page method that includes proper Element UI waiting
-    await transactionsPage.waitForTransactionsTableReady()
-
-    // Select month with proper Element UI handling
+    // Select month and navigate
     selectedMonth = await transactionsPage.selectFirstMonth()
 
-    // Wait for navigation and Element UI loading to complete
+    // Single comprehensive wait for the summary page
     await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/, { waitUntil: 'networkidle' })
-    await waitForPageReady(page)
-    await waitForElementUILoadingToComplete(page)
-
-    // Ensure we're on the month summary page and it's fully loaded
-    await monthSummaryPage.waitForSummaryTableReady()
+    await monthSummaryPage.waitForSummaryTableReady() // This includes Element UI loading
   })
 
   test.afterEach(async ({ page }) => {

@@ -10,35 +10,25 @@ export async function waitForPageReady(page: Page) {
 }
 
 /**
- * Simplified wait for Element UI loading to complete - more reliable for CI
+ * Ultra-simplified wait for Element UI loading - CI focused
  */
-export async function waitForElementUILoadingToComplete(page: Page, timeout: number = 30000) {
-  // Simple, reliable approach: just wait for loading elements to not be visible
-  await page.waitForFunction(
-    () => {
-      // Check for any visible loading indicators
-      const loadingSelectors = [
-        '.el-loading-mask',
-        '.el-loading-spinner',
-        '.el-loading-text',
-        '[class*="is-loading"].el-'
-      ]
-
-      return !loadingSelectors.some(selector => {
-        const elements = document.querySelectorAll(selector)
-        return Array.from(elements).some(el => {
-          const style = window.getComputedStyle(el)
-          return style.display !== 'none' &&
-                 style.visibility !== 'hidden' &&
-                 style.opacity !== '0'
+export async function waitForElementUILoadingToComplete(page: Page, timeout: number = 10000) {
+  // Most basic approach: just check if any loading masks exist and are visible
+  try {
+    await page.waitForFunction(
+      () => {
+        const masks = document.querySelectorAll('.el-loading-mask')
+        return masks.length === 0 || Array.from(masks).every(mask => {
+          const style = window.getComputedStyle(mask)
+          return style.display === 'none' || style.opacity === '0'
         })
-      })
-    },
-    { timeout, polling: 1000 } // Slower polling for CI stability
-  ).catch(() => {
-    // If timeout, continue anyway - don't fail the test
-    console.warn('Element UI loading check timed out, continuing anyway')
-  })
+      },
+      { timeout, polling: 2000 } // Even slower polling - 2 seconds
+    )
+  } catch {
+    // Always continue - never fail the test on loading timeout
+    // This is just a best-effort helper
+  }
 }
 
 /**

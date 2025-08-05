@@ -20,23 +20,20 @@ test.describe('Week Summary Table', () => {
 
     console.time('setting up weekSummaryMocks')
     await setupWeekSummaryMocks(page)
+    await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
+    await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'week' })
     console.timeEnd('setting up weekSummaryMocks')
 
-    // DRY: Use reusable memo route helper
-    await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
-
-    // DRY: Use reusable budget category hierarchy helper
-    await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'week' })
-
-    // ...existing code for page navigation...
+    // Simplified setup - reduce redundant waits
     await transactionsPage.goto()
-    await waitForPageReady(page)
-    await waitForElementUILoadingToComplete(page)
-    await transactionsPage.waitForTransactionsTableReady()
+    await waitForPageReady(page) // This includes networkidle
+
+    // Select week and navigate
     selectedWeek = await transactionsPage.selectFirstWeek()
-    await waitForPageReady(page)
-    await waitForElementUILoadingToComplete(page)
-    await weekSummaryPage.waitForSummaryTableReady()
+
+    // Single comprehensive wait for the summary page
+    await waitForPageReady(page) // Wait for navigation to complete
+    await weekSummaryPage.waitForSummaryTableReady() // This includes Element UI loading
   })
 
   test.afterEach(async ({ page }) => {
