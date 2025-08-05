@@ -14,6 +14,6 @@ export const useBudgetCategorySummary = (
       date
     }),
     refetchOnWindowFocus: false,
-    enabled: !!timeFrame && !!date
+    enabled: Boolean(!!timeFrame && !!date)
   })
 }

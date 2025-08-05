@@ -12,6 +12,6 @@ export const useBudgetCategoryAmountDebit = (
     queryKey: ['budget-category-amount-debit', budgetCategory, timeFrame, date, totalAmountDebit],
     queryFn: () => fetchTransactions({ budgetCategory, timeFrame, date, totalAmountDebit }),
     refetchOnWindowFocus: false,
-    enabled: !!budgetCategory
+    enabled: !!budgetCategory && !!date && date.trim() !== ''
   })
 }
