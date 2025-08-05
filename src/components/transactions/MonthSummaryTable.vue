@@ -18,7 +18,7 @@
       />
     </template>
 
-    <MemoEditModal ref="memoEditModal" />
+    <MemoEditModal ref="memoEditModal" :memo-name="selectedMemoName" />
 
     <el-row data-testid="month-summary-content-row">
       <el-col
@@ -41,7 +41,7 @@
             :data-loading="isFetching || isLoading || isRefetching"
             :data-row-count="data?.length || 0"
             :row-key="(row: MonthSummaryRow) => `${selectedMonth}-${row.memo}`"
-            @row-contextmenu="(row: MonthSummaryRow) => openMemoEditModal(row)"
+            @row-contextmenu="openMemoEditModal"
           >
             <el-table-column
               v-for="(column, columnIndex) in columns"
@@ -108,7 +108,6 @@ import MonthSummaryHeader from '@components/transactions/MonthSummaryHeader.vue'
 import MemoEditModal from '@components/transactions/MemoEditModal.vue'
 import BudgetCategorySummaries from '@components/transactions/BudgetCategorySummaries.vue'
 import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue'
-import { fetchMemo } from '@api/transactions/fetchMemo'
 
 // Define the month summary row structure
 interface MonthSummaryRow {
@@ -122,6 +121,7 @@ const selectedMonth = computed(() => store.getSelectedMonth)
 const months = computed(() => store.getMonths)
 
 const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
+const selectedMemoName = ref<string>('')
 
 // useMonthSummary returns every memo and their total amount debit for the selected month
 const { data, isError, refetch, isFetching, isRefetching, isLoading, error } = useMonthSummary()
@@ -197,19 +197,8 @@ onBeforeUnmount(() => {
   store.setTransactionsTableLimit(100)
 })
 
-const openMemoEditModal = async (row: MonthSummaryRow) => {
-  try {
-    // Fetch the complete memo data and pass it to the modal
-    const memoArray = await fetchMemo(row.memo)
-
-    // Extract the first memo from the array
-    const memoToEdit = memoArray[0]
-
-    if (memoToEdit) {
-      memoEditModal.value?.openModal(memoToEdit)
-    }
-  } catch (error) {
-    throw new Error(`Error fetching memo: ${error}`)
-  }
+const openMemoEditModal = (row: MonthSummaryRow) => {
+  selectedMemoName.value = row.memo
+  memoEditModal.value?.openModal()
 }
 </script>

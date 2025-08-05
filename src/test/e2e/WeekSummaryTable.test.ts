@@ -85,25 +85,20 @@ test.describe('Week Summary Table', () => {
     })
   })
 
-  test('should display the week summary table', async () => {
+  test('should display the week summary table elements correctly', async () => {
     await weekSummaryPage.expectTableVisible()
-  })
-
-  test('should show selected week in the title header', async () => {
     const weekTitle = await weekSummaryPage.getWeekTitle()
     expect(weekTitle).toContain(selectedWeek)
+    await weekSummaryPage.page.getByRole('button', { name: 'Next Week' }).isDisabled()
   })
 
   test('should reset the week when reset button is clicked', async () => {
     await weekSummaryPage.clickResetButton()
-    await weekSummaryPage.page.waitForURL('/budget-visualizer/transactions', { waitUntil: 'domcontentloaded' })
+    await weekSummaryPage.page.waitForURL('/budget-visualizer/transactions', { waitUntil: 'networkidle' })
     const weekSelectValue = await transactionsPage.getWeekSelectValue()
     expect(weekSelectValue).toBe('')
   })
 
-  test('the next week button should be disabled, since we are on the first week in the weeks', async () => {
-    await weekSummaryPage.page.getByRole('button', { name: 'Next Week' }).isDisabled()
-  })
 
   test('memo edit modal workflow: open, display content, and close', async ({ page }) => {
     await debugTableLoadingState(page, 'week-summary-table')

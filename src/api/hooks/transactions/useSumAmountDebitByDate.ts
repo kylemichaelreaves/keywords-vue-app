@@ -10,6 +10,6 @@ export default function useSumAmountDebitByDate(timeFrame: string, date: string)
       return fetchSumAmountDebitByDate(timeFrame, date)
     },
     refetchOnWindowFocus: false,
-    enabled: !!date && date.trim() !== ''
+    enabled: Boolean(!!date && date.trim() !== '')
   })
 }

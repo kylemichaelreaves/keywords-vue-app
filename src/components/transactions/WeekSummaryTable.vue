@@ -12,7 +12,7 @@
       />
     </template>
 
-    <MemoEditModal ref="memoEditModal" />
+    <MemoEditModal ref="memoEditModal" :memo-name="selectedMemoName" />
 
     <el-row :gutter="5">
       <el-col :span="14">
@@ -26,7 +26,7 @@
             layout="auto"
             show-summary
             data-testid="week-summary-table"
-            @row-contextmenu="(row: WeekSummaryRow) => openMemoEditModal(row)"
+            @row-contextmenu="openMemoEditModal"
           >
             <el-table-column
               v-for="column in columns"
@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { computed, onUnmounted, reactive, ref, watch } from 'vue'
-import { ElCard, ElTable, ElTableColumn, ElMessage } from 'element-plus'
+import { ElCard, ElTable, ElTableColumn } from 'element-plus'
 import { useTransactionsStore } from '@stores/transactions'
 import useWeekSummary from '@api/hooks/transactions/useWeekSummary'
 import AlertComponent from '@components/shared/AlertComponent.vue'
@@ -71,7 +71,6 @@ import BudgetCategorySummaries from '@components/transactions/BudgetCategorySumm
 import DaySummariesForSelectedWeekTable from '@components/transactions/DaySummariesForSelectedWeekTable.vue'
 import WeekSummaryHeader from './WeekSummaryHeader.vue'
 import MemoEditModal from '@components/transactions/MemoEditModal.vue'
-import { fetchMemo } from '@api/transactions/fetchMemo'
 
 // Define the week summary row structure
 interface WeekSummaryRow {
@@ -102,6 +101,7 @@ const isLastWeek = computed(() => {
 })
 
 const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
+const selectedMemoName = ref<string>('')
 
 const adjustSelectedWeek = (adjustment: number) => {
   const selectedWeek = store.getSelectedWeek
@@ -145,21 +145,9 @@ onUnmounted(() => {
   store.setDaysForSelectedWeek([])
 })
 
-const openMemoEditModal = async (row: WeekSummaryRow) => {
-  try {
-    // Fetch the complete memo data and pass it to the modal
-    const memoArray = await fetchMemo(row.memo)
-
-    // Extract the first memo from the array
-    const memoToEdit = memoArray[0]
-
-    if (memoToEdit) {
-      memoEditModal.value?.openModal(memoToEdit)
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
-    ElMessage.error(`Failed to fetch memo: ${errorMessage}`)
-  }
+const openMemoEditModal = (row: WeekSummaryRow) => {
+  selectedMemoName.value = row.memo
+  memoEditModal.value?.openModal()
 }
 
 </script>

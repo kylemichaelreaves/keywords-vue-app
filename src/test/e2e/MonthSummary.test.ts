@@ -3,6 +3,7 @@ import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import { waitForLoadingToComplete } from '@test/e2e/helpers/waitHelpers'
+import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
 
 test.describe('Month Summary Page', () => {
   let transactionsPage: TransactionsPage
@@ -12,6 +13,25 @@ test.describe('Month Summary Page', () => {
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
     monthSummaryPage = new MonthSummaryPage(page)
+
+    // Add route interceptor for budget category hierarchy sum request
+    await page.route('**/transactions?budgetCategoryHierarchySum=true&timeFrame=month&date=*', async route => {
+      const url = new URL(route.request().url())
+      console.log('Intercepted budget category hierarchy request:', url.toString())
+
+      // Use the budget categories mock generator instead of hardcoded data
+      const mockBudgetCategories = generateBudgetCategoryHierarchy({
+        includeChildren: false, // Only parent categories for summary
+        maxParentCategories: 5,
+        sourceId: 1
+      })
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockBudgetCategories)
+      })
+    })
 
     console.time('setting up monthSummaryMocks')
     await setupMonthSummaryMocks(page)
@@ -48,24 +68,17 @@ test.describe('Month Summary Page', () => {
     })
   })
 
-  test('should display the month title', async () => {
+  test('should display all month summary page elements correctly', async () => {
+    // Check month title
     const title = await monthSummaryPage.getMonthTitle()
     expect(title).toContain('Month Summary for:' + ' ' + selectedMonth)
-  })
-
-  test('should display the month summary table', async () => {
+    // Check main table visibility
     await expect(monthSummaryPage.monthSummaryTable).toBeVisible()
-  })
-
-  test('should display the budget categories summary component', async () => {
+    // Check budget categories summary component
     await expect(monthSummaryPage.budgetCategorySummaries).toBeVisible()
-  })
-
-  test('the navigation button group should be visible', async () => {
+    // Check navigation button group visibility
     await expect(monthSummaryPage.navigationButtonGroup).toBeVisible()
-  })
-
-  test('the next month button should be disabled when on the latest month', async () => {
+    // Check that next month button is disabled when on the latest month
     const nextButton = monthSummaryPage.navigationButtonGroup.getByRole('button', { name: 'Next Month' })
     expect(await nextButton.isDisabled()).toBeTruthy()
   })

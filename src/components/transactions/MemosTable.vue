@@ -8,7 +8,7 @@
       Along with the total Amount Debit and Budget Category, if there is one assigned to it
     </el-text>
 
-    <MemoEditModal ref="memoEditModal" />
+    <MemoEditModal ref="memoEditModal" :memo-name="selectedMemoName" />
 
     <div @contextmenu.prevent>
       <el-table
@@ -20,7 +20,7 @@
         :default-sort="{ prop: 'total_amount_debit', order: 'descending' }"
         data-testid="memos-table"
         :row-key="(row: Memo) => row.id"
-        @row-contextmenu="(row: Memo) => memoEditModal?.openModal(row)"
+        @row-contextmenu="openMemoEditModal"
       >
         <el-table-column
           v-for="(column, columnIndex) in memoColumns"
@@ -77,6 +77,7 @@ const route = useRoute()
 let updatingFromURL = false
 
 const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
+const selectedMemoName = ref<string>('')
 
 const {
   data,
@@ -191,4 +192,9 @@ const memoColumns = [
   { prop: 'frequency', label: 'Frequency', sortable: false },
   { prop: 'ambiguous', label: 'Ambiguous', sortable: false }
 ]
+
+const openMemoEditModal = (row: Memo) => {
+  selectedMemoName.value = row.name // Changed from row.memo.name to row.name
+  memoEditModal.value?.openModal()
+}
 </script>

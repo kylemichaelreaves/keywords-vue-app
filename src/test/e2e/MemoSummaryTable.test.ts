@@ -78,6 +78,14 @@ test.describe('Memo Summary Table', () => {
     await memoSummaryTablePage.memoSummaryTable.waitFor({ state: 'visible' })
   })
 
+  test.afterEach(async ({ page }) => {
+    await page.evaluate(() => {
+      localStorage.clear()
+      sessionStorage.clear()
+    })
+  })
+
+
   test('should display the memo title', async () => {
     const title = await memoSummaryTablePage.getMemoTitle()
     expect(title).toBe(firstMemoName)
