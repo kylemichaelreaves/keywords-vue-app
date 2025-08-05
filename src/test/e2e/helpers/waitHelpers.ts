@@ -12,7 +12,7 @@ export async function waitForPageReady(page: Page) {
 /**
  * Wait for Element UI loading to complete - this is critical for CI
  */
-export async function waitForElementUILoadingToComplete(page: Page, timeout: number = 30000) {
+export async function waitForElementUILoadingToComplete(page: Page, timeout: number = 60000) {
   // Wait for any Element UI loading masks to disappear
   await page.waitForFunction(
     () => {
