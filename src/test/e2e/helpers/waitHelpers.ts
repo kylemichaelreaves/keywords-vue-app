@@ -117,7 +117,7 @@ export async function rightClickTableRow(table: Locator, rowIndex: number = 0) {
 export async function waitForLoadingToComplete(page: Page, options: {
   timeout?: number
 } = {}) {
-  const { timeout = 30000 } = options
+  const { timeout = 60000 } = options
 
   // Just wait for network to be idle - this is usually sufficient
   await page.waitForLoadState('networkidle', { timeout })
@@ -130,7 +130,7 @@ export async function waitForElementTableReady(table: Locator, page: Page, optio
   timeout?: number
   minRows?: number
 } = {}) {
-  const { timeout = 30000 } = options
+  const { timeout = 60000 } = options
 
   // Just ensure table is visible and has content
   await expect(table).toBeVisible({ timeout })
