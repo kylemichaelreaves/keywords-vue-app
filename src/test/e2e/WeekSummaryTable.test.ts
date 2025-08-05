@@ -2,11 +2,15 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { WeekSummaryPage } from '@test/e2e/pages/WeekSummaryPage'
 import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
-import { debugTableLoadingState, waitForElementUILoadingToComplete, waitForPageReady } from '@test/e2e/helpers/waitHelpers.ts'
 import {
-  setupMemoRouteInterceptor,
+  debugTableLoadingState,
+  waitForElementUILoadingToComplete,
+  waitForPageReady
+} from '@test/e2e/helpers/waitHelpers.ts'
+import {
+  MEMO_PRESETS,
   setupBudgetCategoryHierarchyInterceptor,
-  MEMO_PRESETS
+  setupMemoRouteInterceptor
 } from '@test/e2e/helpers/memoRouteHelper'
 
 test.describe('Week Summary Table', () => {
@@ -18,11 +22,9 @@ test.describe('Week Summary Table', () => {
     transactionsPage = new TransactionsPage(page)
     weekSummaryPage = new WeekSummaryPage(page)
 
-    console.time('setting up weekSummaryMocks')
     await setupWeekSummaryMocks(page)
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
     await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'week' })
-    console.timeEnd('setting up weekSummaryMocks')
 
     // Simplified setup - reduce redundant waits
     await transactionsPage.goto()
@@ -32,7 +34,7 @@ test.describe('Week Summary Table', () => {
     selectedWeek = await transactionsPage.selectFirstWeek()
 
     // Single comprehensive wait for the summary page
-    await waitForPageReady(page) // Wait for navigation to complete
+    await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'networkidle' })
     await weekSummaryPage.waitForSummaryTableReady() // This includes Element UI loading
   })
 
