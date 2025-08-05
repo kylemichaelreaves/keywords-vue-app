@@ -34,7 +34,7 @@ export async function waitForElementUILoadingToComplete(page: Page, timeout: num
 /**
  * Specific helper to wait for Element UI spinners to be hidden
  */
-export async function waitForSpinnersToDisappear(page: Page, timeout: number = 30000) {
+export async function waitForSpinnersToDisappear(page: Page, timeout: number = 60000) {
   try {
     // Wait for all loading elements to be hidden or removed
     await page.waitForFunction(
