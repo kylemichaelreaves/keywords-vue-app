@@ -3,6 +3,7 @@ import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { WeekSummaryPage } from '@test/e2e/pages/WeekSummaryPage'
 import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import { debugTableLoadingState } from '@test/e2e/helpers/waitHelpers.ts'
+import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
 
 test.describe('Week Summary Table', () => {
   let transactionsPage: TransactionsPage
@@ -12,6 +13,27 @@ test.describe('Week Summary Table', () => {
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
     weekSummaryPage = new WeekSummaryPage(page)
+
+
+    // Add route interceptor for budget category hierarchy sum request
+    await page.route('**/transactions?budgetCategoryHierarchySum=true&timeFrame=week&date=*', async route => {
+      const url = new URL(route.request().url())
+      console.log('Intercepted budget category hierarchy request:', url.toString())
+
+      // Use the budget categories mock generator instead of hardcoded data
+      const mockBudgetCategories = generateBudgetCategoryHierarchy({
+        includeChildren: false, // Only parent categories for summary
+        maxParentCategories: 5,
+        sourceId: 1
+      })
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockBudgetCategories)
+      })
+    })
+
 
     console.time('setting up weekSummaryMocks')
     await setupWeekSummaryMocks(page)
