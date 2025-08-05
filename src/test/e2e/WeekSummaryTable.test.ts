@@ -2,6 +2,7 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { WeekSummaryPage } from '@test/e2e/pages/WeekSummaryPage'
 import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
+import { debugTableLoadingState } from '@test/e2e/helpers/waitHelpers.ts'
 
 test.describe('Week Summary Table', () => {
   let transactionsPage: TransactionsPage
@@ -25,10 +26,10 @@ test.describe('Week Summary Table', () => {
 
     // click on week select
     await transactionsPage.weekSelect.click()
-    
+
     // wait for the week select options to be visible
     await transactionsPage.page.getByRole('option').first().waitFor({ state: 'visible' })
-    
+
     // get the text content of the first option
     const firstWeekText = await transactionsPage.page.getByRole('option').first().textContent() ?? ''
     const firstOption = transactionsPage.page.getByRole('option', { name: firstWeekText }).first()
@@ -42,14 +43,14 @@ test.describe('Week Summary Table', () => {
 
     // Wait for the summary table to be visible and stable
     await expect(weekSummaryPage.weekSummaryTable).toBeVisible()
-    
+
     // Wait for table content to be loaded
     const tableBody = weekSummaryPage.weekSummaryTable.locator('tbody')
     await expect(tableBody).toBeVisible()
-    
+
     // Ensure at least one row is present before continuing
     await expect(tableBody.locator('tr').first()).toBeVisible()
-    
+
     // Final network idle wait to ensure all data is loaded
     await page.waitForLoadState('networkidle')
   })
@@ -82,9 +83,14 @@ test.describe('Week Summary Table', () => {
     await weekSummaryPage.page.getByRole('button', { name: 'Next Week' }).isDisabled()
   })
 
-  test('memo edit modal workflow: open, display content, and close', async () => {
+  test('memo edit modal workflow: open, display content, and close', async ({ page }) => {
+    await debugTableLoadingState(page, 'week-summary-table')
+
     // Initially hidden
     await weekSummaryPage.expectMemoEditModalHidden()
+
+    // wait for the week summary table to be ready
+    await weekSummaryPage.expectTableVisible()
 
     // Right click opens modal with correct content
     await weekSummaryPage.rightClickOnTableRow(1)

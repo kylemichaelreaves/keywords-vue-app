@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 /**
@@ -50,7 +50,9 @@ export async function waitForElementInteractive(element: Locator) {
 /**
  * Safe navigation with proper waits
  */
-export async function navigateAndWait(page: Page, url: string | RegExp, options?: { waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' }) {
+export async function navigateAndWait(page: Page, url: string | RegExp, options?: {
+  waitUntil?: 'load' | 'domcontentloaded' | 'networkidle'
+}) {
   await page.waitForURL(url, { waitUntil: options?.waitUntil || 'networkidle' })
   await waitForPageReady(page)
 }
@@ -187,4 +189,50 @@ export async function clickElementTableCell(
 
   // Simple click - the waitForElementTableReady already ensures it's clickable
   await cell.click(clickOptions)
+}
+
+
+export async function debugTableLoadingState(page: Page, testId: string) {
+  return await page.evaluate((testId) => {
+    const table = document.querySelector(`[data-testid="${testId}"]`)
+    if (!table) {
+      console.log(`Table with testId "${testId}" not found`)
+      return null
+    }
+
+    console.log(`\n=== Table ${testId} Loading State ===`)
+    console.log('Table ARIA busy:', table.getAttribute('aria-busy'))
+    console.log('Table classes:', table.className)
+
+    // Check for loading indicators
+    const loadingMask = table.querySelector('.el-loading-mask')
+    const loadingSpinner = table.querySelector('.el-loading-spinner')
+
+    // FIX: Use better visibility checks
+    const isVisible = (element: Element | null): boolean => {
+      if (!element) return false
+      const htmlEl = element as HTMLElement
+      return htmlEl.offsetParent !== null &&
+        getComputedStyle(htmlEl).display !== 'none' &&
+        getComputedStyle(htmlEl).visibility !== 'hidden'
+    }
+
+    console.log('Has loading mask:', !!loadingMask)
+    console.log('Loading mask visible:', isVisible(loadingMask))
+    console.log('Has loading spinner:', !!loadingSpinner)
+    console.log('Loading spinner visible:', isVisible(loadingSpinner))
+
+    // Check table content
+    const rows = table.querySelectorAll('tbody tr')
+    console.log('Table rows found:', rows.length)
+    console.log('Table appears loaded:', rows.length > 0 && !isVisible(loadingMask))
+
+    return {
+      ariaBusy: table.getAttribute('aria-busy'),
+      hasLoadingMask: !!loadingMask,
+      loadingMaskVisible: isVisible(loadingMask),
+      rowCount: rows.length,
+      appearsLoaded: rows.length > 0 && !isVisible(loadingMask)
+    }
+  }, testId)
 }

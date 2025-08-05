@@ -4,7 +4,11 @@ import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
 import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithStaticMocks } from '@test/e2e/helpers/setupTestMocks'
-import { waitForLoadingToComplete, waitForElementTableReady } from '@test/e2e/helpers/waitHelpers'
+import {
+  debugTableLoadingState,
+  waitForElementTableReady,
+  waitForLoadingToComplete
+} from '@test/e2e/helpers/waitHelpers'
 
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
@@ -17,7 +21,7 @@ test.describe('Transactions Table', () => {
     console.timeEnd('setting up transactionMocks')
 
     await transactionsPage.goto()
-    
+
     // Single comprehensive wait instead of multiple redundant waits
     await waitForElementTableReady(transactionsPage.transactionsTable, page)
   })
@@ -48,9 +52,13 @@ test.describe('Transactions Table', () => {
   })
 
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
+    await debugTableLoadingState(page, 'transactions-table')
+
+    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
+
     // Ensure table is ready for interaction
     await page.waitForLoadState('networkidle')
-    
+
     // select the row after the header row
     await transactionsPage.clickOnTableCell({
       rowIndex: 1,
@@ -103,6 +111,7 @@ test.describe('Transactions Table', () => {
   })
 
   test('clicking on a point in the line chart loads the transactions for that date', async ({ page }) => {
+    await debugTableLoadingState(page, 'transactions-table')
     // Wait for chart to be fully loaded
     await page.waitForLoadState('networkidle')
     await expect(transactionsPage.intervalLineChart).toBeVisible()
