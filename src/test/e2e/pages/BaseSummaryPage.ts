@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { waitForElementTableReady, rightClickElementTableRow } from '@test/e2e/helpers/waitHelpers'
+import { waitForElementTableReady, rightClickElementTableRow, waitForElementUILoadingToComplete } from '@test/e2e/helpers/waitHelpers'
 
 export abstract class BaseSummaryPage {
   readonly page: Page
@@ -40,17 +40,21 @@ export abstract class BaseSummaryPage {
   abstract getNavigationButtonGroup(): Locator
   abstract getSummaryTable(): Locator
 
-  // Common memo edit modal functionality
+  // Common memo edit modal functionality with proper Element UI loading handling
   async rightClickOnTableRow(rowIndex: number = 0) {
     const summaryTable = this.getSummaryTable()
-    // Use the Element UI specific table waiting function - this already includes comprehensive waits
+
+    // Wait for any Element UI loading to complete first
+    await waitForElementUILoadingToComplete(this.page)
+
+    // Use the comprehensive Element UI-aware table waiting and clicking
     await rightClickElementTableRow(summaryTable, this.page, rowIndex)
+
     // Wait for context menu or modal to appear
     await expect(this.memoEditDialog).toBeVisible()
   }
 
   async expectMemoEditModalVisible() {
-    // Use Playwright's built-in retry logic instead of hardcoded timeout
     await expect(this.memoEditDialog).toBeVisible()
   }
 
@@ -85,6 +89,8 @@ export abstract class BaseSummaryPage {
 
   // Common reset functionality
   async clickResetButton() {
+    await expect(this.resetButton).toBeVisible()
+    await expect(this.resetButton).toBeEnabled()
     await this.resetButton.click()
     await this.page.waitForURL(/\/budget-visualizer\/transactions/)
   }
@@ -92,8 +98,10 @@ export abstract class BaseSummaryPage {
   // Common table visibility check with better waits
   async expectTableVisible() {
     const table = this.getSummaryTable()
+
     // Use Element UI specific table ready check - this already includes network idle waiting
     await waitForElementTableReady(table, this.page)
+
     return true
   }
 }

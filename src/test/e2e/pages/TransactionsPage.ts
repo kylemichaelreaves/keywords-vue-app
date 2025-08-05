@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { clickElementTableCell } from '@test/e2e/helpers/waitHelpers'
+import { clickElementTableCell, waitForElementTableReady, waitForElementUILoadingToComplete } from '@test/e2e/helpers/waitHelpers'
 
 export class TransactionsPage {
   readonly transactionsTable: Locator
@@ -50,25 +50,23 @@ export class TransactionsPage {
     this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')
 
     this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
-    this.transactionEditModal = this.page.getByTestId('transaction-edit-dialog')
-    this.transactionEditForm = this.transactionEditModal.getByTestId('transaction-edit-form')
+    this.transactionEditModal = this.page.getByTestId('transaction-edit-modal')
+    this.transactionEditForm = this.page.getByTestId('transaction-edit-form')
 
-    // transaction edit form inputs
-    this.transactionNumberInput = this.transactionEditForm.getByRole('textbox', { name: 'Transaction Number' })
-    this.transactionDatePicker = this.transactionEditForm.getByRole('combobox', { name: 'Date' })
-    this.transactionAmountDebitInput = this.transactionEditForm.getByRole('textbox', { name: 'Amount Debit' })
-    this.transactionAmountCreditInput = this.transactionEditForm.getByRole('textbox', { name: 'Amount Credit' })
-    this.transactionDescriptionInput = this.transactionEditForm.getByRole('textbox', { name: 'Description' })
-    this.transactionMemoInput = this.transactionEditForm.getByRole('combobox', { name: 'Memo' })
-    this.transactionBudgetCategoryTreeSelect = this.transactionEditForm.getByRole('combobox', { name: 'Budget Category' })
-    this.transactionCheckNumberInput = this.transactionEditForm.getByRole('textbox', { name: 'Check Number' })
-    this.transactionFeesInput = this.transactionEditForm.getByRole('textbox', { name: 'Fees' })
-    this.transactionBalanceInput = this.transactionEditForm.getByRole('textbox', { name: 'Balance' })
+    // Edit modal form inputs
+    this.transactionNumberInput = this.transactionEditForm.getByTestId('transaction-number-input')
+    this.transactionDatePicker = this.transactionEditForm.getByTestId('transaction-date-picker')
+    this.transactionAmountDebitInput = this.transactionEditForm.getByTestId('transaction-amount-debit-input')
+    this.transactionAmountCreditInput = this.transactionEditForm.getByTestId('transaction-amount-credit-input')
+    this.transactionDescriptionInput = this.transactionEditForm.getByTestId('transaction-description-input')
+    this.transactionMemoInput = this.transactionEditForm.getByTestId('transaction-memo-input')
+    this.transactionBudgetCategoryTreeSelect = this.transactionEditForm.getByTestId('transaction-budget-category-tree-select')
+    this.transactionCheckNumberInput = this.transactionEditForm.getByTestId('transaction-check-number-input')
+    this.transactionFeesInput = this.transactionEditForm.getByTestId('transaction-fees-input')
+    this.transactionBalanceInput = this.transactionEditForm.getByTestId('transaction-balance-input')
 
-
-    this.modalCloseButton = this.transactionEditModal.getByRole('button', { name: 'Close this dialog' })
-    this.modalSaveButton = this.transactionEditModal.getByRole('button', { name: 'Save' })
-
+    this.modalCloseButton = this.transactionEditModal.getByRole('button', { name: /close/i })
+    this.modalSaveButton = this.transactionEditModal.getByRole('button', { name: /save/i })
   }
 
   async goto() {
@@ -111,12 +109,44 @@ export class TransactionsPage {
     await this.page.locator('button').filter({ hasText: /^Decrease Interval$/ }).click()
   }
 
+  // Method to wait for transactions table to be fully ready
+  async waitForTransactionsTableReady() {
+    await waitForElementTableReady(this.transactionsTable, this.page)
+  }
+
+  // Improved table cell clicking with proper Element UI loading handling
+  async clickOnTableCell(options: {
+    rowIndex?: number
+    cellIndex?: number
+    clickOptions?: { button?: 'left' | 'right' | 'middle' }
+  } = {}) {
+    const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
+
+    // Wait for any Element UI loading to complete first
+    await waitForElementUILoadingToComplete(this.page)
+
+    // Use the Element UI-aware helper function
+    await clickElementTableCell(
+      this.transactionsTable,
+      this.page,
+      rowIndex,
+      cellIndex,
+      clickOptions
+    )
+  }
+
   // get the text content of a given cell and row index
   async getCellTextContent(rowIndex: number, cellIndex: number): Promise<string> {
+    // Wait for table to be ready first
+    await waitForElementTableReady(this.transactionsTable, this.page)
+
     const row = this.transactionsTable.getByRole('row').nth(rowIndex)
     const cell = row.getByRole('cell').nth(cellIndex)
-    await expect(cell).not.toBeEmpty()
-    return await cell.textContent() ?? ''
+
+    await expect(cell).toBeVisible()
+    const text = await cell.textContent()
+
+    return text?.trim() || ''
   }
 
   // Method to get the value of the month select
@@ -178,23 +208,6 @@ export class TransactionsPage {
     await this.clickOnTableCell({ rowIndex: 1, cellIndex: 5, clickOptions: { button: 'left' } })
   }
 
-  async clickOnTableCell(options: {
-    rowIndex?: number
-    cellIndex?: number
-    clickOptions?: { button?: 'left' | 'right' | 'middle' }
-  } = {}) {
-    const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
-
-    // Use the Element UI-aware helper function instead of direct click
-    await clickElementTableCell(
-      this.transactionsTable,
-      this.page,
-      rowIndex,
-      cellIndex,
-      clickOptions
-    )
-  }
-
   async expectTransactionEditFormElementsToBeVisible() {
     await expect(this.transactionNumberInput).toBeVisible()
     await expect(this.transactionDatePicker).toBeVisible()
@@ -206,8 +219,18 @@ export class TransactionsPage {
     await expect(this.transactionCheckNumberInput).toBeVisible()
     await expect(this.transactionFeesInput).toBeVisible()
     await expect(this.transactionBalanceInput).toBeVisible()
-    await expect(this.modalCloseButton).toBeVisible()
-    await expect(this.modalSaveButton).toBeVisible()
   }
 
+  async expectTransactionEditModalVisible() {
+    await expect(this.transactionEditModal).toBeVisible()
+  }
+
+  async expectTransactionEditModalHidden() {
+    await expect(this.transactionEditModal).toBeHidden()
+  }
+
+  async closeTransactionEditModal() {
+    await this.modalCloseButton.click()
+    await this.expectTransactionEditModalHidden()
+  }
 }

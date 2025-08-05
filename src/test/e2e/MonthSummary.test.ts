@@ -72,12 +72,16 @@ test.describe('Month Summary Page', () => {
     // Check month title
     const title = await monthSummaryPage.getMonthTitle()
     expect(title).toContain('Month Summary for:' + ' ' + selectedMonth)
+
     // Check main table visibility
     await expect(monthSummaryPage.monthSummaryTable).toBeVisible()
+
     // Check budget categories summary component
     await expect(monthSummaryPage.budgetCategorySummaries).toBeVisible()
+
     // Check navigation button group visibility
     await expect(monthSummaryPage.navigationButtonGroup).toBeVisible()
+
     // Check that next month button is disabled when on the latest month
     const nextButton = monthSummaryPage.navigationButtonGroup.getByRole('button', { name: 'Next Month' })
     expect(await nextButton.isDisabled()).toBeTruthy()
