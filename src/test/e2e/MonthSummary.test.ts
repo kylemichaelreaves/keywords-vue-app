@@ -2,7 +2,7 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
-import { waitForPageReady, waitForSpinnersToDisappear } from '@test/e2e/helpers/waitHelpers'
+import { logSpinnersAndWait, waitForPageReady, waitForSpinnersToDisappear } from '@test/e2e/helpers/waitHelpers'
 import {
   MEMO_PRESETS,
   setupBudgetCategoryHierarchyInterceptor,
@@ -35,6 +35,8 @@ test.describe('Month Summary Page', () => {
     await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/, { waitUntil: 'networkidle' })
     await waitForSpinnersToDisappear(page) // Critical for CI - wait for all spinners
     await monthSummaryPage.waitForSummaryTableReady()
+
+    await logSpinnersAndWait(monthSummaryPage.page)
   })
 
   test.afterEach(async ({ page }) => {
@@ -45,6 +47,7 @@ test.describe('Month Summary Page', () => {
   })
 
   test('should display all month summary page elements correctly', async () => {
+    await logSpinnersAndWait(monthSummaryPage.page)
     // Check month title
     const title = await monthSummaryPage.getMonthTitle()
     expect(title).toContain('Month Summary for:' + ' ' + selectedMonth)
@@ -64,6 +67,7 @@ test.describe('Month Summary Page', () => {
   })
 
   test('should handle reset button click', async () => {
+    await logSpinnersAndWait(monthSummaryPage.page)
     await monthSummaryPage.clickResetButton()
     await monthSummaryPage.page.waitForURL('/budget-visualizer/transactions', { waitUntil: 'networkidle' })
     await expect(transactionsPage.page).toHaveURL(/\/budget-visualizer\/transactions/)
@@ -73,6 +77,8 @@ test.describe('Month Summary Page', () => {
   })
 
   test('right clicking on a table row opens the memo edit modal', async ({ page }) => {
+    await logSpinnersAndWait(monthSummaryPage.page)
+
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.monthly, true)
 
     // Wait for all spinners to disappear before interaction

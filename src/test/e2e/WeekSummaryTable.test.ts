@@ -3,7 +3,7 @@ import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { WeekSummaryPage } from '@test/e2e/pages/WeekSummaryPage'
 import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import {
-  debugTableLoadingState,
+  debugTableLoadingState, logSpinnersAndWait,
   waitForPageReady,
   waitForSpinnersToDisappear
 } from '@test/e2e/helpers/waitHelpers.ts'
@@ -38,6 +38,8 @@ test.describe('Week Summary Table', () => {
     await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'networkidle' })
     await waitForSpinnersToDisappear(page) // Critical for CI - wait for all spinners
     await weekSummaryPage.waitForSummaryTableReady()
+
+    await logSpinnersAndWait(weekSummaryPage.page)
   })
 
   test.afterEach(async ({ page }) => {
@@ -49,6 +51,7 @@ test.describe('Week Summary Table', () => {
   })
 
   test('should display the week summary table elements correctly', async () => {
+    await logSpinnersAndWait(weekSummaryPage.page)
     await weekSummaryPage.expectTableVisible()
     const weekTitle = await weekSummaryPage.getWeekTitle()
     expect(weekTitle).toContain(selectedWeek)
@@ -56,6 +59,7 @@ test.describe('Week Summary Table', () => {
   })
 
   test('should reset the week when reset button is clicked', async () => {
+    await logSpinnersAndWait(weekSummaryPage.page)
     await weekSummaryPage.clickResetButton()
     await weekSummaryPage.page.waitForURL('/budget-visualizer/transactions', { waitUntil: 'networkidle' })
     const weekSelectValue = await transactionsPage.getWeekSelectValue()
@@ -64,6 +68,8 @@ test.describe('Week Summary Table', () => {
 
 
   test('memo edit modal workflow: open, display content, and close', async ({ page }) => {
+    await logSpinnersAndWait(weekSummaryPage.page)
+
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.weekly, true)
 
     // Wait for all spinners to disappear before interaction

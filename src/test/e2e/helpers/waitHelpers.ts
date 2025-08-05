@@ -354,3 +354,85 @@ export async function withRetry<T>(
   throw new Error(`Operation failed after ${retries} attempts: ${lastError?.message || 'Unknown error'}`)
 }
 
+
+/**
+ * Wait for ALL loading spinners to be hidden
+ * @param {Page} page - Playwright page object
+ */
+export async function getSpinnerInfo(page: Page) {
+  return await page.evaluate(() => {
+    const masks = Array.from(document.querySelectorAll('.el-loading-mask'))
+
+    // Filter to only visible masks
+    const visibleMasks = masks.filter(mask => {
+      const style = window.getComputedStyle(mask)
+      return style.display !== 'none' &&
+        style.visibility !== 'hidden' &&
+        (mask as HTMLElement).offsetParent !== null
+    })
+
+    // Get info about what elements they're on top of
+    const containers = visibleMasks.map(mask => {
+      const parent = mask.parentElement
+      if (!parent) return 'unknown'
+
+      // Try to get a meaningful identifier
+      const id = parent.id ? `#${parent.id}` : ''
+      const classes = parent.className ? `.${parent.className.split(' ').join('.')}` : ''
+      const testId = parent.getAttribute('data-testid') ? `[data-testid="${parent.getAttribute('data-testid')}"]` : ''
+      const tagName = parent.tagName.toLowerCase()
+
+      // Return the most specific identifier available
+      return testId || id || classes || tagName
+    })
+
+    return {
+      count: visibleMasks.length,
+      containers: containers
+    }
+  })
+}
+
+
+export async function waitForAllSpinnersHidden(page: Page, options: { timeout?: number; debug?: boolean } = {}) {
+  const { timeout = 30000, debug = false } = options
+
+  if (debug) {
+    const initial = await getSpinnerInfo(page)
+    console.log(`Waiting for ${initial.count} spinner(s) to disappear from:`, initial.containers)
+  }
+
+  await page.waitForFunction(() => {
+    const masks = Array.from(document.querySelectorAll('.el-loading-mask'))
+    const visibleMasks = masks.filter(mask => {
+      const style = window.getComputedStyle(mask)
+      return style.display !== 'none' &&
+        style.visibility !== 'hidden' &&
+        (mask as HTMLElement).offsetParent !== null
+    })
+
+    return visibleMasks.length === 0
+  }, { timeout })
+
+  if (debug) {
+    console.log('All spinners hidden')
+  }
+}
+
+
+export async function logSpinnersAndWait(page: Page, options: { timeout?: number; debug?: boolean } = {}) {
+  const spinnerInfo = await getSpinnerInfo(page)
+
+  console.log(`Found ${spinnerInfo.count} active spinner(s):`)
+  spinnerInfo.containers.forEach((container, index) => {
+    console.log(`  ${index + 1}. ${container}`)
+  })
+
+  if (spinnerInfo.count > 0) {
+    console.log('Waiting for all spinners to disappear...')
+    await waitForAllSpinnersHidden(page, options)
+    console.log('All spinners are now hidden')
+  } else {
+    console.log('No spinners found')
+  }
+}
