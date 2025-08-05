@@ -5,7 +5,8 @@ import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import {
   debugTableLoadingState,
   waitForElementUILoadingToComplete,
-  waitForPageReady
+  waitForPageReady,
+  waitForSpinnersToDisappear
 } from '@test/e2e/helpers/waitHelpers.ts'
 import {
   MEMO_PRESETS,
@@ -26,16 +27,18 @@ test.describe('Week Summary Table', () => {
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
     await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'week' })
 
-    // Simplified setup - reduce redundant waits
+    // Simplified setup with comprehensive spinner waiting
     await transactionsPage.goto()
-    await waitForPageReady(page) // This includes networkidle
+    await waitForPageReady(page)
+    await waitForSpinnersToDisappear(page) // Wait for initial page spinners
 
     // Select week and navigate
     selectedWeek = await transactionsPage.selectFirstWeek()
 
-    // Single comprehensive wait for the summary page
+    // Wait for navigation and all spinners to disappear
     await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'networkidle' })
-    await weekSummaryPage.waitForSummaryTableReady() // This includes Element UI loading
+    await waitForSpinnersToDisappear(page) // Critical for CI - wait for all spinners
+    await weekSummaryPage.waitForSummaryTableReady()
   })
 
   test.afterEach(async ({ page }) => {
@@ -62,27 +65,24 @@ test.describe('Week Summary Table', () => {
 
 
   test('memo edit modal workflow: open, display content, and close', async ({ page }) => {
-    // DRY: Use reusable memo route helper with specific preset and clear existing routes
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.weekly, true)
 
+    // Wait for all spinners to disappear before interaction
+    await waitForSpinnersToDisappear(page)
     await debugTableLoadingState(page, 'week-summary-table')
 
-    // Initially hidden
     await weekSummaryPage.expectMemoEditModalHidden()
-
-    // Wait for the week summary table to be ready with comprehensive loading checks
     await weekSummaryPage.waitForSummaryTableReady()
-    await waitForElementUILoadingToComplete(page)
 
+    // Final spinner check before right-click
+    await waitForSpinnersToDisappear(page)
     await debugTableLoadingState(page, 'week-summary-table')
 
-    // Right click opens modal with correct content
     await weekSummaryPage.rightClickOnTableRow(1)
     await weekSummaryPage.expectMemoEditModalVisible()
     await weekSummaryPage.expectMemoEditFormTitle('Edit Memo:')
     await weekSummaryPage.expectMemoEditFormVisible()
 
-    // Closing hides modal
     await weekSummaryPage.closeMemoEditModal()
     await weekSummaryPage.expectMemoEditModalHidden()
   })

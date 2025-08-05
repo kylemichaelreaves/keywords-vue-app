@@ -32,6 +32,51 @@ export async function waitForElementUILoadingToComplete(page: Page, timeout: num
 }
 
 /**
+ * Specific helper to wait for Element UI spinners to be hidden
+ */
+export async function waitForSpinnersToDisappear(page: Page, timeout: number = 15000) {
+  try {
+    // Wait for all loading elements to be hidden or removed
+    await page.waitForFunction(
+      () => {
+        // Check for loading masks
+        const masks = document.querySelectorAll('.el-loading-mask')
+        const maskHidden = masks.length === 0 || Array.from(masks).every(mask => {
+          const style = window.getComputedStyle(mask)
+          return style.display === 'none' ||
+                 style.visibility === 'hidden' ||
+                 style.opacity === '0' ||
+                 !document.body.contains(mask)
+        })
+
+        // Check for loading spinners
+        const spinners = document.querySelectorAll('.el-loading-spinner')
+        const spinnersHidden = spinners.length === 0 || Array.from(spinners).every(spinner => {
+          const style = window.getComputedStyle(spinner)
+          return style.display === 'none' ||
+                 style.visibility === 'hidden' ||
+                 style.opacity === '0' ||
+                 !document.body.contains(spinner)
+        })
+
+        // Check for v-loading directive elements
+        const loadingElements = document.querySelectorAll('[class*="is-loading"]')
+        const vLoadingHidden = Array.from(loadingElements).every(el => {
+          return !el.classList.contains('is-loading') ||
+                 !el.className.includes('el-')
+        })
+
+        return maskHidden && spinnersHidden && vLoadingHidden
+      },
+      { timeout, polling: 1000 } // Check every second
+    )
+  } catch (error) {
+    console.warn('Spinner wait timed out, continuing anyway:', error)
+    // Don't fail the test - just continue
+  }
+}
+
+/**
  * Wait for Element UI table to be fully loaded and interactive
  * Enhanced version with better loading detection
  */

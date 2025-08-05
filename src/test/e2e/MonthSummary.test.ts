@@ -2,7 +2,11 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
-import { waitForElementUILoadingToComplete, waitForPageReady } from '@test/e2e/helpers/waitHelpers'
+import {
+  waitForElementUILoadingToComplete,
+  waitForPageReady,
+  waitForSpinnersToDisappear
+} from '@test/e2e/helpers/waitHelpers'
 import {
   setupMemoRouteInterceptor,
   setupBudgetCategoryHierarchyInterceptor,
@@ -23,16 +27,18 @@ test.describe('Month Summary Page', () => {
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
     await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'month' })
 
-    // Simplified setup - reduce redundant waits
+    // Simplified setup with comprehensive spinner waiting
     await transactionsPage.goto()
-    await waitForPageReady(page) // This includes networkidle
+    await waitForPageReady(page)
+    await waitForSpinnersToDisappear(page) // Wait for initial page spinners
 
     // Select month and navigate
     selectedMonth = await transactionsPage.selectFirstMonth()
 
-    // Single comprehensive wait for the summary page
+    // Wait for navigation and all spinners to disappear
     await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/, { waitUntil: 'networkidle' })
-    await monthSummaryPage.waitForSummaryTableReady() // This includes Element UI loading
+    await waitForSpinnersToDisappear(page) // Critical for CI - wait for all spinners
+    await monthSummaryPage.waitForSummaryTableReady()
   })
 
   test.afterEach(async ({ page }) => {
@@ -71,12 +77,14 @@ test.describe('Month Summary Page', () => {
   })
 
   test('right clicking on a table row opens the memo edit modal', async ({ page }) => {
-    // DRY: Use reusable memo route helper with specific preset and clear existing routes
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.monthly, true)
 
-    // Wait for the month summary table to be ready with comprehensive loading checks
+    // Wait for all spinners to disappear before interaction
+    await waitForSpinnersToDisappear(page)
     await monthSummaryPage.waitForSummaryTableReady()
-    await waitForElementUILoadingToComplete(page)
+
+    // Final spinner check before right-click
+    await waitForSpinnersToDisappear(page)
 
     await monthSummaryPage.expectMemoEditModalHidden()
     await monthSummaryPage.rightClickOnTableRow(1)
