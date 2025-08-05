@@ -91,7 +91,7 @@ test.describe('Week Summary Table', () => {
 
     // wait for the week summary table to be ready
     await weekSummaryPage.expectTableVisible()
-
+    await debugTableLoadingState(page, 'week-summary-table')
     // Right click opens modal with correct content
     await weekSummaryPage.rightClickOnTableRow(1)
     await weekSummaryPage.expectMemoEditModalVisible()
