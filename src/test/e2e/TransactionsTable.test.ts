@@ -16,9 +16,9 @@ test.describe('Transactions Table', () => {
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
 
-    console.time('setting up transactionMocks')
+
     await setupTransactionsTableWithStaticMocks(page, staticTransactions, staticDailyIntervals)
-    console.timeEnd('setting up transactionMocks')
+
 
     await transactionsPage.goto()
 
@@ -132,9 +132,9 @@ test.describe('Transactions Table', () => {
     expect(fifthPointDate).toBeDefined()
     expect(fifthPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
 
-    console.time('generating transactions')
+
     const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
-    console.timeEnd('generating transactions')
+
 
     // CRITICAL FIX: Unroute existing handlers first to prevent conflicts
     await page.unroute('**/transactions**')
@@ -178,8 +178,8 @@ test.describe('Transactions Table', () => {
     const requestPromise = page.waitForRequest(request => {
       const url = request.url()
       return url.includes('transactions') &&
-             url.includes(`date=${fifthPointDate}`) &&
-             url.includes('timeFrame=day')
+        url.includes(`date=${fifthPointDate}`) &&
+        url.includes('timeFrame=day')
     })
 
     // Click the chart point

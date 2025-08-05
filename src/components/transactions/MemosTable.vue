@@ -19,7 +19,7 @@
         size="large"
         :default-sort="{ prop: 'total_amount_debit', order: 'descending' }"
         data-testid="memos-table"
-        :row-key="(row: Memo) => row.id"
+        :row-key="(row: Memo) => row.name"
         @row-contextmenu="openMemoEditModal"
       >
         <el-table-column

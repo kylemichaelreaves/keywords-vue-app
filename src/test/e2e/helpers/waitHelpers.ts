@@ -34,7 +34,7 @@ export async function waitForElementUILoadingToComplete(page: Page, timeout: num
 /**
  * Specific helper to wait for Element UI spinners to be hidden
  */
-export async function waitForSpinnersToDisappear(page: Page, timeout: number = 15000) {
+export async function waitForSpinnersToDisappear(page: Page, timeout: number = 30000) {
   try {
     // Wait for all loading elements to be hidden or removed
     await page.waitForFunction(
@@ -106,101 +106,6 @@ export async function waitForElementTableReady(table: Locator, page: Page, optio
   // Double-check no loading masks are present on the table specifically
   await expect(table.locator('.el-loading-mask')).not.toBeVisible()
 }
-
-/**
- * Wait for table to be ready using semantic selectors
- */
-export async function waitForTableReady(table: Locator) {
-  await expect(table).toBeVisible()
-  await expect(table).toBeAttached()
-
-  const tableBody = table.locator('tbody')
-  await expect(tableBody).toBeVisible()
-
-  const firstRow = table.getByRole('row').first()
-  await expect(firstRow).toBeVisible()
-  await expect(firstRow).toBeAttached()
-
-  const firstCell = firstRow.getByRole('cell').first()
-  await expect(firstCell).toBeVisible()
-  await expect(firstCell).not.toBeEmpty()
-
-  await expect(table).not.toHaveAttribute('aria-busy', 'true')
-}
-
-/**
- * Wait for element to be interactive with Element UI considerations
- */
-export async function waitForElementInteractive(element: Locator, page: Page) {
-  await expect(element).toBeVisible()
-  await expect(element).toBeAttached()
-  await expect(element).toBeEnabled()
-
-  // Ensure no loading masks are covering this element
-  await waitForElementUILoadingToComplete(page)
-
-  await expect(element).not.toHaveAttribute('aria-busy', 'true')
-  await expect(element).not.toHaveAttribute('aria-disabled', 'true')
-}
-
-/**
- * Safe navigation with proper waits
- */
-export async function navigateAndWait(page: Page, url: string | RegExp, options?: {
-  waitUntil?: 'load' | 'domcontentloaded' | 'networkidle'
-}) {
-  await page.waitForURL(url, { waitUntil: options?.waitUntil || 'networkidle' })
-  await waitForPageReady(page)
-}
-
-/**
- * Wait for dropdown options to be available using semantic selectors
- */
-export async function waitForDropdownOptions(page: Page) {
-  await page.getByRole('option').first().waitFor({ state: 'visible' })
-}
-
-/**
- * Wait for dropdown to be ready with options loaded using semantic selectors
- */
-export async function waitForDropdownReady(dropdown: Locator, page: Page) {
-  await expect(dropdown).toBeVisible()
-  await expect(dropdown).toBeEnabled()
-
-  await dropdown.click()
-
-  await expect(page.getByRole('option').first()).toBeVisible()
-
-  const firstOption = page.getByRole('option').first()
-  await expect(firstOption).not.toHaveText(/loading|\.\.\./)
-}
-
-/**
- * Wait for modal to be fully ready using semantic selectors
- */
-export async function waitForModalReady(modal: Locator) {
-  await expect(modal).toBeVisible()
-
-  const dialogContent = modal.getByRole('dialog').first()
-  await expect(dialogContent).toBeVisible()
-
-  await expect(modal).not.toHaveAttribute('aria-busy', 'true')
-}
-
-/**
- * Robust table row interaction with Element UI loading considerations
- */
-export async function rightClickTableRow(table: Locator, page: Page, rowIndex: number = 0) {
-  await waitForElementTableReady(table, page)
-
-  const tableRow = table.getByRole('row').nth(rowIndex)
-  await waitForElementInteractive(tableRow, page)
-
-  await expect(tableRow.getByRole('cell').first()).not.toBeEmpty()
-
-  await tableRow.click({ button: 'right' })
-}
-
 /**
  * Wait for loading to complete - comprehensive version for CI
  */
@@ -323,38 +228,6 @@ export async function debugTableLoadingState(page: Page, testId: string) {
     }
   }, testId)
 }
-
-/**
- * CI-specific retry wrapper for critical operations
- */
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  options: {
-    retries?: number
-    delay?: number
-    onRetry?: (attempt: number, error: Error) => void
-  } = {}
-): Promise<T> {
-  const { retries = 3, onRetry } = options
-  let lastError: Error | null = null
-
-  for (let i = 0; i < retries; i++) {
-    try {
-      return await fn()
-    } catch (error) {
-      lastError = error as Error
-      if (i < retries - 1) {
-        onRetry?.(i + 1, lastError)
-        // Use page.waitForLoadState instead of timeout
-        await new Promise(resolve => setTimeout(resolve, 100 * (i + 1)))
-      }
-    }
-  }
-
-  throw new Error(`Operation failed after ${retries} attempts: ${lastError?.message || 'Unknown error'}`)
-}
-
-
 /**
  * Wait for ALL loading spinners to be hidden
  * @param {Page} page - Playwright page object

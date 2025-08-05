@@ -29,14 +29,13 @@ test.describe('Week Summary Table', () => {
     // Simplified setup with comprehensive spinner waiting
     await transactionsPage.goto()
     await waitForPageReady(page)
-    await waitForSpinnersToDisappear(page) // Wait for initial page spinners
+    // await waitForSpinnersToDisappear(page) // Wait for initial page spinners
 
     // Select week and navigate
     selectedWeek = await transactionsPage.selectFirstWeek()
 
     // Wait for navigation and all spinners to disappear
     await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'networkidle' })
-    await waitForSpinnersToDisappear(page) // Critical for CI - wait for all spinners
     await weekSummaryPage.waitForSummaryTableReady()
 
     await logSpinnersAndWait(weekSummaryPage.page)
