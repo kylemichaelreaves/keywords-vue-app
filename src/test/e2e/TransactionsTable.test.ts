@@ -53,11 +53,11 @@ test.describe('Transactions Table', () => {
   })
 
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
-    // Use comprehensive Element UI-aware waiting
-    await transactionsPage.waitForTransactionsTableReady()
-
-    // Additional debug info for CI troubleshooting
-    await debugTableLoadingState(page, 'transactions-table')
+    // // Use comprehensive Element UI-aware waiting
+    // await transactionsPage.waitForTransactionsTableReady()
+    //
+    // // Additional debug info for CI troubleshooting
+    // await debugTableLoadingState(page, 'transactions-table')
 
     // Use the improved click method that handles Element UI loading
     await transactionsPage.clickOnTableCell({
@@ -89,6 +89,7 @@ test.describe('Transactions Table', () => {
     //   close the Transaction Edit modal
     const closeButton = transactionsPage.modalCloseButton
     await closeButton.click()
+    await transactionsPage.page.waitForLoadState('networkidle')
     await expect(editTransactionModal).not.toBeVisible()
   })
 

@@ -81,21 +81,16 @@ test.describe('Month Summary Page', () => {
 
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.monthly, true)
 
-    // Wait for all spinners to disappear before interaction
-    await waitForSpinnersToDisappear(page)
-    await monthSummaryPage.waitForSummaryTableReady()
-
-    // Final spinner check before right-click
-    await waitForSpinnersToDisappear(page)
+    await monthSummaryPage.monthSummaryTable.waitFor({ state: 'visible' })
 
     await monthSummaryPage.expectMemoEditModalHidden()
     await monthSummaryPage.rightClickOnTableRow(1)
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await monthSummaryPage.expectMemoEditModalVisible()
     await monthSummaryPage.expectMemoEditFormVisible()
     await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
     await monthSummaryPage.closeMemoEditModal()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await monthSummaryPage.expectMemoEditModalHidden()
   })
 })

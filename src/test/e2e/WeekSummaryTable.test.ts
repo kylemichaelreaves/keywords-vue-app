@@ -66,20 +66,9 @@ test.describe('Week Summary Table', () => {
 
 
   test('memo edit modal workflow: open, display content, and close', async ({ page }) => {
-    // await logSpinnersAndWait(weekSummaryPage.page)
-
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.weekly, true)
 
-    // Wait for all spinners to disappear before interaction
-    // await waitForSpinnersToDisappear(page)
-    // await debugTableLoadingState(page, 'week-summary-table')
-
     await weekSummaryPage.expectMemoEditModalHidden()
-    await weekSummaryPage.waitForSummaryTableReady()
-
-    // Final spinner check before right-click
-    // await waitForSpinnersToDisappear(page)
-    // await debugTableLoadingState(page, 'week-summary-table')
 
     await weekSummaryPage.rightClickOnTableRow(1)
     await weekSummaryPage.expectMemoEditModalVisible()
