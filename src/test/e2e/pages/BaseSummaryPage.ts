@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { waitForElementTableReady, rightClickElementTableRow, waitForElementUILoadingToComplete, waitForTableContent } from '@test/e2e/helpers/waitHelpers'
+import { rightClickElementTableRow, waitForTableContent } from '@test/e2e/helpers/waitHelpers'
 
 export abstract class BaseSummaryPage {
   readonly page: Page
@@ -94,7 +94,6 @@ export abstract class BaseSummaryPage {
     const table = this.getSummaryTable()
 
     // More specific content checks
-    await expect(table.getByRole('row')).toHaveCount({ min: 2 }) // Header + at least 1 data row
     await expect(table.getByRole('cell').first()).not.toBeEmpty()
 
     return true

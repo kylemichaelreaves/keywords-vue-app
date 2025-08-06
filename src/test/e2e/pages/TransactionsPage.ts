@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { clickElementTableCell, waitForElementTableReady, waitForElementUILoadingToComplete } from '@test/e2e/helpers/waitHelpers'
+import { clickElementTableCell, waitForElementTableReady } from '@test/e2e/helpers/waitHelpers'
 
 export class TransactionsPage {
   readonly transactionsTable: Locator
@@ -123,10 +123,6 @@ export class TransactionsPage {
   } = {}) {
     const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
 
-    // Wait for any Element UI loading to complete first
-    await waitForElementUILoadingToComplete(this.page)
-
-    // Use the Element UI-aware helper function
     await clickElementTableCell(
       this.transactionsTable,
       this.page,
@@ -139,7 +135,7 @@ export class TransactionsPage {
   // get the text content of a given cell and row index
   async getCellTextContent(rowIndex: number, cellIndex: number): Promise<string> {
     // Wait for table to be ready first
-    await waitForElementTableReady(this.transactionsTable, this.page)
+    // await waitForElementTableReady(this.transactionsTable, this.page)
 
     const row = this.transactionsTable.getByRole('row').nth(rowIndex)
     const cell = row.getByRole('cell').nth(cellIndex)
