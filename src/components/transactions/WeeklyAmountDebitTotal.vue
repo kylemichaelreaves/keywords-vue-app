@@ -1,21 +1,23 @@
 <template>
-  <AlertComponent
-    v-if="isError && error"
-    :title="error.name"
-    :message="error.message"
-    type="error"
-    data-testid="weekly-amount-debit-total-error"
-  />
-  <el-statistic
-    v-if="data"
-    :value="weekTotalAmountDebit"
-    title="Weekly Total Amount Debit"
-    v-loading="isLoading || isFetching || isRefetching"
-  />
+  <div>
+    <AlertComponent
+      v-if="isError && error"
+      :title="error.name"
+      :message="error.message"
+      type="error"
+      data-testid="weekly-amount-debit-total-error"
+    />
+    <el-statistic
+      v-if="data"
+      :value="weekTotalAmountDebit"
+      title="Weekly Total Amount Debit"
+      v-loading="isLoading || isFetching || isRefetching"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { watch, computed } from 'vue'
+import { computed, watch } from 'vue'
 import { ElStatistic } from 'element-plus'
 import useSumAmountDebitByDate from '@api/hooks/transactions/useSumAmountDebitByDate'
 import { useTransactionsStore } from '@stores/transactions'

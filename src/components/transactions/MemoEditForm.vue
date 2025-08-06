@@ -1,37 +1,42 @@
 <template>
-  <el-form :model="formData" label-width="120px" :data-testid="dataTestId">
-    <el-form-item
-      v-for="(field, key) in fields"
-      :key="key"
-      :label="field.label"
-      :data-testid="`${dataTestId}-${key}-form-item`"
-    >
-      <component
-        :is="field.component"
-        v-model="formData[key]"
-        :placeholder="field.placeholder"
-        :disabled="field.disabledCondition ? field.disabledCondition : false"
-        :data-testid="field.dataTestId || `${dataTestId}-${key}`"
+  <div>
+    <AlertComponent v-if="isError && error" :message="error.message" type="error" :title="error.name"/>
+    <el-form :model="formData" label-width="120px" :data-testid="props.dataTestId">
+      <el-form-item
+        v-for="(field, key) in fields"
+        :key="key"
+        :label="field.label"
+        :data-testid="`${dataTestId}-${key}-form-item`"
       >
-        <template v-if="field.component === 'el-select'">
-          <el-option
-            v-for="option in field.options"
-            :key="option.value"
-            :value="option.value"
-            :label="option.label"
-            :data-testid="`${dataTestId}-${key}-option-${option.value}`"
-          />
-        </template>
-      </component>
-    </el-form-item>
-    <el-button
-      type="primary"
-      @click="saveMemo"
-      :data-testid="`${dataTestId}-save-button`"
-    >
-      Save
-    </el-button>
-  </el-form>
+        <component
+          :is="field.component"
+          v-model="formData[key]"
+          :placeholder="field.placeholder"
+          :disabled="field.disabledCondition ? field.disabledCondition : false"
+          :data-testid="field.dataTestId || `${dataTestId}-${key}`"
+        >
+          <template v-if="field.component === 'el-select'">
+            <el-option
+              v-for="option in field.options"
+              :key="option.value"
+              :value="option.value"
+              :label="option.label"
+              :data-testid="`${dataTestId}-${key}-option-${option.value}`"
+            />
+          </template>
+        </component>
+      </el-form-item>
+      <el-button
+        type="primary"
+        @click="saveMemo"
+        :data-testid="`${dataTestId}-save-button`"
+        :loading="isPending"
+        :disabled="isPending"
+      >
+        Save
+      </el-button>
+    </el-form>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -42,6 +47,7 @@ import type { Memo, MemoFormFields, MemoKeys } from '@types'
 import mutateMemo from '@api/hooks/transactions/mutateMemo'
 import BudgetCategoryTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
 import MemoAvatar from '@components/transactions/MemoAvatar.vue'
+import AlertComponent from '@components/shared/AlertComponent.vue'
 
 const props = defineProps({
   memo: {
@@ -65,7 +71,7 @@ const formData = reactive<Memo>({
   avatar_s3_url: props.memo.avatar_s3_url || null
 })
 
-const { mutate } = mutateMemo()
+const { mutate, error, isError, isPending } = mutateMemo()
 
 // Watch for changes to the memo prop and update the reactive form data
 watch(

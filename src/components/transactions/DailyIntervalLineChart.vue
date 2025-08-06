@@ -1,23 +1,25 @@
 <template>
-  <AlertComponent
-    v-if="isError && error"
-    :message="error.message"
-    :title="error.name"
-    type="error"
-    :data-testid="errorAlertDataTestId"
-  />
-  <IntervalForm
-    :data-testid="intervalFormDataTestId"
-    @update:interval-value="handleIntervalChange"
-    v-model:interval-value="intervalValue"
-  />
-  <LineChart
-    :data-testid="props.dataTestId"
-    v-if="data"
-    :summaries="data"
-    :loading="isLoading || isFetching"
-    :handle-on-click-selection="handleOnDayClicked"
-  />
+  <div>
+    <AlertComponent
+      v-if="isError && error"
+      :message="error.message"
+      :title="error.name"
+      type="error"
+      :data-testid="errorAlertDataTestId"
+    />
+    <IntervalForm
+      :data-testid="intervalFormDataTestId"
+      @update:interval-value="handleIntervalChange"
+      v-model:interval-value="intervalValue"
+    />
+    <LineChart
+      :data-testid="props.dataTestId"
+      v-if="data"
+      :summaries="data"
+      :loading="isLoading || isFetching"
+      :handle-on-click-selection="handleOnDayClicked"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">

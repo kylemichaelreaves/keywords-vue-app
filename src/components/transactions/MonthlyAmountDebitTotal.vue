@@ -1,19 +1,21 @@
 <template>
-  <AlertComponent
-    v-if="isError && error"
-    :title="error.name"
-    :message="error?.message"
-    type="error"
-    data-test-id="monthly-amount-debit-total-error"
-  />
-  <el-statistic
-    v-if="data"
-    :value="statisticValue"
-    title="Monthly Total Amount Debit"
-    v-loading="isLoading || isFetching || isRefetching"
-    :precision="2"
-    data-test-id="monthly-amount-debit-total-statistic"
-  />
+  <div>
+    <AlertComponent
+      v-if="isError && error"
+      :title="error.name"
+      :message="error?.message"
+      type="error"
+      data-test-id="monthly-amount-debit-total-error"
+    />
+    <el-statistic
+      v-if="data"
+      :value="statisticValue"
+      title="Monthly Total Amount Debit"
+      v-loading="isLoading || isFetching || isRefetching"
+      :precision="2"
+      data-testid="monthly-amount-debit-total-statistic"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">

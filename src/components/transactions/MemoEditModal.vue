@@ -1,4 +1,5 @@
 <template>
+  <AlertComponent v-if="isError && error" :message="error.message" type="error" :title="error.name" />
   <el-dialog
     v-model="isVisible"
     :title="modalTitle"
@@ -10,7 +11,6 @@
     <MemoEditForm
       v-if="memoData && !isLoading && isVisible"
       :memo="memoData"
-      data-testid="memo-edit-form"
       @close="handleClose"
     />
     <div v-else-if="isLoading && isVisible" class="loading-state">
@@ -26,6 +26,7 @@
 import { computed, ref, watch } from 'vue'
 import MemoEditForm from '@components/transactions/MemoEditForm.vue'
 import useMemo from '@api/hooks/transactions/useMemo'
+import AlertComponent from '@components/shared/AlertComponent.vue'
 
 // Props
 interface Props {
@@ -40,7 +41,7 @@ const isVisible = ref(false)
 
 
 const { data: memoData, isError, isLoading, error, refetch } = useMemo(
-  computed(() => props.memoName),
+  computed(() => props.memoName)
 )
 
 const modalTitle = computed(() => {

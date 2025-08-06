@@ -1,14 +1,11 @@
 <template>
-  <el-row class="selects" data-testid="transactions-table-selects-row">
+  <el-row class="selects" :data-testid="props.dataTestId">
     <el-col
       v-for="select in selects"
       :key="select.testId"
       :span="select.span"
     >
-      <component
-        :is="select.component"
-        :data-testid="select.testId"
-      />
+      <component :is="select.component" />
     </el-col>
   </el-row>
 </template>
@@ -19,6 +16,13 @@ import MonthSelect from '@components/transactions/MonthSelect.vue'
 import WeekSelect from '@components/transactions/WeekSelect.vue'
 import DaySelect from '@components/transactions/DaySelect.vue'
 import YearSelect from '@components/transactions/YearSelect.vue'
+
+const props = defineProps({
+  dataTestId: {
+    type: String,
+    default: 'transactions-table-selects-row'
+  }
+})
 
 const selects = [
   {

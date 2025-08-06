@@ -23,7 +23,8 @@ test.describe('Transactions Table', () => {
     await transactionsPage.goto()
 
     // Single comprehensive wait instead of multiple redundant waits
-    await waitForElementTableReady(transactionsPage.transactionsTable, page)
+    // await waitForElementTableReady(transactionsPage.transactionsTable, page)
+    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
   })
 
   test.afterEach(async ({ page }) => {

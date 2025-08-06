@@ -2,7 +2,7 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
-import { logSpinnersAndWait, waitForPageReady, waitForSpinnersToDisappear } from '@test/e2e/helpers/waitHelpers'
+import { logSpinnersAndWait, waitForSpinnersToDisappear } from '@test/e2e/helpers/waitHelpers'
 import {
   MEMO_PRESETS,
   setupBudgetCategoryHierarchyInterceptor,
@@ -25,18 +25,18 @@ test.describe('Month Summary Page', () => {
 
     // Simplified setup with comprehensive spinner waiting
     await transactionsPage.goto()
-    await waitForPageReady(page)
-    await waitForSpinnersToDisappear(page) // Wait for initial page spinners
+    // await waitForPageReady(page)
+    // await waitForSpinnersToDisappear(page) // Wait for initial page spinners
 
     // Select month and navigate
     selectedMonth = await transactionsPage.selectFirstMonth()
 
     // Wait for navigation and all spinners to disappear
-    await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/, { waitUntil: 'networkidle' })
+    await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/, { waitUntil: 'domcontentloaded' })
     await waitForSpinnersToDisappear(page) // Critical for CI - wait for all spinners
-    await monthSummaryPage.waitForSummaryTableReady()
-
     await logSpinnersAndWait(monthSummaryPage.page)
+
+    await monthSummaryPage.monthSummaryTable.waitFor({ state: 'visible' })
   })
 
   test.afterEach(async ({ page }) => {

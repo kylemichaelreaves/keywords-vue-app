@@ -2,10 +2,11 @@ import type { MonthSummary } from '@types'
 import { httpClient } from '@api/httpClient'
 
 export async function fetchMonthSummary(monthId: string): Promise<MonthSummary[]> {
-  return await httpClient
-    .get(`/transactions/months/${monthId}/summary`)
-    .then(res => res.data)
-    .catch((err: Error) => {
-      console.error('err:', err)
-    })
+  try {
+    const response = await httpClient.get(`/transactions/months/${monthId}/summary`)
+    return response.data
+  } catch (err) {
+    console.error('Error fetching month summary:', err)
+    throw err
+  }
 }

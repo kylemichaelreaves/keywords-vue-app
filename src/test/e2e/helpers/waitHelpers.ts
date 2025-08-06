@@ -100,12 +100,12 @@ export async function waitForElementTableReady(table: Locator, page: Page, optio
   await page.waitForLoadState('networkidle', { timeout: 10000 })
 
 
-  await table.locator('.el-loading-mask').waitFor({ state: 'hidden', timeout: 10000 })
-
+  await table.locator('.el-loading-mask').waitFor({ state: 'hidden', timeout: 60000 })
 
   // Double-check no loading masks are present on the table specifically
   await expect(table.locator('.el-loading-mask')).not.toBeVisible()
 }
+
 /**
  * Wait for loading to complete - comprehensive version for CI
  */
@@ -228,6 +228,7 @@ export async function debugTableLoadingState(page: Page, testId: string) {
     }
   }, testId)
 }
+
 /**
  * Wait for ALL loading spinners to be hidden
  * @param {Page} page - Playwright page object

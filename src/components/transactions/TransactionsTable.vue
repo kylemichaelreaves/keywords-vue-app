@@ -1,5 +1,4 @@
 <template>
-  <DailyIntervalLineChart data-testid="daily-interval-line-chart" :first-day="firstDay" />
   <AlertComponent
     v-if="isError && error"
     :title="error.name"
@@ -8,8 +7,11 @@
     data-testid="transactions-table-error-alert"
   />
 
-  <MonthSummaryTable v-if="selectedMonth" data-testid="month-summary-table" />
-  <WeekSummaryTable v-if="selectedWeek" data-testid="week-summary-table" />
+  <DailyIntervalLineChart :first-day="firstDay" />
+
+  <MonthSummaryTable v-if="selectedMonth" />
+  <WeekSummaryTable v-if="selectedWeek" />
+
   <TransactionsTableSelects data-testid="transactions-table-selects" />
 
   <el-dialog
@@ -24,7 +26,6 @@
       v-if="selectedTransaction"
       :transaction="selectedTransaction"
       @close="closeTransactionEditModal"
-      data-testid="transaction-edit-form"
     />
   </el-dialog>
 
@@ -78,7 +79,7 @@
       </el-table-column>
     </el-table>
   </div>
-  <TransactionTablePagination v-if="!isPaginationDisabled" data-testid="transactions-table-pagination" />
+  <TransactionTablePagination v-if="!isPaginationDisabled" />
 </template>
 
 <script setup lang="ts">

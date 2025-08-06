@@ -1,14 +1,16 @@
 <template>
-  <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error" />
-  <SelectComponent
-    :data-testid="props.dataTestId"
-    :options="weekOptions"
-    :selectedValue="selectedWeek"
-    placeholder="select a week"
-    :onChange="updateSelectedWeek"
-    :onClear="clearSelectedYear"
-    :disabled="isLoading || isFetching"
-  />
+  <div>
+    <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error" />
+    <SelectComponent
+      :data-testid="props.dataTestId"
+      :options="weekOptions"
+      :selectedValue="selectedWeek"
+      placeholder="select a week"
+      :onChange="updateSelectedWeek"
+      :onClear="clearSelectedYear"
+      :disabled="isLoading || isFetching"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">

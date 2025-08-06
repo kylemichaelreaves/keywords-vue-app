@@ -1,15 +1,16 @@
 import { httpClient } from '@api/httpClient'
 import type { Memo } from '@types'
 
-export async function updateMemoBudgetCategory(memo: Memo['name'], budgetCategory: string): Promise<Memo> {
+export async function updateMemoBudgetCategory(memoName: Memo['name'], budgetCategory: string): Promise<Memo> {
   // TODO remove: it's redundant.
-  return await httpClient
-    .patch(`/memos/${memo}`, {
+  try {
+    const res = await httpClient.patch(`/memos/${memoName}`, {
         budgetCategory: budgetCategory
       }
     )
-    .then(res => res.data)
-    .catch((err: Error) => {
-      console.error('err:', err)
-    })
+    return res.data
+  } catch (err) {
+    console.error('Error updating memo budget category:', { memoName, budgetCategory }, err)
+    throw err
+  }
 }

@@ -1,23 +1,25 @@
 <template>
-  <AlertComponent
-    :title="error.name"
-    :message="error.message"
-    type="error" v-if="isError && error"
-    :data-testid="errorId"
-  />
-  <SelectComponent
-    :data-testid="props.dataTestId"
-    :selectedValue="selectedYear"
-    placeholder="select a year"
-    :options="yearOptions"
-    :isLoading="isLoading"
-    :isFetching="isFetching"
-    :isError="isError"
-    :error="error"
-    :onChange="updateSelectedYear"
-    :onClear="clearSelectedYear"
-    :disabled="true"
-  />
+  <div>
+    <AlertComponent
+      :title="error.name"
+      :message="error.message"
+      type="error" v-if="isError && error"
+      :data-testid="errorId"
+    />
+    <SelectComponent
+      :data-testid="props.dataTestId"
+      :selectedValue="selectedYear"
+      placeholder="select a year"
+      :options="yearOptions"
+      :isLoading="isLoading"
+      :isFetching="isFetching"
+      :isError="isError"
+      :error="error"
+      :onChange="updateSelectedYear"
+      :onClear="clearSelectedYear"
+      :disabled="true"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">

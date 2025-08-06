@@ -3,11 +3,12 @@ import { httpClient } from '@api/httpClient'
 
 
 export async function fetchDaySummary(day: string): Promise<DaySummary[]> {
-  const dayWithoutTime = day.split('T')[0]
-  return await httpClient
-    .get(`/transactions/days/${dayWithoutTime}/summary`)
-    .then(res => res.data)
-    .catch((err: Error) => {
-      console.error('err:', err)
-    })
+  try {
+    const dayWithoutTime = day.split('T')[0]
+    const res = await httpClient.get(`/transactions/days/${dayWithoutTime}/summary`)
+    return res.data
+  } catch (err) {
+    console.error('Error fetching day summary:', { day }, err)
+    throw err
+  }
 }

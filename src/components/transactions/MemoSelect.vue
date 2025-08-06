@@ -1,21 +1,23 @@
 <template>
-  <AlertComponent
-    v-if="error && isError"
-    :title="error.name"
-    :message="error.message"
-    type="error"
-    :data-test-id="errorAlertDataTestId"
-  />
-  <SelectComponent
-    :data-testid="props.dataTestId"
-    :on-clear="clearSelectedMemo"
-    :on-change="updateSelectedMemo"
-    :placeholder="props.placeholder"
-    :selectedValue="model"
-    :options="memoOptions"
-    :disabled="isFetching || isLoading"
-    :data-test-id="props.dataTestId"
-  />
+  <div>
+    <AlertComponent
+      v-if="error && isError"
+      :title="error.name"
+      :message="error.message"
+      type="error"
+      :data-test-id="errorAlertDataTestId"
+    />
+    <SelectComponent
+      :data-testid="props.dataTestId"
+      :on-clear="clearSelectedMemo"
+      :on-change="updateSelectedMemo"
+      :placeholder="props.placeholder"
+      :selectedValue="model"
+      :options="memoOptions"
+      :disabled="isFetching || isLoading"
+      :data-test-id="props.dataTestId"
+    />
+  </div>
 </template>
 
 <script setup lang='ts'>

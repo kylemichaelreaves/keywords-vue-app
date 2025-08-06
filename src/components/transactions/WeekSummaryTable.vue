@@ -1,6 +1,6 @@
 <template>
-  <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error" />
   <el-card>
+    <AlertComponent v-if="isError && error" :title="error.name" :message="error.message" type="error" />
     <template #header>
       <WeekSummaryHeader
         :selected-week="selectedWeek"

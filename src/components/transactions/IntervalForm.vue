@@ -1,58 +1,69 @@
 <template>
-  <AlertComponent
-    title="Interval Exceeds Oldest Transaction"
-    message="Your requested interval exceeds the oldest dated transaction. Please choose a smaller interval."
-    type="error"
-    v-if="isOutOfRange"
-    @close="onClose"
-  />
+  <div>
+    <AlertComponent
+      title="Interval Exceeds Oldest Transaction"
+      message="Your requested interval exceeds the oldest dated transaction. Please choose a smaller interval."
+      type="error"
+      v-if="isOutOfRange"
+      @close="onClose"
+    />
 
-  <AlertComponent
-    :title="error.name"
-    :message="error.message"
-    type="error"
-    v-if="error && isError"
-  />
+    <AlertComponent
+      :title="error.name"
+      :message="error.message"
+      type="error"
+      v-if="error && isError"
+    />
 
-  <el-form label-position="top" :disabled="isOutOfRange || isFetching || isLoading" data-testid="interval-form">
-    <div class="form-row">
-      <el-form-item label="Interval Count" class="form-item-inline">
-        <el-input-number
-          v-model="numberInput"
-          :min="1"
-          :max="100"
-          :step="1"
-          @change="handleNumberInputChange"
-          controls-position="right"
-          class="input-number-inline"
-          data-testid="interval-input-number"
-        />
-      </el-form-item>
-      <el-form-item label="Interval Type" class="form-item-inline">
-        <el-select
-          v-model="intervalSelect"
-          placeholder="Select interval"
-          class="select-inline"
-          clearable
-          @clear="onClearIntervalSelect"
-          data-testid="interval-select"
-        >
-          <el-option
-            v-for="option in selectOptions"
-            :key="option.value"
-            :label="option.label"
-            :value="option.value"
+    <el-form label-position="top" :disabled="isOutOfRange || isFetching || isLoading" data-testid="interval-form">
+      <div class="form-row">
+        <el-form-item label="Interval Count" class="form-item-inline">
+          <el-input-number
+            v-model="numberInput"
+            :min="1"
+            :max="100"
+            :step="1"
+            @change="handleNumberInputChange"
+            controls-position="right"
+            class="input-number-inline"
+            data-testid="interval-input-number"
           />
-        </el-select>
-      </el-form-item>
-    </div>
-  </el-form>
+        </el-form-item>
+        <el-form-item label="Interval Type" class="form-item-inline">
+          <el-select
+            v-model="intervalSelect"
+            placeholder="Select interval"
+            class="select-inline"
+            clearable
+            @clear="onClearIntervalSelect"
+            data-testid="interval-select"
+          >
+            <el-option
+              v-for="option in selectOptions"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+      </div>
+    </el-form>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { useIsIntervalGreaterThanOldestDate } from "@api/hooks/transactions/useIsIntervalGreaterThanOldestDate";
 import AlertComponent from "@components/shared/AlertComponent.vue";
+
+
+defineProps({
+  dataTestId: {
+    type: String,
+    default: "interval-form"
+  }
+});
+
 
 // Using defineModel for the interval value
 const intervalValue = defineModel<string>('intervalValue', {

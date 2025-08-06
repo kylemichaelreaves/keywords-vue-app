@@ -2,15 +2,16 @@ import { httpClient } from '@api/httpClient'
 
 
 export async function fetchIsIntervalGreaterThanOldestDate(interval: string, dailyTotals=true): Promise<boolean> {
-  return await httpClient
-    .get(`/transactions`, {
+  try {
+    const res = await httpClient.get(`/transactions`, {
       params: {
         interval,
         dailyTotals
       }
     })
-    .then(res => res.data)
-    .catch((err: Error) => {
-      console.error('err:', err)
-    })
+    return res.data
+  } catch (err) {
+    console.error('Error fetching is interval greater than oldest date:', { interval, dailyTotals }, err)
+    throw err
+  }
 }

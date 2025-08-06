@@ -11,7 +11,7 @@ export default function useMonthSummary(): UseQueryReturnType<MonthSummary[], Er
     const month = computed(() => store.getSelectedMonth)
 
     return useQuery<Array<MonthSummary>>({
-        queryKey: ['monthSummary', month.value],
+        queryKey: ['month-summary', month.value],
         queryFn: () => fetchMonthSummary(month.value),
         enabled: Boolean(!!month.value && month.value.trim() !== ''),
         refetchOnWindowFocus: false,

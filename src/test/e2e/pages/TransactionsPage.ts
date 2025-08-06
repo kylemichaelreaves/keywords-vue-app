@@ -93,6 +93,8 @@ export class TransactionsPage {
     const firstWeekText = await this.page.getByRole('option').first().textContent() ?? ''
     const firstOption = this.page.getByRole('option', { name: firstWeekText }).first()
     await firstOption.click()
+    // a petite wait
+    await this.page.waitForLoadState('networkidle')
     return firstWeekText
   }
 
