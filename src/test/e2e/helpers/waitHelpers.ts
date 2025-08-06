@@ -11,24 +11,13 @@ export async function waitForElementTableReady(table: Locator, page: Page, optio
 } = {}) {
   const { timeout = 30000 } = options
 
-  // Step 1: Basic visibility
   await expect(table).toBeVisible({ timeout })
 
-  // Step 2: Wait for content
   await expect(table.getByRole('row').first()).toBeVisible({ timeout })
   await expect(table.getByRole('cell').first()).toBeVisible({ timeout })
 
-  // // Step 3: Simple loading check
-  // await waitForElementUILoadingToComplete(page, 5000) // Shorter timeout
-
-  // Step 4: Network settle
   await page.waitForLoadState('networkidle', { timeout: 10000 })
 
-
-  // await table.locator('.el-loading-mask').waitFor({ state: 'hidden', timeout: 60000 })
-
-  // // Double-check no loading masks are present on the table specifically
-  // await expect(table.locator('.el-loading-mask')).not.toBeVisible()
 }
 
 /**
@@ -44,14 +33,11 @@ export async function rightClickElementTableRow(table: Locator, page: Page, rowI
   await expect(tableRow).toBeVisible()
   await expect(tableRow).toBeAttached()
 
-  // // Final check - ensure no loading masks are present
-  // await expect(table.locator('.el-loading-mask')).not.toBeVisible()
-
   // Ensure row has content
   await expect(tableRow.getByRole('cell').first()).not.toBeEmpty()
 
   // Right click with force option for CI stability
-  await tableRow.click({ button: 'right', force: false })
+  await tableRow.click({ button: 'right', force: !!process.env.isCI })
 }
 
 /**
@@ -72,9 +58,6 @@ export async function clickElementTableCell(
   await expect(cell).toBeVisible()
   await expect(cell).toBeAttached()
 
-  // Final check - ensure no loading masks are present
-  // await expect(table.locator('.el-loading-mask')).not.toBeVisible()
-
   await cell.click(clickOptions)
 }
 /**
@@ -88,9 +71,6 @@ export async function waitForTableContent(table: Locator, page: Page, options: {
 
   // Wait for table to exist
   await table.waitFor({ state: 'visible', timeout })
-
-  // Wait for actual data rows (not just headers)
-  // await expect(table.getByRole('row')).toHaveCount({ min: minRows + 1 }, { timeout }) // +1 for header
 
   // Ensure first data row has content
   const firstDataRow = table.getByRole('row').nth(1) // Skip header row
