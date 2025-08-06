@@ -3,12 +3,11 @@ import { httpClient } from '@api/httpClient'
 
 
 export async function fetchWeekSummary(week: string): Promise<Array<WeekSummary>> {
-  return await httpClient
-    .get(`/transactions/weeks/${week}/summary`)
-    .then(res => res.data)
-    .catch((err: Error) => {
-      console.error('err:', err)
-    })
-
-
+  try {
+    const response = await httpClient.get(`/transactions/weeks/${week}/summary`)
+    return response.data
+  } catch (err) {
+    console.error('Error fetching week summary:', err)
+    throw err
+  }
 }

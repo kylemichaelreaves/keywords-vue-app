@@ -1,23 +1,24 @@
 <template>
-  <AlertComponent
+  <div :data-testid="props.dataTestId">
+    <AlertComponent
       title="Interval Exceeds Oldest Transaction"
       message="Your requested interval exceeds the oldest dated transaction. Please choose a smaller interval."
       type="error"
       v-if="isOutOfRange"
       @close="onClose"
-  />
+    />
 
-  <AlertComponent
+    <AlertComponent
       :title="error.name"
       :message="error.message"
       type="error"
       v-if="error && isError"
-  />
+    />
 
-  <el-form label-position="top" :disabled="isOutOfRange || isFetching || isLoading">
-    <div class="form-row">
-      <el-form-item label="Interval Count" class="form-item-inline">
-        <el-input-number
+    <el-form label-position="top" :disabled="isOutOfRange || isFetching || isLoading">
+      <div class="form-row">
+        <el-form-item label="Interval Count" class="form-item-inline">
+          <el-input-number
             v-model="numberInput"
             :min="1"
             :max="100"
@@ -25,57 +26,73 @@
             @change="handleNumberInputChange"
             controls-position="right"
             class="input-number-inline"
-        />
-      </el-form-item>
-      <el-form-item label="Interval Type" class="form-item-inline">
-        <el-select
+            data-testid="interval-input-number"
+          />
+        </el-form-item>
+        <el-form-item label="Interval Type" class="form-item-inline">
+          <el-select
             v-model="intervalSelect"
             placeholder="Select interval"
             class="select-inline"
             clearable
             @clear="onClearIntervalSelect"
-        >
-          <el-option
+            data-testid="interval-select"
+          >
+            <el-option
               v-for="option in selectOptions"
               :key="option.value"
               :label="option.label"
               :value="option.value"
-          />
-        </el-select>
-      </el-form-item>
-    </div>
-  </el-form>
+            />
+          </el-select>
+        </el-form-item>
+      </div>
+    </el-form>
+  </div>
 </template>
 
-
 <script setup lang="ts">
-import {ref, computed, watch} from "vue";
-import {useIsIntervalGreaterThanOldestDate} from "@api/hooks/transactions/useIsIntervalGreaterThanOldestDate";
+import { ref, computed, watch } from "vue";
+import { useIsIntervalGreaterThanOldestDate } from "@api/hooks/transactions/useIsIntervalGreaterThanOldestDate";
 import AlertComponent from "@components/shared/AlertComponent.vue";
 
-const intervalSelect = ref("months");
+
+const props = defineProps({
+  dataTestId: {
+    type: String,
+    default: 'interval-form'
+  }
+});
+
+
+// Using defineModel for the interval value
+const intervalValue = defineModel<string>('intervalValue', {
+  default: '1 month'
+});
+
+
+const intervalSelect = ref("month");
 const numberInput = ref(1);
 
-const intervalValue = computed(() => {
+// Computed property to build the interval string
+const computedIntervalValue = computed(() => {
   return `${numberInput.value} ${intervalSelect.value}`;
 });
 
-const {data, error, isError, isLoading, isFetching, refetch} = useIsIntervalGreaterThanOldestDate(intervalValue);
+const { data, error, isError, isLoading, isFetching, refetch } = useIsIntervalGreaterThanOldestDate(computedIntervalValue);
 
 // get is_out_of_range from the data object
 const isOutOfRange = computed(() => {
   return data?.value?.map((item: { is_out_of_range: boolean }) => item.is_out_of_range)[0];
 });
 
-const emit = defineEmits(["update:intervalValue"]);
-
 const handleNumberInputChange = (value: number) => {
   numberInput.value = value;
 }
 
 const onClose = () => {
-  intervalSelect.value = "months";
-  numberInput.value = 3;
+  intervalSelect.value = "month";
+  numberInput.value = 1;
 }
 
 const onClearIntervalSelect = () => {
@@ -84,16 +101,17 @@ const onClearIntervalSelect = () => {
 
 const selectOptions = computed(() => {
   return [
-    {value: "days", label: numberInput.value == 1 ? "Day" : "Days"},
-    {value: "weeks", label: numberInput.value == 1 ? "Week" : "Weeks"},
-    {value: "months", label: numberInput.value == 1 ? "Month" : "Months"},
-    {value: "years", label: numberInput.value == 1 ? "Year" : "Years"},
+    { value: "days", label: numberInput.value == 1 ? "Day" : "Days" },
+    { value: "weeks", label: numberInput.value == 1 ? "Week" : "Weeks" },
+    { value: "months", label: numberInput.value == 1 ? "Month" : "Months" },
+    { value: "years", label: numberInput.value == 1 ? "Year" : "Years" },
   ];
 });
 
-watch(intervalValue, (newVal) => {
+// Update the model value whenever the computed interval changes
+watch(computedIntervalValue, (newVal) => {
   if (newVal) {
-    emit("update:intervalValue", newVal);
+    intervalValue.value = newVal;
   }
 });
 
@@ -102,8 +120,6 @@ watch(intervalSelect, (newVal) => {
     refetch();
   }
 });
-
-
 </script>
 
 <style scoped>

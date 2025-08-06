@@ -1,19 +1,21 @@
 <template>
-  <AlertComponent
-    :title="error.name"
-    :message="error.message"
-    type="error" v-if="isError && error"
-    :data-testid="errorId"
-  />
-  <SelectComponent
-    :data-testid="props.dataTestId"
-    :options="monthOptions"
-    :selectedValue="store.selectedMonth"
-    placeholder="select a month"
-    :disabled="isLoading || isFetching"
-    :onChange="updateSelectedMonth"
-    :on-clear="clearSelectedMonth"
-  />
+  <div>
+    <AlertComponent
+      :title="error.name"
+      :message="error.message"
+      type="error" v-if="isError && error"
+      :data-testid="errorId"
+    />
+    <SelectComponent
+      :data-testid="props.dataTestId"
+      :options="monthOptions"
+      :selectedValue="store.selectedMonth"
+      placeholder="select a month"
+      :disabled="isLoading || isFetching"
+      :onChange="updateSelectedMonth"
+      :on-clear="clearSelectedMonth"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -69,5 +71,3 @@ onBeforeUnmount(() => {
 
 </script>
 
-<style scoped>
-</style>

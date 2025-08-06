@@ -1,21 +1,23 @@
 <template>
-  <AlertComponent
-    v-if="isError && error"
-    :title="error.name"
-    :message="error.message"
-    type="error"
-    data-testid="transactions-table-pagination-error"
-  />
-  <el-pagination
-    :data-testid="props.dataTestId"
-    background
-    layout="prev, pager, next"
-    :total="Number(transactionsCount)"
-    v-model:page-size="limit"
-    v-model:current-page="currentPage"
-    @update:current-change="handleCurrentChange"
-    @update:size-change="handleSizeChange"
-  />
+  <div>
+    <AlertComponent
+      v-if="isError && error"
+      :title="error.name"
+      :message="error.message"
+      type="error"
+      data-testid="transactions-table-pagination-error"
+    />
+    <el-pagination
+      :data-testid="props.dataTestId"
+      background
+      layout="prev, pager, next"
+      :total="Number(transactionsCount)"
+      v-model:page-size="limit"
+      v-model:current-page="currentPage"
+      @update:current-change="handleCurrentChange"
+      @update:size-change="handleSizeChange"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -78,5 +80,3 @@ onMounted(() => {
 
 </script>
 
-<style scoped>
-</style>

@@ -1,19 +1,11 @@
 <template>
-  <el-row class="selects" data-testid="transactions-table-selects-row">
-    <el-col :span="4">
-      <DaySelect data-testid="transactions-table-day-select" />
-    </el-col>
-    <el-col :span="4">
-      <WeekSelect data-testid="transactions-table-week-select" />
-    </el-col>
-    <el-col :span="4">
-      <MonthSelect data-testid="transactions-table-month-select" />
-    </el-col>
-    <el-col :span="4">
-      <YearSelect data-testid="transactions-table-year-select" />
-    </el-col>
-    <el-col :span="8">
-      <MemoSelect data-testid="transactions-table-memo-select" />
+  <el-row class="selects" :data-testid="props.dataTestId">
+    <el-col
+      v-for="select in selects"
+      :key="select.testId"
+      :span="select.span"
+    >
+      <component :is="select.component" />
     </el-col>
   </el-row>
 </template>
@@ -24,6 +16,41 @@ import MonthSelect from '@components/transactions/MonthSelect.vue'
 import WeekSelect from '@components/transactions/WeekSelect.vue'
 import DaySelect from '@components/transactions/DaySelect.vue'
 import YearSelect from '@components/transactions/YearSelect.vue'
+
+const props = defineProps({
+  dataTestId: {
+    type: String,
+    default: 'transactions-table-selects-row'
+  }
+})
+
+const selects = [
+  {
+    component: DaySelect,
+    span: 4,
+    testId: 'transactions-table-day-select'
+  },
+  {
+    component: WeekSelect,
+    span: 4,
+    testId: 'transactions-table-week-select'
+  },
+  {
+    component: MonthSelect,
+    span: 4,
+    testId: 'transactions-table-month-select'
+  },
+  {
+    component: YearSelect,
+    span: 4,
+    testId: 'transactions-table-year-select'
+  },
+  {
+    component: MemoSelect,
+    span: 8,
+    testId: 'transactions-table-memo-select'
+  }
+]
 </script>
 
 <style scoped>

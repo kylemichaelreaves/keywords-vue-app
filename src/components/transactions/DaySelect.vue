@@ -1,15 +1,17 @@
 <template>
-  <AlertComponent v-if="isError && error" :message="error.message" :title="error.name" type="error" />
-  <SelectComponent
-    :data-testid="props.dataTestId"
-    :options="dayOptions"
-    :selectedValue="selectedDay"
-    placeholder="select a day"
-    :onChange="updateSelectedDay"
-    :onClear="clearSelectedDay"
-    :loading="isLoading || isFetching"
-    loading-text="…loading days…"
-  />
+  <div>
+    <AlertComponent v-if="isError && error" :message="error.message" :title="error.name" type="error" />
+    <SelectComponent
+      :data-testid="props.dataTestId"
+      :options="dayOptions"
+      :selectedValue="selectedDay"
+      placeholder="select a day"
+      :onChange="updateSelectedDay"
+      :onClear="clearSelectedDay"
+      :loading="isLoading || isFetching"
+      loading-text="…loading days…"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -56,5 +58,3 @@ const clearSelectedDay = () => {
 
 </script>
 
-<style scoped>
-</style>

@@ -1,17 +1,17 @@
 import { httpClient } from '@api/httpClient'
 
-export async function fetchSumAmountDebitByDate(timeFrame: string, date: Date | null | undefined, totalAmountDebit=true): Promise<Array<{ total_amount_debit: number }>> {
-  return await httpClient
-    .get(`/transactions`, {
+export async function fetchSumAmountDebitByDate(timeFrame: string, date: string, totalAmountDebit = true): Promise<Array<{ total_amount_debit: number }>> {
+  try {
+    const res = await httpClient.get(`/transactions`, {
       params: {
         timeFrame,
-        date: date?.toISOString().split('T')[0],
+        date,
         totalAmountDebit
       }
     })
-    .then(res => res.data)
-    .catch((err: Error) => {
-      console.error('err:', err)
-    })
-
+    return res.data
+  } catch (err) {
+    console.error('Error fetching sum amount debit by date:', { timeFrame, date, totalAmountDebit }, err)
+    throw err // Re-throw so Vue Query can handle the error state
+  }
 }

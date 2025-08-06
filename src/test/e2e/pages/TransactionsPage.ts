@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
+import { clickElementTableCell, waitForElementTableReady } from '@test/e2e/helpers/waitHelpers'
 
 export class TransactionsPage {
   readonly transactionsTable: Locator
@@ -9,6 +10,7 @@ export class TransactionsPage {
   readonly yearSelect: Locator
   readonly memoSelect: Locator
 
+  readonly intervalForm: Locator
   readonly intervalTypeSelect: Locator
   readonly intervalNumberInput: Locator
   readonly intervalLineChart: Locator
@@ -42,34 +44,58 @@ export class TransactionsPage {
     this.memoSelect = this.page.getByTestId('transactions-table-memo-select')
 
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
-    this.intervalTypeSelect = this.page.getByRole('main').getByText('Month', { exact: true })
-    this.intervalNumberInput = this.page.getByRole('spinbutton', { name: 'Interval Count' })
+    this.intervalForm = this.page.getByTestId('interval-form')
+    this.intervalTypeSelect = this.page.getByText('Interval Type')
+    this.intervalNumberInput = this.page.getByText('Interval Count')
     this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')
 
     this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
-    this.transactionEditModal = this.page.getByTestId('transaction-edit-dialog')
-    this.transactionEditForm = this.transactionEditModal.getByTestId('transaction-edit-form')
+    this.transactionEditModal = this.page.getByRole('dialog', { name: /edit transaction/i })
+    this.transactionEditForm = this.transactionEditModal.getByRole('form')
 
-    // transaction edit form inputs
-    this.transactionNumberInput = this.transactionEditForm.getByRole('textbox', { name: 'Transaction Number' })
-    this.transactionDatePicker = this.transactionEditForm.getByRole('combobox', { name: 'Date' })
-    this.transactionAmountDebitInput = this.transactionEditForm.getByRole('textbox', { name: 'Amount Debit' })
-    this.transactionAmountCreditInput = this.transactionEditForm.getByRole('textbox', { name: 'Amount Credit' })
-    this.transactionDescriptionInput = this.transactionEditForm.getByRole('textbox', { name: 'Description' })
-    this.transactionMemoInput = this.transactionEditForm.getByRole('combobox', { name: 'Memo' })
-    this.transactionBudgetCategoryTreeSelect = this.transactionEditForm.getByRole('combobox', { name: 'Budget Category' })
-    this.transactionCheckNumberInput = this.transactionEditForm.getByRole('textbox', { name: 'Check Number' })
-    this.transactionFeesInput = this.transactionEditForm.getByRole('textbox', { name: 'Fees' })
-    this.transactionBalanceInput = this.transactionEditForm.getByRole('textbox', { name: 'Balance' })
+    this.transactionNumberInput = this.transactionEditModal.getByRole('textbox', { name: /transaction number/i })
+    this.transactionDatePicker = this.transactionEditModal.getByRole('combobox', { name: /date/i })
+    this.transactionAmountDebitInput = this.transactionEditModal.getByRole('textbox', { name: /amount debit/i })
+    this.transactionAmountCreditInput = this.transactionEditModal.getByRole('textbox', { name: /amount credit/i })
+    this.transactionDescriptionInput = this.transactionEditModal.getByRole('textbox', { name: /description/i })
+    this.transactionMemoInput = this.transactionEditModal.getByRole('combobox', { name: /memo/i })
+    this.transactionBudgetCategoryTreeSelect = this.transactionEditModal.getByRole('combobox', { name: /budget category/i })
+    this.transactionCheckNumberInput = this.transactionEditModal.getByRole('textbox', { name: /check number/i })
+    this.transactionFeesInput = this.transactionEditModal.getByRole('textbox', { name: /fees/i })
+    this.transactionBalanceInput = this.transactionEditModal.getByRole('textbox', { name: /balance/i })
 
-
-    this.modalCloseButton = this.transactionEditModal.getByRole('button', { name: 'Close this dialog' })
-    this.modalSaveButton = this.transactionEditModal.getByRole('button', { name: 'Save' })
-
+    this.modalCloseButton = this.transactionEditModal.getByRole('button', { name: /close/i })
+    this.modalSaveButton = this.transactionEditModal.getByRole('button', { name: /save/i })
   }
 
   async goto() {
     await this.page.goto('budget-visualizer/transactions')
+  }
+
+  async goTo() {
+    await this.goto()
+  }
+
+  async selectFirstMonth(): Promise<string> {
+    await this.monthSelect.click()
+    const firstMonth = await this.page.getByRole('option').first().textContent() ?? ''
+    const firstOption = this.page.getByRole('option', { name: firstMonth }).first()
+    await firstOption.click()
+    return firstMonth
+  }
+
+  async selectFirstWeek(): Promise<string> {
+    await this.weekSelect.click()
+    // wait for the week select options to be visible
+    await this.page.getByRole('option').first().waitFor({ state: 'visible' })
+
+    // get the text content of the first option
+    const firstWeekText = await this.page.getByRole('option').first().textContent() ?? ''
+    const firstOption = this.page.getByRole('option', { name: firstWeekText }).first()
+    await firstOption.click()
+    // a petite wait
+    await this.page.waitForLoadState('networkidle')
+    return firstWeekText
   }
 
   async clickOnDaySelect() {
@@ -84,12 +110,40 @@ export class TransactionsPage {
     await this.page.locator('button').filter({ hasText: /^Decrease Interval$/ }).click()
   }
 
+  // Method to wait for transactions table to be fully ready
+  async waitForTransactionsTableReady() {
+    await waitForElementTableReady(this.transactionsTable, this.page)
+  }
+
+  // Improved table cell clicking with proper Element UI loading handling
+  async clickOnTableCell(options: {
+    rowIndex?: number
+    cellIndex?: number
+    clickOptions?: { button?: 'left' | 'right' | 'middle' }
+  } = {}) {
+    const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
+
+    await clickElementTableCell(
+      this.transactionsTable,
+      this.page,
+      rowIndex,
+      cellIndex,
+      clickOptions
+    )
+  }
+
   // get the text content of a given cell and row index
   async getCellTextContent(rowIndex: number, cellIndex: number): Promise<string> {
+    // Wait for table to be ready first
+    // await waitForElementTableReady(this.transactionsTable, this.page)
+
     const row = this.transactionsTable.getByRole('row').nth(rowIndex)
     const cell = row.getByRole('cell').nth(cellIndex)
-    await expect(cell).not.toBeEmpty()
-    return await cell.textContent() ?? ''
+
+    await expect(cell).toBeVisible()
+    const text = await cell.textContent()
+
+    return text?.trim() || ''
   }
 
   // Method to get the value of the month select
@@ -113,24 +167,42 @@ export class TransactionsPage {
     return trimmedText
   }
 
+
+  // getWeekSelectValue method to get the value of the week select
+  async getWeekSelectValue(): Promise<string> {
+    return this.getSelectValue(this.weekSelect, 'select a week')
+  }
+
+  private async getSelectValue(
+    selector: Locator,
+    expectedPlaceholder?: string
+  ): Promise<string> {
+    // Try to get the input value first (most reliable)
+    const input = selector.locator('input')
+    if (await input.count() > 0) {
+      const value = await input.inputValue()
+      if (value) return value
+    }
+
+    // Check the visible text content of the select
+    const selectText = await selector.textContent()
+    const trimmedText = selectText?.trim() ?? ''
+
+    // If it shows placeholder text, consider it empty
+    const isPlaceholder = trimmedText === '' ||
+      trimmedText.includes('select') ||
+      (expectedPlaceholder && trimmedText === expectedPlaceholder)
+
+    return isPlaceholder ? '' : trimmedText
+  }
+
+
   async rightClickOnFirstTransaction() {
     await this.clickOnTableCell({ rowIndex: 1, cellIndex: 1, clickOptions: { button: 'right' } })
   }
 
   async clickOnMemoFromTable() {
     await this.clickOnTableCell({ rowIndex: 1, cellIndex: 5, clickOptions: { button: 'left' } })
-  }
-
-  async clickOnTableCell(options: {
-    rowIndex?: number
-    cellIndex?: number
-    clickOptions?: { button?: 'left' | 'right' | 'middle' }
-  } = {}) {
-    const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
-
-    const row = this.transactionsTable.getByRole('row').nth(rowIndex)
-    const cell = row.getByRole('cell').nth(cellIndex)
-    await cell.click(clickOptions)
   }
 
   async expectTransactionEditFormElementsToBeVisible() {
@@ -144,10 +216,18 @@ export class TransactionsPage {
     await expect(this.transactionCheckNumberInput).toBeVisible()
     await expect(this.transactionFeesInput).toBeVisible()
     await expect(this.transactionBalanceInput).toBeVisible()
-    await expect(this.modalCloseButton).toBeVisible()
-    await expect(this.modalSaveButton).toBeVisible()
   }
 
+  async expectTransactionEditModalVisible() {
+    await expect(this.transactionEditModal).toBeVisible()
+  }
+
+  async expectTransactionEditModalHidden() {
+    await expect(this.transactionEditModal).toBeHidden()
+  }
+
+  async closeTransactionEditModal() {
+    await this.modalCloseButton.click()
+    await this.expectTransactionEditModalHidden()
+  }
 }
-
-

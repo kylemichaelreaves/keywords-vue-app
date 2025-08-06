@@ -6,6 +6,8 @@ export const useBudgetCategories = (timeframe?: TimeframeType, date?: string, fl
   return useQuery({
     queryKey: ['budgetCategories', flatten, timeframe, date],
     queryFn: () => fetchBudgetCategories(flatten, timeframe, date),
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    // FIX: Add validation for optional date parameter
+    enabled: Boolean(!date || (date && date.trim() !== ''))
   })
 }

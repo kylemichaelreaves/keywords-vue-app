@@ -44,8 +44,6 @@ const props = defineProps({
   }
 })
 
-console.log('TransactionEditForm props', props.transaction)
-
 const transaction = reactive({ ...props.transaction })
 
 const formRef = ref<InstanceType<typeof ElForm> | null>(null)
@@ -156,5 +154,3 @@ const saveTransaction = () => {
 
 </script>
 
-<style scoped>
-</style>

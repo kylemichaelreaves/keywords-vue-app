@@ -3,10 +3,11 @@ import type {Year} from "@types";
 
 
 export async function fetchYears(): Promise<Array<Year>> {
-    return await httpClient
-        .get(`/transactions/years`)
-        .then(res => res.data)
-        .catch((err: Error) => {
-            console.error('err:', err);
-        });
+    try {
+        const res = await httpClient.get(`/transactions/years`)
+        return res.data
+    } catch (err) {
+        console.error('Error fetching years:', err)
+        throw err
+    }
 }

@@ -1,5 +1,4 @@
 <template>
-  <DailyIntervalLineChart data-testid="daily-interval-line-chart" v-if="!selectedDay" />
   <AlertComponent
     v-if="isError && error"
     :title="error.name"
@@ -8,8 +7,11 @@
     data-testid="transactions-table-error-alert"
   />
 
-  <MonthSummaryTable v-if="selectedMonth" data-testid="month-summary-table" />
-  <WeekSummaryTable v-if="selectedWeek" data-testid="week-summary-table" />
+  <DailyIntervalLineChart :first-day="firstDay" />
+
+  <MonthSummaryTable v-if="selectedMonth" />
+  <WeekSummaryTable v-if="selectedWeek" />
+
   <TransactionsTableSelects data-testid="transactions-table-selects" />
 
   <el-dialog
@@ -24,7 +26,6 @@
       v-if="selectedTransaction"
       :transaction="selectedTransaction"
       @close="closeTransactionEditModal"
-      data-testid="transaction-edit-form"
     />
   </el-dialog>
 
@@ -78,11 +79,11 @@
       </el-table-column>
     </el-table>
   </div>
-  <TransactionTablePagination v-if="!isPaginationDisabled" data-testid="transactions-table-pagination" />
+  <TransactionTablePagination v-if="!isPaginationDisabled" />
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { Transaction } from '@types'
 import { formatDate } from '@api/helpers/formatDate'
 import MonthSummaryTable from '@components/transactions/MonthSummaryTable.vue'
@@ -103,6 +104,11 @@ const store = useTransactionsStore()
 const selectedMonth = computed(() => store.getSelectedMonth)
 const selectedWeek = computed(() => store.getSelectedWeek)
 const selectedDay = computed(() => store.getSelectedDay)
+
+const firstDay = computed(() => {
+  const days = store.getDays
+  return days.length > 0 ? days[0].day : ''
+})
 
 const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())
 const selectedValue = computed(() => dateTypeAndValue.value.selectedValue)
@@ -145,12 +151,12 @@ const {
   hasNextPage
 } = useTransactions()
 
-const isLoadingCondition = reactive(
-  isLoading ||
-  isFetching ||
-  isRefetching ||
-  isFetchingNextPage ||
-  isFetchingPreviousPage
+const isLoadingCondition = computed(() =>
+  isLoading.value ||
+  isFetching.value ||
+  isRefetching.value ||
+  isFetchingNextPage.value ||
+  isFetchingPreviousPage.value
 )
 
 const flattenedData = computed(() => {
@@ -214,6 +220,3 @@ function getRowKey(row: Transaction): string {
 }
 
 </script>
-
-<style scoped>
-</style>

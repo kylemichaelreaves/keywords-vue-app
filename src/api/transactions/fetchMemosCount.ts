@@ -3,16 +3,17 @@ import { httpClient } from '@api/httpClient'
 export async function fetchMemosCount(timeFrame?: string, date?: Date, distinct?: boolean): Promise<{
   count: number
 }[]> {
-  return await httpClient
-    .get(`/memos?count=true`, {
+  try {
+    const res = await httpClient.get(`/memos?count=true`, {
       params: {
         timeFrame: timeFrame,
         date: date,
         distinct: distinct
       }
     })
-    .then(res => res.data)
-    .catch((err: Error) => {
-      console.error('err:', err)
-    })
+    return res.data
+  } catch (err) {
+    console.error('Error fetching memos count:', { timeFrame, date, distinct }, err)
+    throw err
+  }
 }

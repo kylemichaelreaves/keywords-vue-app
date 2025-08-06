@@ -1,20 +1,20 @@
 <template>
-  <div :data-testid="dataTestId">
+  <div :data-testid="props.dataTestId">
     <AlertComponent
       :title="error.name"
       :message="error.message"
       type="error"
-      :data-testid="`${dataTestId}-error-alert`"
+      :data-testid="`${props.dataTestId}-error-alert`"
       v-if="isError && error"
     />
     <el-space
       direction="vertical"
       class="w-full"
-      :data-testid="`${dataTestId}-header`"
+      :data-testid="`${props.dataTestId}-header`"
     >
       <el-text
         size="large"
-        :data-testid="`${dataTestId}-title`"
+        :data-testid="`${props.dataTestId}-title`"
       >
         Sums of the amount_debit column for a budget_category
       </el-text>
@@ -22,12 +22,12 @@
     <div
       v-for="category in hierarchicalSummaries"
       :key="category.budget_category"
-      :data-testid="`${dataTestId}-category-${category.category_id}`"
+      :data-testid="`${props.dataTestId}-category-${category.category_id}`"
     >
       <StatisticComponent
         :value="category.total_amount_debit"
         :title="category.category_name"
-        :data-testid="`${dataTestId}-statistic-${category.category_id}`"
+        :data-testid="`${props.dataTestId}-statistic-${category.category_id}`"
         v-loading="isLoading || isFetching || isRefetching"
         :precision="2"
         :style="{ marginLeft: `${category.level * 20}px` }"

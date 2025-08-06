@@ -5,13 +5,14 @@
  * @param {string} [format='YYYY-MM-DD'] - The desired output format. Defaults to 'YYYY-MM-DD'.
  * @returns {string} - The formatted date string or 'Invalid date' if the input is not a valid date.
  */
+// used by the TransactionsTable
 export function formatDate(dateString: string, format: string = 'YYYY-MM-DD'): string {
     // Input validation: Check if dateString matches the expected format
-    let date = new Date(dateString);
+    const date = new Date(dateString);
 
-    let month = date.getUTCMonth() + 1;
-    let day = date.getUTCDate();
-    let year = date.getUTCFullYear();
+    const month = date.getUTCMonth() + 1;
+    const day = date.getUTCDate();
+    const year = date.getUTCFullYear();
 
 
     if (isNaN(date.getTime())) {

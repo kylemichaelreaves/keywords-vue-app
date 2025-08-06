@@ -1,47 +1,53 @@
 <template>
-  <el-form :model="memo" label-width="120px" :data-testid="dataTestId">
-    <el-form-item
-      v-for="(field, key) in fields"
-      :key="key"
-      :label="field.label"
-      :data-testid="`${dataTestId}-${key}-form-item`"
-    >
-      <component
-        :is="field.component"
-        v-model="memo[key]"
-        :placeholder="field.placeholder"
-        :disabled="field.disabledCondition ? field.disabledCondition : false"
-        :data-testid="field.dataTestId || `${dataTestId}-${key}`"
+  <div>
+    <AlertComponent v-if="isError && error" :message="error.message" type="error" :title="error.name"/>
+    <el-form :model="formData" label-width="120px" :data-testid="props.dataTestId">
+      <el-form-item
+        v-for="(field, key) in fields"
+        :key="key"
+        :label="field.label"
+        :data-testid="`${dataTestId}-${key}-form-item`"
       >
-        <template v-if="field.component === 'el-select'">
-          <el-option
-            v-for="option in field.options"
-            :key="option.value"
-            :value="option.value"
-            :label="option.label"
-            :data-testid="`${dataTestId}-${key}-option-${option.value}`"
-          />
-        </template>
-      </component>
-    </el-form-item>
-    <el-button
-      type="primary"
-      @click="saveMemo"
-      :data-testid="`${dataTestId}-save-button`"
-    >
-      Save
-    </el-button>
-  </el-form>
+        <component
+          :is="field.component"
+          v-model="formData[key]"
+          :placeholder="field.placeholder"
+          :disabled="field.disabledCondition ? field.disabledCondition : false"
+          :data-testid="field.dataTestId || `${dataTestId}-${key}`"
+        >
+          <template v-if="field.component === 'el-select'">
+            <el-option
+              v-for="option in field.options"
+              :key="option.value"
+              :value="option.value"
+              :label="option.label"
+              :data-testid="`${dataTestId}-${key}-option-${option.value}`"
+            />
+          </template>
+        </component>
+      </el-form-item>
+      <el-button
+        type="primary"
+        @click="saveMemo"
+        :data-testid="`${dataTestId}-save-button`"
+        :loading="isPending"
+        :disabled="isPending"
+      >
+        Save
+      </el-button>
+    </el-form>
+  </div>
 </template>
 
 <script setup lang="ts">
 import type { PropType } from 'vue'
-import { defineProps, reactive, watch } from 'vue'
+import { defineProps, reactive, watch, computed } from 'vue'
 import { ElMessage, ElOption } from 'element-plus'
 import type { Memo, MemoFormFields, MemoKeys } from '@types'
 import mutateMemo from '@api/hooks/transactions/mutateMemo'
 import BudgetCategoryTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
 import MemoAvatar from '@components/transactions/MemoAvatar.vue'
+import AlertComponent from '@components/shared/AlertComponent.vue'
 
 const props = defineProps({
   memo: {
@@ -54,28 +60,26 @@ const props = defineProps({
   }
 })
 
-const memo = reactive({
-  name: props.memo.name,
-  recurring: props.memo.recurring,
-  necessary: props.memo.necessary,
-  frequency: props.memo.frequency,
-  budget_category: props.memo.budget_category,
-  ambiguous: props.memo.ambiguous,
-  avatar_s3_url: props.memo.avatar_s3_url
+const formData = reactive<Memo>({
+  id: props.memo.id || 0,
+  name: props.memo.name || '',
+  recurring: props.memo.recurring || false,
+  necessary: props.memo.necessary || false,
+  frequency: props.memo.frequency || null,
+  budget_category: props.memo.budget_category || null,
+  ambiguous: props.memo.ambiguous || false,
+  avatar_s3_url: props.memo.avatar_s3_url || null
 })
 
-const { mutate } = mutateMemo()
+const { mutate, error, isError, isPending } = mutateMemo()
 
+// Watch for changes to the memo prop and update the reactive form data
 watch(
   () => props.memo,
-  (newVal) => {
-    memo.name = newVal.name
-    memo.recurring = newVal.recurring
-    memo.necessary = newVal.necessary
-    memo.frequency = newVal.frequency
-    memo.budget_category = newVal.budget_category
-    memo.ambiguous = newVal.ambiguous
-    memo.avatar_s3_url = newVal.avatar_s3_url
+  (newMemo) => {
+    if (newMemo) {
+      Object.assign(formData, newMemo)
+    }
   },
   {
     deep: true,
@@ -105,13 +109,13 @@ const fields: Record<MemoKeys, MemoFormFields> = {
   necessary: {
     component: 'el-switch',
     label: 'Necessary',
-    dataTestId: `${props.dataTestId}-necessary-switch`,
+    dataTestId: `${props.dataTestId}-necessary-switch`
   },
   frequency: {
     component: 'el-select',
     label: 'Frequency',
     placeholder: 'Select frequency',
-    disabledCondition: memo.recurring,
+    disabledCondition: computed(() => !formData.recurring),
     options: [
       { value: 'daily', label: 'Daily' },
       { value: 'weekly', label: 'Weekly' },
@@ -124,7 +128,7 @@ const fields: Record<MemoKeys, MemoFormFields> = {
     component: BudgetCategoryTreeSelect,
     label: 'Budget Category',
     placeholder: 'Select a budget category',
-    dataTestId: `${props.dataTestId}-budget-category-tree-select`,
+    dataTestId: `${props.dataTestId}-budget-category-tree-select`
   },
   ambiguous: {
     component: 'el-switch',
@@ -136,7 +140,7 @@ const fields: Record<MemoKeys, MemoFormFields> = {
 const saveMemo = () => {
   mutate(
     {
-      memo: props.memo
+      memo: formData
     },
     {
       onSuccess: () => {
@@ -149,6 +153,3 @@ const saveMemo = () => {
   )
 }
 </script>
-
-<style scoped>
-</style>

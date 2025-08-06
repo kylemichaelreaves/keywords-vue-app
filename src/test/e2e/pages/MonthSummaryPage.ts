@@ -1,48 +1,47 @@
 import type { Locator, Page } from '@playwright/test'
+import { BaseSummaryPage } from './BaseSummaryPage'
 
-export class MonthSummaryPage {
-  readonly page: Page
-
-  readonly errorAlert: Locator
+export class MonthSummaryPage extends BaseSummaryPage {
+  // Month-specific elements
   readonly monthSummaryTable: Locator
-  readonly budgetCategorySummaries: Locator
   readonly transactionsCount: Locator
   readonly transactionsAmount: Locator
-  readonly resetButton: Locator
   readonly monthTitle: Locator
-  readonly navigationButtonGroup: Locator
 
   constructor(page: Page) {
-    this.page = page
+    super(page)
 
-    this.errorAlert = page.getByTestId('month-summary-table-error')
+    // Initialize month-specific elements
     this.monthSummaryTable = page.getByTestId('month-summary-transactions-table')
     this.transactionsCount = page.getByTestId('transactions-count').locator('div')
     this.transactionsAmount = page.getByTestId('sum-amount-debit').locator('div')
-    this.resetButton = page.getByRole('button', { name: 'Reset Month' })
-    this.monthTitle = page.getByTestId('month-summary-table-header').locator('h2')
-    this.budgetCategorySummaries = page.getByTestId('budget-category-summaries')
-    this.navigationButtonGroup = page.getByTestId('month-summary-navigation-button-group')
+    this.monthTitle = page.locator('h2')
   }
 
+  // Implement abstract methods from base class
+  getErrorAlert(): Locator {
+    return this.page.getByTestId('month-summary-table-error')
+  }
+
+  getResetButton(): Locator {
+    return this.page.getByRole('button', { name: 'Reset Month' })
+  }
+
+  getBudgetCategorySummaries(): Locator {
+    return this.page.getByTestId('budget-category-summaries')
+  }
+
+  getNavigationButtonGroup(): Locator {
+    return this.page.getByTestId('month-summary-navigation-button-group')
+  }
+
+  getSummaryTable(): Locator {
+    return this.monthSummaryTable
+  }
+
+  // Month-specific methods
   async goTo(monthId: string) {
     await this.page.goto(`budget-visualizer/transactions/months/${monthId}/summary`)
-  }
-
-  async clickResetButton() {
-    await this.resetButton.click()
-  }
-
-  async expectError(message?: string) {
-    if (message) {
-      expect(this.errorAlert).toHaveAttribute('title', message)
-    } else {
-      expect(this.errorAlert.isVisible())
-    }
-  }
-
-  async expectNoError() {
-    expect(this.errorAlert.isHidden())
   }
 
   async getMonthTitle() {
@@ -54,9 +53,5 @@ export class MonthSummaryPage {
       transactionsCount: await this.transactionsCount.textContent(),
       transactionsAmount: await this.transactionsAmount.textContent()
     }
-  }
-
-  expectTableVisible() {
-    return this.monthSummaryTable.isVisible()
   }
 }
