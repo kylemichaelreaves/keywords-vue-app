@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :data-testid="props.dataTestId">
     <AlertComponent
       title="Interval Exceeds Oldest Transaction"
       message="Your requested interval exceeds the oldest dated transaction. Please choose a smaller interval."
@@ -15,7 +15,7 @@
       v-if="error && isError"
     />
 
-    <el-form label-position="top" :disabled="isOutOfRange || isFetching || isLoading" data-testid="interval-form">
+    <el-form label-position="top" :disabled="isOutOfRange || isFetching || isLoading">
       <div class="form-row">
         <el-form-item label="Interval Count" class="form-item-inline">
           <el-input-number
@@ -57,10 +57,10 @@ import { useIsIntervalGreaterThanOldestDate } from "@api/hooks/transactions/useI
 import AlertComponent from "@components/shared/AlertComponent.vue";
 
 
-defineProps({
+const props = defineProps({
   dataTestId: {
     type: String,
-    default: "interval-form"
+    default: 'interval-form'
   }
 });
 

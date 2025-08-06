@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { Transaction } from '@types'
 import { formatDate } from '@api/helpers/formatDate'
 import MonthSummaryTable from '@components/transactions/MonthSummaryTable.vue'
@@ -151,12 +151,12 @@ const {
   hasNextPage
 } = useTransactions()
 
-const isLoadingCondition = reactive(
-  isLoading ||
-  isFetching ||
-  isRefetching ||
-  isFetchingNextPage ||
-  isFetchingPreviousPage
+const isLoadingCondition = computed(() =>
+  isLoading.value ||
+  isFetching.value ||
+  isRefetching.value ||
+  isFetchingNextPage.value ||
+  isFetchingPreviousPage.value
 )
 
 const flattenedData = computed(() => {

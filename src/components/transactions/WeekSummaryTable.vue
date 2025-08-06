@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, reactive, ref, watch } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { ElCard, ElTable, ElTableColumn } from 'element-plus'
 import { useTransactionsStore } from '@stores/transactions'
 import useWeekSummary from '@api/hooks/transactions/useWeekSummary'
@@ -85,7 +85,7 @@ const selectedWeek = computed(() => store.getSelectedWeek)
 
 const { data, isError, refetch, isFetching, isLoading, isRefetching, error } = useWeekSummary()
 
-const isLoadingCondition = reactive(isFetching || isLoading || isRefetching)
+const isLoadingCondition = computed(() => isFetching.value || isLoading.value || isRefetching.value)
 
 const weeks = computed(() => store.getWeeks)
 

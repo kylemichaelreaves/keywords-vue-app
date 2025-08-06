@@ -1,8 +1,7 @@
 <template>
-  <div>
+  <div :data-testid="props.dataTestId">
     <AlertComponent :title="error.name" :message="error.message" type="error" v-if="isError && error" />
     <SelectComponent
-      :data-testid="props.dataTestId"
       :options="weekOptions"
       :selectedValue="selectedWeek"
       placeholder="select a week"

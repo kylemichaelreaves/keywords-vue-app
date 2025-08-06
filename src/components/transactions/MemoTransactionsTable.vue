@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import useMemoTransactions from '@api/hooks/transactions/useMemoTransactions'
-import { type PropType, reactive } from 'vue'
+import { type PropType, computed } from 'vue'
 import type { Memo } from '@types'
 import { ElTableColumn } from 'element-plus'
 import AlertComponent from '@components/shared/AlertComponent.vue'
@@ -76,9 +76,8 @@ const filteredColumns = columns.filter(column => !excludedColumns.includes(colum
 
 const { data, error, isError, isFetching, isLoading } = useMemoTransactions(props.memoName)
 
-const isLoadingCondition = reactive(
-  isLoading || isFetching
+const isLoadingCondition = computed(() =>
+  isLoading.value || isFetching.value
 )
 
 </script>
-

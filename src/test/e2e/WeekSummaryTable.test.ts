@@ -21,13 +21,11 @@ test.describe('Week Summary Table', () => {
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
     await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'week' })
 
-    // Navigate and select week
     await transactionsPage.goto()
     selectedWeek = await transactionsPage.selectFirstWeek()
 
-    // Wait for navigation and content to be ready
     await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'domcontentloaded' })
-    await weekSummaryPage.expectTableHasData() // Wait for actual content instead of spinners
+    await weekSummaryPage.expectTableHasData()
   })
 
   test.afterEach(async ({ page }) => {

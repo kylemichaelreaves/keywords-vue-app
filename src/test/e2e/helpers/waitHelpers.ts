@@ -60,6 +60,7 @@ export async function clickElementTableCell(
 
   await cell.click(clickOptions)
 }
+
 /**
  * Wait for table to have actual data content instead of loading states
  */
@@ -78,4 +79,22 @@ export async function waitForTableContent(table: Locator, page: Page, options: {
 
   // Wait for network to settle (no more pending requests)
   await page.waitForLoadState('networkidle', { timeout: 10000 })
+}
+
+
+export async function rightClickAndOpenDialog(
+  page: Page,
+  targetSelector: string,
+  options: { timeout?: number } = {}
+) {
+  const { timeout = 15000 } = options
+
+  // Right-click on target - this directly opens the dialog
+  await page.locator(targetSelector).click({ button: 'right' })
+
+  // Wait for dialog to appear
+  await page.getByRole('dialog').waitFor({ timeout })
+
+  // Wait for form inside dialog to be ready
+  await page.getByRole('dialog').locator('form').waitFor({ timeout: 5000 })
 }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :data-testid="props.dataTestId">
     <AlertComponent
       v-if="isError && error"
       :message="error.message"
@@ -13,7 +13,6 @@
       v-model:interval-value="intervalValue"
     />
     <LineChart
-      :data-testid="props.dataTestId"
       v-if="data"
       :summaries="data"
       :loading="isLoading || isFetching"
