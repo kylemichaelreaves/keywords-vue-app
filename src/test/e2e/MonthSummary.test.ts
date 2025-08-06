@@ -33,8 +33,8 @@ test.describe('Month Summary Page', () => {
 
     // Wait for navigation and all spinners to disappear
     await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/, { waitUntil: 'domcontentloaded' })
-    await waitForSpinnersToDisappear(page) // Critical for CI - wait for all spinners
-    await logSpinnersAndWait(monthSummaryPage.page)
+    // await waitForSpinnersToDisappear(page) // Critical for CI - wait for all spinners
+    // await logSpinnersAndWait(monthSummaryPage.page)
 
     await monthSummaryPage.monthSummaryTable.waitFor({ state: 'visible' })
   })

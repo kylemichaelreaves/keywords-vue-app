@@ -1,19 +1,21 @@
 <template>
-  <AlertComponent
-    v-if="error && isError"
-    :title="error.name"
-    :message="error.message"
-    type="error"
-  />
-  <div class="budget-category-selector">
-    <el-tree-select
-      :placeholder="props.placeholder"
-      :data="selectTreeData"
-      v-model="model"
-      class="tree-select"
-      show-checkbox
-      :data-testid="props.dataTestId"
+  <div>
+    <AlertComponent
+      v-if="error && isError"
+      :title="error.name"
+      :message="error.message"
+      type="error"
     />
+    <div class="budget-category-selector">
+      <el-tree-select
+        :placeholder="props.placeholder"
+        :data="selectTreeData"
+        v-model="model"
+        class="tree-select"
+        show-checkbox
+        :data-testid="props.dataTestId"
+      />
+    </div>
   </div>
 </template>
 

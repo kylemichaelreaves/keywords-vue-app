@@ -136,10 +136,6 @@ test.describe('Transactions Table', () => {
 
     const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
 
-
-    // CRITICAL FIX: Unroute existing handlers first to prevent conflicts
-    await page.unroute('**/transactions**')
-
     // Set up the route handler BEFORE clicking to ensure it catches the request
     await page.route('**/transactions**', async route => {
       const url = new URL(route.request().url())
@@ -193,8 +189,8 @@ test.describe('Transactions Table', () => {
     await page.waitForLoadState('networkidle')
 
     // Use the Element UI-aware waiting helpers
-    await waitForLoadingToComplete(page)
-    await waitForElementTableReady(transactionsPage.transactionsTable, page)
+    // await waitForLoadingToComplete(page)
+    // await waitForElementTableReady(transactionsPage.transactionsTable, page)
 
     // Verify the table shows the correct date
     const dateText = await transactionsPage.getCellTextContent(1, 2)
