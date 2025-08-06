@@ -2,7 +2,6 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
-import { logSpinnersAndWait, waitForSpinnersToDisappear } from '@test/e2e/helpers/waitHelpers'
 import {
   MEMO_PRESETS,
   setupBudgetCategoryHierarchyInterceptor,
@@ -23,20 +22,13 @@ test.describe('Month Summary Page', () => {
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
     await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'month' })
 
-    // Simplified setup with comprehensive spinner waiting
+    // Navigate and select month
     await transactionsPage.goto()
-    // await waitForPageReady(page)
-    // await waitForSpinnersToDisappear(page) // Wait for initial page spinners
-
-    // Select month and navigate
     selectedMonth = await transactionsPage.selectFirstMonth()
 
-    // Wait for navigation and all spinners to disappear
+    // Wait for navigation and content to be ready
     await page.waitForURL(/\/budget-visualizer\/transactions\/months\/.*\/summary/, { waitUntil: 'domcontentloaded' })
-    // await waitForSpinnersToDisappear(page) // Critical for CI - wait for all spinners
-    // await logSpinnersAndWait(monthSummaryPage.page)
-
-    await monthSummaryPage.monthSummaryTable.waitFor({ state: 'visible' })
+    await monthSummaryPage.expectTableHasData() // Wait for actual content instead of spinners
   })
 
   test.afterEach(async ({ page }) => {
@@ -47,12 +39,11 @@ test.describe('Month Summary Page', () => {
   })
 
   test('should display all month summary page elements correctly', async () => {
-    await logSpinnersAndWait(monthSummaryPage.page)
     // Check month title
     const title = await monthSummaryPage.getMonthTitle()
     expect(title).toContain('Month Summary for:' + ' ' + selectedMonth)
 
-    // Check main table visibility
+    // Check main table visibility with content
     await expect(monthSummaryPage.monthSummaryTable).toBeVisible()
 
     // Check budget categories summary component
@@ -67,7 +58,6 @@ test.describe('Month Summary Page', () => {
   })
 
   test('should handle reset button click', async () => {
-    await logSpinnersAndWait(monthSummaryPage.page)
     await monthSummaryPage.clickResetButton()
     await monthSummaryPage.page.waitForURL('/budget-visualizer/transactions', { waitUntil: 'networkidle' })
     await expect(transactionsPage.page).toHaveURL(/\/budget-visualizer\/transactions/)
@@ -77,20 +67,14 @@ test.describe('Month Summary Page', () => {
   })
 
   test('right clicking on a table row opens the memo edit modal', async ({ page }) => {
-    await logSpinnersAndWait(monthSummaryPage.page)
-
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.monthly, true)
-
-    await monthSummaryPage.monthSummaryTable.waitFor({ state: 'visible' })
 
     await monthSummaryPage.expectMemoEditModalHidden()
     await monthSummaryPage.rightClickOnTableRow(1)
-    await page.waitForLoadState('domcontentloaded')
     await monthSummaryPage.expectMemoEditModalVisible()
     await monthSummaryPage.expectMemoEditFormVisible()
     await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
     await monthSummaryPage.closeMemoEditModal()
-    await page.waitForLoadState('domcontentloaded')
     await monthSummaryPage.expectMemoEditModalHidden()
   })
 })

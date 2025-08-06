@@ -3,11 +3,6 @@ import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
 import { WeekSummaryPage } from '@test/e2e/pages/WeekSummaryPage'
 import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import {
-  debugTableLoadingState, logSpinnersAndWait,
-  waitForPageReady,
-  waitForSpinnersToDisappear
-} from '@test/e2e/helpers/waitHelpers.ts'
-import {
   MEMO_PRESETS,
   setupBudgetCategoryHierarchyInterceptor,
   setupMemoRouteInterceptor
@@ -26,18 +21,13 @@ test.describe('Week Summary Table', () => {
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
     await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'week' })
 
-    // Simplified setup with comprehensive spinner waiting
+    // Navigate and select week
     await transactionsPage.goto()
-    // await waitForPageReady(page)
-    // await waitForSpinnersToDisappear(page) // Wait for initial page spinners
-
-    // Select week and navigate
     selectedWeek = await transactionsPage.selectFirstWeek()
 
-    // Wait for navigation and all spinners to disappear
+    // Wait for navigation and content to be ready
     await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'domcontentloaded' })
-    // await logSpinnersAndWait(weekSummaryPage.page)
-    await weekSummaryPage.weekSummaryTable.waitFor({ state: 'visible' })
+    await weekSummaryPage.expectTableHasData() // Wait for actual content instead of spinners
   })
 
   test.afterEach(async ({ page }) => {
@@ -49,7 +39,6 @@ test.describe('Week Summary Table', () => {
   })
 
   test('should display the week summary table elements correctly', async () => {
-    // await logSpinnersAndWait(weekSummaryPage.page)
     await weekSummaryPage.expectTableVisible()
     const weekTitle = await weekSummaryPage.getWeekTitle()
     expect(weekTitle).toContain(selectedWeek)
@@ -57,7 +46,6 @@ test.describe('Week Summary Table', () => {
   })
 
   test('should reset the week when reset button is clicked', async () => {
-    // await logSpinnersAndWait(weekSummaryPage.page)
     await weekSummaryPage.clickResetButton()
     await weekSummaryPage.page.waitForURL('/budget-visualizer/transactions', { waitUntil: 'networkidle' })
     const weekSelectValue = await transactionsPage.getWeekSelectValue()

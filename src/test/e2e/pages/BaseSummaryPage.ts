@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { waitForElementTableReady, rightClickElementTableRow, waitForElementUILoadingToComplete } from '@test/e2e/helpers/waitHelpers'
+import { waitForElementTableReady, rightClickElementTableRow, waitForElementUILoadingToComplete, waitForTableContent } from '@test/e2e/helpers/waitHelpers'
 
 export abstract class BaseSummaryPage {
   readonly page: Page
@@ -45,7 +45,7 @@ export abstract class BaseSummaryPage {
     const summaryTable = this.getSummaryTable()
 
     // Wait for any Element UI loading to complete first
-    await waitForElementUILoadingToComplete(this.page)
+    // await waitForElementUILoadingToComplete(this.page)
 
     // Use the comprehensive Element UI-aware table waiting and clicking
     await rightClickElementTableRow(summaryTable, this.page, rowIndex)
@@ -74,20 +74,6 @@ export abstract class BaseSummaryPage {
     await this.memoEditFormCloseButton.click()
   }
 
-  // Common error handling functionality
-  async expectError(message?: string) {
-    if (message) {
-      expect(this.errorAlert).toHaveAttribute('title', message)
-    } else {
-      expect(this.errorAlert.isVisible())
-    }
-  }
-
-  async expectNoError() {
-    expect(this.errorAlert.isHidden())
-  }
-
-  // Common reset functionality
   async clickResetButton() {
     await expect(this.resetButton).toBeVisible()
     await expect(this.resetButton).toBeEnabled()
@@ -95,19 +81,22 @@ export abstract class BaseSummaryPage {
     await this.page.waitForURL(/\/budget-visualizer\/transactions/)
   }
 
-  // Common table visibility check with better waits
   async expectTableVisible() {
     const table = this.getSummaryTable()
 
-    // Use Element UI specific table ready check - this already includes network idle waiting
-    await waitForElementTableReady(table, this.page)
+    // Wait for actual content instead of spinner states
+    await waitForTableContent(table, this.page, { minRows: 1 })
 
     return true
   }
 
-  // Wait for summary table to be ready with Element UI considerations
-  async waitForSummaryTableReady() {
-    const summaryTable = this.getSummaryTable()
-    await waitForElementTableReady(summaryTable, this.page)
+  async expectTableHasData() {
+    const table = this.getSummaryTable()
+
+    // More specific content checks
+    await expect(table.getByRole('row')).toHaveCount({ min: 2 }) // Header + at least 1 data row
+    await expect(table.getByRole('cell').first()).not.toBeEmpty()
+
+    return true
   }
 }

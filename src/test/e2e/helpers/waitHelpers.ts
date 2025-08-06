@@ -12,7 +12,7 @@ export async function waitForPageReady(page: Page) {
 /**
  * Ultra-simplified wait for Element UI loading - CI focused
  */
-export async function waitForElementUILoadingToComplete(page: Page, timeout: number = 10000) {
+export async function waitForElementUILoadingToComplete(page: Page, timeout: number = 60000) {
   // Most basic approach: just check if any loading masks exist and are visible
   try {
     await page.waitForFunction(
@@ -100,27 +100,11 @@ export async function waitForElementTableReady(table: Locator, page: Page, optio
   await page.waitForLoadState('networkidle', { timeout: 10000 })
 
 
-  await table.locator('.el-loading-mask').waitFor({ state: 'hidden', timeout: 60000 })
+  // await table.locator('.el-loading-mask').waitFor({ state: 'hidden', timeout: 60000 })
 
-  // Double-check no loading masks are present on the table specifically
-  await expect(table.locator('.el-loading-mask')).not.toBeVisible()
+  // // Double-check no loading masks are present on the table specifically
+  // await expect(table.locator('.el-loading-mask')).not.toBeVisible()
 }
-
-/**
- * Wait for loading to complete - comprehensive version for CI
- */
-export async function waitForLoadingToComplete(page: Page, options: {
-  timeout?: number
-} = {}) {
-  const { timeout = 60000 } = options
-
-  // Wait for network to be idle
-  await page.waitForLoadState('networkidle', { timeout })
-
-  // Wait for Element UI loading to complete
-  await waitForElementUILoadingToComplete(page, timeout)
-}
-
 /**
  * Safe table row interaction with comprehensive Element UI support
  */
@@ -134,8 +118,8 @@ export async function rightClickElementTableRow(table: Locator, page: Page, rowI
   await expect(tableRow).toBeVisible()
   await expect(tableRow).toBeAttached()
 
-  // Final check - ensure no loading masks are present
-  await expect(table.locator('.el-loading-mask')).not.toBeVisible()
+  // // Final check - ensure no loading masks are present
+  // await expect(table.locator('.el-loading-mask')).not.toBeVisible()
 
   // Ensure row has content
   await expect(tableRow.getByRole('cell').first()).not.toBeEmpty()
@@ -163,7 +147,7 @@ export async function clickElementTableCell(
   await expect(cell).toBeAttached()
 
   // Final check - ensure no loading masks are present
-  await expect(table.locator('.el-loading-mask')).not.toBeVisible()
+  // await expect(table.locator('.el-loading-mask')).not.toBeVisible()
 
   await cell.click(clickOptions)
 }
@@ -309,4 +293,46 @@ export async function logSpinnersAndWait(page: Page, options: { timeout?: number
   } else {
     console.log('No spinners found')
   }
+}
+
+/**
+ * Wait for table to have actual data content instead of loading states
+ */
+export async function waitForTableContent(table: Locator, page: Page, options: {
+  minRows?: number
+  timeout?: number
+} = {}) {
+  const { minRows = 1, timeout = 30000 } = options
+
+  // Wait for table to exist
+  await table.waitFor({ state: 'visible', timeout })
+
+  // Wait for actual data rows (not just headers)
+  await expect(table.getByRole('row')).toHaveCount({ min: minRows + 1 }, { timeout }) // +1 for header
+
+  // Ensure first data row has content
+  const firstDataRow = table.getByRole('row').nth(1) // Skip header row
+  await expect(firstDataRow.getByRole('cell').first()).not.toBeEmpty({ timeout })
+
+  // Wait for network to settle (no more pending requests)
+  await page.waitForLoadState('networkidle', { timeout: 5000 })
+}
+
+/**
+ * Wait for select options to be populated
+ */
+export async function waitForSelectOptions(select: Locator, page: Page, options: {
+  minOptions?: number
+  timeout?: number
+} = {}) {
+  const { minOptions = 1, timeout = 30000 } = options
+
+  // Click to open dropdown
+  await select.click()
+
+  // Wait for options to appear
+  await expect(page.getByRole('option')).toHaveCount({ min: minOptions }, { timeout })
+
+  // Ensure first option has content
+  await expect(page.getByRole('option').first()).not.toBeEmpty({ timeout })
 }

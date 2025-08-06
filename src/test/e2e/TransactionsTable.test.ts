@@ -4,11 +4,7 @@ import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
 import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithStaticMocks } from '@test/e2e/helpers/setupTestMocks'
-import {
-  debugTableLoadingState,
-  waitForElementTableReady,
-  waitForLoadingToComplete
-} from '@test/e2e/helpers/waitHelpers'
+import { waitForTableContent } from '@test/e2e/helpers/waitHelpers'
 
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
@@ -16,15 +12,12 @@ test.describe('Transactions Table', () => {
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
 
-
     await setupTransactionsTableWithStaticMocks(page, staticTransactions, staticDailyIntervals)
-
 
     await transactionsPage.goto()
 
-    // Single comprehensive wait instead of multiple redundant waits
-    // await waitForElementTableReady(transactionsPage.transactionsTable, page)
-    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
+    // Wait for actual table content instead of just visibility
+    await waitForTableContent(transactionsPage.transactionsTable, page)
   })
 
   test.afterEach(async ({ page }) => {
@@ -52,14 +45,7 @@ test.describe('Transactions Table', () => {
     await expect(transactionsPage.transactionsTablePagination).toBeVisible()
   })
 
-  test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
-    // // Use comprehensive Element UI-aware waiting
-    // await transactionsPage.waitForTransactionsTableReady()
-    //
-    // // Additional debug info for CI troubleshooting
-    // await debugTableLoadingState(page, 'transactions-table')
-
-    // Use the improved click method that handles Element UI loading
+  test('right clicking on a cell in the TransactionsTable opens the context menu', async () => {
     await transactionsPage.clickOnTableCell({
       rowIndex: 1,
       cellIndex: 1,
@@ -112,9 +98,7 @@ test.describe('Transactions Table', () => {
   })
 
   test('clicking on a point in the line chart loads the transactions for that date', async ({ page }) => {
-    await debugTableLoadingState(page, 'transactions-table')
-
-    // Wait for chart to be fully loaded
+    // Wait for chart to be fully loaded with content
     await page.waitForLoadState('networkidle')
     await expect(transactionsPage.intervalLineChart).toBeVisible()
 
@@ -133,7 +117,6 @@ test.describe('Transactions Table', () => {
     // Ensure we got a valid date before proceeding
     expect(fifthPointDate).toBeDefined()
     expect(fifthPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-
 
     const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
 
@@ -186,12 +169,8 @@ test.describe('Transactions Table', () => {
     // Wait for the specific request we're expecting
     await requestPromise
 
-    // Wait for UI to update
-    await page.waitForLoadState('networkidle')
-
-    // Use the Element UI-aware waiting helpers
-    // await waitForLoadingToComplete(page)
-    // await waitForElementTableReady(transactionsPage.transactionsTable, page)
+    // Wait for table to have new content instead of just network idle
+    await waitForTableContent(transactionsPage.transactionsTable, page)
 
     // Verify the table shows the correct date
     const dateText = await transactionsPage.getCellTextContent(1, 2)
