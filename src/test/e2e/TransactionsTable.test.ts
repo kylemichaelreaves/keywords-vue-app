@@ -145,7 +145,6 @@ test.describe('Transactions Table', () => {
 
       // More robust date matching - check if the date parameter contains our target date
       if (firstPointDate && dateParam && dateParam.includes(firstPointDate) && timeFrame === 'day') {
-        console.log(`Fulfilling chart click request for date: ${firstPointDate}`)
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
