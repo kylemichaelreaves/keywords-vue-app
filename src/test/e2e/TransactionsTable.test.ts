@@ -1,4 +1,4 @@
-// Enhanced TransactionsTable test with comprehensive route mocking
+// Enhanced TransactionsTable test with app loading debugging
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
 import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
@@ -21,6 +21,7 @@ async function setupComprehensiveTransactionMocks(page: any, staticTransactions:
     const hasInterval = params.has('interval')
     const hasDate = params.has('date')
     const timeFrame = params.get('timeFrame')
+    const firstDay = params.get('firstDay')
 
     if (isCI) {
       console.log('[MOCK] Intercepting transactions request:', {
@@ -28,6 +29,7 @@ async function setupComprehensiveTransactionMocks(page: any, staticTransactions:
         isDailyTotals,
         hasInterval,
         hasDate,
+        firstDay,
         timeFrame,
         allParams: Object.fromEntries(params)
       })
@@ -48,7 +50,7 @@ async function setupComprehensiveTransactionMocks(page: any, staticTransactions:
     }
 
     // Handle main transactions table data requests
-    if (hasInterval || hasDate || timeFrame) {
+    if (hasInterval || hasDate || timeFrame || firstDay) {
       // For specific date/timeframe requests, generate targeted data
       const dateParam = params.get('date')
       if (dateParam && timeFrame === 'day') {
@@ -83,6 +85,33 @@ async function setupComprehensiveTransactionMocks(page: any, staticTransactions:
   }
 }
 
+// Helper function to check if Vue app loaded properly
+async function waitForVueAppToLoad(page: any, timeout: number = 60000) {
+  if (isCI) {
+    console.log('[CI] Waiting for Vue app to load...')
+  }
+
+  // Wait for the main app div
+  await page.waitForSelector('#app', { state: 'attached', timeout })
+
+  // Wait for Vue to mount
+  await page.waitForFunction(() => {
+    const app = document.querySelector('#app')
+    return app && app.children.length > 0
+  }, { timeout })
+
+  // Wait for page title to be set by Vue
+  await page.waitForFunction(() => {
+    return document.title && document.title !== ''
+  }, { timeout })
+
+  if (isCI) {
+    const title = await page.title()
+    const appContent = await page.locator('#app').innerHTML()
+    console.log('[CI] Vue app loaded - Title:', title, 'App content length:', appContent.length)
+  }
+}
+
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
@@ -106,55 +135,105 @@ test.describe('Transactions Table', () => {
 
     await page.goto(targetUrl)
 
-    // Enhanced waiting with better CI debugging
+    // CRITICAL: Wait for Vue app to actually load before looking for table
     try {
-      // Wait for actual table content instead of just visibility
-      await waitForTableContent(transactionsPage.transactionsTable, page, {
-        timeout: isCI ? 120000 : 60000
-      })
+      await waitForVueAppToLoad(page, isCI ? 90000 : 60000)
 
       if (isCI) {
-        // Additional debugging for table state after content load
-        const rowCount = await transactionsPage.transactionsTable.getByRole('row').count()
-        const cellCount = await transactionsPage.transactionsTable.getByRole('cell').count()
-        const firstCellText = await transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first().textContent()
-        console.log('[CI] Table state after waitForTableContent:', { rowCount, cellCount, firstCellText })
+        console.log('[CI] Vue app loaded successfully')
       }
 
-      // Wait for the chart to be ready with data points before running any tests
-      await waitForLineChartReady(transactionsPage.intervalLineChart, page, {
-        minDataPoints: 5,
-        timeout: isCI ? 60000 : 40000
-      })
+      // Enhanced waiting with better CI debugging
+      try {
+        // Wait for actual table content instead of just visibility
+        await waitForTableContent(transactionsPage.transactionsTable, page, {
+          timeout: isCI ? 120000 : 60000
+        })
 
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      if (isCI) {
-        console.log('[CI] Setup failed:', errorMessage)
-
-        // Capture detailed table state on failure
-        try {
-          const tableExists = await transactionsPage.transactionsTable.count()
+        if (isCI) {
+          // Additional debugging for table state after content load
           const rowCount = await transactionsPage.transactionsTable.getByRole('row').count()
           const cellCount = await transactionsPage.transactionsTable.getByRole('cell').count()
+          const firstCellText = await transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first().textContent()
+          console.log('[CI] Table state after waitForTableContent:', { rowCount, cellCount, firstCellText })
+        }
 
-          console.log('[CI] Detailed table state on setup failure:', {
-            tableExists,
-            rowCount,
-            cellCount
+        // Wait for the chart to be ready with data points before running any tests
+        await waitForLineChartReady(transactionsPage.intervalLineChart, page, {
+          minDataPoints: 5,
+          timeout: isCI ? 60000 : 40000
+        })
+
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        if (isCI) {
+          console.log('[CI] Table/Chart setup failed:', errorMessage)
+
+          // Capture detailed page state on failure
+          try {
+            const appExists = await page.locator('#app').count()
+            const appContent = await page.locator('#app').innerHTML()
+            const pageContent = await page.content()
+
+            console.log('[CI] Page state on table failure:', {
+              appExists,
+              appContentLength: appContent.length,
+              pageContentLength: pageContent.length,
+              url: page.url(),
+              title: await page.title()
+            })
+
+            // Look for any error messages in the page
+            const errorTexts = await page.locator('text=error').allTextContents()
+            if (errorTexts.length > 0) {
+              console.log('[CI] Found error texts on page:', errorTexts)
+            }
+
+            // Check if there are any router-related elements
+            const routerView = await page.locator('router-view').count()
+            const routerLink = await page.locator('router-link').count()
+            console.log('[CI] Router elements:', { routerView, routerLink })
+
+          } catch (debugError) {
+            const debugErrorMessage = debugError instanceof Error ? debugError.message : String(debugError)
+            console.log('[CI] Failed to capture page debug info:', debugErrorMessage)
+          }
+        }
+        throw error
+      }
+
+    } catch (appLoadError) {
+      const appErrorMessage = appLoadError instanceof Error ? appLoadError.message : String(appLoadError)
+      if (isCI) {
+        console.log('[CI] Vue app failed to load:', appErrorMessage)
+
+        // Capture complete page state when app fails to load
+        try {
+          const pageContent = await page.content()
+          const url = page.url()
+          const title = await page.title()
+
+          console.log('[CI] App load failure - URL:', url)
+          console.log('[CI] App load failure - Title:', title)
+          console.log('[CI] App load failure - Page content length:', pageContent.length)
+
+          // Check if we can see any Vue-related content
+          const vueAppExists = pageContent.includes('id="app"')
+          const hasVueContent = pageContent.includes('vue') || pageContent.includes('Vue')
+          const hasScripts = pageContent.includes('<script')
+
+          console.log('[CI] App load failure analysis:', {
+            vueAppExists,
+            hasVueContent,
+            hasScripts,
+            contentPreview: pageContent.substring(0, 500)
           })
 
-          // Check each row's first cell content
-          for (let i = 0; i < Math.min(rowCount, 5); i++) {
-            const cellText = await transactionsPage.transactionsTable.getByRole('row').nth(i).getByRole('cell').first().textContent()
-            console.log(`[CI] Row ${i} first cell text:`, cellText)
-          }
         } catch (debugError) {
-          const debugErrorMessage = debugError instanceof Error ? debugError.message : String(debugError)
-          console.log('[CI] Failed to capture debug info:', debugErrorMessage)
+          console.log('[CI] Failed to capture app load debug info:', debugError)
         }
       }
-      throw error
+      throw appLoadError
     }
 
     if (isCI) {
@@ -163,16 +242,27 @@ test.describe('Transactions Table', () => {
   })
 
   test.afterEach(async ({ page }) => {
-    await page.evaluate(() => {
-      localStorage.clear()
-      sessionStorage.clear()
-    })
+    try {
+      await page.evaluate(() => {
+        localStorage.clear()
+        sessionStorage.clear()
+      })
+    } catch (error) {
+      // Ignore cleanup errors if page is already closed
+      if (isCI) {
+        console.log('[CI] Cleanup error (page may be closed):', error)
+      }
+    }
   })
-
 
   test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({ page }) => {
     if (isCI) {
       console.log('[CI] Starting elements visibility test')
+
+      // Extra verification that Vue app is still loaded
+      const appExists = await page.locator('#app').count()
+      const title = await page.title()
+      console.log('[CI] Pre-test app state:', { appExists, title })
 
       // Extra verification that table has actual data before checking other elements
       const firstDataCell = transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first()
