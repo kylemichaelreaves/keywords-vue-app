@@ -121,6 +121,7 @@ export const MOCK_PRESETS = {
   } as TestMockOptions,
 
   MEMOS_TABLE: {
+    memos: true,
     memoTable: true
   } as TestMockOptions
 }

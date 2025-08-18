@@ -43,10 +43,12 @@ export async function setupMemoRouteInterceptor(
 ) {
   // Clear existing route handlers if requested
   if (clearExisting) {
+    console.log('Clearing existing memo route handlers...')
     await page.unroute('**/memos/*')
   }
 
   const mockMemo = { ...DEFAULT_MEMO, ...options }
+  console.log('Setting up memo route interceptor with data:', mockMemo)
 
   await page.route('**/memos/*', async route => {
     const url = new URL(route.request().url())
@@ -58,6 +60,8 @@ export async function setupMemoRouteInterceptor(
       body: JSON.stringify([mockMemo]) // Always return as array for consistency
     })
   })
+
+  console.log('Memo route interceptor setup complete')
 }
 
 /**

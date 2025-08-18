@@ -98,3 +98,33 @@ export async function rightClickAndOpenDialog(
   // Wait for form inside dialog to be ready
   await page.getByRole('dialog').locator('form').waitFor({ timeout: 5000 })
 }
+
+/**
+ * Wait for line chart to be fully loaded with data points
+ */
+export async function waitForLineChartReady(chartContainer: Locator, page: Page, options: {
+  timeout?: number
+  minDataPoints?: number
+} = {}) {
+  const { timeout = 15000, minDataPoints = 1 } = options
+
+  // Wait for chart container to be visible
+  await expect(chartContainer).toBeVisible({ timeout })
+
+  // Wait for SVG element to be present - use the correct selector
+  const svg = chartContainer.locator('svg[data-testid="line-chart"]')
+  await expect(svg).toBeVisible({ timeout })
+
+  // Wait for at least one chart dot to be rendered
+  const firstDot = chartContainer.getByTestId('chart-dot-0')
+  await expect(firstDot).toBeVisible({ timeout })
+
+  // Wait for minimum number of data points
+  if (minDataPoints > 1) {
+    const lastRequiredDot = chartContainer.getByTestId(`chart-dot-${minDataPoints - 1}`)
+    await expect(lastRequiredDot).toBeVisible({ timeout })
+  }
+
+  // Wait for network to settle
+  await page.waitForLoadState('networkidle', { timeout: 5000 })
+}

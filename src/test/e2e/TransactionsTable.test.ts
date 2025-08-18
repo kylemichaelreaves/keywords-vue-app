@@ -4,7 +4,7 @@ import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
 import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithStaticMocks } from '@test/e2e/helpers/setupTestMocks'
-import { waitForTableContent } from '@test/e2e/helpers/waitHelpers'
+import { waitForTableContent, waitForLineChartReady } from '@test/e2e/helpers/waitHelpers'
 
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
@@ -12,12 +12,43 @@ test.describe('Transactions Table', () => {
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
 
+    // Set up comprehensive mocks with enhanced daily intervals route handling
     await setupTransactionsTableWithStaticMocks(page, staticTransactions, staticDailyIntervals)
 
-    await transactionsPage.goto()
+    // Add specific route handler for daily intervals with better logging
+    await page.route('**/transactions*dailyTotals=true*', async route => {
+      const url = route.request().url()
+      console.log('DailyIntervals route intercepted:', url)
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(staticDailyIntervals),
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
+    })
+
+    // Use the first date from your static data instead of hardcoding
+    const firstStaticDate = staticDailyIntervals[0].date.split('T')[0] // Extract date part
+    await page.goto(`budget-visualizer/transactions?firstDay=${firstStaticDate}`)
 
     // Wait for actual table content instead of just visibility
     await waitForTableContent(transactionsPage.transactionsTable, page)
+
+    // Wait for the daily intervals API call to complete before checking chart
+    // await page.waitForResponse(response =>
+    //   response.url().includes('dailyTotals=true') && response.status() === 200,
+    //   { timeout: 15000 }
+    // )
+
+    // Wait for the chart to be ready with data points before running any tests
+    await waitForLineChartReady(transactionsPage.intervalLineChart, page, {
+      minDataPoints: 5, // Reduced from 10 since we have limited static data
+      timeout: 25000
+    })
   })
 
   test.afterEach(async ({ page }) => {
@@ -28,11 +59,7 @@ test.describe('Transactions Table', () => {
   })
 
 
-  test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({ page }) => {
-    await page.goto('/budget-visualizer')
-    await transactionsPage.goto()
-    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
-
+  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({ transactionsPage }) => {
     await expect(transactionsPage.transactionsTable).toBeVisible()
     await expect(transactionsPage.daySelect).toBeVisible()
     await expect(transactionsPage.weekSelect).toBeVisible()
@@ -75,78 +102,63 @@ test.describe('Transactions Table', () => {
     //   close the Transaction Edit modal
     const closeButton = transactionsPage.modalCloseButton
     await closeButton.click()
-    await transactionsPage.page.waitForLoadState('networkidle')
+    await transactionsPage.page.waitForLoadState('domcontentloaded')
     await expect(editTransactionModal).not.toBeVisible()
   })
 
-  test('should display the tooltip of the point on the linechart when hovering over it', async ({ page }) => {
-    // Wait for chart to be fully loaded
-    await page.waitForLoadState('networkidle')
+  test('line chart displays tooltip on hover and allows clicking points to load transactions', async ({ page }) => {
+    // Chart should already be ready from beforeEach, but let's ensure it's still visible
     await expect(transactionsPage.intervalLineChart).toBeVisible()
 
-    // hover over the first chart-dot on the line chart
-    const tenthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-10')
-    await expect(tenthPoint).toBeVisible()
-    await tenthPoint.hover()
+    // Test tooltip functionality first - use a lower index since we have limited static data
+    const secondPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-1')
+    await expect(secondPoint).toBeVisible()
+    await secondPoint.hover()
 
-    const toolTip = transactionsPage.intervalLineChartTooltip
+    const toolTip = transactionsPage.intervalLineChartTooltip.first()
     await expect(toolTip).toBeVisible()
 
-    // check that the tooltip has the correct text
+    // Check that the tooltip has the correct text
     const tooltipText = await toolTip.textContent()
     expect(tooltipText).toBeDefined()
-  })
+    expect(tooltipText).toContain('2023-06') // Should contain our test date range
+    expect(tooltipText).toContain('$') // Should contain currency
 
-  test('clicking on a point in the line chart loads the transactions for that date', async ({ page }) => {
-    // Wait for chart to be fully loaded with content
-    await page.waitForLoadState('networkidle')
-    await expect(transactionsPage.intervalLineChart).toBeVisible()
+    // Test clicking functionality - use first point to avoid any missing data issues
+    const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
+    await expect(firstPoint).toBeVisible()
 
-    const fifthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-5')
-    await expect(fifthPoint).toBeVisible()
+    // Hover over the first chart-dot to get the date
+    await firstPoint.hover()
+    await expect(transactionsPage.intervalLineChartTooltip.first()).toBeVisible()
 
-    // hover over the fifth chart-dot on the line chart
-    await fifthPoint.hover()
-    // wait for the intervalLineChartTooltip to be visible
-    await expect(transactionsPage.intervalLineChartTooltip).toBeVisible()
-
-    const textContent = await transactionsPage.intervalLineChartTooltip.textContent()
-
-    const fifthPointDate = textContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
+    const hoverTextContent = await transactionsPage.intervalLineChartTooltip.first().textContent()
+    const firstPointDate = hoverTextContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
 
     // Ensure we got a valid date before proceeding
-    expect(fifthPointDate).toBeDefined()
-    expect(fifthPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    expect(firstPointDate).toBeDefined()
+    expect(firstPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
 
-    const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
+    const firstPointDateTransactions = generateTransactionsArray(5, '', firstPointDate)
 
     // Set up the route handler BEFORE clicking to ensure it catches the request
     await page.route('**/transactions**', async route => {
       const url = new URL(route.request().url())
       const params = url.searchParams
 
-      console.log('Chart click interceptor - transactions request:', {
-        limit: params.get('limit'),
-        offset: params.get('offset'),
-        timeFrame: params.get('timeFrame'),
-        date: params.get('date'),
-        full_url: url.toString()
-      })
-
       const dateParam = params.get('date')
       const timeFrame = params.get('timeFrame')
 
       // More robust date matching - check if the date parameter contains our target date
-      if (fifthPointDate && dateParam && dateParam.includes(fifthPointDate) && timeFrame === 'day') {
-        console.log(`Fulfilling chart click request for date: ${fifthPointDate}`)
+      if (firstPointDate && dateParam && dateParam.includes(firstPointDate) && timeFrame === 'day') {
+        console.log(`Fulfilling chart click request for date: ${firstPointDate}`)
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(fifthPointDateTransactions)
+          body: JSON.stringify(firstPointDateTransactions)
         })
       } else {
         // For any other request, use static transactions as fallback
-        console.log('Using static transactions as fallback')
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -159,12 +171,12 @@ test.describe('Transactions Table', () => {
     const requestPromise = page.waitForRequest(request => {
       const url = request.url()
       return url.includes('transactions') &&
-        url.includes(`date=${fifthPointDate}`) &&
+        url.includes(`date=${firstPointDate}`) &&
         url.includes('timeFrame=day')
     })
 
     // Click the chart point
-    await fifthPoint.click()
+    await firstPoint.click()
 
     // Wait for the specific request we're expecting
     await requestPromise
@@ -174,8 +186,37 @@ test.describe('Transactions Table', () => {
 
     // Verify the table shows the correct date
     const dateText = await transactionsPage.getCellTextContent(1, 2)
+    expect(dateText).toBe(firstPointDate)
 
-    expect(dateText).toBe(fifthPointDate)
+    // NEW TEST: Verify that the chart is now hidden after selecting a day
+    await expect(transactionsPage.intervalLineChart).not.toBeVisible()
+  })
+
+  test('daily interval line chart is hidden when a day is selected', async ({ page }) => {
+    // Initially, the chart should be visible (no day selected)
+    await expect(transactionsPage.intervalLineChart).toBeVisible()
+
+    // Click on a chart point to select a day
+    const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
+    await expect(firstPoint).toBeVisible()
+    
+    // Set up route handler for the chart click
+    await page.route('**/transactions**', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(generateTransactionsArray(5, '', '2023-06-01'))
+      })
+    })
+
+    // Click the chart point to select a day
+    await firstPoint.click()
+
+    // Wait for the store to update and the chart to hide
+    await page.waitForTimeout(500)
+
+    // Verify that the chart is now hidden
+    await expect(transactionsPage.intervalLineChart).not.toBeVisible()
   })
 
 })

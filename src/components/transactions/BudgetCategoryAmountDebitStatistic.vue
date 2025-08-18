@@ -1,11 +1,20 @@
 <template>
   <div>
     <AlertComponent title="error.name" message="error.message" type="error" v-if="isError && error" />
+
+    <!-- Show skeleton when loading -->
+    <el-skeleton v-if="isLoading || isFetching || isRefetching" animated>
+      <template #template>
+        <el-skeleton-item variant="h3" style="width: 60%; margin-bottom: 8px;" />
+        <el-skeleton-item variant="text" style="width: 40%;" />
+      </template>
+    </el-skeleton>
+
+    <!-- Show actual statistic when loaded -->
     <StatisticComponent
-      v-if="totalAmountDebit"
+      v-else-if="totalAmountDebit"
       :value="totalAmountDebit"
       :title="props.budgetCategoryName"
-      v-loading="isLoading || isFetching || isRefetching"
       :precision="2"
       :data-test-id="props.dataTestId"
     />
@@ -17,6 +26,7 @@ import { useBudgetCategoryAmountDebit } from '@api/hooks/transactions/useBudgetC
 import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import StatisticComponent from '@components/shared/StatisticComponent.vue'
+import { ElSkeleton, ElSkeletonItem } from 'element-plus'
 import { computed } from 'vue'
 
 const props = defineProps({

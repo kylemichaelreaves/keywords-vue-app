@@ -4,15 +4,51 @@
   line-height: 24px;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Custom theme variables */
+  --app-bg-color: #ffffff;
+  --app-text-color: #213547;
+  --app-text-color-secondary: #666666;
+  --app-border-color: #e4e7ed;
+  --app-card-bg: #ffffff;
+  --app-shadow: rgba(0, 0, 0, 0.1);
+
+  color-scheme: light;
+  color: var(--app-text-color);
+  background-color: var(--app-bg-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+/* Dark theme variables */
+:root.dark {
+  --app-bg-color: #1a1a1a;
+  --app-text-color: rgba(255, 255, 255, 0.87);
+  --app-text-color-secondary: rgba(255, 255, 255, 0.6);
+  --app-border-color: #414243;
+  --app-card-bg: #242424;
+  --app-shadow: rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+  color: var(--app-text-color);
+  background-color: var(--app-bg-color);
+}
+
+/* Light theme variables */
+:root.light {
+  --app-bg-color: #ffffff;
+  --app-text-color: #213547;
+  --app-text-color-secondary: #666666;
+  --app-border-color: #e4e7ed;
+  --app-card-bg: #ffffff;
+  --app-shadow: rgba(0, 0, 0, 0.1);
+
+  color-scheme: light;
+  color: var(--app-text-color);
+  background-color: var(--app-bg-color);
 }
 
 a {
@@ -30,6 +66,9 @@ body {
   place-items: flex-start;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--app-bg-color);
+  color: var(--app-text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1 {
@@ -44,9 +83,11 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--app-card-bg);
+  color: var(--app-text-color);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: border-color 0.25s, background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 4px var(--app-shadow);
 }
 button:hover {
   border-color: #646cff;
@@ -58,6 +99,11 @@ button:focus-visible {
 
 .card {
   padding: 2em;
+  background-color: var(--app-card-bg);
+  border: 1px solid var(--app-border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--app-shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 #app {
@@ -65,17 +111,8 @@ button:focus-visible {
   margin: 0 0;
   padding: 1rem 0 0 1rem;
   text-align: left;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  background-color: var(--app-bg-color);
+  color: var(--app-text-color);
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

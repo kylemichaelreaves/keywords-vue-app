@@ -73,7 +73,7 @@ onMounted(() => {
   refetch()
   store.updateTransactionsTableOffset(0)
   if (data.value) {
-    store.setTransactionsCount(data.value)
+    store.setTransactionsCount(data.value[0].count)
   }
 })
 

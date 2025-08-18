@@ -52,41 +52,26 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
 export async function mockDailyIntervalRoutes(page: Page, days: number = 30, staticData?: any[]) {
   const intervals = staticData || generateDailyIntervals(days)
 
-  // Various parameter orders for daily totals
-  await page.route('**/transactions?dailyTotals=true&interval=1+month&date=*', route => {
-    route.fulfill({
+  // Use more specific route patterns to avoid conflicts
+  await page.route('**/transactions?dailyTotals=true*', async route => {
+    const url = route.request().url()
+    console.log('Daily intervals mock - intercepted request:', url)
+    console.log('Daily intervals mock - fulfilling request with data:', intervals.length, 'intervals')
+
+    await route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify(intervals)
     })
   })
 
-  await page.route('**/transactions?dailyTotals=true&interval=1+months', route => {
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(intervals)
-    })
-  })
+  // Also handle requests with different parameter order
+  await page.route('**/transactions*dailyTotals=true*', async route => {
+    const url = route.request().url()
+    console.log('Daily intervals mock (alt pattern) - intercepted request:', url)
+    console.log('Daily intervals mock (alt pattern) - fulfilling request with data:', intervals.length, 'intervals')
 
-  await page.route('**/transactions?dailyTotals=true&interval=1+months&date=*', route => {
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(intervals)
-    })
-  })
-
-  await page.route('**/transactions?interval=1+months&dailyTotals=true', route => {
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(intervals)
-    })
-  })
-
-  await page.route('**/transactions?interval=1+month&dailyTotals=true', route => {
-    route.fulfill({
+    await route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify(intervals)
@@ -119,9 +104,23 @@ export async function mockBudgetCategoryRoutes(page: Page) {
  * Mock individual memo API calls for context menu functionality
  */
 export async function mockMemoRoutes(page: Page) {
-  await page.route('**/memos/*', async route => {
+  // Add a catch-all debug route first to see all requests
+  await page.route('**/*', async route => {
+    const url = route.request().url()
+    if (url.includes('memo')) {
+      console.log('DEBUG: Any request containing "memo":', url)
+    }
+    await route.continue()
+  })
+
+  // More comprehensive route patterns to catch all possible API gateway URLs
+  await page.route('**/memos/**', async route => {
     const url = new URL(route.request().url())
-    const memoName = url.pathname.split('/').pop()
+    const pathParts = url.pathname.split('/memos/')
+    const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
+
+    console.log('Mock intercepted memo request for:', memoName)
+    console.log('Full URL:', route.request().url())
 
     await route.fulfill({
       status: 200,
@@ -130,10 +129,57 @@ export async function mockMemoRoutes(page: Page) {
         id: 1,
         name: memoName,
         budget_category: 'Groceries',
-        total_amount_debit: -150.00,
         necessary: true,
         recurring: false,
-        frequency: null,
+        frequency: 'monthly',
+        ambiguous: false
+      }])
+    })
+  })
+
+  // Additional catch-all pattern for different API gateway configurations
+  await page.route('**/api/**/memos/**', async route => {
+    const url = new URL(route.request().url())
+    const pathParts = url.pathname.split('/memos/')
+    const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
+
+    console.log('Mock intercepted API memo request for:', memoName)
+    console.log('Full URL:', route.request().url())
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([{
+        id: 1,
+        name: memoName,
+        budget_category: 'Groceries',
+        necessary: true,
+        recurring: false,
+        frequency: 'monthly',
+        ambiguous: false
+      }])
+    })
+  })
+
+  // Even broader pattern to catch any memo-related requests
+  await page.route(/.*\/memos\/.*/, async route => {
+    const url = new URL(route.request().url())
+    const pathParts = url.pathname.split('/memos/')
+    const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
+
+    console.log('Mock intercepted regex memo request for:', memoName)
+    console.log('Full URL:', route.request().url())
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([{
+        id: 1,
+        name: memoName,
+        budget_category: 'Groceries',
+        necessary: true,
+        recurring: false,
+        frequency: 'monthly',
         ambiguous: false
       }])
     })

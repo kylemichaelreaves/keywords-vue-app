@@ -1,32 +1,31 @@
 import type { Categories, CategoryNode } from '@types'
 
 /**
- * convertToTree: converts the data object resulting from the useBudgetCategories hook into a tree of CategoryNodes.
- * by iterating over the keys of the categories object and creating a new CategoryNode for each.
- * If a category has subcategories, it recursively calls itself to create a tree for each subcategory.
- *
- * Note: The result of this function is an array of arrays. It's necessary, therefore, to call .flat() on the result
- * so that it can be consumed by the el-select-tree, which expects a flat array of options (CategoryNodes).
+ * convertToTree: converts the nested categories object into a tree of CategoryNodes.
+ * This function handles the actual structure returned by the API: a nested object where
+ * each key is a category name and the value contains subcategories.
  *
  * @param {Categories} categories - The categories object to convert into a tree.
- * @param {string} parentValue - The value of the parent node. Used to create the value of the current node.
+ * @param {string} parentPath - The path of parent categories, used to create unique values.
  * @returns {CategoryNode[]} - An array of CategoryNodes representing the tree.
  */
 // used by BudgetCategoryTreeSelect
-export function convertToTree(categories: Categories, parentValue: string = ''): CategoryNode[] {
-  return Object.keys(categories).map((key, index) => {
-    // Create the value for the current node
-    const value = parentValue ? `${parentValue}-${index + 1}` : `${index + 1}`
+export function convertToTree(categories: Categories, parentPath: string = ''): CategoryNode[] {
+  return Object.keys(categories).map((categoryName) => {
+    // Create a unique value path for this category
+    const currentPath = parentPath ? `${parentPath} - ${categoryName}` : categoryName
 
-    // If the current category has subcategories, create a tree for them
-    const children = Object.keys(categories[key]).length > 0
-      ? convertToTree(categories[key], value)
+    const subcategories = categories[categoryName]
+
+    // If there are subcategories, recursively process them
+    const children = Object.keys(subcategories).length > 0
+      ? convertToTree(subcategories, currentPath)
       : undefined
 
-    // Return a new CategoryNode
+    // Return a CategoryNode
     return {
-      value,
-      label: key,
+      value: currentPath, // Use the full path as the value
+      label: categoryName, // Just the category name as the label
       ...(children && { children })
     }
   })

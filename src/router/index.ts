@@ -6,15 +6,14 @@ import LoanCalculator from '@components/loan/LoanCalculator.vue'
 import TransactionsTable from '@components/transactions/TransactionsTable.vue'
 import MonthSummaryTable from '@components/transactions/MonthSummaryTable.vue'
 import WeekSummaryTable from '@components/transactions/WeekSummaryTable.vue'
-import TransactionSummaryTable from '@components/transactions/TransactionSummaryTable.vue'
 import MemosTable from '@components/transactions/MemosTable.vue'
 import MemoSummaryTable from '@components/transactions/MemoSummaryTable.vue'
-import BudgetCategoriesTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
 import NotFound from '@components/NotFound.vue'
 import LoginUser from '@components/user-management/LoginUser.vue'
+import MemoEditForm from '@components/transactions/MemoEditForm.vue'
 import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
 import { useTransactionsStore } from '@stores/transactions.ts'
-
+import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
 
 
 export const routes = [{
@@ -90,14 +89,14 @@ export const routes = [{
 
 
               store.setSelectedWeek(to.params.week as string)
-            },
+            }
           }
         ]
       },
       {
-        path: 'transactions/:transactionNumber',
-        name: 'transaction',
-        component: TransactionSummaryTable,
+        path: 'transactions/:transactionId/edit',
+        name: 'transaction-edit',
+        component: TransactionEditForm,
         meta: { requiresAuth: true },
         props: true
       },
@@ -109,7 +108,7 @@ export const routes = [{
       },
       {
         path: 'memos/:memoName/summary',
-        name: 'memo',
+        name: 'memo-summary',
         component: MemoSummaryTable,
         props: true,
         meta: { requiresAuth: true },
@@ -121,14 +120,29 @@ export const routes = [{
           store.setSelectedMonth('')
           store.setSelectedYear('')
 
-
+          store.setSelectedMemo(to.params.memoName as string)
+        }
+      },
+      {
+        path: 'memos/:memoName/edit',
+        name: 'memo-edit',
+        component: MemoEditForm,
+        meta: { requiresAuth: true },
+        props: true,
+        beforeEnter: (to: RouteLocationNormalized) => {
+          const store = useTransactionsStore()
+          // clear any previous selections
+          store.setSelectedDay('')
+          store.setSelectedWeek('')
+          store.setSelectedMonth('')
+          store.setSelectedYear('')
           store.setSelectedMemo(to.params.memoName as string)
         }
       },
       {
         path: 'budget-categories',
         name: 'budget-categories',
-        component: BudgetCategoriesTreeSelect,
+        component: () => import('@components/transactions/BudgetCategoriesTreeSelect.vue'),
         meta: { requiresAuth: true }
       }
     ]
@@ -154,4 +168,3 @@ export const router = createRouter({
   history: createWebHistory(),
   routes: routes
 })
-

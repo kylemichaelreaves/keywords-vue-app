@@ -41,7 +41,8 @@ test.describe('Month Summary Page', () => {
   test('should display all month summary page elements correctly', async () => {
     // Check month title
     const title = await monthSummaryPage.getMonthTitle()
-    expect(title).toContain('Month Summary for:' + ' ' + selectedMonth)
+    expect(title).toContain('Month Summary for:')
+    expect(title).toContain(selectedMonth)
 
     // Check main table visibility with content
     await expect(monthSummaryPage.monthSummaryTable).toBeVisible()
@@ -67,13 +68,42 @@ test.describe('Month Summary Page', () => {
   })
 
   test('right clicking on a table row opens the memo edit modal', async ({ page }) => {
+    // Set up the memo route interceptor with better timing and logging
+    console.log('Setting up memo route interceptor for monthly preset...')
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.monthly, true)
 
     await monthSummaryPage.expectMemoEditModalHidden()
+
+    // Log before right-clicking
+    console.log('Right-clicking on table row to open modal...')
+
+    // Wait for the memo request to be made and responded to
+    const responsePromise = page.waitForResponse(response =>
+      response.url().includes('/memos/') && response.status() === 200
+    )
+
     await monthSummaryPage.rightClickOnTableRow(1)
+
+    // Wait for modal to be visible before checking for form
     await monthSummaryPage.expectMemoEditModalVisible()
-    await monthSummaryPage.expectMemoEditFormVisible()
-    await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
+    console.log('Modal is visible, waiting for memo data to load...')
+
+    // Wait for the memo response to complete
+    const response = await responsePromise
+    console.log('Memo response received:', response.status())
+
+    // Now check if the form is visible
+    try {
+      await monthSummaryPage.expectMemoEditFormVisible()
+      await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
+    } catch (error) {
+      // If form isn't visible, log the current state for debugging
+      console.log('Form not visible, checking modal content...')
+      const modalContent = await page.locator('[data-testid="memo-edit-dialog"]').textContent()
+      console.log('Modal content:', modalContent)
+      throw error
+    }
+
     await monthSummaryPage.closeMemoEditModal()
     await monthSummaryPage.expectMemoEditModalHidden()
   })

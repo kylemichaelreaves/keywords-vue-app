@@ -54,9 +54,9 @@
         width="auto"
       >
         <template v-slot:default="scope">
-          <template v-if="column.prop === 'transaction_number'">
+          <template v-if="column.prop === 'id'">
             <router-link
-              :to="{name: 'transaction', params: {transactionNumber: scope.row[column.prop]}}"
+              :to="{name: 'transaction-edit', params: {transactionId: scope.row[column.prop]}}"
               :data-testid="`transaction-link-${scope.row[column.prop]}`"
             >
               {{ scope.row[column.prop] }}

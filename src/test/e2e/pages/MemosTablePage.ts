@@ -119,10 +119,30 @@ export class MemosTablePage {
   async rightClickOnFirstMemo() {
     const cell = this.page.locator('[data-row-index="0"][data-column="name"]')
     const link = cell.locator('a')
+
+    // Get the memo name before right-clicking to ensure we know what we're working with
+    const memoName = await link.textContent()
+    console.log('Right-clicking on memo:', memoName)
+
     await link.click({ button: 'right' })
+
+    // Wait a bit for the modal to potentially open
+    await this.page.waitForTimeout(500)
   }
 
   async expectMemoEditModalToBeVisible() {
+    // Add more debugging to see what's happening
+    const isVisible = await this.memoEditModal.isVisible()
+    console.log('Modal visible:', isVisible)
+
+    if (!isVisible) {
+      // Check if there are any console errors
+      const consoleLogs = await this.page.evaluate(() => {
+        return window.console.error.toString()
+      })
+      console.log('Console errors:', consoleLogs)
+    }
+
     await expect(this.memoEditModal).toBeVisible()
   }
 

@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { DateTime } from 'luxon'
 
-
 const lastMonthStart = DateTime.now().minus({ months: 1 }).startOf('month').toJSDate()
 const lastMonthEnd = DateTime.now().minus({ days: DateTime.now().day }).toJSDate()
 
@@ -28,7 +27,6 @@ export function generateDailyIntervals(
   }));
 }
 
-
 export const staticDailyIntervals = [
   {
     date: '2023-06-01T00:00:00.000Z',
@@ -52,62 +50,22 @@ export const staticDailyIntervals = [
   },
   {
     date: '2023-06-06T00:00:00.000Z',
-    total_amount_debit: -400.00
+    total_amount_debit: -75.00
   },
   {
     date: '2023-06-07T00:00:00.000Z',
-    total_amount_debit: -250.00
+    total_amount_debit: -125.00
   },
   {
     date: '2023-06-08T00:00:00.000Z',
-    total_amount_debit: -350.00
+    total_amount_debit: -180.00
   },
   {
     date: '2023-06-09T00:00:00.000Z',
-    total_amount_debit: -450.00
+    total_amount_debit: -220.00
   },
   {
     date: '2023-06-10T00:00:00.000Z',
-    total_amount_debit: -500.00
-  },
-  {
-    date: '2023-06-11T00:00:00.000Z',
-    total_amount_debit: -600.00
-  },
-  {
-    date: '2023-06-12T00:00:00.000Z',
-    total_amount_debit: -700.00
-  },
-  {
-    date: '2023-06-13T00:00:00.000Z',
-    total_amount_debit: -800.00
-  },
-  {
-    date: '2023-06-14T00:00:00.000Z',
-    total_amount_debit: -900.00
-  },
-  {
-    date: '2023-06-15T00:00:00.000Z',
-    total_amount_debit: -1000.00
-  },
-  {
-    date: '2023-06-16T00:00:00.000Z',
-    total_amount_debit: -1100.00
-  },
-  {
-    date: '2023-06-17T00:00:00.000Z',
-    total_amount_debit: -1200.00
-  },
-  {
-    date: '2023-06-18T00:00:00.000Z',
-    total_amount_debit: -1300.00
-  },
-  {
-    date: '2023-06-19T00:00:00.000Z',
-    total_amount_debit: -1400.00
-  },
-  {
-    date: '2023-06-20T00:00:00.000Z',
-    total_amount_debit: -1500.00
+    total_amount_debit: -95.00
   }
 ];

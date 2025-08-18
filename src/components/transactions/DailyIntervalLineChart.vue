@@ -1,5 +1,5 @@
 <template>
-  <div :data-testid="props.dataTestId">
+  <div :data-testid="props.dataTestId" v-if="!selectedDay || selectedDay === ''">
     <AlertComponent
       v-if="isError && error"
       :message="error.message"
@@ -86,6 +86,3 @@ const handleOnDayClicked = (selection: string) => {
 }
 
 </script>
-
-<style scoped>
-</style>

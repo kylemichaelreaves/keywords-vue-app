@@ -1,3 +1,5 @@
+import type { Frequency } from '@types'
+
 /**
  * Generates an array of mock Memo objects for testing
  * @param {number} count - Number of memos to generate
@@ -32,12 +34,12 @@ export function generateMemosArray(count = 100) {
     const ambiguous = Math.random() < 0.2 // 20% chance of being ambiguous
 
     // Select frequency (bias towards monthly for recurring items)
-    let frequency
+    let frequency: Frequency
     if (recurring) {
-      const recurringFreqs = ['weekly', 'monthly', 'yearly']
+      const recurringFreqs: Frequency[] = ['daily', 'weekly', 'monthly', 'yearly']
       frequency = recurringFreqs[Math.floor(Math.random() * recurringFreqs.length)]
     } else {
-      frequency = Math.random() < 0.8 ? 'one-time' : 'monthly'
+      frequency = Math.random() < 0.8 ? 'weekly' : 'monthly'
     }
 
     memos.push({

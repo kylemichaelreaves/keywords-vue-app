@@ -12,7 +12,6 @@
         :data="selectTreeData"
         v-model="model"
         class="tree-select"
-        show-checkbox
         :data-testid="props.dataTestId"
       />
     </div>
@@ -24,7 +23,6 @@ import { computed } from 'vue'
 import { ElTreeSelect } from 'element-plus'
 import { useBudgetCategories } from '@api/hooks/transactions/useBudgetCategories'
 import { convertToTree } from '@api/helpers/convertToTree'
-import type { BudgetCategoryResponse } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
 interface Props {
@@ -47,9 +45,11 @@ const { data, isError, error } = useBudgetCategories(undefined, undefined, false
 const selectTreeData = computed(() => {
   if (!data.value?.length) return []
 
-  return data.value
-    .map((item: BudgetCategoryResponse) => convertToTree(item.data))
-    .flat()
+  // The API returns { json: [{ data: { /* nested categories */ } }] }
+  const categoryData = data.value[0]?.data
+  if (!categoryData) return []
+
+  return convertToTree(categoryData).flat()
 })
 </script>
 

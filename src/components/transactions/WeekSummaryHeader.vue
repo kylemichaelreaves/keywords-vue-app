@@ -10,7 +10,7 @@
     data-testid="week-summary-header"
   >
     <template #subtitle>
-      <el-text size="large">From: {{ weekRange.startDate }} To: {{ weekRange.endDate }}</el-text>
+      <el-text size="default">From: {{ weekRange.startDate }} To: {{ weekRange.endDate }}</el-text>
     </template>
     <template #amount-total>
       <WeeklyAmountDebitTotal data-testid="weekly-amount-debit-total" />

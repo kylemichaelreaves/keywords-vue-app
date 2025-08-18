@@ -49,14 +49,26 @@ export interface BudgetCategory {
   frequency?: Frequency;
 }
 
-export interface BudgetCategoryData {
-  id: string;
-  name: string;
-  subcategories?: Record<string, BudgetCategoryData>;
+/**
+ * CategoryObject interface represents the base structure for budget category data.
+ * Used in budget category summaries and pie chart visualizations.
+ */
+export interface CategoryObject {
+  category_id: number
+  category_name: string
+  full_path: string
+  level: number
+  parent_id: number | null
+  source_id: number
 }
 
-export interface BudgetCategoryResponse {
-  data: BudgetCategoryData;
+/**
+ * BudgetCategorySummary extends CategoryObject with additional summary data.
+ * Used for budget category analysis and chart data visualization.
+ */
+export interface BudgetCategorySummary extends CategoryObject {
+  budget_category: string
+  total_amount_debit: number
 }
 
 /**
@@ -135,12 +147,12 @@ export interface Memo {
   name: string
   recurring: boolean;
   necessary: boolean;
-  frequency?: Frequency | null;
+  frequency?: Frequency;
   budget_category?: string | null;
   ambiguous: boolean;
   total_amount_debit?: number;
   transactions_count?: number;
-  avatar_s3_url?: string | null;
+  avatar_s3_url?: string;
 }
 
 
@@ -179,7 +191,8 @@ export type MemoKeys =
 
 export interface MonthSummary {
   memo: string;
-  monthly_amount_debit: number;
+  total_amount_debit: number;
+  budget_category: string;
 }
 
 export interface MonthYear {

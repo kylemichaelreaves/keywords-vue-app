@@ -52,12 +52,25 @@ test.describe('Week Summary Table', () => {
 
 
   test('memo edit modal workflow: open, display content, and close', async ({ page }) => {
+    // Set up the memo route interceptor for weekly preset
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.weekly, true)
 
     await weekSummaryPage.expectMemoEditModalHidden()
 
+    // Wait for the memo request to be made and responded to
+    const responsePromise = page.waitForResponse(response =>
+      response.url().includes('/memos/') && response.status() === 200
+    )
+
     await weekSummaryPage.rightClickOnTableRow(1)
+
+    // Wait for modal to be visible
     await weekSummaryPage.expectMemoEditModalVisible()
+
+    // Wait for the memo response to complete
+    await responsePromise
+
+    // Now check if the form is visible
     await weekSummaryPage.expectMemoEditFormTitle('Edit Memo:')
     await weekSummaryPage.expectMemoEditFormVisible()
 
