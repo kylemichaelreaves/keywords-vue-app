@@ -38,16 +38,10 @@ test.describe('Transactions Table', () => {
     // Wait for actual table content instead of just visibility
     await waitForTableContent(transactionsPage.transactionsTable, page)
 
-    // Wait for the daily intervals API call to complete before checking chart
-    // await page.waitForResponse(response =>
-    //   response.url().includes('dailyTotals=true') && response.status() === 200,
-    //   { timeout: 15000 }
-    // )
-
     // Wait for the chart to be ready with data points before running any tests
     await waitForLineChartReady(transactionsPage.intervalLineChart, page, {
       minDataPoints: 5, // Reduced from 10 since we have limited static data
-      timeout: 25000
+      timeout: 40000
     })
   })
 

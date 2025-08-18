@@ -341,3 +341,35 @@ export interface BudgetCategoryHierarchySummaryResponse {
   source_id: number;
   total_amount_debit: number;
 }
+
+export interface CategoryObject {
+  category_id: number
+  category_name: string
+  full_path: string
+  level: number
+  parent_id: number | null
+  source_id: number
+}
+
+export interface BudgetCategorySummary extends CategoryObject {
+  budget_category: string
+  total_amount_debit: number
+}
+
+export interface MockMemoOptions {
+  id?: number
+  name?: string
+  recurring?: boolean
+  necessary?: boolean
+  frequency?: string | null
+  budget_category?: string | null
+  ambiguous?: boolean
+  avatar_s3_url?: string | null
+}
+
+export interface BudgetCategoryHierarchyOptions {
+  timeFrame: 'week' | 'month' | 'day'
+  includeChildren?: boolean
+  maxParentCategories?: number
+  sourceId?: number
+}

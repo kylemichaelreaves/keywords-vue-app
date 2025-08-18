@@ -39,7 +39,9 @@ export function generateMemosArray(count = 100) {
       const recurringFreqs: Frequency[] = ['daily', 'weekly', 'monthly', 'yearly']
       frequency = recurringFreqs[Math.floor(Math.random() * recurringFreqs.length)]
     } else {
-      frequency = Math.random() < 0.8 ? 'weekly' : 'monthly'
+      // For non-recurring items, use a weighted selection
+      const frequencyOptions: Frequency[] = ['weekly', 'weekly', 'monthly', 'monthly', 'monthly', 'yearly']
+      frequency = frequencyOptions[Math.floor(Math.random() * frequencyOptions.length)]
     }
 
     memos.push({

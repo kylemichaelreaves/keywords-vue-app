@@ -102,14 +102,11 @@ test.describe('Memo Summary Table', () => {
   })
 
   test('when the memo lacks a budget_category, the budget category button should be visible and clickable', async ({ page }) => {
-    console.log('TEST: Starting combined budget category button test')
-
     // Clear the existing memo route specifically
     await page.unroute('**/memos/**')
 
     // Get the current memo name for consistency
     const currentMemoText = await memoSummaryTablePage.getMemoTitle()
-    console.log('TEST: Current memo loaded:', currentMemoText)
 
     // Create a memo without budget category using the CURRENT memo name
     const memoWithoutBudgetCategory = {
@@ -122,17 +119,14 @@ test.describe('Memo Summary Table', () => {
       ambiguous: false,
       avatar_s3_url: null
     }
-    console.log('TEST: Created memo without budget category:', memoWithoutBudgetCategory)
 
     // Set up a more specific route interceptor that doesn't interfere with summary endpoint
     await page.route('**/memos/**', async route => {
       const url = new URL(route.request().url())
       const pathSegments = url.pathname.split('/')
       const lastSegment = pathSegments[pathSegments.length - 1]
-
       // Only intercept if this is NOT a summary route
       if (lastSegment !== 'summary') {
-        console.log('TEST: Route intercepted for memo details:', route.request().url())
         // Return array containing the memo object - this matches the expected API format
         await route.fulfill({
           status: 200,
@@ -141,48 +135,22 @@ test.describe('Memo Summary Table', () => {
         })
       } else {
         // Let summary routes pass through to the original mock
-        console.log('TEST: Allowing summary route to pass through:', route.request().url())
         await route.continue()
       }
     })
 
     // Navigate to the same page fresh (instead of reload)
     const currentUrl = page.url()
-    console.log('TEST: Navigating to trigger new data:', currentUrl)
     await page.goto(currentUrl)
 
     // Wait for the page to be ready
     await page.waitForLoadState('networkidle')
 
-    // Add debugging for page state
-    const pageState = await page.evaluate(() => {
-      const budgetCategoryColumn = document.querySelector('[data-testid="budget-category-column"]')
-      const budgetCategoryButton = document.querySelector('[data-testid="budget-category-button"]')
-
-      return {
-        budgetColumnExists: !!budgetCategoryColumn,
-        budgetColumnLoading: budgetCategoryColumn?.getAttribute('data-loading'),
-        budgetColumnHasCategory: budgetCategoryColumn?.getAttribute('data-has-category'),
-        budgetButtonExists: !!budgetCategoryButton,
-        allTestIds: Array.from(document.querySelectorAll('[data-testid]')).map(el => el.getAttribute('data-testid')),
-        pageTitle: document.title,
-        currentUrl: window.location.href
-      }
-    })
-    console.log('TEST: Page state after navigation:', JSON.stringify(pageState, null, 2))
-
     // Wait for the button to be visible - this is the main test
-    console.log('TEST: Waiting for budget category button to be visible')
     await expect(memoSummaryTablePage.budgetCategoryButton).toBeVisible({ timeout: 15000 })
-    console.log('TEST: Budget category button is visible!')
-
     // Now test clicking the button to open the modal
-    console.log('TEST: Clicking budget category button to test modal opening')
     await memoSummaryTablePage.budgetCategoryButton.click()
-
     // Check if modal opens
-    console.log('TEST: Waiting for modal to be visible')
     await expect(memoSummaryTablePage.budgetCategoryModal).toBeVisible({ timeout: 5000 })
-    console.log('TEST: Modal is visible! Test passed.')
   })
 })

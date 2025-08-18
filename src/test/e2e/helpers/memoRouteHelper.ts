@@ -1,23 +1,8 @@
 import type { Page } from '@playwright/test'
 import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock'
+import type { BudgetCategoryHierarchyOptions, MockMemoOptions } from '@types'
 
-export interface MockMemoOptions {
-  id?: number
-  name?: string
-  recurring?: boolean
-  necessary?: boolean
-  frequency?: string | null
-  budget_category?: string | null
-  ambiguous?: boolean
-  avatar_s3_url?: string | null
-}
 
-export interface BudgetCategoryHierarchyOptions {
-  timeFrame: 'week' | 'month' | 'day'
-  includeChildren?: boolean
-  maxParentCategories?: number
-  sourceId?: number
-}
 
 /**
  * Default memo mock data
@@ -43,12 +28,12 @@ export async function setupMemoRouteInterceptor(
 ) {
   // Clear existing route handlers if requested
   if (clearExisting) {
-    console.log('Clearing existing memo route handlers...')
+
     await page.unroute('**/memos/*')
   }
 
   const mockMemo = { ...DEFAULT_MEMO, ...options }
-  console.log('Setting up memo route interceptor with data:', mockMemo)
+
 
   await page.route('**/memos/*', async route => {
     const url = new URL(route.request().url())
@@ -61,7 +46,6 @@ export async function setupMemoRouteInterceptor(
     })
   })
 
-  console.log('Memo route interceptor setup complete')
 }
 
 /**

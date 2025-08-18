@@ -55,7 +55,8 @@
         style="margin-bottom: 16px;"
       >
         <template #template>
-          <div style="display: flex; align-items: center; gap: 12px;" :style="{ marginLeft: `${category.level * 20}px` }">
+          <div style="display: flex; align-items: center; gap: 12px;"
+               :style="{ marginLeft: `${category.level * 20}px` }">
             <el-skeleton-item variant="text" :style="{ width: category.level > 0 ? '50%' : '60%' }" />
             <el-skeleton-item variant="text" style="width: 20%;" />
           </div>
@@ -117,12 +118,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, type PropType } from 'vue'
+import { computed, type PropType, watch } from 'vue'
 import { useBudgetCategorySummary } from '@api/hooks/transactions/useBudgetCategorySummary.ts'
 import StatisticComponent from '@components/shared/StatisticComponent.vue'
 import BudgetCategoryPieChart from '@components/charts/BudgetCategoryPieChart.vue'
 import { useTransactionsStore } from '@stores/transactions'
-import type { TimeframeType } from '@types'
+import type { BudgetCategorySummary, TimeframeType } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
 const props = defineProps({
@@ -146,12 +147,6 @@ const store = useTransactionsStore()
 const reactiveTimeFrame = computed(() => props.timeFrame)
 const reactiveDate = computed(() => props.date)
 
-console.log('BudgetCategorySummaries: Props received', {
-  timeFrame: props.timeFrame,
-  date: props.date,
-  dataTestId: props.dataTestId
-})
-
 const { data, isLoading, isFetching, isRefetching, isError, error, refetch } = useBudgetCategorySummary(
   reactiveTimeFrame,
   reactiveDate
@@ -159,80 +154,36 @@ const { data, isLoading, isFetching, isRefetching, isError, error, refetch } = u
 
 // Watch for changes in store values and force refetch
 watch(() => store.getSelectedMonth, (newMonth, oldMonth) => {
-  console.log('BudgetCategorySummaries: Selected month changed', {
-    from: oldMonth,
-    to: newMonth,
-    currentTimeFrame: props.timeFrame
-  })
   if (props.timeFrame === 'month' && newMonth !== oldMonth) {
-    console.log('BudgetCategorySummaries: Refetching for month change')
     refetch()
   }
 }, { immediate: false })
 
 watch(() => store.getSelectedWeek, (newWeek, oldWeek) => {
-  console.log('BudgetCategorySummaries: Selected week changed', {
-    from: oldWeek,
-    to: newWeek,
-    currentTimeFrame: props.timeFrame
-  })
   if (props.timeFrame === 'week' && newWeek !== oldWeek) {
-    console.log('BudgetCategorySummaries: Refetching for week change')
     refetch()
   }
 }, { immediate: false })
 
 watch(() => store.getSelectedDay, (newDay, oldDay) => {
-  console.log('BudgetCategorySummaries: Selected day changed', {
-    from: oldDay,
-    to: newDay,
-    currentTimeFrame: props.timeFrame
-  })
   if (props.timeFrame === 'day' && newDay !== oldDay) {
-    console.log('BudgetCategorySummaries: Refetching for day change')
     refetch()
   }
 }, { immediate: false })
-
 // Also watch for changes to the props themselves
 watch(() => [props.date, props.timeFrame], ([newDate, newTimeFrame], [oldDate, oldTimeFrame]) => {
-  console.log('BudgetCategorySummaries: Props changed', {
-    date: { from: oldDate, to: newDate },
-    timeFrame: { from: oldTimeFrame, to: newTimeFrame }
-  })
   if (newDate !== oldDate || newTimeFrame !== oldTimeFrame) {
-    console.log('BudgetCategorySummaries: Refetching for prop changes')
     refetch()
   }
 }, { immediate: false })
 
-export interface CategoryObject {
-  category_id: number
-  category_name: string
-  full_path: string
-  level: number
-  parent_id: number | null
-  source_id: number
-}
-
-interface BudgetCategorySummary extends CategoryObject {
-  budget_category: string
-  total_amount_debit: number
-}
 
 const categorySummaries = computed((): BudgetCategorySummary[] => {
   if (!data?.value) {
-    console.log('BudgetCategorySummaries: No data from API')
     return []
   }
 
-  const result = data.value.map((item: BudgetCategorySummary) => item)
-  console.log('BudgetCategorySummaries: categorySummaries computed', {
-    dataLength: data.value.length,
-    resultLength: result.length,
-    sampleData: result[0]
-  })
-  return result
+  return data.value.map((item: BudgetCategorySummary) => item)
 })
 
 const hierarchicalSummaries = computed((): BudgetCategorySummary[] => {
@@ -268,16 +219,14 @@ const hierarchicalSummaries = computed((): BudgetCategorySummary[] => {
     })
     return result
   }
-  // start with root, AKA parentless, AKA null, categories
-  return buildHierarchy(null)
+  return buildHierarchy(null) // start with root, AKA parentless, AKA null, categories
 })
 
-// Create skeleton items based on the hierarchical structure
 const skeletonItems = computed(() => {
   return hierarchicalSummaries.value.map(category => {
     return {
       ...category,
-      total_amount_debit: null // or some placeholder value
+      total_amount_debit: null
     }
   })
 })
@@ -302,24 +251,17 @@ const skeletonItems = computed(() => {
 }
 
 .summaries-left {
-  flex: 0 0 250px; /* Reduced from 280px to give more space to chart */
+  flex: 0 0 250px;
   min-width: 200px;
-  overflow-y: auto; /* Add scroll if content is too long */
-  padding-right: 16px; /* Add some padding for scroll */
+  overflow-y: auto;
+  padding-right: 16px;
 }
 
 .chart-right {
-  flex: 1; /* Takes up remaining space */
-  min-width: 500px; /* Increased minimum width for better chart display */
+  flex: 1;
+  min-width: 500px;
   display: flex;
-  justify-content: flex-start; /* Align chart to the left within its container */
-}
-
-.summaries-title {
-  font-size: 16px; /* Smaller title */
-  margin-bottom: 12px; /* Reduced margin */
-  font-weight: 600;
-  color: #333;
+  justify-content: flex-start;
 }
 
 /* Make individual statistics more compact */

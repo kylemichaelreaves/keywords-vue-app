@@ -162,12 +162,12 @@ export async function mockMemoRoutes(page: Page) {
   })
 
   // Even broader pattern to catch any memo-related requests
-  await page.route(/.*\/memos\/.*/, async route => {
+  await page.route('**/memos/**', async route => {
     const url = new URL(route.request().url())
     const pathParts = url.pathname.split('/memos/')
     const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
 
-    console.log('Mock intercepted regex memo request for:', memoName)
+    console.log('Mock intercepted memo request for:', memoName)
     console.log('Full URL:', route.request().url())
 
     await route.fulfill({
