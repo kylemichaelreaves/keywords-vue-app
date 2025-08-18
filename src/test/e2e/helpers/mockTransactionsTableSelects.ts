@@ -1,4 +1,4 @@
-// test-utils.js
+// mockTransactionsTableSelects.ts
 import { generateMemosArray } from '@test/e2e/mocks/memosMock.ts'
 import { generateDaysArray } from '@test/e2e/mocks/daysMock.ts'
 import { generateWeeksArray } from '@test/e2e/mocks/weeksMock.ts'

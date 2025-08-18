@@ -1,4 +1,4 @@
-// import {test, expect} from '@playwright/test';
+// Transactions Table E2E Tests
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
 import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
@@ -192,7 +192,7 @@ test.describe('Transactions Table', () => {
     // Click on a chart point to select a day
     const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
     await expect(firstPoint).toBeVisible()
-    
+
     // Set up route handler for the chart click
     await page.route('**/transactions**', async route => {
       await route.fulfill({
