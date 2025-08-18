@@ -12,8 +12,9 @@ async function setupComprehensiveTransactionMocks(page: any, staticTransactions:
   // Mock all transaction select dropdowns
   await mockTransactionsTableSelects(page)
 
-  // Mock the main transactions route with comprehensive pattern matching
-  await page.route('**/transactions*', async (route: any) => {
+  // CRITICAL FIX: Make route patterns more specific to avoid intercepting page navigation
+  // Only intercept API calls, not the main page URL
+  await page.route('**/api/**/transactions*', async (route: any) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
 
@@ -24,7 +25,84 @@ async function setupComprehensiveTransactionMocks(page: any, staticTransactions:
     const firstDay = params.get('firstDay')
 
     if (isCI) {
-      console.log('[MOCK] Intercepting transactions request:', {
+      console.log('[MOCK] Intercepting API transactions request:', {
+        url: url.toString(),
+        isDailyTotals,
+        hasInterval,
+        hasDate,
+        firstDay,
+        timeFrame,
+        allParams: Object.fromEntries(params)
+      })
+    }
+
+    // Handle daily intervals requests
+    if (isDailyTotals) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(staticDailyIntervals),
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
+      return
+    }
+
+    // Handle main transactions table data requests
+    if (hasInterval || hasDate || timeFrame || firstDay) {
+      // For specific date/timeframe requests, generate targeted data
+      const dateParam = params.get('date')
+      if (dateParam && timeFrame === 'day') {
+        const targetTransactions = generateTransactionsArray(5, '', dateParam)
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(targetTransactions),
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        })
+        return
+      }
+    }
+
+    // Default: return static transactions for all other cases
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(staticTransactions),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
+  })
+
+  // Additional pattern for different API configurations (without /api/ prefix)
+  await page.route('**/transactions?**', async (route: any) => {
+    const url = new URL(route.request().url())
+
+    // CRITICAL: Only intercept if this looks like an API call, not page navigation
+    // Skip if this is the main page URL (contains /budget-visualizer/ in path)
+    if (url.pathname.includes('/budget-visualizer/')) {
+      if (isCI) {
+        console.log('[MOCK] Skipping page navigation URL:', url.toString())
+      }
+      return route.continue()
+    }
+
+    const params = url.searchParams
+    const isDailyTotals = params.get('dailyTotals') === 'true'
+    const hasInterval = params.has('interval')
+    const hasDate = params.has('date')
+    const timeFrame = params.get('timeFrame')
+    const firstDay = params.get('firstDay')
+
+    if (isCI) {
+      console.log('[MOCK] Intercepting transactions API request:', {
         url: url.toString(),
         isDailyTotals,
         hasInterval,
