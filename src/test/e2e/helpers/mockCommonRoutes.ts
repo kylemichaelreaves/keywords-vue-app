@@ -77,7 +77,8 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     })
   }
 
-  await page.route(`**/dev/transactions**`, async (route: any) => {
+  // CI-specific: Add more generous timeouts for route handlers
+  await page.route(`**/transactions**`, async (route: any) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
     const isDailyTotals = params.get('dailyTotals') === 'true'
@@ -88,19 +89,23 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     const hasOffset = params.has('offset')
 
     // Log the actual request parameters for debugging
-    console.log('[MOCK DEBUG] Intercepted AWS API request:', {
-      url: url.toString(),
-      isDailyTotals,
-      interval: params.get('interval'),
-      date: params.get('date'),
-      hasLimit,
-      hasOffset
-    })
+    if (isCI) {
+      console.log('[MOCK DEBUG] Intercepted AWS API request:', {
+        url: url.toString(),
+        isDailyTotals,
+        interval: params.get('interval'),
+        date: params.get('date'),
+        hasLimit,
+        hasOffset
+      })
+    }
 
     try {
       // PRIORITY 1: Handle daily totals requests (for line chart) - MUST BE FIRST
       if (isDailyTotals && hasInterval && hasDate) {
-        console.log('[MOCK] Returning daily intervals for chart with', staticDailyIntervals.length, 'items')
+        if (isCI) {
+          console.log('[MOCK] Returning daily intervals for chart with', staticDailyIntervals.length, 'items')
+        }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -115,7 +120,9 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
 
       // PRIORITY 2: Handle basic daily totals requests (fallback)
       if (isDailyTotals) {
-        console.log('[MOCK] Returning basic daily intervals')
+        if (isCI) {
+          console.log('[MOCK] Returning basic daily intervals')
+        }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -130,7 +137,9 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
 
       // PRIORITY 3: Handle table data requests (limit/offset patterns for pagination)
       if (hasLimit && hasOffset) {
-        console.log('[MOCK] Returning transactions for table pagination')
+        if (isCI) {
+          console.log('[MOCK] Returning transactions for table pagination')
+        }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -146,8 +155,10 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       // PRIORITY 4: Handle specific date/timeframe requests (for table data)
       if (timeFrame === 'day' && hasDate) {
         const dateParam = params.get('date')
-        const targetTransactions = generateTransactionsArray(5, '', dateParam)
-        console.log('[MOCK] Returning day-specific transactions')
+        const targetTransactions = generateTransactionsArray(5, '', dateParam ?? undefined)
+        if (isCI) {
+          console.log('[MOCK] Returning day-specific transactions')
+        }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -161,7 +172,9 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       }
 
       // PRIORITY 5: Handle other transaction requests
-      console.log('[MOCK] Returning default transaction data')
+      if (isCI) {
+        console.log('[MOCK] Returning default transaction data')
+      }
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -177,6 +190,11 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       await route.continue()
     }
   })
+
+  // CI-specific: Add timeout for route setup
+  if (isCI) {
+    await page.waitForTimeout(500) // Give CI more time for route handlers to register
+  }
 
   console.log('[MOCK] AWS API Gateway transaction mocks setup complete')
 }
