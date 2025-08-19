@@ -44,7 +44,7 @@ export class TransactionsPage {
     this.memoSelect = this.page.getByTestId('transactions-table-memo-select')
 
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
-    this.intervalForm = this.page.getByTestId('interval-form')
+    this.intervalForm = this.page.getByTestId('daily-interval-line-chart-form')
     this.intervalTypeSelect = this.page.getByText('Interval Type')
     this.intervalNumberInput = this.page.getByText('Interval Count')
     this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')

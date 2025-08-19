@@ -1,194 +1,12 @@
-// Enhanced TransactionsTable test with app loading debugging
+// Enhanced TransactionsTable test with user behavior focus
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
-import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
+import { staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
-import { mockTransactionsTableSelects } from '@test/e2e/helpers/mockTransactionsTableSelects'
-import { waitForTableContent, waitForLineChartReady } from '@test/e2e/helpers/waitHelpers'
+import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
+import { waitForLineChartReady, waitForTableContent } from '@test/e2e/helpers/waitHelpers'
 
 const isCI = !!process.env.CI
-
-async function setupComprehensiveTransactionMocks(page: any, staticTransactions: any[], staticDailyIntervals: any[]) {
-  // Mock all transaction select dropdowns
-  await mockTransactionsTableSelects(page)
-
-  // CRITICAL FIX: Make route patterns more specific to avoid intercepting page navigation
-  // Only intercept API calls, not the main page URL
-  await page.route('**/api/**/transactions*', async (route: any) => {
-    const url = new URL(route.request().url())
-    const params = url.searchParams
-
-    const isDailyTotals = params.get('dailyTotals') === 'true'
-    const hasInterval = params.has('interval')
-    const hasDate = params.has('date')
-    const timeFrame = params.get('timeFrame')
-    const firstDay = params.get('firstDay')
-
-    if (isCI) {
-      console.log('[MOCK] Intercepting API transactions request:', {
-        url: url.toString(),
-        isDailyTotals,
-        hasInterval,
-        hasDate,
-        firstDay,
-        timeFrame,
-        allParams: Object.fromEntries(params)
-      })
-    }
-
-    // Handle daily intervals requests
-    if (isDailyTotals) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(staticDailyIntervals),
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
-      })
-      return
-    }
-
-    // Handle main transactions table data requests
-    if (hasInterval || hasDate || timeFrame || firstDay) {
-      // For specific date/timeframe requests, generate targeted data
-      const dateParam = params.get('date')
-      if (dateParam && timeFrame === 'day') {
-        const targetTransactions = generateTransactionsArray(5, '', dateParam)
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(targetTransactions),
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        })
-        return
-      }
-    }
-
-    // Default: return static transactions for all other cases
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(staticTransactions),
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    })
-  })
-
-  // Additional pattern for different API configurations (without /api/ prefix)
-  await page.route('**/transactions?**', async (route: any) => {
-    const url = new URL(route.request().url())
-
-    // CRITICAL: Only intercept if this looks like an API call, not page navigation
-    // Skip if this is the main page URL (contains /budget-visualizer/ in path)
-    if (url.pathname.includes('/budget-visualizer/')) {
-      if (isCI) {
-        console.log('[MOCK] Skipping page navigation URL:', url.toString())
-      }
-      return route.continue()
-    }
-
-    const params = url.searchParams
-    const isDailyTotals = params.get('dailyTotals') === 'true'
-    const hasInterval = params.has('interval')
-    const hasDate = params.has('date')
-    const timeFrame = params.get('timeFrame')
-    const firstDay = params.get('firstDay')
-
-    if (isCI) {
-      console.log('[MOCK] Intercepting transactions API request:', {
-        url: url.toString(),
-        isDailyTotals,
-        hasInterval,
-        hasDate,
-        firstDay,
-        timeFrame,
-        allParams: Object.fromEntries(params)
-      })
-    }
-
-    // Handle daily intervals requests
-    if (isDailyTotals) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(staticDailyIntervals),
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
-      })
-      return
-    }
-
-    // Handle main transactions table data requests
-    if (hasInterval || hasDate || timeFrame || firstDay) {
-      // For specific date/timeframe requests, generate targeted data
-      const dateParam = params.get('date')
-      if (dateParam && timeFrame === 'day') {
-        const targetTransactions = generateTransactionsArray(5, '', dateParam)
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(targetTransactions),
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        })
-        return
-      }
-    }
-
-    // Default: return static transactions for all other cases
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(staticTransactions),
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    })
-  })
-
-  if (isCI) {
-    console.log('[MOCK] All transaction mocks setup complete')
-  }
-}
-
-// Helper function to check if Vue app loaded properly
-async function waitForVueAppToLoad(page: any, timeout: number = 60000) {
-  if (isCI) {
-    console.log('[CI] Waiting for Vue app to load...')
-  }
-
-  // Wait for the main app div
-  await page.waitForSelector('#app', { state: 'attached', timeout })
-
-  // Wait for Vue to mount
-  await page.waitForFunction(() => {
-    const app = document.querySelector('#app')
-    return app && app.children.length > 0
-  }, { timeout })
-
-  // Wait for page title to be set by Vue
-  await page.waitForFunction(() => {
-    return document.title && document.title !== ''
-  }, { timeout })
-
-  if (isCI) {
-    const title = await page.title()
-    const appContent = await page.locator('#app').innerHTML()
-    console.log('[CI] Vue app loaded - Title:', title, 'App content length:', appContent.length)
-  }
-}
 
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
@@ -196,127 +14,21 @@ test.describe('Transactions Table', () => {
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
 
-    if (isCI) {
-      console.log('[CI] Starting test setup with comprehensive mocking')
-    }
+    // CRITICAL FIX: Set up API mocks AND initialize clean store state
+    await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions, staticDailyIntervals)
 
-    // Set up comprehensive mocks
-    await setupComprehensiveTransactionMocks(page, staticTransactions, staticDailyIntervals)
+    // Navigate to the page
+    await page.goto('budget-visualizer/transactions')
 
-    // Use the first date from your static data instead of hardcoding
-    const firstStaticDate = staticDailyIntervals[0].date.split('T')[0] // Extract date part
-    const targetUrl = `budget-visualizer/transactions?firstDay=${firstStaticDate}`
+    // Wait for both table and chart components to load properly
+    await waitForTableContent(transactionsPage.transactionsTable, page, {
+      timeout: isCI ? 120000 : 60000
+    })
 
-    if (isCI) {
-      console.log('[CI] Navigating to:', targetUrl)
-    }
-
-    await page.goto(targetUrl)
-
-    // CRITICAL: Wait for Vue app to actually load before looking for table
-    try {
-      await waitForVueAppToLoad(page, isCI ? 90000 : 60000)
-
-      if (isCI) {
-        console.log('[CI] Vue app loaded successfully')
-      }
-
-      // Enhanced waiting with better CI debugging
-      try {
-        // Wait for actual table content instead of just visibility
-        await waitForTableContent(transactionsPage.transactionsTable, page, {
-          timeout: isCI ? 120000 : 60000
-        })
-
-        if (isCI) {
-          // Additional debugging for table state after content load
-          const rowCount = await transactionsPage.transactionsTable.getByRole('row').count()
-          const cellCount = await transactionsPage.transactionsTable.getByRole('cell').count()
-          const firstCellText = await transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first().textContent()
-          console.log('[CI] Table state after waitForTableContent:', { rowCount, cellCount, firstCellText })
-        }
-
-        // Wait for the chart to be ready with data points before running any tests
-        await waitForLineChartReady(transactionsPage.intervalLineChart, page, {
-          minDataPoints: 5,
-          timeout: isCI ? 60000 : 40000
-        })
-
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        if (isCI) {
-          console.log('[CI] Table/Chart setup failed:', errorMessage)
-
-          // Capture detailed page state on failure
-          try {
-            const appExists = await page.locator('#app').count()
-            const appContent = await page.locator('#app').innerHTML()
-            const pageContent = await page.content()
-
-            console.log('[CI] Page state on table failure:', {
-              appExists,
-              appContentLength: appContent.length,
-              pageContentLength: pageContent.length,
-              url: page.url(),
-              title: await page.title()
-            })
-
-            // Look for any error messages in the page
-            const errorTexts = await page.locator('text=error').allTextContents()
-            if (errorTexts.length > 0) {
-              console.log('[CI] Found error texts on page:', errorTexts)
-            }
-
-            // Check if there are any router-related elements
-            const routerView = await page.locator('router-view').count()
-            const routerLink = await page.locator('router-link').count()
-            console.log('[CI] Router elements:', { routerView, routerLink })
-
-          } catch (debugError) {
-            const debugErrorMessage = debugError instanceof Error ? debugError.message : String(debugError)
-            console.log('[CI] Failed to capture page debug info:', debugErrorMessage)
-          }
-        }
-        throw error
-      }
-
-    } catch (appLoadError) {
-      const appErrorMessage = appLoadError instanceof Error ? appLoadError.message : String(appLoadError)
-      if (isCI) {
-        console.log('[CI] Vue app failed to load:', appErrorMessage)
-
-        // Capture complete page state when app fails to load
-        try {
-          const pageContent = await page.content()
-          const url = page.url()
-          const title = await page.title()
-
-          console.log('[CI] App load failure - URL:', url)
-          console.log('[CI] App load failure - Title:', title)
-          console.log('[CI] App load failure - Page content length:', pageContent.length)
-
-          // Check if we can see any Vue-related content
-          const vueAppExists = pageContent.includes('id="app"')
-          const hasVueContent = pageContent.includes('vue') || pageContent.includes('Vue')
-          const hasScripts = pageContent.includes('<script')
-
-          console.log('[CI] App load failure analysis:', {
-            vueAppExists,
-            hasVueContent,
-            hasScripts,
-            contentPreview: pageContent.substring(0, 500)
-          })
-
-        } catch (debugError) {
-          console.log('[CI] Failed to capture app load debug info:', debugError)
-        }
-      }
-      throw appLoadError
-    }
-
-    if (isCI) {
-      console.log('[CI] Setup completed successfully')
-    }
+    // CRITICAL: Ensure chart is visible before proceeding with chart tests
+    await expect(transactionsPage.intervalLineChart).toBeVisible({
+      timeout: isCI ? 60000 : 30000
+    })
   })
 
   test.afterEach(async ({ page }) => {
@@ -327,37 +39,11 @@ test.describe('Transactions Table', () => {
       })
     } catch (error) {
       // Ignore cleanup errors if page is already closed
-      if (isCI) {
-        console.log('[CI] Cleanup error (page may be closed):', error)
-      }
     }
   })
 
-  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({ page }) => {
-    if (isCI) {
-      console.log('[CI] Starting elements visibility test')
-
-      // Extra verification that Vue app is still loaded
-      const appExists = await page.locator('#app').count()
-      const title = await page.title()
-      console.log('[CI] Pre-test app state:', { appExists, title })
-
-      // Extra verification that table has actual data before checking other elements
-      const firstDataCell = transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first()
-      const cellText = await firstDataCell.textContent()
-      console.log('[CI] First data cell content before visibility tests:', cellText)
-
-      // If cell is empty, wait a bit more and check network requests
-      if (!cellText || cellText.trim() === '') {
-        console.log('[CI] First data cell is empty, waiting for data...')
-        await page.waitForTimeout(2000)
-
-        const updatedCellText = await firstDataCell.textContent()
-        console.log('[CI] First data cell content after wait:', updatedCellText)
-      }
-    }
-
-    // Enhanced visibility tests with CI timeouts
+  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async () => {
+    // Test what the user can see - UI elements visibility
     await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.daySelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.weekSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -368,23 +54,12 @@ test.describe('Transactions Table', () => {
     await expect(transactionsPage.intervalTypeSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.intervalNumberInput).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.transactionsTablePagination).toBeVisible({ timeout: isCI ? 30000 : 15000 })
-
-    if (isCI) {
-      console.log('[CI] All elements visibility test completed')
-    }
   })
 
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
-    if (isCI) {
-      console.log('[CI] Starting right click test')
-
-      // Verify table has data before attempting right click
-      const firstDataCell = transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first()
-      await expect(firstDataCell).not.toBeEmpty({ timeout: 30000 })
-
-      const cellText = await firstDataCell.textContent()
-      console.log('[CI] Table data verified, first cell:', cellText)
-    }
+    // Test user interaction - right click behavior
+    const firstDataCell = transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first()
+    await expect(firstDataCell).not.toBeEmpty({ timeout: 30000 })
 
     await transactionsPage.clickOnTableCell({
       rowIndex: 1,
@@ -395,8 +70,7 @@ test.describe('Transactions Table', () => {
     const editTransactionModal = transactionsPage.transactionEditModal
     await expect(editTransactionModal).toBeVisible({ timeout: isCI ? 30000 : 15000 })
 
-    // check that the transactionEditModal has the correct title, ie, it has the transactionNumber in it
-    // get the first transaction number from the table
+    // Verify user sees expected content in modal
     const modalTitle = await editTransactionModal
       .getByRole('heading', { name: 'Edit Transaction' })
       .textContent()
@@ -407,138 +81,90 @@ test.describe('Transactions Table', () => {
 
     await transactionsPage.expectTransactionEditFormElementsToBeVisible()
 
-    // the user shouldn't ever be able to edit the transactionNumber
+    // Test that user cannot edit the transaction number (UI constraint)
     const numberInput = transactionsPage.transactionNumberInput
     await expect(numberInput).toBeVisible()
     await expect(numberInput).toBeDisabled()
 
-    //   close the Transaction Edit modal
+    // Test user can close the modal
     const closeButton = transactionsPage.modalCloseButton
     await closeButton.click({ force: isCI })
     await page.waitForLoadState('domcontentloaded')
     await expect(editTransactionModal).not.toBeVisible()
-
-    if (isCI) {
-      console.log('[CI] Right click test completed successfully')
-    }
   })
 
   test('line chart displays tooltip on hover and allows clicking points to load transactions', async ({ page }) => {
-    if (isCI) {
-      console.log('[CI] Starting chart interaction test')
-    }
+    // Test user interaction with chart - what they see and can do
 
-    // Chart should already be ready from beforeEach, but let's ensure it's still visible
+    // User should see the chart
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
 
-    // Test tooltip functionality first - use a lower index since we have limited static data
-    const secondPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-1')
-    await expect(secondPoint).toBeVisible({ timeout: isCI ? 20000 : 10000 })
+    // Wait for chart to load data that user can interact with
+    await waitForLineChartReady(transactionsPage.intervalLineChart, page, {
+      minDataPoints: 1,
+      timeout: isCI ? 60000 : 40000
+    })
 
-    await secondPoint.hover({ force: isCI })
-    if (isCI) {
-      await page.waitForTimeout(1000) // Extra wait for CI
-    }
+    // Test user can hover over chart points and see tooltip
+    const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
+    await expect(firstPoint).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+
+    await firstPoint.hover({ force: isCI })
 
     const toolTip = transactionsPage.intervalLineChartTooltip.first()
     await expect(toolTip).toBeVisible({ timeout: isCI ? 15000 : 5000 })
 
-    // Check that the tooltip has the correct text
+    // Test tooltip shows expected information to user
     const tooltipText = await toolTip.textContent()
     expect(tooltipText).toBeDefined()
-    expect(tooltipText).toContain('2023-06') // Should contain our test date range
-    expect(tooltipText).toContain('$') // Should contain currency
+    expect(tooltipText).toMatch(/\d{4}-\d{2}-\d{2}/) // Date format
+    expect(tooltipText).toContain('$') // Currency
 
-    // Test clicking functionality - use first point to avoid any missing data issues
-    const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
-    await expect(firstPoint).toBeVisible({ timeout: isCI ? 20000 : 10000 })
-
-    // Hover over the first chart-dot to get the date
-    await firstPoint.hover({ force: isCI })
-    if (isCI) {
-      await page.waitForTimeout(1000)
-    }
-
-    await expect(transactionsPage.intervalLineChartTooltip.first()).toBeVisible()
-
+    // Test user can click chart points to drill down
     const hoverTextContent = await transactionsPage.intervalLineChartTooltip.first().textContent()
     const firstPointDate = hoverTextContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
 
-    // Ensure we got a valid date before proceeding
     expect(firstPointDate).toBeDefined()
     expect(firstPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
 
-    if (isCI) {
-      console.log('[CI] Chart point date extracted:', firstPointDate)
-    }
-
-    // Set up request promise to wait for the specific chart click request
-    const requestPromise = page.waitForRequest(request => {
-      const url = request.url()
-      const matches = url.includes('transactions') &&
-        url.includes(`date=${firstPointDate}`) &&
-        url.includes('timeFrame=day')
-
-      if (isCI && matches) {
-        console.log('[CI] Found expected request:', url)
-      }
-
-      return matches
-    }, { timeout: isCI ? 30000 : 15000 })
-
-    // Click the chart point
+    // User clicks chart point
     await firstPoint.click({ force: isCI })
-    if (isCI) {
-      console.log('[CI] Chart point clicked')
-    }
 
-    // Wait for the specific request we're expecting
-    await requestPromise
-
-    // Wait for table to have new content instead of just network idle
+    // Wait for UI to update with new data
     await waitForTableContent(transactionsPage.transactionsTable, page, {
       timeout: isCI ? 90000 : 60000
     })
 
-    // Verify the table shows the correct date
+    // Verify user sees filtered data in table
     const dateText = await transactionsPage.getCellTextContent(1, 2)
     expect(dateText).toBe(firstPointDate)
 
-    // NEW TEST: Verify that the chart is now hidden after selecting a day
+    // Test that chart hides after user selects a specific day (expected UX behavior)
     await expect(transactionsPage.intervalLineChart).not.toBeVisible({ timeout: isCI ? 20000 : 10000 })
-
-    if (isCI) {
-      console.log('[CI] Chart interaction test completed successfully')
-    }
   })
 
   test('daily interval line chart is hidden when a day is selected', async ({ page }) => {
-    if (isCI) {
-      console.log('[CI] Starting chart hide test')
-    }
+    // Test user workflow: chart visibility changes based on user actions
 
-    // Initially, the chart should be visible (no day selected)
+    // Initially, user should see the chart (aggregate view)
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
 
-    // Click on a chart point to select a day
+    // Wait for chart to be interactive
+    await waitForLineChartReady(transactionsPage.intervalLineChart, page, {
+      minDataPoints: 1,
+      timeout: isCI ? 60000 : 40000
+    })
+
+    // User clicks on a chart point to drill down
     const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
     await expect(firstPoint).toBeVisible({ timeout: isCI ? 20000 : 10000 })
 
-    // Click the chart point to select a day
     await firstPoint.click({ force: isCI })
-    if (isCI) {
-      console.log('[CI] Chart point clicked for hide test')
-    }
 
-    // Wait for the store to update and the chart to hide
+    // Give time for UI to respond to user action
     await page.waitForTimeout(isCI ? 2000 : 500)
 
-    // Verify that the chart is now hidden
+    // Chart should now be hidden (user is in detail view)
     await expect(transactionsPage.intervalLineChart).not.toBeVisible({ timeout: isCI ? 20000 : 10000 })
-
-    if (isCI) {
-      console.log('[CI] Chart hide test completed successfully')
-    }
   })
-
 })

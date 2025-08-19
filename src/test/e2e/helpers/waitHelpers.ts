@@ -1,4 +1,18 @@
-// waitHelpers.ts
+/**
+ * CRITICAL FIX DOCUMENTATION - Wait Helpers for DailyIntervalLineChart Tests
+ *
+ * This file contains wait helper functions that were essential for fixing
+ * DailyIntervalLineChart loading issues in Playwright tests.
+ *
+ * KEY ISSUES RESOLVED:
+ * 1. Chart SVG Selector: Using correct nested data-testid for chart components
+ * 2. Timing Synchronization: Proper waiting for chart data and rendering
+ * 3. CI Stability: Enhanced timeouts and debugging for CI environments
+ *
+ * DO NOT MODIFY the SVG selector without ensuring it matches the actual
+ * data-testid attribute passed from DailyIntervalLineChart to LineChart.
+ */
+
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
@@ -212,6 +226,9 @@ export async function rightClickAndOpenDialog(
 
 /**
  * Wait for line chart to be fully loaded with data points
+ *
+ * CRITICAL: This function was redesigned to fix DailyIntervalLineChart test failures.
+ * The SVG selector MUST match the nested data-testid structure.
  */
 export async function waitForLineChartReady(chartContainer: Locator, page: Page, options: {
   timeout?: number
@@ -227,12 +244,16 @@ export async function waitForLineChartReady(chartContainer: Locator, page: Page,
     await expect(chartContainer).toBeVisible({ timeout })
     await debugLog(page, 'Chart container is visible')
 
-    // Wait for SVG element to be present - use the correct selector
-    const svg = chartContainer.locator('svg[data-testid="line-chart"]')
+    // CRITICAL FIX: Use the correct data-testid for the SVG
+    // The LineChart component receives data-testid="daily-interval-line-chart-line-chart"
+    // when nested inside DailyIntervalLineChart. This selector MUST match that structure.
+    // DO NOT change this without updating the component's data-testid prop passing.
+    const svg = chartContainer.locator('svg[data-testid="daily-interval-line-chart-line-chart"]')
     await expect(svg).toBeVisible({ timeout })
     await debugLog(page, 'Chart SVG is visible')
 
     // Wait for at least one chart dot to be rendered
+    // Chart dots are created by createLineChart.ts with data-testid="chart-dot-{index}"
     const firstDot = chartContainer.getByTestId('chart-dot-0')
     await expect(firstDot).toBeVisible({ timeout })
     await debugLog(page, 'First chart dot is visible')
@@ -264,7 +285,7 @@ export async function waitForLineChartReady(chartContainer: Locator, page: Page,
     // Capture chart-specific debugging info
     try {
       const dotCount = await chartContainer.getByTestId(/chart-dot-\d+/).count()
-      const svgExists = await chartContainer.locator('svg[data-testid="line-chart"]').count()
+      const svgExists = await chartContainer.locator('svg[data-testid="daily-interval-line-chart-line-chart"]').count()
       await debugLog(page, 'Chart state on failure', { dotCount, svgExists })
     } catch (debugError) {
       const debugErrorMessage = debugError instanceof Error ? debugError.message : String(debugError)

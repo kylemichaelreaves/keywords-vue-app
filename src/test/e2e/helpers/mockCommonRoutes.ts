@@ -1,7 +1,24 @@
+/**
+ * CRITICAL FIX DOCUMENTATION - API Route Mocking for DailyIntervalLineChart
+ *
+ * This file contains the comprehensive transaction route mocking that was essential
+ * for fixing DailyIntervalLineChart loading issues in Playwright tests.
+ *
+ * KEY ISSUES RESOLVED:
+ * 1. Route Priority: Daily totals requests (dailyTotals=true) MUST be handled FIRST
+ * 2. Parameter Detection: Proper parsing of URL search params to identify request types
+ * 3. Mock Data Return: Correct static data structure for daily intervals
+ *
+ * DO NOT REORDER the route handling logic without ensuring daily totals requests
+ * are still processed with highest priority.
+ */
+
 import type { Page } from '@playwright/test'
 import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
 import { generateDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
+
+const isCI = !!process.env.CI
 
 /**
  * Mock basic transaction routes that are commonly used across tests
@@ -44,6 +61,110 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
       body: JSON.stringify(transactions)
     })
   })
+}
+
+/**
+ * Comprehensive transaction route mocking that handles all patterns including page navigation protection
+ *
+ * CRITICAL: This function was redesigned to fix DailyIntervalLineChart test failures.
+ * The route handling order is CRITICAL - daily totals must be processed first.
+ */
+export async function mockComprehensiveTransactionRoutes(page: Page, staticTransactions: any[], staticDailyIntervals: any[]) {
+  if (isCI) {
+    console.log('[MOCK SETUP] Starting comprehensive transaction mocking with:', {
+      staticTransactionsCount: staticTransactions.length,
+      staticDailyIntervalsCount: staticDailyIntervals.length,
+      firstDailyInterval: staticDailyIntervals[0],
+      lastDailyInterval: staticDailyIntervals[staticDailyIntervals.length - 1]
+    })
+  }
+
+  // CRITICAL FIX: Add specific route for daily intervals BEFORE the catch-all
+  await page.route('**/transactions*', async (route: any) => {
+    const url = new URL(route.request().url())
+
+    // Skip if this is the main page URL (contains /budget-visualizer/ in path)
+    if (url.pathname.includes('/budget-visualizer/')) {
+      if (isCI) {
+        console.log('[MOCK] Skipping page navigation URL:', url.toString())
+      }
+      return route.continue()
+    }
+
+    const params = url.searchParams
+    const isDailyTotals = params.get('dailyTotals') === 'true'
+    const hasInterval = params.has('interval')
+    const hasDate = params.has('date')
+    const timeFrame = params.get('timeFrame')
+
+    if (isCI) {
+      console.log('[MOCK] Processing request:', {
+        url: url.toString(),
+        isDailyTotals,
+        hasInterval,
+        hasDate,
+        timeFrame,
+        allParams: Object.fromEntries(params)
+      })
+    }
+
+    // PRIORITY 1: Handle daily totals requests (for line chart) - MUST BE FIRST
+    // This is the CRITICAL fix that enables DailyIntervalLineChart to load properly
+    if (isDailyTotals) {
+      if (isCI) {
+        console.log('[MOCK DAILY] Returning daily intervals data:', staticDailyIntervals.length, 'items')
+        console.log('[MOCK DAILY] Sample data:', staticDailyIntervals.slice(0, 2))
+      }
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(staticDailyIntervals),
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
+      return
+    }
+
+    // PRIORITY 2: Handle specific date/timeframe requests (for table data)
+    if (timeFrame === 'day' && hasDate) {
+      const dateParam = params.get('date')
+      const targetTransactions = generateTransactionsArray(5, '', dateParam)
+      if (isCI) {
+        console.log('[MOCK TABLE] Returning day-specific transactions for:', dateParam)
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(targetTransactions),
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
+      return
+    }
+
+    // PRIORITY 3: Handle other transaction requests
+    if (isCI) {
+      console.log('[MOCK DEFAULT] Returning default static transactions')
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(staticTransactions),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
+  })
+
+  if (isCI) {
+    console.log('[MOCK] Comprehensive transaction mocks setup complete')
+  }
 }
 
 /**

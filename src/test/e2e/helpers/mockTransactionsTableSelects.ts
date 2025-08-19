@@ -16,11 +16,13 @@ export async function mockTransactionsTableSelects(page: Page) {
     })
   })
 
+  // CRITICAL FIX: Return days with at least one entry to prevent firstDay from blocking chart
+  // but ensure the store doesn't auto-select it
   await page.route('**/transactions/days', route => {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(generateDaysArray())
+      body: JSON.stringify([]) // Keep empty to ensure chart shows in aggregate view
     })
   })
 
