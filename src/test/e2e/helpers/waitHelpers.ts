@@ -64,12 +64,18 @@ export async function clickElementTableCell(
 /**
  * Wait for table to have actual data content instead of loading states
  * FIXED: Simplified logic and removed problematic checks
+ * CI FIX: Enhanced for CI environment with longer timeouts and better error handling
  */
 export async function waitForTableContent(table: Locator, page: Page, options: {
   minRows?: number
   timeout?: number
 } = {}) {
   const { timeout = 30000 } = options
+  const isCI = !!process.env.CI
+
+  if (isCI) {
+    console.log('[CI WAIT] Starting table content wait with timeout:', timeout)
+  }
 
   // CRITICAL FIX: Simple visibility check first
   await table.waitFor({ state: 'visible', timeout })
@@ -78,22 +84,41 @@ export async function waitForTableContent(table: Locator, page: Page, options: {
   const anyRow = table.getByRole('row').first()
   await expect(anyRow).toBeVisible({ timeout })
 
-  // CRITICAL FIX: Wait for at least one data cell to have content
-  // Use a more lenient check that works with different table structures
-  await page.waitForFunction(() => {
+  // CI FIX: More robust table content detection
+  await page.waitForFunction((timeoutMs) => {
     const tableElement = document.querySelector('[data-testid="transactions-table"]')
-    if (!tableElement) return false
+    if (!tableElement) {
+      console.log('[CI DEBUG] Table element not found')
+      return false
+    }
 
     const rows = tableElement.querySelectorAll('tr')
     // Check if we have at least 2 rows (header + 1 data row)
-    if (rows.length < 2) return false
+    if (rows.length < 2) {
+      console.log('[CI DEBUG] Insufficient rows:', rows.length)
+      return false
+    }
 
     // Check if the second row (first data row) has cells with content
     const firstDataRow = rows[1]
     const cells = firstDataRow.querySelectorAll('td')
-    return cells.length > 0 && Array.from(cells).some(cell => cell.textContent?.trim() !== '')
-  }, undefined, { timeout })
+    const hasContent = cells.length > 0 && Array.from(cells).some(cell => {
+      const text = cell.textContent?.trim()
+      return text !== '' && text !== 'Loading...' && text !== '--'
+    })
 
-  // Give a moment for rendering to complete
-  await page.waitForTimeout(500)
+    if (!hasContent) {
+      console.log('[CI DEBUG] No content in cells yet')
+    }
+
+    return hasContent
+  }, timeout, { timeout })
+
+  // CI-specific: Give more time for rendering to complete
+  if (isCI) {
+    await page.waitForTimeout(1500) // Increased from 500ms for CI
+    console.log('[CI WAIT] Table content wait complete')
+  } else {
+    await page.waitForTimeout(500)
+  }
 }

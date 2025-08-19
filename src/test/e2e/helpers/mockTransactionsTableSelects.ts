@@ -9,12 +9,18 @@ import type { Page } from '@playwright/test'
 export async function mockTransactionsTableSelects(page: Page) {
 
   // CRITICAL FIX: Use more specific API patterns to avoid intercepting page navigation
+  // AND ensure they work in both local and CI environments
   await page.route(`**/api/**/memos?limit=100&offset=0`, route => {
     console.log('[MOCK] Returning memos data for select dropdown')
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(generateMemosArray())
+      body: JSON.stringify(generateMemosArray()),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     })
   })
 
@@ -35,7 +41,12 @@ export async function mockTransactionsTableSelects(page: Page) {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(days)
+      body: JSON.stringify(days),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     })
   })
 
@@ -44,7 +55,12 @@ export async function mockTransactionsTableSelects(page: Page) {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(generateWeeksArray())
+      body: JSON.stringify(generateWeeksArray()),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     })
   })
 
@@ -53,7 +69,12 @@ export async function mockTransactionsTableSelects(page: Page) {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(generateMonthsArray())
+      body: JSON.stringify(generateMonthsArray()),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     })
   })
 
@@ -62,7 +83,12 @@ export async function mockTransactionsTableSelects(page: Page) {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(generateYearsArray())
+      body: JSON.stringify(generateYearsArray()),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
     })
   })
 }

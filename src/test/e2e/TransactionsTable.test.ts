@@ -13,26 +13,36 @@ test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
   test.beforeEach(async ({ page }) => {
-    setupAwsApiRequestLogging(page)
+    // CI FIX: Enhanced logging and setup for CI environment
+    if (isCI) {
+      console.log('[CI TEST] Starting TransactionsTable test setup')
+      setupAwsApiRequestLogging(page)
+    }
+
     transactionsPage = new TransactionsPage(page)
 
-    await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
-    await transactionsPage.goto()
-    // Log only AWS API requests
-    // Add comprehensive debugging to track the loading flow
-    console.time('TransactionsTableTestSetup')
     // CRITICAL FIX: Set up API mocks FIRST before any navigation
+    console.time('TransactionsTableTestSetup')
+    await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
     console.timeEnd('TransactionsTableTestSetup')
-    // Initialize page object before navigation
-    // Wait for both table and chart components to load properly with increased timeout
+
+    // Navigate to page AFTER mocks are set up
+    await transactionsPage.goto()
+
+    // CI FIX: Wait for both table and chart components to load properly with CI-appropriate timeouts
     await waitForTableContent(transactionsPage.transactionsTable, page, {
       timeout: isCI ? 120000 : 90000
     })
 
     // CRITICAL: Ensure chart is visible before proceeding with chart tests
+    // CI FIX: More generous timeout for chart visibility in CI
     await expect(transactionsPage.intervalLineChart).toBeVisible({
-      timeout: isCI ? 60000 : 30000
+      timeout: isCI ? 90000 : 30000  // Increased from 60000 to 90000 for CI
     })
+
+    if (isCI) {
+      console.log('[CI TEST] TransactionsTable setup complete')
+    }
   })
 
   test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({ page }) => {

@@ -188,14 +188,17 @@ export const setupTransactionsTableWithComprehensiveMocks = async (page: Page, s
 
   try {
     if (isCI) {
-      console.log('[CI SETUP] Starting comprehensive mock setup')
+      console.log('[CI SETUP] Starting comprehensive mock setup with enhanced CI timeouts')
+      // CI-specific: Pre-setup timeout to allow system to stabilize
+      await page.waitForTimeout(2000)
     }
 
     await setupTestMocks(page, mockOptions)
 
-    // CI-specific setup timeout
+    // CI-specific setup timeout - more generous for CI environment
     if (isCI) {
-      await page.waitForTimeout(1000)
+      await page.waitForTimeout(3000) // Increased from 1000ms to 3000ms for CI
+      console.log('[CI SETUP] Mock setup complete - waiting for route handlers to stabilize')
     }
 
     console.log('[SETUP] Mock setup complete')
@@ -204,8 +207,9 @@ export const setupTransactionsTableWithComprehensiveMocks = async (page: Page, s
     console.error('[SETUP ERROR] Mock setup failed:', error)
 
     if (isCI) {
-      console.error('[CI SETUP] Continuing despite error')
-      return false
+      console.error('[CI SETUP] Critical failure in CI environment - aborting')
+      // In CI, we should fail fast rather than continuing with broken mocks
+      throw error
     }
 
     throw error

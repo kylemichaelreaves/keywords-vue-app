@@ -69,10 +69,11 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
  *
  * CRITICAL: This function was redesigned to fix DailyIntervalLineChart test failures.
  * FIXED: Removed hardcoded API URL for security - requires environment variable to be set
+ * CI FIX: Added proper CORS headers and longer timeouts for CI environment
  */
 export async function mockComprehensiveTransactionRoutes(page: Page, staticTransactions: any[], staticDailyIntervals: any[]) {
   if (isCI) {
-    console.log('[MOCK SETUP] Starting comprehensive transaction mocking with:', {
+    console.log('[CI MOCK SETUP] Starting comprehensive transaction mocking with:', {
       staticTransactionsCount: staticTransactions.length,
       staticDailyIntervalsCount: staticDailyIntervals.length
     })
@@ -94,7 +95,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
 
     // Log the actual request parameters for debugging
     if (isCI) {
-      console.log('[MOCK DEBUG] Intercepted AWS API request:', {
+      console.log('[CI MOCK DEBUG] Intercepted AWS API request:', {
         url: url.toString(),
         isDailyTotals,
         interval: params.get('interval'),
@@ -104,20 +105,25 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       })
     }
 
+    // CI-specific: Standard headers for all responses
+    const ciHeaders = {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    }
+
     try {
       // PRIORITY 1: Handle daily totals requests (for line chart) - MUST BE FIRST
       if (isDailyTotals && hasInterval && hasDate) {
         if (isCI) {
-          console.log('[MOCK] Returning daily intervals for chart with', staticDailyIntervals.length, 'items')
+          console.log('[CI MOCK] Returning daily intervals for chart with', staticDailyIntervals.length, 'items')
         }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(staticDailyIntervals),
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
+          headers: ciHeaders
         })
         return
       }
@@ -125,16 +131,13 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       // PRIORITY 2: Handle basic daily totals requests (fallback)
       if (isDailyTotals) {
         if (isCI) {
-          console.log('[MOCK] Returning basic daily intervals')
+          console.log('[CI MOCK] Returning basic daily intervals')
         }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(staticDailyIntervals),
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
+          headers: ciHeaders
         })
         return
       }
@@ -142,16 +145,13 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       // PRIORITY 3: Handle table data requests (limit/offset patterns for pagination)
       if (hasLimit && hasOffset) {
         if (isCI) {
-          console.log('[MOCK] Returning transactions for table pagination')
+          console.log('[CI MOCK] Returning transactions for table pagination')
         }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(staticTransactions),
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
+          headers: ciHeaders
         })
         return
       }
@@ -161,35 +161,29 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
         const dateParam = params.get('date')
         const targetTransactions = generateTransactionsArray(5, '', dateParam ?? undefined)
         if (isCI) {
-          console.log('[MOCK] Returning day-specific transactions')
+          console.log('[CI MOCK] Returning day-specific transactions')
         }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(targetTransactions),
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
+          headers: ciHeaders
         })
         return
       }
 
       // PRIORITY 5: Handle other transaction requests
       if (isCI) {
-        console.log('[MOCK] Returning default transaction data')
+        console.log('[CI MOCK] Returning default transaction data')
       }
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(staticTransactions),
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
+        headers: ciHeaders
       })
     } catch (error) {
-      console.error('[MOCK ERROR] Failed to fulfill route:', error)
+      console.error('[CI MOCK ERROR] Failed to fulfill route:', error)
       // Fallback to continue the request if mocking fails
       await route.continue()
     }
@@ -197,10 +191,10 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
 
   // CI-specific: Add timeout for route setup
   if (isCI) {
-    await page.waitForTimeout(500) // Give CI more time for route handlers to register
+    await page.waitForTimeout(1500) // Give CI more time for route handlers to register
   }
 
-  console.log('[MOCK] AWS API Gateway transaction mocks setup complete')
+  console.log('[CI MOCK] AWS API Gateway transaction mocks setup complete')
 }
 
 /**
