@@ -75,26 +75,40 @@ const selectedDay = computed(() => store.selectedDay)
  * DO NOT change this logic without updating test mocks accordingly.
  */
 const selectedValue = computed((): string | null => {
+  console.log('[DailyIntervalLineChart DEBUG] Computing selectedValue...')
+  console.log('[DailyIntervalLineChart DEBUG] selectedWeek:', selectedWeek.value)
+  console.log('[DailyIntervalLineChart DEBUG] selectedMonth:', selectedMonth.value)
+  console.log('[DailyIntervalLineChart DEBUG] selectedDay:', selectedDay.value)
+  console.log('[DailyIntervalLineChart DEBUG] props.firstDay:', props.firstDay)
+
   if (selectedWeek.value) {
-    return parseDateIWIYYY(selectedWeek.value)?.toISOString().split('T')[0] ?? null
+    const result = parseDateIWIYYY(selectedWeek.value)?.toISOString().split('T')[0] ?? null
+    console.log('[DailyIntervalLineChart DEBUG] Using selectedWeek, result:', result)
+    return result
   }
   if (selectedMonth.value) {
-    return parseDateMMYYYY(selectedMonth.value)?.toISOString().split('T')[0] ?? null
+    const result = parseDateMMYYYY(selectedMonth.value)?.toISOString().split('T')[0] ?? null
+    console.log('[DailyIntervalLineChart DEBUG] Using selectedMonth, result:', result)
+    return result
   }
   if (selectedDay.value) {
+    console.log('[DailyIntervalLineChart DEBUG] Using selectedDay:', selectedDay.value)
     return selectedDay.value
   }
   // CRITICAL FIX: Ensure we always have a valid date to enable the API call
   // Use firstDay prop or fall back to last day of previous month
   // This prevents the API hook from being disabled due to empty/null startDate
   if (props.firstDay) {
+    console.log('[DailyIntervalLineChart DEBUG] Using props.firstDay:', props.firstDay)
     return props.firstDay
   }
 
   // Fall back to last day of previous month (which is what the date will always be when there are days)
   // Using Luxon for cleaner date manipulation
   const lastDayOfPreviousMonth = DateTime.now().minus({ months: 1 }).endOf('month')
-  return lastDayOfPreviousMonth.toISODate()
+  const fallbackDate = lastDayOfPreviousMonth.toISODate()
+  console.log('[DailyIntervalLineChart DEBUG] Using fallback date:', fallbackDate)
+  return fallbackDate
 })
 
 function handleIntervalChange(newInterval: string) {

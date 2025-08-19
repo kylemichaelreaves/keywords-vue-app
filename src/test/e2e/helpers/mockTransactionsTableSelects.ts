@@ -7,8 +7,11 @@ import { generateYearsArray } from '@test/e2e/mocks/yearsMock.ts'
 import type { Page } from '@playwright/test'
 
 export async function mockTransactionsTableSelects(page: Page) {
-  // mock the transaction selects
-  await page.route('**/memos?limit=100&offset=0', route => {
+  // CRITICAL FIX: Use environment variable for API Gateway URL instead of hardcoded URL
+  const apiGatewayUrl = process.env.VITE_APIGATEWAY_URL
+
+  await page.route(`${apiGatewayUrl}/memos?limit=100&offset=0`, route => {
+    console.log('[MOCK] Returning memos data for select dropdown')
     route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -16,17 +19,29 @@ export async function mockTransactionsTableSelects(page: Page) {
     })
   })
 
-  // CRITICAL FIX: Return days with at least one entry to prevent firstDay from blocking chart
-  // but ensure the store doesn't auto-select it
-  await page.route('**/transactions/days', route => {
+  // CRITICAL FIX: Return multiple days to ensure chart can render properly
+  // The DailyIntervalLineChart needs multiple data points to create a line chart
+  await page.route(`${apiGatewayUrl}/transactions/days`, route => {
+    const today = new Date()
+    const days = []
+
+    // Generate last 30 days to provide realistic data for chart rendering
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(today)
+      date.setDate(date.getDate() - i)
+      days.push({ day: date.toISOString().split('T')[0] })
+    }
+
+    console.log('[MOCK] Returning days data with', days.length, 'days for DailyIntervalLineChart')
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify([]) // Keep empty to ensure chart shows in aggregate view
+      body: JSON.stringify(days)
     })
   })
 
-  await page.route('**/transactions/weeks', route => {
+  await page.route(`${apiGatewayUrl}/transactions/weeks`, route => {
+    console.log('[MOCK] Returning weeks data for select dropdown')
     route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -34,7 +49,8 @@ export async function mockTransactionsTableSelects(page: Page) {
     })
   })
 
-  await page.route('**/transactions/months', route => {
+  await page.route(`${apiGatewayUrl}/transactions/months`, route => {
+    console.log('[MOCK] Returning months data for select dropdown')
     route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -42,7 +58,8 @@ export async function mockTransactionsTableSelects(page: Page) {
     })
   })
 
-  await page.route('**/transactions/years', route => {
+  await page.route(`${apiGatewayUrl}/transactions/years`, route => {
+    console.log('[MOCK] Returning years data for select dropdown')
     route.fulfill({
       status: 200,
       contentType: 'application/json',

@@ -67,30 +67,21 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
  * Comprehensive transaction route mocking that handles all patterns including page navigation protection
  *
  * CRITICAL: This function was redesigned to fix DailyIntervalLineChart test failures.
- * The route handling order is CRITICAL - daily totals must be processed first.
+ * FIXED: Using process.env for Playwright test environment instead of import.meta.env
  */
 export async function mockComprehensiveTransactionRoutes(page: Page, staticTransactions: any[], staticDailyIntervals: any[]) {
   if (isCI) {
     console.log('[MOCK SETUP] Starting comprehensive transaction mocking with:', {
       staticTransactionsCount: staticTransactions.length,
-      staticDailyIntervalsCount: staticDailyIntervals.length,
-      firstDailyInterval: staticDailyIntervals[0],
-      lastDailyInterval: staticDailyIntervals[staticDailyIntervals.length - 1]
+      staticDailyIntervalsCount: staticDailyIntervals.length
     })
   }
 
-  // CRITICAL FIX: Add specific route for daily intervals BEFORE the catch-all
-  await page.route('**/transactions*', async (route: any) => {
+  // CRITICAL FIX: Use process.env for Playwright test environment instead of import.meta.env
+  const apiGatewayUrl = process.env.VITE_APIGATEWAY_URL
+
+  await page.route(`${apiGatewayUrl}/transactions**`, async (route: any) => {
     const url = new URL(route.request().url())
-
-    // Skip if this is the main page URL (contains /budget-visualizer/ in path)
-    if (url.pathname.includes('/budget-visualizer/')) {
-      if (isCI) {
-        console.log('[MOCK] Skipping page navigation URL:', url.toString())
-      }
-      return route.continue()
-    }
-
     const params = url.searchParams
     const isDailyTotals = params.get('dailyTotals') === 'true'
     const hasInterval = params.has('interval')
@@ -99,45 +90,81 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     const hasLimit = params.has('limit')
     const hasOffset = params.has('offset')
 
-    if (isCI) {
-      console.log('[MOCK] Processing request:', {
-        url: url.toString(),
-        isDailyTotals,
-        hasInterval,
-        hasDate,
-        timeFrame,
-        hasLimit,
-        hasOffset,
-        allParams: Object.fromEntries(params)
-      })
-    }
+    // Log the actual request parameters for debugging
+    console.log('[MOCK DEBUG] Intercepted AWS API request:', {
+      url: url.toString(),
+      isDailyTotals,
+      interval: params.get('interval'),
+      date: params.get('date'),
+      hasLimit,
+      hasOffset
+    })
 
-    // PRIORITY 1: Handle daily totals requests (for line chart) - MUST BE FIRST
-    // This is the CRITICAL fix that enables DailyIntervalLineChart to load properly
-    if (isDailyTotals) {
-      if (isCI) {
-        console.log('[MOCK DAILY] Returning daily intervals data:', staticDailyIntervals.length, 'items')
-        console.log('[MOCK DAILY] Sample data:', staticDailyIntervals.slice(0, 2))
+    try {
+      // PRIORITY 1: Handle daily totals requests (for line chart) - MUST BE FIRST
+      if (isDailyTotals && hasInterval && hasDate) {
+        console.log('[MOCK] Returning daily intervals for chart with', staticDailyIntervals.length, 'items')
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(staticDailyIntervals),
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        })
+        return
       }
 
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(staticDailyIntervals),
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
-      })
-      return
-    }
-
-    // PRIORITY 2: Handle table data requests (limit/offset patterns for pagination)
-    if (hasLimit && hasOffset) {
-      if (isCI) {
-        console.log('[MOCK TABLE] Returning paginated transactions data:', staticTransactions.length, 'items')
-        console.log('[MOCK TABLE] Sample data:', staticTransactions.slice(0, 2))
+      // PRIORITY 2: Handle basic daily totals requests (fallback)
+      if (isDailyTotals) {
+        console.log('[MOCK] Returning basic daily intervals')
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(staticDailyIntervals),
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        })
+        return
       }
+
+      // PRIORITY 3: Handle table data requests (limit/offset patterns for pagination)
+      if (hasLimit && hasOffset) {
+        console.log('[MOCK] Returning transactions for table pagination')
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(staticTransactions),
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        })
+        return
+      }
+
+      // PRIORITY 4: Handle specific date/timeframe requests (for table data)
+      if (timeFrame === 'day' && hasDate) {
+        const dateParam = params.get('date')
+        const targetTransactions = generateTransactionsArray(5, '', dateParam)
+        console.log('[MOCK] Returning day-specific transactions')
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(targetTransactions),
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        })
+        return
+      }
+
+      // PRIORITY 5: Handle other transaction requests
+      console.log('[MOCK] Returning default transaction data')
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -147,78 +174,45 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
           'Access-Control-Allow-Origin': '*'
         }
       })
-      return
+    } catch (error) {
+      console.error('[MOCK ERROR] Failed to fulfill route:', error)
+      // Fallback to continue the request if mocking fails
+      await route.continue()
     }
-
-    // PRIORITY 3: Handle specific date/timeframe requests (for table data)
-    if (timeFrame === 'day' && hasDate) {
-      const dateParam = params.get('date')
-      const targetTransactions = generateTransactionsArray(5, '', dateParam)
-      if (isCI) {
-        console.log('[MOCK TABLE] Returning day-specific transactions for:', dateParam)
-      }
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(targetTransactions),
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
-      })
-      return
-    }
-
-    // PRIORITY 4: Handle other transaction requests
-    if (isCI) {
-      console.log('[MOCK DEFAULT] Returning default static transactions')
-    }
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(staticTransactions),
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    })
   })
 
-  if (isCI) {
-    console.log('[MOCK] Comprehensive transaction mocks setup complete')
-  }
+  console.log('[MOCK] AWS API Gateway transaction mocks setup complete')
 }
 
 /**
  * Mock daily interval routes with various parameter orders
+ * FIXED: Use more specific pattern to avoid conflicts with comprehensive routes
  */
 export async function mockDailyIntervalRoutes(page: Page, days: number = 30, staticData?: any[]) {
   const intervals = staticData || generateDailyIntervals(days)
 
-  // Use more specific route patterns to avoid conflicts
-  await page.route('**/transactions?dailyTotals=true*', async route => {
-    const url = route.request().url()
-    console.log('Daily intervals mock - intercepted request:', url)
-    console.log('Daily intervals mock - fulfilling request with data:', intervals.length, 'intervals')
+  // CRITICAL FIX: Use specific pattern that only matches dailyTotals requests to avoid conflicts
+  await page.route('**/transactions?*dailyTotals=true*', async route => {
+    const url = new URL(route.request().url())
+    const params = url.searchParams
 
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(intervals)
-    })
-  })
+    // Only handle requests that have dailyTotals=true
+    if (params.get('dailyTotals') === 'true') {
+      if (isCI) {
+        console.log('Daily intervals mock - intercepted request:', url.toString())
+        console.log('Daily intervals mock - fulfilling request with data:', intervals.length, 'intervals')
+      }
 
-  // Also handle requests with different parameter order
-  await page.route('**/transactions*dailyTotals=true*', async route => {
-    const url = route.request().url()
-    console.log('Daily intervals mock (alt pattern) - intercepted request:', url)
-    console.log('Daily intervals mock (alt pattern) - fulfilling request with data:', intervals.length, 'intervals')
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(intervals)
+      })
+      return
+    }
 
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(intervals)
-    })
+    // Continue to other handlers if not a daily totals request
+    await route.continue()
   })
 }
 
@@ -245,25 +239,19 @@ export async function mockBudgetCategoryRoutes(page: Page) {
 
 /**
  * Mock individual memo API calls for context menu functionality
+ * FIXED: Simplified and consolidated memo route handlers to prevent conflicts
  */
 export async function mockMemoRoutes(page: Page) {
-  // Add a catch-all debug route first to see all requests
-  await page.route('**/*', async route => {
-    const url = route.request().url()
-    if (url.includes('memo')) {
-      console.log('DEBUG: Any request containing "memo":', url)
+  // Single comprehensive memo route handler to avoid conflicts
+  await page.route('**/memos/**', async route => {
+    const url = new URL(route.request().url())
+    const pathParts = url.pathname.split('/memos/')
+    const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
+
+    // Only log in non-CI environments to reduce noise
+    if (!isCI) {
+      console.log('Mock intercepted memo request for:', memoName)
     }
-    await route.continue()
-  })
-
-  // More comprehensive route patterns to catch all possible API gateway URLs
-  await page.route('**/memos/**', async route => {
-    const url = new URL(route.request().url())
-    const pathParts = url.pathname.split('/memos/')
-    const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
-
-    console.log('Mock intercepted memo request for:', memoName)
-    console.log('Full URL:', route.request().url())
 
     await route.fulfill({
       status: 200,
@@ -276,55 +264,11 @@ export async function mockMemoRoutes(page: Page) {
         recurring: false,
         frequency: 'monthly',
         ambiguous: false
-      }])
-    })
-  })
-
-  // Additional catch-all pattern for different API gateway configurations
-  await page.route('**/api/**/memos/**', async route => {
-    const url = new URL(route.request().url())
-    const pathParts = url.pathname.split('/memos/')
-    const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
-
-    console.log('Mock intercepted API memo request for:', memoName)
-    console.log('Full URL:', route.request().url())
-
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify([{
-        id: 1,
-        name: memoName,
-        budget_category: 'Groceries',
-        necessary: true,
-        recurring: false,
-        frequency: 'monthly',
-        ambiguous: false
-      }])
-    })
-  })
-
-  // Even broader pattern to catch any memo-related requests
-  await page.route('**/memos/**', async route => {
-    const url = new URL(route.request().url())
-    const pathParts = url.pathname.split('/memos/')
-    const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
-
-    console.log('Mock intercepted memo request for:', memoName)
-    console.log('Full URL:', route.request().url())
-
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify([{
-        id: 1,
-        name: memoName,
-        budget_category: 'Groceries',
-        necessary: true,
-        recurring: false,
-        frequency: 'monthly',
-        ambiguous: false
-      }])
+      }]),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     })
   })
 }

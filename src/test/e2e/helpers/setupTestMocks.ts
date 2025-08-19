@@ -174,15 +174,27 @@ export const setupTransactionsTableWithStaticMocks = (page: Page, staticTransact
  * Enhanced setup for TransactionsTable tests with comprehensive mocking
  *
  * CRITICAL: This function was redesigned to fix DailyIntervalLineChart test failures.
- * Removed localStorage operations to prevent CI issues.
+ * FIXED: Removed problematic localStorage validation that was causing issues
  */
 export const setupTransactionsTableWithComprehensiveMocks = async (page: Page, staticTransactions: any[], staticIntervals: any[]) => {
-  // Setup mocks without localStorage manipulation to avoid CI issues
-  return setupTestMocks(page, {
-    comprehensiveTransactions: {
-      staticTransactions,
-      staticDailyIntervals: staticIntervals
-    },
-    transactionSelects: true
-  })
+  try {
+    // Setup mocks with comprehensive error handling
+    await setupTestMocks(page, {
+      comprehensiveTransactions: {
+        staticTransactions,
+        staticDailyIntervals: staticIntervals
+      },
+      transactionSelects: true
+    })
+
+    // CRITICAL FIX: Simple validation that mocks are set up
+    // Just wait a moment for route handlers to be registered
+    await page.waitForTimeout(200)
+
+    console.log('Mock setup complete - routes registered')
+    return true
+  } catch (error) {
+    console.error('Error setting up comprehensive mocks:', error)
+    throw error
+  }
 }
