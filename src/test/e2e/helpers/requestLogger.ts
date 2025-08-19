@@ -12,12 +12,8 @@ export function setupApiRequestLogging(
   page: Page,
   urlPattern: string = 'api',
   logPrefix: string = 'API Request:'
-): void {
-  // page.on('request', req => {
-  //   if (req.url().includes(urlPattern)) {
-  //     console.log(logPrefix, req.url())
-  //   }
-  // })
+) {
+
   page.on('console', msg => {
     if (msg.type() === 'log' || msg.type() === 'error' || msg.type() === 'warning') {
       console.log(`[BROWSER ${msg.type().toUpperCase()}]:`, msg.text())

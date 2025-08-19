@@ -14,13 +14,15 @@ test.describe('Transactions Table', () => {
 
   test.beforeEach(async ({ page }) => {
     transactionsPage = new TransactionsPage(page)
+
+    await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
+    setupAwsApiRequestLogging(page)
+
     await transactionsPage.goto()
     // Log only AWS API requests
-    setupAwsApiRequestLogging(page)
     // Add comprehensive debugging to track the loading flow
     console.time('TransactionsTableTestSetup')
     // CRITICAL FIX: Set up API mocks FIRST before any navigation
-    await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
     console.timeEnd('TransactionsTableTestSetup')
     // Initialize page object before navigation
     // Wait for both table and chart components to load properly with increased timeout
