@@ -5,6 +5,7 @@ import { staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
 import { waitForTableContent } from '@test/e2e/helpers/waitHelpers'
+import { setupAwsApiRequestLogging, setupApiRequestLogging } from '@test/e2e/helpers/requestLogger'
 
 const isCI = !!process.env.CI
 
@@ -12,25 +13,25 @@ test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
   test.beforeEach(async ({ page }) => {
-    // Log only API requests
-    page.on('request', req => {
-      if (req.url().includes('api')) {
-        console.log('API Request:', req.url());
-      }
-    });
+    // Log only AWS API requests
+    setupAwsApiRequestLogging(page)
 
     transactionsPage = new TransactionsPage(page)
 
+    console.time('TransactionsTableTestSetup')
     // CRITICAL FIX: Set up API mocks AND initialize clean store state
     await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions, staticDailyIntervals)
+    console.timeEnd('TransactionsTableTestSetup')
 
     // Navigate to the page
     await page.goto('budget-visualizer/transactions')
 
+    console.time('TransactionsPageLoad')
     // Wait for both table and chart components to load properly
     await waitForTableContent(transactionsPage.transactionsTable, page, {
       timeout: isCI ? 120000 : 60000
     })
+    console.timeEnd('TransactionsPageLoad')
 
     // CRITICAL: Ensure chart is visible before proceeding with chart tests
     await expect(transactionsPage.intervalLineChart).toBeVisible({
@@ -51,11 +52,7 @@ test.describe('Transactions Table', () => {
 
   test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({page}) => {
     // Log only API requests for this test
-    page.on('request', req => {
-      if (req.url().includes('api')) {
-        console.log('API Request:', req.url());
-      }
-    });
+    setupApiRequestLogging(page)
 
     // Test what the user can see - UI elements visibility
     await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -72,11 +69,7 @@ test.describe('Transactions Table', () => {
 
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
     // Log only API requests for this test
-    page.on('request', req => {
-      if (req.url().includes('api')) {
-        console.log('API Request:', req.url());
-      }
-    });
+    setupApiRequestLogging(page)
 
     // Test user interaction - right click behavior
     const firstDataCell = transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first()
@@ -117,11 +110,7 @@ test.describe('Transactions Table', () => {
   test('line chart displays tooltip on hover and allows clicking points to load transactions', async ({ page }) => {
     // Test user interaction with chart - what they see and can do
     // Log only API requests for this test
-    page.on('request', req => {
-      if (req.url().includes('api')) {
-        console.log('API Request:', req.url());
-      }
-    });
+    setupApiRequestLogging(page)
 
     // User should see the chart
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -166,11 +155,7 @@ test.describe('Transactions Table', () => {
 
   test('daily interval line chart is hidden when a day is selected', async ({ page }) => {
     // Log only API requests for this test
-    page.on('request', req => {
-      if (req.url().includes('api')) {
-        console.log('API Request:', req.url());
-      }
-    });
+    setupApiRequestLogging(page)
 
     // Initially, user should see the chart (aggregate view)
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
