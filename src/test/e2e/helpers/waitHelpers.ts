@@ -16,7 +16,7 @@ export async function waitForElementTableReady(table: Locator, page: Page, optio
   await expect(table.getByRole('row').first()).toBeVisible({ timeout })
   await expect(table.getByRole('cell').first()).toBeVisible({ timeout })
 
-  await page.waitForLoadState('networkidle', { timeout: 10000 })
+  await page.waitForLoadState('domcontentloaded', { timeout: 10000 })
 
 }
 
@@ -68,7 +68,7 @@ export async function waitForTableContent(table: Locator, page: Page, options: {
   minRows?: number
   timeout?: number
 } = {}) {
-  const { minRows = 1, timeout = 10000 } = options
+  const { minRows = 10, timeout = 10000 } = options
 
   // Wait for table to exist
   await table.waitFor({ state: 'visible', timeout })
@@ -78,5 +78,5 @@ export async function waitForTableContent(table: Locator, page: Page, options: {
   await expect(firstDataRow.getByRole('cell').first()).not.toBeEmpty({ timeout })
 
   // Wait for network to settle (no more pending requests)
-  await page.waitForLoadState('networkidle', { timeout: 10000 })
+  await page.waitForLoadState('domcontentloaded', { timeout: 10000 })
 }
