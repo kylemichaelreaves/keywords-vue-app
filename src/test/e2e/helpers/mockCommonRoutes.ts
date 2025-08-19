@@ -77,7 +77,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     })
   }
 
-  await page.route(`dev/transactions**`, async (route: any) => {
+  await page.route(`**/dev/transactions**`, async (route: any) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
     const isDailyTotals = params.get('dailyTotals') === 'true'
