@@ -18,7 +18,7 @@ test.describe('Transactions Table', () => {
 
     // Add comprehensive debugging to track the loading flow
     page.on('console', msg => {
-      if (msg.type() === 'log' || msg.type() === 'error' || msg.type() === 'warn') {
+      if (msg.type() === 'log' || msg.type() === 'error' || msg.type() === 'warning') {
         console.log(`[BROWSER ${msg.type().toUpperCase()}]:`, msg.text())
       }
     })

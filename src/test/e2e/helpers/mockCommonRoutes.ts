@@ -67,7 +67,7 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
  * Comprehensive transaction route mocking that handles all patterns including page navigation protection
  *
  * CRITICAL: This function was redesigned to fix DailyIntervalLineChart test failures.
- * FIXED: Using process.env for Playwright test environment instead of import.meta.env
+ * FIXED: Removed hardcoded API URL for security - requires environment variable to be set
  */
 export async function mockComprehensiveTransactionRoutes(page: Page, staticTransactions: any[], staticDailyIntervals: any[]) {
   if (isCI) {
@@ -77,8 +77,14 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     })
   }
 
-  // CRITICAL FIX: Use process.env for Playwright test environment instead of import.meta.env
+  // SECURITY FIX: No hardcoded API URLs - must be provided via environment variable
   const apiGatewayUrl = process.env.VITE_APIGATEWAY_URL
+
+  if (!apiGatewayUrl) {
+    throw new Error('VITE_APIGATEWAY_URL environment variable is required for API mocking')
+  }
+
+  console.log('[MOCK DEBUG] Using API Gateway URL:', apiGatewayUrl)
 
   await page.route(`${apiGatewayUrl}/transactions**`, async (route: any) => {
     const url = new URL(route.request().url())

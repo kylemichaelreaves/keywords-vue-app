@@ -31,13 +31,6 @@ test.describe('Month Summary Page', () => {
     await monthSummaryPage.expectTableHasData() // Wait for actual content instead of spinners
   })
 
-  test.afterEach(async ({ page }) => {
-    await page.evaluate(() => {
-      localStorage.clear()
-      sessionStorage.clear()
-    })
-  })
-
   test('should display all month summary page elements correctly', async () => {
     // Check month title
     const title = await monthSummaryPage.getMonthTitle()

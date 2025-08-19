@@ -28,13 +28,6 @@ test.describe('Week Summary Table', () => {
     await weekSummaryPage.expectTableHasData()
   })
 
-  test.afterEach(async ({ page }) => {
-    // Clean up after each test
-    await page.evaluate(() => {
-      localStorage.clear()
-      sessionStorage.clear()
-    })
-  })
 
   test('should display the week summary table elements correctly', async () => {
     await weekSummaryPage.expectTableVisible()

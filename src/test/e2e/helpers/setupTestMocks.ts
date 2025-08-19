@@ -128,14 +128,14 @@ export const MOCK_PRESETS = {
     dailyIntervals: 30,
     budgetCategories: true,
     memos: true,
-    transactionSelects: true,
+    transactionSelects: true, // REVERTED: Month summary tests can use transaction selects since VITE_APIGATEWAY_URL is available
     monthTransactions: true
   } as TestMockOptions,
 
   WEEK_SUMMARY: {
     basicTransactions: true,
     memos: true,
-    transactionSelects: true,
+    transactionSelects: true, // REVERTED: Week summary tests can use transaction selects since VITE_APIGATEWAY_URL is available
     weekTransactions: true
   } as TestMockOptions,
 

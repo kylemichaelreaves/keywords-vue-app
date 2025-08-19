@@ -7,8 +7,14 @@ import { generateYearsArray } from '@test/e2e/mocks/yearsMock.ts'
 import type { Page } from '@playwright/test'
 
 export async function mockTransactionsTableSelects(page: Page) {
-  // CRITICAL FIX: Use environment variable for API Gateway URL instead of hardcoded URL
+  // SECURITY FIX: No hardcoded API URLs - must be provided via environment variable
   const apiGatewayUrl = process.env.VITE_APIGATEWAY_URL
+
+  if (!apiGatewayUrl) {
+    throw new Error('VITE_APIGATEWAY_URL environment variable is required for API mocking')
+  }
+
+  console.log('[MOCK DEBUG] Using API Gateway URL for selects:', apiGatewayUrl)
 
   await page.route(`${apiGatewayUrl}/memos?limit=100&offset=0`, route => {
     console.log('[MOCK] Returning memos data for select dropdown')
