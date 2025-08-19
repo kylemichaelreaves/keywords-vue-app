@@ -3,7 +3,8 @@
 ## Overview
 
 This document provides a comprehensive summary of the critical fixes implemented to resolve DailyIntervalLineChart
-loading issues in Playwright tests. These fixes ensure the component loads properly with mock data and can be reliably
+loading issues in Playwright tests, as well as the critical route mocking fix that resolved TransactionsTable.test.ts
+returning JSON instead of rendering the UI. These fixes ensure components load properly with mock data and can be reliably
 tested.
 
 ## Root Cause Analysis
@@ -36,7 +37,52 @@ The DailyIntervalLineChart was failing to load in Playwright tests due to severa
 
 ## Critical Fixes Implemented
 
-### 1. Component Logic Fixes (`DailyIntervalLineChart.vue`)
+### 1. Route Mocking Pattern Fix (CRITICAL - August 19, 2025)
+
+#### Problem: Tests Receiving JSON Instead of UI
+- **Issue**: TransactionsTable.test.ts was receiving JSON data instead of rendering the UI
+- **Root Cause**: Overly broad route mocking patterns were intercepting page navigation
+- **Pattern**: `**/transactions**` was catching both API requests AND page routes like `budget-visualizer/transactions`
+- **Impact**: Browser received JSON response when navigating to the transactions page instead of HTML UI
+
+#### Solution: API-Specific Route Patterns
+
+**Before (Problematic):**
+```typescript
+await page.route(`**/transactions**`, async (route: any) => {
+  // This catches EVERYTHING including page navigation
+})
+```
+
+**After (Fixed):**
+```typescript
+await page.route(`**/api/**/transactions**`, async (route: any) => {
+  // This only catches actual API endpoints
+})
+```
+
+#### Files Fixed:
+1. **`mockCommonRoutes.ts`**:
+   - Changed `**/transactions**` → `**/api/**/transactions**`
+   - Updated all basic transaction route patterns
+   - Fixed daily interval and budget category patterns
+
+2. **`mockTransactionsTableSelects.ts`**:
+   - Changed `**/transactions/days` → `**/api/**/transactions/days`
+   - Fixed all select dropdown API patterns
+   - Updated memos patterns
+
+3. **`memoRouteHelper.ts`**:
+   - Fixed budget category hierarchy patterns
+   - Updated route clearing patterns
+
+#### Why This Fix is Critical:
+- **Page Navigation Protection**: Prevents route mocks from intercepting actual page loads
+- **API-Only Targeting**: Ensures mocks only affect API calls, not UI navigation
+- **Test Reliability**: Eliminates the JSON-instead-of-UI bug that was breaking tests
+- **Future-Proof**: More specific patterns prevent similar issues with new routes
+
+### 2. Component Logic Fixes (`DailyIntervalLineChart.vue`)
 
 #### selectedValue Computed Property
 
@@ -63,7 +109,7 @@ const selectedValue = computed((): string | null => {
 
 **Why Critical**: Creates the nested test selector structure that test helpers depend on.
 
-### 2. API Route Mocking Fixes (`mockCommonRoutes.ts`)
+### 3. API Route Mocking Fixes (`mockCommonRoutes.ts`)
 
 #### Priority-Based Route Handling
 
@@ -77,12 +123,28 @@ if (isDailyTotals) {
   })
   return
 }
+
+// PRIORITY 2: Handle table data requests (limit/offset patterns for pagination)
+if (hasLimit && hasOffset) {
+  await route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify(staticTransactions)
+  })
+  return
+}
+
+// PRIORITY 3: Handle specific date/timeframe requests
+// PRIORITY 4: Handle other transaction requests
 ```
 
-**Why Critical**: Daily totals requests must be handled before any other transaction patterns to ensure chart data is
-properly mocked.
+**Why Critical**: The priority order ensures that:
 
-### 3. Test Setup Fixes (`setupTestMocks.ts`)
+1. Daily totals requests are handled first for chart data
+2. Table pagination requests are handled second for table data
+3. Other requests are handled with appropriate fallbacks
+
+### 4. Test Setup Fixes (`setupTestMocks.ts`)
 
 #### Store State Initialization
 
@@ -104,7 +166,7 @@ await page.addInitScript(() => {
 
 **Why Critical**: Provides the initial date needed for the API hook's enabled condition and ensures clean test state.
 
-### 4. Wait Helper Fixes (`waitHelpers.ts`)
+### 5. Wait Helper Fixes (`waitHelpers.ts`)
 
 #### Correct SVG Selector
 
@@ -116,19 +178,40 @@ const svg = chartContainer.locator('svg[data-testid="daily-interval-line-chart-l
 
 ## Files Modified with Critical Documentation
 
-1. **`DailyIntervalLineChart.vue`** - Component logic and visibility rules
-2. **`mockCommonRoutes.ts`** - API route mocking priority and handling
-3. **`setupTestMocks.ts`** - Store initialization and test setup
-4. **`waitHelpers.ts`** - Chart loading synchronization and selectors
+1. **`mockCommonRoutes.ts`** - **CRITICAL FIX**: Changed overly broad route patterns to API-specific patterns
+2. **`mockTransactionsTableSelects.ts`** - **CRITICAL FIX**: Updated all route patterns to prevent page navigation interception
+3. **`memoRouteHelper.ts`** - **CRITICAL FIX**: Fixed budget category route patterns
+4. **`DailyIntervalLineChart.vue`** - Component logic and visibility rules
+5. **`setupTestMocks.ts`** - Store initialization and test setup
+6. **`waitHelpers.ts`** - Chart loading synchronization and selectors
 
 ## Prevention Guidelines
 
+### ⚠️ CRITICAL: Route Pattern Best Practices
+
+**Never Use These Patterns (Too Broad):**
+```typescript
+// DON'T - Catches page navigation
+page.route('**/transactions**')
+page.route('**/memos**')  
+page.route('**/budget-categories**')
+```
+
+**Always Use These Patterns (API-Specific):**
+```typescript
+// DO - Only catches API calls
+page.route('**/api/**/transactions**')
+page.route('**/api/**/memos**')
+page.route('**/api/**/budget-categories**')
+```
+
 ### ⚠️ DO NOT MODIFY without considering these dependencies:
 
-1. **selectedValue computed property** - Must always return a valid date string
-2. **Route handling order** - Daily totals requests must be handled first
-3. **Data-testid propagation** - Must maintain nested selector structure
-4. **Store initialization** - Must provide valid initial date for API hooks
+1. **Route pattern specificity** - Must include `/api/` to avoid intercepting page navigation
+2. **selectedValue computed property** - Must always return a valid date string
+3. **Route handling order** - Daily totals requests must be handled first
+4. **Data-testid propagation** - Must maintain nested selector structure
+5. **Store initialization** - Must provide valid initial date for API hooks
 
 ### ✅ Safe Modification Practices:
 
@@ -141,13 +224,23 @@ const svg = chartContainer.locator('svg[data-testid="daily-interval-line-chart-l
 
 The fixes enable these test scenarios:
 
+- ✅ **Page Navigation**: Tests navigate to actual UI pages instead of receiving JSON
+- ✅ **API Mocking**: API calls are properly intercepted and mocked
 - ✅ Chart loads with mock data
 - ✅ Chart dots are interactive (hover/click)
 - ✅ Tooltips display properly
 - ✅ Chart hides when drilling down to specific dates
 - ✅ Store state changes affect chart visibility correctly
+- ✅ **UI Rendering**: TransactionsTable.test.ts renders the full UI correctly
 
 ## Debugging Tips
+
+If tests start receiving JSON instead of UI again:
+
+1. **Check route patterns**: Ensure all patterns include `/api/` to target only API endpoints
+2. **Verify page navigation**: Test that `page.goto('budget-visualizer/transactions')` loads HTML, not JSON
+3. **Review new route additions**: Any new route mocks must follow API-specific patterns
+4. **Check console logs**: Look for route interception logs to identify problematic patterns
 
 If the chart fails to load again:
 
@@ -158,10 +251,12 @@ If the chart fails to load again:
 
 ## Related Files
 
+- **CRITICAL**: `src/test/e2e/helpers/mockCommonRoutes.ts` - Main route mocking patterns
+- **CRITICAL**: `src/test/e2e/helpers/mockTransactionsTableSelects.ts` - Select dropdown API mocking
+- **CRITICAL**: `src/test/e2e/helpers/memoRouteHelper.ts` - Memo-related route patterns
 - **Component**: `src/components/transactions/DailyIntervalLineChart.vue`
 - **API Hook**: `src/api/hooks/transactions/useDailyTotalAmountDebit.ts`
 - **Test Setup**: `src/test/e2e/helpers/setupTestMocks.ts`
-- **Route Mocking**: `src/test/e2e/helpers/mockCommonRoutes.ts`
 - **Wait Helpers**: `src/test/e2e/helpers/waitHelpers.ts`
 - **Test File**: `src/test/e2e/TransactionsTable.test.ts`
 

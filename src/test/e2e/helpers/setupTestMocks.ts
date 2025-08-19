@@ -1,18 +1,3 @@
-/**
- * CRITICAL FIX DOCUMENTATION - Test Mock Setup for DailyIntervalLineChart
- *
- * This file contains the test mock setup that was essential for fixing
- * DailyIntervalLineChart loading issues in Playwright tests.
- *
- * KEY ISSUES RESOLVED:
- * 1. Store State Initialization: Proper cleanup and initialization of localStorage
- * 2. Initial Date Setup: Ensuring the API hook's enabled condition is met
- * 3. Comprehensive Mock Strategy: Using the right mocking approach for complex components
- *
- * DO NOT REMOVE the store initialization logic without ensuring the API hooks
- * can still function properly in test environments.
- */
-
 import type { Page } from '@playwright/test'
 import { mockTransactionsTableSelects } from './mockTransactionsTableSelects'
 import {

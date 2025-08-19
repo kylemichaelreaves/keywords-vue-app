@@ -60,10 +60,10 @@ export async function setupBudgetCategoryHierarchyInterceptor(
 
   // Clear existing route handlers if requested
   if (clearExisting) {
-    await page.unroute(`**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`)
+    await page.unroute(`**/api/**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`)
   }
 
-  await page.route(`**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`, async route => {
+  await page.route(`**/api/**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`, async route => {
     const url = new URL(route.request().url())
     console.log(`Intercepted budget category hierarchy request (${timeFrame}):`, url.toString())
 

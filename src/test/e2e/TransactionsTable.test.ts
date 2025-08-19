@@ -13,11 +13,10 @@ test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
   test.beforeEach(async ({ page }) => {
+    setupAwsApiRequestLogging(page)
     transactionsPage = new TransactionsPage(page)
 
     await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
-    setupAwsApiRequestLogging(page)
-
     await transactionsPage.goto()
     // Log only AWS API requests
     // Add comprehensive debugging to track the loading flow

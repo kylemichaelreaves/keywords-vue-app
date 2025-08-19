@@ -8,7 +8,8 @@ import type { Page } from '@playwright/test'
 
 export async function mockTransactionsTableSelects(page: Page) {
 
-  await page.route(`**/memos?limit=100&offset=0`, route => {
+  // CRITICAL FIX: Use more specific API patterns to avoid intercepting page navigation
+  await page.route(`**/api/**/memos?limit=100&offset=0`, route => {
     console.log('[MOCK] Returning memos data for select dropdown')
     route.fulfill({
       status: 200,
@@ -19,7 +20,7 @@ export async function mockTransactionsTableSelects(page: Page) {
 
   // CRITICAL FIX: Return multiple days to ensure chart can render properly
   // The DailyIntervalLineChart needs multiple data points to create a line chart
-  await page.route(`**/transactions/days`, route => {
+  await page.route(`**/api/**/transactions/days`, route => {
     const today = new Date()
     const days = []
 
@@ -38,7 +39,7 @@ export async function mockTransactionsTableSelects(page: Page) {
     })
   })
 
-  await page.route(`**/transactions/weeks`, route => {
+  await page.route(`**/api/**/transactions/weeks`, route => {
     console.log('[MOCK] Returning weeks data for select dropdown')
     route.fulfill({
       status: 200,
@@ -47,7 +48,7 @@ export async function mockTransactionsTableSelects(page: Page) {
     })
   })
 
-  await page.route(`**/transactions/months`, route => {
+  await page.route(`**/api/**/transactions/months`, route => {
     console.log('[MOCK] Returning months data for select dropdown')
     route.fulfill({
       status: 200,
@@ -56,7 +57,7 @@ export async function mockTransactionsTableSelects(page: Page) {
     })
   })
 
-  await page.route(`**/transactions/years`, route => {
+  await page.route(`**/api/**/transactions/years`, route => {
     console.log('[MOCK] Returning years data for select dropdown')
     route.fulfill({
       status: 200,
