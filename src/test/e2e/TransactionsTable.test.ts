@@ -12,6 +12,13 @@ test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
   test.beforeEach(async ({ page }) => {
+    // Log only API requests
+    page.on('request', req => {
+      if (req.url().includes('api')) {
+        console.log('API Request:', req.url());
+      }
+    });
+
     transactionsPage = new TransactionsPage(page)
 
     // CRITICAL FIX: Set up API mocks AND initialize clean store state
@@ -42,7 +49,14 @@ test.describe('Transactions Table', () => {
     }
   })
 
-  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async () => {
+  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({page}) => {
+    // Log only API requests for this test
+    page.on('request', req => {
+      if (req.url().includes('api')) {
+        console.log('API Request:', req.url());
+      }
+    });
+
     // Test what the user can see - UI elements visibility
     await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.daySelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -57,6 +71,13 @@ test.describe('Transactions Table', () => {
   })
 
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
+    // Log only API requests for this test
+    page.on('request', req => {
+      if (req.url().includes('api')) {
+        console.log('API Request:', req.url());
+      }
+    });
+
     // Test user interaction - right click behavior
     const firstDataCell = transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first()
     await expect(firstDataCell).not.toBeEmpty({ timeout: 30000 })
@@ -95,6 +116,12 @@ test.describe('Transactions Table', () => {
 
   test('line chart displays tooltip on hover and allows clicking points to load transactions', async ({ page }) => {
     // Test user interaction with chart - what they see and can do
+    // Log only API requests for this test
+    page.on('request', req => {
+      if (req.url().includes('api')) {
+        console.log('API Request:', req.url());
+      }
+    });
 
     // User should see the chart
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -138,6 +165,13 @@ test.describe('Transactions Table', () => {
   })
 
   test('daily interval line chart is hidden when a day is selected', async ({ page }) => {
+    // Log only API requests for this test
+    page.on('request', req => {
+      if (req.url().includes('api')) {
+        console.log('API Request:', req.url());
+      }
+    });
+
     // Initially, user should see the chart (aggregate view)
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     // User clicks on a chart point to drill down
