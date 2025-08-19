@@ -174,28 +174,10 @@ export const setupTransactionsTableWithStaticMocks = (page: Page, staticTransact
  * Enhanced setup for TransactionsTable tests with comprehensive mocking
  *
  * CRITICAL: This function was redesigned to fix DailyIntervalLineChart test failures.
- * The store initialization is ESSENTIAL for the component to load properly.
+ * Removed localStorage operations to prevent CI issues.
  */
 export const setupTransactionsTableWithComprehensiveMocks = async (page: Page, staticTransactions: any[], staticIntervals: any[]) => {
-  // CRITICAL FIX: Initialize store state AND set proper initial date to enable API calls
-  await page.addInitScript(() => {
-    // Clear any existing store state that might interfere with chart visibility
-    window.localStorage.removeItem('transactions-store')
-    window.sessionStorage.clear()
-
-    // CRITICAL: Set up initial state to ensure the API hook's enabled condition passes
-    // This ensures selectedValue in DailyIntervalLineChart will have a valid date
-    // WITHOUT this, the useDailyTotalAmountDebit hook will be disabled and no API calls will be made
-    const initialDate = new Date().toISOString().split('T')[0] // Today's date in YYYY-MM-DD format
-    window.localStorage.setItem('transactions-store', JSON.stringify({
-      selectedDay: '',
-      selectedWeek: '',
-      selectedMonth: '',
-      selectedYear: '',
-      firstDay: initialDate // This will be used as fallback in selectedValue computed property
-    }))
-  })
-
+  // Setup mocks without localStorage manipulation to avoid CI issues
   return setupTestMocks(page, {
     comprehensiveTransactions: {
       staticTransactions,

@@ -39,17 +39,6 @@ test.describe('Transactions Table', () => {
     })
   })
 
-  test.afterEach(async ({ page }) => {
-    try {
-      await page.evaluate(() => {
-        localStorage.clear()
-        sessionStorage.clear()
-      })
-    } catch (error) {
-      // Ignore cleanup errors if page is already closed
-    }
-  })
-
   test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({page}) => {
     // Log only API requests for this test
     setupApiRequestLogging(page)
