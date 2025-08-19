@@ -96,6 +96,8 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     const hasInterval = params.has('interval')
     const hasDate = params.has('date')
     const timeFrame = params.get('timeFrame')
+    const hasLimit = params.has('limit')
+    const hasOffset = params.has('offset')
 
     if (isCI) {
       console.log('[MOCK] Processing request:', {
@@ -104,6 +106,8 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
         hasInterval,
         hasDate,
         timeFrame,
+        hasLimit,
+        hasOffset,
         allParams: Object.fromEntries(params)
       })
     }
@@ -128,7 +132,25 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       return
     }
 
-    // PRIORITY 2: Handle specific date/timeframe requests (for table data)
+    // PRIORITY 2: Handle table data requests (limit/offset patterns for pagination)
+    if (hasLimit && hasOffset) {
+      if (isCI) {
+        console.log('[MOCK TABLE] Returning paginated transactions data:', staticTransactions.length, 'items')
+        console.log('[MOCK TABLE] Sample data:', staticTransactions.slice(0, 2))
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(staticTransactions),
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
+      return
+    }
+
+    // PRIORITY 3: Handle specific date/timeframe requests (for table data)
     if (timeFrame === 'day' && hasDate) {
       const dateParam = params.get('date')
       const targetTransactions = generateTransactionsArray(5, '', dateParam)
@@ -147,7 +169,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       return
     }
 
-    // PRIORITY 3: Handle other transaction requests
+    // PRIORITY 4: Handle other transaction requests
     if (isCI) {
       console.log('[MOCK DEFAULT] Returning default static transactions')
     }

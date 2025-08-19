@@ -4,7 +4,7 @@ import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
 import { staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
-import { waitForLineChartReady, waitForTableContent } from '@test/e2e/helpers/waitHelpers'
+import { waitForTableContent } from '@test/e2e/helpers/waitHelpers'
 
 const isCI = !!process.env.CI
 
@@ -99,12 +99,6 @@ test.describe('Transactions Table', () => {
     // User should see the chart
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
 
-    // Wait for chart to load data that user can interact with
-    await waitForLineChartReady(transactionsPage.intervalLineChart, page, {
-      minDataPoints: 1,
-      timeout: isCI ? 60000 : 40000
-    })
-
     // Test user can hover over chart points and see tooltip
     const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
     await expect(firstPoint).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -144,26 +138,15 @@ test.describe('Transactions Table', () => {
   })
 
   test('daily interval line chart is hidden when a day is selected', async ({ page }) => {
-    // Test user workflow: chart visibility changes based on user actions
-
     // Initially, user should see the chart (aggregate view)
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
-
-    // Wait for chart to be interactive
-    await waitForLineChartReady(transactionsPage.intervalLineChart, page, {
-      minDataPoints: 1,
-      timeout: isCI ? 60000 : 40000
-    })
-
     // User clicks on a chart point to drill down
     const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
     await expect(firstPoint).toBeVisible({ timeout: isCI ? 20000 : 10000 })
 
     await firstPoint.click({ force: isCI })
-
     // Give time for UI to respond to user action
-    await page.waitForTimeout(isCI ? 2000 : 500)
-
+    await page.waitForLoadState('domcontentloaded', { timeout: isCI ? 20000 : 10000 })
     // Chart should now be hidden (user is in detail view)
     await expect(transactionsPage.intervalLineChart).not.toBeVisible({ timeout: isCI ? 20000 : 10000 })
   })
