@@ -44,7 +44,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 1,
     transaction_number: 'ABCD1234',
-    date: '2023-06-01T00:00:00.000Z',
+    date: '2025-06-01T00:00:00.000Z',
     description: 'Grocery Store',
     memo: 'Weekly groceries',
     memo_id: 101,
@@ -58,7 +58,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 2,
     transaction_number: 'EFGH5678',
-    date: '2023-06-02T00:00:00.000Z',
+    date: '2025-06-02T00:00:00.000Z',
     description: 'Online Shopping',
     memo: 'Clothes purchase',
     memo_id: 102,
@@ -72,7 +72,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 3,
     transaction_number: 'IJKL9012',
-    date: '2023-06-03T00:00:00.000Z',
+    date: '2025-06-03T00:00:00.000Z',
     description: 'Salary Payment',
     memo: 'Monthly salary',
     memo_id: 103,
@@ -86,7 +86,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 4,
     transaction_number: 'MNOP3456',
-    date: '2023-06-04T00:00:00.000Z',
+    date: '2025-06-04T00:00:00.000Z',
     description: 'Utility Bill',
     memo: 'Electricity bill for May',
     memo_id: 104,
@@ -100,7 +100,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 5,
     transaction_number: 'QRST7890',
-    date: '2023-06-05T00:00:00.000Z',
+    date: '2025-06-05T00:00:00.000Z',
     description: 'Restaurant Dinner',
     memo: 'Dinner with friends',
     memo_id: 105,
@@ -114,7 +114,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 6,
     transaction_number: 'UVWX1234',
-    date: '2023-06-06T00:00:00.000Z',
+    date: '2025-06-06T00:00:00.000Z',
     description: 'Gas Station',
     memo: 'Fuel for car',
     memo_id: 106,
@@ -128,7 +128,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 7,
     transaction_number: 'YZAB5678',
-    date: '2023-06-07T00:00:00.000Z',
+    date: '2025-06-07T00:00:00.000Z',
     description: 'Movie Tickets',
     memo: 'Cinema outing',
     memo_id: 107,
@@ -142,7 +142,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 8,
     transaction_number: 'CDEF9012',
-    date: '2023-06-08T00:00:00.000Z',
+    date: '2025-06-08T00:00:00.000Z',
     description: 'Book Purchase',
     memo: 'New novel',
     memo_id: 108,
@@ -156,7 +156,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 9,
     transaction_number: 'GHIK3456',
-    date: '2023-06-09T00:00:00.000Z',
+    date: '2025-06-09T00:00:00.000Z',
     description: 'Gym Membership',
     memo: 'Monthly fee',
     memo_id: 109,
@@ -170,7 +170,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 10,
     transaction_number: 'LMNO7890',
-    date: '2023-06-10T00:00:00.000Z',
+    date: '2025-06-10T00:00:00.000Z',
     description: 'Transfer to Savings',
     memo: 'Monthly savings transfer',
     memo_id: 110,
@@ -184,7 +184,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 11,
     transaction_number: 'PQRS1234',
-    date: '2023-06-11T00:00:00.000Z',
+    date: '2025-06-11T00:00:00.000Z',
     description: 'Business Services',
     memo: 'Consulting fee',
     memo_id: 111,
@@ -198,7 +198,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 12,
     transaction_number: 'TUVW5678',
-    date: '2023-06-11T00:00:00.000Z',
+    date: '2025-06-11T00:00:00.000Z',
     description: 'Online Subscription',
     memo: 'Monthly software subscription',
     memo_id: 112,
@@ -212,7 +212,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 13,
     transaction_number: 'XYZ12345',
-    date: '2023-06-12T00:00:00.000Z',
+    date: '2025-06-12T00:00:00.000Z',
     description: 'Coffee Shop',
     memo: 'Morning coffee',
     memo_id: 113,
@@ -226,7 +226,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 14,
     transaction_number: 'ABC67890',
-    date: '2023-06-13T00:00:00.000Z',
+    date: '2025-06-13T00:00:00.000Z',
     description: 'Bookstore Purchase',
     memo: 'Educational books',
     memo_id: 114,
@@ -240,7 +240,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 15,
     transaction_number: 'DEF23456',
-    date: '2023-06-13T00:00:00.000Z',
+    date: '2025-06-13T00:00:00.000Z',
     description: 'Restaurant Lunch',
     memo: 'Business lunch meeting',
     memo_id: 115,
@@ -254,7 +254,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 16,
     transaction_number: 'GHI78901',
-    date: '2023-06-14T00:00:00.000Z',
+    date: '2025-06-14T00:00:00.000Z',
     description: 'Car Maintenance',
     memo: 'Oil change and service',
     memo_id: 116,
@@ -268,7 +268,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 17,
     transaction_number: 'JKL34567',
-    date: '2023-06-15T00:00:00.000Z',
+    date: '2025-06-15T00:00:00.000Z',
     description: 'Movie Streaming Service',
     memo: 'Monthly subscription',
     memo_id: 117,
@@ -282,7 +282,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 18,
     transaction_number: 'MNO89012',
-    date: '2023-06-16T00:00:00.000Z',
+    date: '2025-06-16T00:00:00.000Z',
     description: 'Health Insurance Payment',
     memo: 'Monthly premium',
     memo_id: 118,
@@ -296,7 +296,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 19,
     transaction_number: 'PQR45678',
-    date: '2023-06-17T00:00:00.000Z',
+    date: '2025-06-17T00:00:00.000Z',
     description: 'Transfer to Investment Account',
     memo: 'Monthly investment transfer',
     memo_id: 119,
@@ -310,7 +310,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 20,
     transaction_number: 'STU12345',
-    date: '2023-06-18T00:00:00.000Z',
+    date: '2025-06-18T00:00:00.000Z',
     description: 'Freelance Project Payment',
     memo: 'Payment for freelance work',
     memo_id: 120,
@@ -324,7 +324,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 21,
     transaction_number: 'VWX67890',
-    date: '2023-06-19T00:00:00.000Z',
+    date: '2025-06-19T00:00:00.000Z',
     description: 'Online Course Purchase',
     memo: 'E-learning course fee',
     memo_id: 121,
@@ -338,7 +338,7 @@ export const staticTransactions: Transaction[] = [
   {
     id: 22,
     transaction_number: 'YZA23456',
-    date: '2023-06-20T00:00:00.000Z',
+    date: '2025-06-20T00:00:00.000Z',
     description: 'Pet Care Expenses',
     memo: 'Vet visit and supplies',
     memo_id: 122,
@@ -348,6 +348,146 @@ export const staticTransactions: Transaction[] = [
     check_number: undefined,
     fees: undefined,
     budget_category: 'Pets'
+  },
+  {
+    id: 23,
+    transaction_number: 'BCD78901',
+    date: '2025-06-21T00:00:00.000Z',
+    description: 'Charity Donation',
+    memo: 'Monthly donation to charity',
+    memo_id: 123,
+    amount_debit: '-50.00',
+    amount_credit: '0.00',
+    balance: '11950.00',
+    check_number: undefined,
+    fees: undefined,
+    budget_category: 'Charity'
+  },
+  {
+    id: 24,
+    transaction_number: 'EFG34567',
+    date: '2025-06-22T00:00:00.000Z',
+    description: 'Coffee Shop',
+    memo: 'Afternoon coffee',
+    memo_id: 124,
+    amount_debit: '-4.50',
+    amount_credit: '0.00',
+    balance: '11945.50',
+    check_number: undefined,
+    fees: undefined,
+    budget_category: 'Food & Dining'
+  },
+  {
+    id: 25,
+    transaction_number: 'HIJ89012',
+    date: '2025-06-23T00:00:00.000Z',
+    description: 'Grocery Store',
+    memo: 'Weekly groceries',
+    memo_id: 125,
+    amount_debit: '-160.00',
+    amount_credit: '0.00',
+    balance: '11785.50',
+    check_number: '1003',
+    fees: '2.75',
+    budget_category: 'Food & Dining'
+  },
+  {
+    id: 26,
+    transaction_number: 'KLM45678',
+    date: '2025-06-24T00:00:00.000Z',
+    description: 'Bookstore Purchase',
+    memo: 'New textbooks',
+    memo_id: 126,
+    amount_debit: '-90.00',
+    amount_credit: '0.00',
+    balance: '11695.50',
+    check_number: undefined,
+    fees: undefined,
+    budget_category: 'Shopping'
+  },
+  {
+    id: 27,
+    transaction_number: 'NOP12345',
+    date: '2025-06-25T00:00:00.000Z',
+    description: 'Restaurant Dinner',
+    memo: 'Family dinner outing',
+    memo_id: 127,
+    amount_debit: '-120.00',
+    amount_credit: '0.00',
+    balance: '11575.50',
+    check_number: undefined,
+    fees: undefined,
+    budget_category: 'Food & Dining'
+  },
+  {
+    id: 28,
+    transaction_number: 'QRS67890',
+    date: '2025-06-26T00:00:00.000Z',
+    description: 'Car Wash',
+    memo: 'Weekend car wash',
+    memo_id: 128,
+    amount_debit: '-25.00',
+    amount_credit: '0.00',
+    balance: '11550.50',
+    check_number: undefined,
+    fees: undefined,
+    budget_category: 'Auto & Transport'
+  },
+  {
+    id: 29,
+    transaction_number: 'TUV23456',
+    date: '2025-06-27T00:00:00.000Z',
+    description: 'Movie Tickets',
+    memo: 'Evening movie outing',
+    memo_id: 129,
+    amount_debit: '-35.00',
+    amount_credit: '0.00',
+    balance: '11515.50',
+    check_number: undefined,
+    fees: undefined,
+    budget_category: 'Entertainment'
+  },
+  {
+    id: 30,
+    transaction_number: 'WXY78901',
+    date: '2025-06-28T00:00:00.000Z',
+    description: 'Pharmacy Purchase',
+    memo: 'Medicines and health supplies',
+    memo_id: 130,
+    amount_debit: '-45.00',
+    amount_credit: '0.00',
+    balance: '11470.50',
+    check_number: undefined,
+    fees: undefined,
+    budget_category: 'Health & Fitness'
+  },
+  {
+    id: 31,
+    transaction_number: 'ZAB34567',
+    date: '2025-06-29T00:00:00.000Z',
+    description: 'Transfer to Savings',
+    memo: 'Weekly savings transfer',
+    memo_id: 131,
+    amount_debit: '-200.00',
+    amount_credit: '0.00',
+    balance: '11270.50',
+    check_number: undefined,
+    fees: undefined,
+    budget_category: 'Transfer'
+  },
+  {
+    id: 32,
+    transaction_number: 'CDE89012',
+    date: '2025-06-30T00:00:00.000Z',
+    description: 'Freelance Project Payment',
+    memo: 'Payment for freelance design work',
+    memo_id: 132,
+    amount_debit: '0.00',
+    amount_credit: '800.00',
+    balance: '12070.50',
+    check_number: undefined,
+    fees: undefined,
+    budget_category: 'Business Services'
   }
 
 

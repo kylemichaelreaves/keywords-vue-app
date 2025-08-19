@@ -5,7 +5,7 @@ import { staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
 import { waitForTableContent } from '@test/e2e/helpers/waitHelpers'
-import { setupAwsApiRequestLogging, setupApiRequestLogging } from '@test/e2e/helpers/requestLogger'
+import { setupApiRequestLogging, setupAwsApiRequestLogging } from '@test/e2e/helpers/requestLogger'
 
 const isCI = !!process.env.CI
 
@@ -13,98 +13,20 @@ test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
   test.beforeEach(async ({ page }) => {
+    transactionsPage = new TransactionsPage(page)
+    await transactionsPage.goto()
     // Log only AWS API requests
     setupAwsApiRequestLogging(page)
-
     // Add comprehensive debugging to track the loading flow
-    page.on('console', msg => {
-      if (msg.type() === 'log' || msg.type() === 'error' || msg.type() === 'warning') {
-        console.log(`[BROWSER ${msg.type().toUpperCase()}]:`, msg.text())
-      }
-    })
-
-    // Track all network requests to see what's happening
-    page.on('request', request => {
-      console.log(`[REQUEST]: ${request.method()} ${request.url()}`)
-    })
-
-    page.on('response', response => {
-      console.log(`[RESPONSE]: ${response.status()} ${response.url()}`)
-    })
-
     console.time('TransactionsTableTestSetup')
     // CRITICAL FIX: Set up API mocks FIRST before any navigation
-    await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions, staticDailyIntervals)
+    await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
     console.timeEnd('TransactionsTableTestSetup')
-
     // Initialize page object before navigation
-    transactionsPage = new TransactionsPage(page)
-
-    console.log('[DEBUG] About to navigate to transactions page...')
-
-    // CRITICAL FIX: Navigate with better error handling and longer timeout
-    try {
-      await page.goto('budget-visualizer/transactions', {
-        waitUntil: 'domcontentloaded',
-        timeout: isCI ? 90000 : 60000
-      })
-      console.log('[DEBUG] Navigation completed successfully')
-    } catch (navigationError) {
-      console.error('[DEBUG] Navigation failed, retrying:', navigationError)
-      // Retry navigation once
-      await page.waitForTimeout(1000)
-      await page.goto('budget-visualizer/transactions', {
-        waitUntil: 'domcontentloaded',
-        timeout: isCI ? 90000 : 60000
-      })
-      console.log('[DEBUG] Navigation retry completed')
-    }
-
-    // DEBUG: Check what elements are actually present on the page
-    console.log('[DEBUG] Checking page elements after navigation...')
-
-    // Check if the main app is loaded
-    const appElement = await page.locator('#app').count()
-    console.log(`[DEBUG] App element count: ${appElement}`)
-
-    // Check if we're on the right route
-    const currentUrl = page.url()
-    console.log(`[DEBUG] Current URL: ${currentUrl}`)
-
-    // Check for any error messages
-    const errorAlerts = await page.locator('[data-testid*="error"]').count()
-    console.log(`[DEBUG] Error alerts found: ${errorAlerts}`)
-
-    // Check if DailyIntervalLineChart is present
-    const chartElement = await page.locator('[data-testid="daily-interval-line-chart"]').count()
-    console.log(`[DEBUG] Chart element count: ${chartElement}`)
-
-    // Check if table element exists at all
-    const tableElement = await page.locator('[data-testid="transactions-table"]').count()
-    console.log(`[DEBUG] Table element count: ${tableElement}`)
-
-    // Check if table is visible
-    const tableVisible = await page.locator('[data-testid="transactions-table"]').isVisible().catch(() => false)
-    console.log(`[DEBUG] Table visible: ${tableVisible}`)
-
-    console.time('TransactionsPageLoad')
-
-    // Try to wait for any element to appear first
-    console.log('[DEBUG] Waiting for any table-related element...')
-    try {
-      await page.waitForSelector('[data-testid="transactions-table"], [data-testid="daily-interval-line-chart"], .el-table', {
-        timeout: 10000
-      })
-      console.log('[DEBUG] Found some table-related element')
-    } catch (error) {
-      console.log('[DEBUG] No table-related elements found within 10s')
-    }
-
     // Wait for both table and chart components to load properly with increased timeout
     await waitForTableContent(transactionsPage.transactionsTable, page, {
       timeout: isCI ? 120000 : 90000
     })
-    console.timeEnd('TransactionsPageLoad')
 
     // CRITICAL: Ensure chart is visible before proceeding with chart tests
     await expect(transactionsPage.intervalLineChart).toBeVisible({
@@ -112,7 +34,7 @@ test.describe('Transactions Table', () => {
     })
   })
 
-  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({page}) => {
+  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({ page }) => {
     // Log only API requests for this test
     setupApiRequestLogging(page)
 

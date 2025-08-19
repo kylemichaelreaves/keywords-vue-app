@@ -187,19 +187,7 @@ export const MOCK_PRESETS = {
  */
 export const setupMonthSummaryMocks = (page: Page) => setupTestMocks(page, MOCK_PRESETS.MONTH_SUMMARY)
 export const setupWeekSummaryMocks = (page: Page) => setupTestMocks(page, MOCK_PRESETS.WEEK_SUMMARY)
-export const setupTransactionsTableMocks = (page: Page) => setupTestMocks(page, MOCK_PRESETS.TRANSACTIONS_TABLE)
 export const setupMemosTableMocks = (page: Page) => setupTestMocks(page, MOCK_PRESETS.MEMOS_TABLE)
-
-/**
- * Legacy function for backward compatibility
- */
-export const setupTransactionsTableWithStaticMocks = (page: Page, staticTransactions: any[], staticIntervals: any[]) =>
-  setupTestMocks(page, {
-    basicTransactions: staticTransactions,
-    dailyIntervals: staticIntervals,
-    transactionSelects: true
-  })
-
 /**
  * Enhanced setup for TransactionsTable tests with comprehensive mocking
  * Simplified error handling and CI-specific configurations
