@@ -77,16 +77,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     })
   }
 
-  // SECURITY FIX: No hardcoded API URLs - must be provided via environment variable
-  const apiGatewayUrl = process.env.VITE_APIGATEWAY_URL
-
-  if (!apiGatewayUrl) {
-    throw new Error('VITE_APIGATEWAY_URL environment variable is required for API mocking')
-  }
-
-  console.log('[MOCK DEBUG] Using API Gateway URL:', apiGatewayUrl)
-
-  await page.route(`${apiGatewayUrl}/transactions**`, async (route: any) => {
+  await page.route(`dev/transactions**`, async (route: any) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
     const isDailyTotals = params.get('dailyTotals') === 'true'
