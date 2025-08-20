@@ -126,6 +126,8 @@ async function setupFeatureMocks(page: Page, config: TestMockOptions) {
  * Refactored to be less complex and more maintainable
  */
 export async function setupTestMocks(page: Page, options: TestMockOptions = {}) {
+  await page.unroute('**')
+
   const config = { ...DEFAULT_MOCK_OPTIONS, ...options }
 
   // Setup mocks in logical groups

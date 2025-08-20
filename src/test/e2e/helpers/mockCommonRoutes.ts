@@ -26,42 +26,41 @@ const isCI = !!process.env.CI
 export async function mockBasicTransactionRoutes(page: Page, staticData?: any[]) {
   const transactions = staticData || generateTransactionsArray(100)
 
-  // CRITICAL FIX: Use more specific API patterns to avoid intercepting page navigation
-  // Mock transactions with year timeframe
-  await page.route('**/api/**/transactions?limit=100&offset=0&timeFrame=year', route => {
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(transactions)
+  await Promise.all([
+    // CRITICAL FIX: Use more specific API patterns to avoid intercepting page navigation
+    // Mock transactions with year timeframe
+    await page.route('**/api/**/transactions?limit=100&offset=0&timeFrame=year', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(transactions)
+      })
+    }),
+    // Mock transaction count
+    await page.route('**/api/**/transactions?count=true', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ count: 200 })
+      })
+    }),
+    // mock **/transactions?limit=100&offset=0&timeFrame=day&date=
+    await page.route('**/api/**/transactions?limit=100&offset=0&timeFrame=day&date=*', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(transactions)
+      })
+    }),
+    //   transactions?limit=100&offset=0&timeFrame=year&date=
+    await page.route('**/api/**/transactions?limit=100&offset=0&timeFrame=year&date=', route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(transactions)
+      })
     })
-  })
-
-  // Mock transaction count
-  await page.route('**/api/**/transactions?count=true', route => {
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ count: 200 })
-    })
-  })
-
-  // mock **/transactions?limit=100&offset=0&timeFrame=day&date=
-  await page.route('**/api/**/transactions?limit=100&offset=0&timeFrame=day&date=*', route => {
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(transactions)
-    })
-  })
-
-  //   transactions?limit=100&offset=0&timeFrame=year&date=
-  await page.route('**/api/**/transactions?limit=100&offset=0&timeFrame=year&date=', route => {
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(transactions)
-    })
-  })
+  ])
 }
 
 /**
