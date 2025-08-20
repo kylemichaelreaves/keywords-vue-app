@@ -243,9 +243,6 @@ export type Summaries = {
 };
 
 
-export type TimeframeType = 'day' | 'week' | 'month' | 'year';
-
-
 export enum Timeframe {
   Day = 'day',
   Month = 'month',
@@ -296,7 +293,7 @@ export interface TransactionQueryParams {
   offset?: number;
   limit?: number;
   memo?: Memo['name'];
-  timeFrame?: TimeframeType;
+  timeFrame?: Timeframe;
   oldestDate?: boolean;
   count?: boolean;
   budgetCategory?: BudgetCategory['name'];
@@ -332,29 +329,6 @@ export interface Year {
   year: string;
 }
 
-export interface BudgetCategoryHierarchySummaryResponse {
-  category_id: number;
-  category_name: string;
-  full_path: string;
-  level: number;
-  parent_id: number | null;
-  source_id: number;
-  total_amount_debit: number;
-}
-
-export interface CategoryObject {
-  category_id: number
-  category_name: string
-  full_path: string
-  level: number
-  parent_id: number | null
-  source_id: number
-}
-
-export interface BudgetCategorySummary extends CategoryObject {
-  budget_category: string
-  total_amount_debit: number
-}
 
 export interface MockMemoOptions {
   id?: number
@@ -368,7 +342,7 @@ export interface MockMemoOptions {
 }
 
 export interface BudgetCategoryHierarchyOptions {
-  timeFrame: 'week' | 'month' | 'day'
+  timeFrame: Timeframe
   includeChildren?: boolean
   maxParentCategories?: number
   sourceId?: number
