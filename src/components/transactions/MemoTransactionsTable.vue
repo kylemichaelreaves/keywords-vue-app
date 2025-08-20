@@ -1,49 +1,51 @@
 <template>
-  <AlertComponent
-    v-if="isError && error"
-    :title="error.name"
-    :message="error?.message || 'An error occurred while fetching memo transactions.'"
-    type="error"
-    data-testid="memo-summary-transactions-error"
-  />
-  <el-table
-    v-loading="isLoadingCondition"
-    v-if="data"
-    :data="data"
-    :data-testid="props.dataTestId"
-    row-key="transaction_number"
-  >
-    <el-table-column
-      v-for="(column, columnIndex) in filteredColumns"
-      :key="column.prop"
-      :prop="column.prop"
-      :label="column.label"
-      :data-testid="`column-${column.prop}`"
+  <div>
+    <AlertComponent
+      v-if="isError && error"
+      :title="error.name"
+      :message="error?.message || 'An error occurred while fetching memo transactions.'"
+      type="error"
+      data-testid="memo-summary-transactions-error"
+    />
+    <el-table
+      v-loading="isLoadingCondition"
+      v-if="data"
+      :data="data"
+      :data-testid="props.dataTestId"
+      row-key="transaction_number"
     >
-      <template #header>
-        <span :data-testid="`header-${column.prop}`">{{ column.label }}</span>
-      </template>
+      <el-table-column
+        v-for="(column, columnIndex) in filteredColumns"
+        :key="column.prop"
+        :prop="column.prop"
+        :label="column.label"
+        :data-testid="`column-${column.prop}`"
+      >
+        <template #header>
+          <span :data-testid="`header-${column.prop}`">{{ column.label }}</span>
+        </template>
 
-      <template v-slot:default="scope">
-        <div
-          :data-testid="`cell-${scope.$index}-${columnIndex}`"
-          :data-row-id="scope.row.transaction_number"
-          :data-column="column.prop"
-          :data-row-index="scope.$index"
-          :data-column-index="columnIndex"
-          :data-memo-name="props.memoName"
-          :data-transaction-number="scope.row.transaction_number"
-        >
-          <span>{{ scope.row[column.prop] }}</span>
-        </div>
-      </template>
-    </el-table-column>
-  </el-table>
+        <template v-slot:default="scope">
+          <div
+            :data-testid="`cell-${scope.$index}-${columnIndex}`"
+            :data-row-id="scope.row.transaction_number"
+            :data-column="column.prop"
+            :data-row-index="scope.$index"
+            :data-column-index="columnIndex"
+            :data-memo-name="props.memoName"
+            :data-transaction-number="scope.row.transaction_number"
+          >
+            <span>{{ scope.row[column.prop] }}</span>
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 
 <script setup lang="ts">
 import useMemoTransactions from '@api/hooks/transactions/useMemoTransactions'
-import { type PropType, computed } from 'vue'
+import { computed, type PropType } from 'vue'
 import type { Memo } from '@types'
 import { ElTableColumn } from 'element-plus'
 import AlertComponent from '@components/shared/AlertComponent.vue'

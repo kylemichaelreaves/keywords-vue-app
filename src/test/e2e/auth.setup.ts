@@ -7,6 +7,9 @@ import type { User } from '@types'
 
 dotenv.config()
 
+const isCI = !!process.env.CI
+const baseURL = isCI ? 'http://localhost:4173' : 'http://localhost:5173'
+
 setup('authenticate', async ({ page }) => {
   const __filename = fileURLToPath(import.meta.url)
   const __dirnameESM = dirname(__filename)
@@ -37,6 +40,7 @@ setup('authenticate', async ({ page }) => {
 
     console.log('Username exists:', !!userName)
     console.log('Password exists:', !!password)
+    console.log('Auth setup using base URL:', baseURL)
 
     await page.goto('/login')
     await page.getByRole('textbox', { name: '* Username' }).fill(userName || '')
@@ -67,7 +71,7 @@ setup('authenticate', async ({ page }) => {
       cookies: [],
       origins: [
         {
-          origin: 'http://localhost:5173',
+          origin: baseURL, // Use environment-specific base URL
           localStorage: [
             { name: 'token', value: token },
             { name: 'user', value: JSON.stringify(testUser) }
@@ -77,7 +81,7 @@ setup('authenticate', async ({ page }) => {
     }
 
     fs.writeFileSync(authFile, JSON.stringify(minimalAuthState, null, 2))
-    console.log('Fallback auth file created directly')
+    console.log('Fallback auth file created directly for:', baseURL)
   }
 
   // Verify the auth file exists

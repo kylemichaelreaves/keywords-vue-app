@@ -15,13 +15,13 @@
     <MemoEditModal ref="memoEditModal" :memo-name="selectedMemoName" />
 
     <el-row :gutter="5">
-      <el-col :span="14">
+      <el-col :span="10">
         <div @contextmenu.prevent>
           <el-table
             v-if='data'
             :data="data"
             table-layout="auto"
-            size="large"
+            size="default"
             v-loading="isLoadingCondition"
             layout="auto"
             show-summary
@@ -35,7 +35,7 @@
               :label="column.label"
             >
               <template v-if="column.prop === 'memo'" v-slot="scope">
-                <router-link :to="{ name: 'memo', params: { memoName: scope.row[column.prop] }}">
+                <router-link :to="{ name: 'memo-summary', params: { memoName: scope.row[column.prop] }}">
                   {{ scope.row.memo }}
                 </router-link>
               </template>
@@ -46,16 +46,13 @@
           </el-table>
         </div>
       </el-col>
-      <el-col :span="10">
+      <el-col :span="14">
         <BudgetCategorySummaries
           :data-testid="'budget-category-summaries-for-week'"
           :date="selectedWeek"
           time-frame="week"
         />
       </el-col>
-    </el-row>
-    <el-row>
-      <DaySummariesForSelectedWeekTable />
     </el-row>
   </el-card>
 </template>
@@ -68,7 +65,6 @@ import useWeekSummary from '@api/hooks/transactions/useWeekSummary'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import { router } from '@router'
 import BudgetCategorySummaries from '@components/transactions/BudgetCategorySummaries.vue'
-import DaySummariesForSelectedWeekTable from '@components/transactions/DaySummariesForSelectedWeekTable.vue'
 import WeekSummaryHeader from './WeekSummaryHeader.vue'
 import MemoEditModal from '@components/transactions/MemoEditModal.vue'
 
@@ -89,14 +85,19 @@ const isLoadingCondition = computed(() => isFetching.value || isLoading.value ||
 
 const weeks = computed(() => store.getWeeks)
 
-const firstWeek = weeks.value[0].week_year
-const lastWeek = weeks.value[weeks.value.length - 1].week_year
-
+// first, meaning: the most recent week
 const isFirstWeek = computed(() => {
+  const currentWeeks = weeks.value
+  if (!currentWeeks.length || !selectedWeek.value) return false
+  const firstWeek = currentWeeks[0]?.week_year
   return firstWeek === selectedWeek.value
 })
 
+// last, meaning: the oldest week
 const isLastWeek = computed(() => {
+  const currentWeeks = weeks.value
+  if (!currentWeeks.length || !selectedWeek.value) return false
+  const lastWeek = currentWeeks[currentWeeks.length - 1]?.week_year
   return lastWeek === selectedWeek.value
 })
 
@@ -141,13 +142,15 @@ watch(() => store.selectedWeek, () => {
   refetch()
 })
 
+const openMemoEditModal = (row: WeekSummaryRow) => {
+  console.log('WeekSummaryTable: Opening memo edit modal for:', row.memo)
+  selectedMemoName.value = row.memo
+  console.log('WeekSummaryTable: selectedMemoName set to:', selectedMemoName.value)
+  memoEditModal.value?.openModal()
+}
+
 onUnmounted(() => {
   store.setDaysForSelectedWeek([])
 })
-
-const openMemoEditModal = (row: WeekSummaryRow) => {
-  selectedMemoName.value = row.memo
-  memoEditModal.value?.openModal()
-}
 
 </script>

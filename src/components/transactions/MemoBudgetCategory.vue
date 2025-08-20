@@ -1,67 +1,68 @@
 <template>
-  <AlertComponent
-    v-if="error && isError"
-    :title="error.name"
-    :message="error.message"
-    type="error"
-    data-testid="memo-budget-category-error"
-  />
-  <el-col
-    class="category-wrapper"
-    data-testid="budget-category-column"
-    :data-memo-name="props.memoName"
-    :data-has-category="!!budgetCategory"
-    :data-budget-category="budgetCategory || ''"
-    :data-loading="isLoading || isFetching || isRefetching"
-  >
-    <el-text
-      tag="u"
-      size="large"
-      data-testid="budget-category-label"
-    >
-      Budget Category:
-    </el-text>
-
-    <el-tag
-      v-if="budgetCategory"
-      class="category-tag"
-      size="large"
-      effect="dark"
-      round
-      data-testid="budget-category-tag"
+  <div :data-testid="props.dataTestId">
+    <AlertComponent
+      v-if="error && isError"
+      :title="error.name"
+      :message="error.message"
+      type="error"
+      data-testid="memo-budget-category-error"
+    />
+    <el-col
+      class="category-wrapper"
+      data-testid="budget-category-column"
       :data-memo-name="props.memoName"
-      :data-category-value="budgetCategory"
+      :data-has-category="!!budgetCategory"
+      :data-budget-category="budgetCategory || ''"
+      :data-loading="isLoading || isFetching || isRefetching"
     >
-      {{ budgetCategory }}
-    </el-tag>
+      <el-text
+        tag="u"
+        size="large"
+        data-testid="budget-category-label"
+      >
+        Budget Category:
+      </el-text>
 
-    <el-button
-      v-else-if="buttonCondition"
-      class="category-tag"
-      size="large"
-      round
-      type="danger"
-      effect="dark"
-      @click="openModal"
-      data-testid="budget-category-button"
+      <el-tag
+        v-if="budgetCategory"
+        class="category-tag"
+        size="large"
+        effect="dark"
+        round
+        data-testid="budget-category-tag"
+        :data-memo-name="props.memoName"
+        :data-category-value="budgetCategory"
+      >
+        {{ budgetCategory }}
+      </el-tag>
+
+      <el-button
+        v-else-if="buttonCondition"
+        class="category-tag"
+        size="large"
+        round
+        type="danger"
+        effect="dark"
+        @click="openModal"
+        data-testid="budget-category-button"
+        :data-memo-name="props.memoName"
+        :data-action="'assign-category'"
+      >
+        No Budget Category Assigned
+      </el-button>
+    </el-col>
+
+    <BudgetCategoryModal
+      v-model:visible="isModalVisible"
+      v-model:selectedBudgetCategory="selectedBudgetCategory"
+      :memo="memoObject || props.memoName"
+      @categoryUpdated="onCategoryUpdated"
+      @memoUpdated="onMemoUpdated"
+      data-testid="budget-category-modal"
       :data-memo-name="props.memoName"
-      :data-action="'assign-category'"
-    >
-      No Budget Category Assigned
-    </el-button>
-  </el-col>
-
-  <BudgetCategoryModal
-    v-if="isModalVisible"
-    :memo="props.memoName"
-    :isVisible="isModalVisible"
-    :selectedBudgetCategory="budgetCategory || ''"
-    @update:isVisible="closeModal"
-    @categoryUpdated="onCategoryUpdated"
-    data-testid="budget-category-modal"
-    :data-memo-name="props.memoName"
-    :data-selected-category="budgetCategory || ''"
-  />
+      :data-selected-category="selectedBudgetCategory"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -82,32 +83,49 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['memoUpdated'])
+
 const { data, isLoading, isError, refetch, isRefetching, isFetching, error } = useMemo(props.memoName)
 
 const isModalVisible = ref(false)
 
-const openModal = () => {
-  isModalVisible.value = true
-}
-
-const closeModal = () => {
-  isModalVisible.value = false
-}
-
-const onCategoryUpdated = () => {
-  refetch()
-  closeModal()
-}
+const selectedBudgetCategory = ref('')
 
 const budgetCategory = computed(() => {
-  const budgetData = data?.value as Memo[] | undefined
-  return budgetData ? budgetData[0]?.budget_category : null
+  // useMemo returns a single Memo object, not an array
+  const memo = data?.value as Memo | undefined
+  return memo?.budget_category || null
+})
+
+const memoObject = computed(() => {
+  // useMemo returns a single Memo object, not an array
+  return data?.value as Memo | undefined || null
 })
 
 const buttonCondition = computed(() => {
   return !budgetCategory.value && !isFetching.value && !isLoading.value && !isRefetching.value
 })
 
+// Sync selected category with current budget category when modal opens
+watch(isModalVisible, (newValue) => {
+  if (newValue) {
+    selectedBudgetCategory.value = budgetCategory.value || ''
+  }
+})
+
+const openModal = () => {
+  isModalVisible.value = true
+}
+
+const onCategoryUpdated = () => {
+  refetch()
+}
+
+const onMemoUpdated = (memoName: string) => {
+  emit('memoUpdated', memoName)
+}
+
+// Close modal on prop change
 watch(() => props.memoName, () => {
   refetch()
 })

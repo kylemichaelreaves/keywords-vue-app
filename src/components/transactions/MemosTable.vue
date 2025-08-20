@@ -8,8 +8,7 @@
       Along with the total Amount Debit and Budget Category, if there is one assigned to it
     </el-text>
 
-    <MemoEditModal ref="memoEditModal" :memo-name="selectedMemoName" />
-
+    <MemoEditModal ref="memoEditModal" :memo="selectedMemo" />
     <div @contextmenu.prevent>
       <el-table
         v-if="paginatedData"
@@ -44,7 +43,7 @@
             >
               <router-link
                 v-if="column.prop === 'name'"
-                :to="{ name: 'memo', params: { memoName: scope.row[column.prop] } }"
+                :to="{ name: 'memo-summary', params: { memoName: scope.row[column.prop] } }"
                 :data-testid="`memo-link-${scope.row.id}`"
               >
                 {{ scope.row[column.prop] }}
@@ -55,29 +54,72 @@
         </el-table-column>
       </el-table>
     </div>
+    <div v-if="isLoadingCondition" class="loading-container" data-testid="memos-table-loading">
+      <el-skeleton :rows="10" animated>
+        <template #template>
+          <el-skeleton-item variant="h3" style="width: 200px; margin-bottom: 20px;" />
+          <div v-for="i in 8" :key="i" class="skeleton-row">
+            <el-skeleton-item
+              v-for="(width, index) in skeletonWidths"
+              :key="index"
+              variant="text"
+              :style="`width: ${width}px;`"
+            />
+          </div>
+        </template>
+      </el-skeleton>
+    </div>
     <MemosTablePagination />
   </el-card>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import useMemos from '@api/hooks/transactions/useMemos'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import MemosTablePagination from '@components/transactions/MemosTablePagination.vue'
 import MemoEditModal from '@components/transactions/MemoEditModal.vue'
-import { useTransactionsStore } from '@stores/transactions'
 import { useRoute, useRouter } from 'vue-router'
 import type { Memo } from '@types'
 
-const store = useTransactionsStore()
 const router = useRouter()
 const route = useRoute()
 
-// Track if we're updating from URL to prevent loops
-let updatingFromURL = false
-
 const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
-const selectedMemoName = ref<string>('')
+const selectedMemo = ref<Memo | undefined>(undefined)
+
+const skeletonWidths = [100, 150, 200, 120, 180, 160, 140, 130]
+
+// URL-driven pagination state
+const currentPage = computed({
+  get: () => parseInt(route.query.page as string) || 1,
+  set: (value: number) => {
+    const query = { ...route.query }
+    if (value === 1) {
+      delete query.page
+    } else {
+      query.page = value.toString()
+    }
+    router.replace({ query })
+  }
+})
+
+const pageLimit = computed({
+  get: () => parseInt(route.query.limit as string) || 100,
+  set: (value: number) => {
+    const query = { ...route.query }
+    if (value === 100) {
+      delete query.limit
+    } else {
+      query.limit = value.toString()
+    }
+    // Reset to page 1 when changing limit
+    delete query.page
+    router.replace({ query })
+  }
+})
+
+const offset = computed(() => (currentPage.value - 1) * pageLimit.value)
 
 const {
   data,
@@ -92,8 +134,7 @@ const {
   hasNextPage
 } = useMemos()
 
-
-const isLoadingCondition = computed(() => 
+const isLoadingCondition = computed(() =>
   isLoading.value ||
   isFetching.value ||
   isRefetching.value ||
@@ -105,82 +146,23 @@ const flattenedData = computed(() => {
   return data?.value?.pages.flat() ?? []
 })
 
-const currentPage = computed({
-  get: () => Math.floor(store.memosTableOffset / store.memosTableLimit) + 1,
-  set: (val: number) => {
-    store.setMemosTableOffset((val - 1) * store.memosTableLimit)
-  }
-})
-
-const LIMIT = computed(() => store.memosTableLimit)
-
-
 const paginatedData = computed(() => {
-  const start = (currentPage.value - 1) * LIMIT.value
-  const end = start + LIMIT.value
+  const start = offset.value
+  const end = start + pageLimit.value
   return flattenedData.value.slice(start, end)
 })
 
-
 const loadMorePagesIfNeeded = async () => {
-  const requiredDataCount = currentPage.value * LIMIT.value
+  const requiredDataCount = currentPage.value * pageLimit.value
   while (flattenedData.value.length < requiredDataCount && hasNextPage.value) {
     await fetchNextPage()
   }
 }
 
-watch(currentPage, () => {
+// Auto-load more data when pagination changes
+watch([currentPage, pageLimit], () => {
   loadMorePagesIfNeeded()
-})
-
-// URL Sync Logic
-const updateURL = () => {
-  if (updatingFromURL) return
-
-  const query: Record<string, string> = {}
-
-  // Only add page if not page 1
-  if (currentPage.value > 1) {
-    query.page = currentPage.value.toString()
-  }
-
-  // Only add limit if different from default
-  if (LIMIT.value !== 100) {
-    query.limit = LIMIT.value.toString()
-  }
-
-  router.replace({
-    name: route.name,
-    params: route.params,
-    query: Object.keys(query).length > 0 ? query : undefined
-  })
-}
-
-// Watch for pagination changes and update URL
-watch([currentPage, LIMIT], () => {
-  updateURL()
-}, { flush: 'post' })
-
-// Initialize from URL on mount
-onMounted(() => {
-  updatingFromURL = true
-
-  const urlPage = parseInt(route.query.page as string) || 1
-  const urlLimit = parseInt(route.query.limit as string) || store.memosTableLimit
-
-  // Update store if URL has different values
-  if (urlLimit !== store.memosTableLimit) {
-    store.setMemosTableLimit(urlLimit)
-  }
-
-  if (urlPage !== currentPage.value) {
-    store.setMemosTableOffset((urlPage - 1) * urlLimit)
-  }
-
-  nextTick(() => {
-    updatingFromURL = false
-  })
-})
+}, { immediate: true })
 
 const memoColumns = [
   { prop: 'id', label: 'Id', sortable: true },
@@ -194,7 +176,14 @@ const memoColumns = [
 ]
 
 const openMemoEditModal = (row: Memo) => {
-  selectedMemoName.value = row.name // Changed from row.memo.name to row.name
+  selectedMemo.value = row
   memoEditModal.value?.openModal()
 }
+
+// Expose pagination controls for child components
+defineExpose({
+  currentPage,
+  pageLimit,
+  totalPages: computed(() => Math.ceil(flattenedData.value.length / pageLimit.value))
+})
 </script>

@@ -5,6 +5,8 @@ export class MemoSummaryTablePage {
 
   readonly errorAlert: Locator
   readonly memoSummaryTable: Locator
+  readonly memoSummaryHeader: Locator
+  readonly memoSummaryCard: Locator
   readonly memoTransactionsTable: Locator
   readonly transactionsCount: Locator
   readonly transactionsAmount: Locator
@@ -17,13 +19,16 @@ export class MemoSummaryTablePage {
     this.page = page
 
     this.errorAlert = page.getByRole('alert').getByTestId('memo-summary-table-error')
+    this.memoSummaryHeader = page.getByTestId('memo-summary-header')
+    this.memoSummaryCard = page.getByTestId('memo-summary-card')
     this.memoSummaryTable = page.getByTestId('memo-summary-table')
     this.memoTransactionsTable = page.getByTestId('memo-transactions-table')
     this.transactionsCount = page.getByTestId('transactions-count')
     this.transactionsAmount = page.getByTestId('sum-amount-debit')
     this.backButton = page.getByRole('button', { name: 'Go Back' })
-    this.memoTitle = page.getByTestId('memo-title')
-    this.budgetCategoryButton = page.getByTestId('budget-category-button')
+    this.memoTitle = this.memoSummaryHeader.getByTestId('memo-title')
+    // Fix: Target the specific button within the budget category column
+    this.budgetCategoryButton = page.getByTestId('budget-category-column').getByTestId('budget-category-button')
     this.budgetCategoryModal = page.getByTestId('budget-category-modal')
 
   }
@@ -39,9 +44,9 @@ export class MemoSummaryTablePage {
 
 
   async expectError(message?: string) {
-    await expect(this.errorAlert.isVisible())
+    expect(this.errorAlert.isVisible())
     if (message) {
-      await expect(this.errorAlert).toHaveAttribute('title', message)
+    expect(this.errorAlert).toHaveAttribute('title', message)
     }
   }
 
@@ -62,6 +67,10 @@ export class MemoSummaryTablePage {
 
   expectSummaryTableVisible() {
     return this.memoSummaryTable.isVisible()
+  }
+
+  expectMemoSummaryCardVisible() {
+    return this.memoSummaryCard.isVisible()
   }
 
   async hasError() {

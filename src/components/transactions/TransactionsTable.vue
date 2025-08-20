@@ -30,11 +30,19 @@
   </el-dialog>
 
   <div @contextmenu.prevent>
+    <!-- Show skeleton when loading -->
+    <TableSkeleton
+      v-if="isLoadingCondition"
+      :columns="transactionColumns"
+      :rows="LIMIT"
+      data-testid="transactions-table-skeleton"
+    />
+
+    <!-- Show actual table when not loading -->
     <el-table
+      v-else-if="flattenedData && flattenedData.length >= 0"
       data-testid="transactions-table"
       :row-key="getRowKey"
-      v-if="flattenedData"
-      v-loading="isLoadingCondition"
       :data="paginatedData"
       height="auto"
       size="small"
@@ -54,9 +62,9 @@
         width="auto"
       >
         <template v-slot:default="scope">
-          <template v-if="column.prop === 'transaction_number'">
+          <template v-if="column.prop === 'id'">
             <router-link
-              :to="{name: 'transaction', params: {transactionNumber: scope.row[column.prop]}}"
+              :to="{name: 'transaction-edit', params: {transactionId: scope.row[column.prop]}}"
               :data-testid="`transaction-link-${scope.row[column.prop]}`"
             >
               {{ scope.row[column.prop] }}
@@ -96,6 +104,7 @@ import DailyIntervalLineChart from '@components/transactions/DailyIntervalLineCh
 import TransactionTablePagination from '@components/transactions/TransactionsTablePagination.vue'
 import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
 import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
+import TableSkeleton from '@components/shared/TableSkeleton.vue'
 import useURLSync from '@composables/useURLSync.ts'
 
 
@@ -107,7 +116,12 @@ const selectedDay = computed(() => store.getSelectedDay)
 
 const firstDay = computed(() => {
   const days = store.getDays
-  return days.length > 0 ? days[0].day : ''
+  if (days.length > 0) {
+    return days[0].day
+  }
+  const now = new Date()
+  const lastDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0)
+  return lastDayOfPreviousMonth.toISOString().split('T')[0]
 })
 
 const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())

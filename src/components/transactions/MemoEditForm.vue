@@ -6,14 +6,14 @@
         v-for="(field, key) in fields"
         :key="key"
         :label="field.label"
-        :data-testid="`${dataTestId}-${key}-form-item`"
+        :data-testid="`${props.dataTestId}-${key}-form-item`"
       >
         <component
           :is="field.component"
           v-model="formData[key]"
           :placeholder="field.placeholder"
           :disabled="field.disabledCondition ? field.disabledCondition : false"
-          :data-testid="field.dataTestId || `${dataTestId}-${key}`"
+          :data-testid="field.dataTestId || `${props.dataTestId}-${key}`"
         >
           <template v-if="field.component === 'el-select'">
             <el-option
@@ -21,7 +21,7 @@
               :key="option.value"
               :value="option.value"
               :label="option.label"
-              :data-testid="`${dataTestId}-${key}-option-${option.value}`"
+              :data-testid="`${props.dataTestId}-${key}-option-${option.value}`"
             />
           </template>
         </component>
@@ -29,7 +29,7 @@
       <el-button
         type="primary"
         @click="saveMemo"
-        :data-testid="`${dataTestId}-save-button`"
+        :data-testid="`${props.dataTestId}-save-button`"
         :loading="isPending"
         :disabled="isPending"
       >
@@ -43,6 +43,7 @@
 import type { PropType } from 'vue'
 import { defineProps, reactive, watch, computed } from 'vue'
 import { ElMessage, ElOption } from 'element-plus'
+import { useQueryClient } from '@tanstack/vue-query'
 import type { Memo, MemoFormFields, MemoKeys } from '@types'
 import mutateMemo from '@api/hooks/transactions/mutateMemo'
 import BudgetCategoryTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
@@ -60,20 +61,22 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['close', 'updated'])
+
 const formData = reactive<Memo>({
   id: props.memo.id || 0,
   name: props.memo.name || '',
   recurring: props.memo.recurring || false,
   necessary: props.memo.necessary || false,
-  frequency: props.memo.frequency || null,
+  frequency: props.memo.frequency,
   budget_category: props.memo.budget_category || null,
   ambiguous: props.memo.ambiguous || false,
-  avatar_s3_url: props.memo.avatar_s3_url || null
+  avatar_s3_url: props.memo.avatar_s3_url
 })
 
 const { mutate, error, isError, isPending } = mutateMemo()
+const queryClient = useQueryClient()
 
-// Watch for changes to the memo prop and update the reactive form data
 watch(
   () => props.memo,
   (newMemo) => {
@@ -87,7 +90,6 @@ watch(
   }
 )
 
-// Extended fields configuration with optional custom test IDs
 const fields: Record<MemoKeys, MemoFormFields> = {
   avatar_s3_url: {
     component: MemoAvatar,
@@ -145,6 +147,15 @@ const saveMemo = () => {
     {
       onSuccess: () => {
         ElMessage.success('Memo updated successfully.')
+
+        queryClient.invalidateQueries({ queryKey: ['budget-category-summary'] })
+        queryClient.invalidateQueries({ queryKey: ['budget-category-amount-debit'] })
+        queryClient.invalidateQueries({ queryKey: ['month-summary'] })
+        queryClient.invalidateQueries({ queryKey: ['week-summary'] })
+        queryClient.invalidateQueries({ queryKey: ['memo', formData.name] })
+
+        emit('updated', formData)
+        emit('close')
       },
       onError: (error) => {
         ElMessage.error(`An error occurred while updating the memo: ${error.message}`)

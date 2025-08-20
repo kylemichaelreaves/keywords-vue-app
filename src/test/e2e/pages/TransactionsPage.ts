@@ -44,7 +44,7 @@ export class TransactionsPage {
     this.memoSelect = this.page.getByTestId('transactions-table-memo-select')
 
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
-    this.intervalForm = this.page.getByTestId('interval-form')
+    this.intervalForm = this.page.getByTestId('daily-interval-line-chart-form')
     this.intervalTypeSelect = this.page.getByText('Interval Type')
     this.intervalNumberInput = this.page.getByText('Interval Count')
     this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')
@@ -69,7 +69,7 @@ export class TransactionsPage {
   }
 
   async goto() {
-    await this.page.goto('budget-visualizer/transactions')
+    await this.page.goto('/budget-visualizer/transactions')
   }
 
   async goTo() {
@@ -78,6 +78,7 @@ export class TransactionsPage {
 
   async selectFirstMonth(): Promise<string> {
     await this.monthSelect.click()
+    await this.page.getByRole('option').first().waitFor({ state: 'visible' })
     const firstMonth = await this.page.getByRole('option').first().textContent() ?? ''
     const firstOption = this.page.getByRole('option', { name: firstMonth }).first()
     await firstOption.click()
@@ -86,15 +87,10 @@ export class TransactionsPage {
 
   async selectFirstWeek(): Promise<string> {
     await this.weekSelect.click()
-    // wait for the week select options to be visible
     await this.page.getByRole('option').first().waitFor({ state: 'visible' })
-
-    // get the text content of the first option
     const firstWeekText = await this.page.getByRole('option').first().textContent() ?? ''
     const firstOption = this.page.getByRole('option', { name: firstWeekText }).first()
     await firstOption.click()
-    // a petite wait
-    await this.page.waitForLoadState('networkidle')
     return firstWeekText
   }
 

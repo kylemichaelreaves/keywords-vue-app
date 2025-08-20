@@ -54,5 +54,3 @@ const clearSelectedYear = () => {
 </script>
 
 
-<style scoped>
-</style>

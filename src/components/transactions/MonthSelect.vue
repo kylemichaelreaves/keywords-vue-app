@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :data-testid="props.dataTestId">
     <AlertComponent
       :title="error.name"
       :message="error.message"
@@ -7,7 +7,6 @@
       :data-testid="errorId"
     />
     <SelectComponent
-      :data-testid="props.dataTestId"
       :options="monthOptions"
       :selectedValue="store.selectedMonth"
       placeholder="select a month"
@@ -53,7 +52,6 @@ const monthOptions = computed(() => {
 })
 
 const updateSelectedMonth = (month: string) => {
-  // set the limit to 0, to return all of the months data
   store.setTransactionsTableLimit(200)
   store.setSelectedMonth(month)
   router.push(`/budget-visualizer/transactions/months/${month}/summary`)

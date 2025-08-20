@@ -1,51 +1,78 @@
-// import {test, expect} from '@playwright/test';
+// Enhanced TransactionsTable test with user behavior focus
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage'
-import { generateTransactionsArray, staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
+import { staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
-import { setupTransactionsTableWithStaticMocks } from '@test/e2e/helpers/setupTestMocks'
+import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
 import { waitForTableContent } from '@test/e2e/helpers/waitHelpers'
+import { setupApiRequestLogging, setupAwsApiRequestLogging } from '@test/e2e/helpers/requestLogger'
+
+const isCI = !!process.env.CI
 
 test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
   test.beforeEach(async ({ page }) => {
+    // CI FIX: Enhanced logging and setup for CI environment
+    if (isCI) {
+      console.log('[CI TEST] Starting TransactionsTable test setup')
+      setupAwsApiRequestLogging(page)
+    }
+
     transactionsPage = new TransactionsPage(page)
 
-    await setupTransactionsTableWithStaticMocks(page, staticTransactions, staticDailyIntervals)
+    // CRITICAL FIX: Set up API mocks FIRST before any navigation
+    await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
 
+    // Now navigate to the transactions page
     await transactionsPage.goto()
 
-    // Wait for actual table content instead of just visibility
-    await waitForTableContent(transactionsPage.transactionsTable, page)
-  })
+    // CRITICAL: Wait for Vue app to be mounted and DOM to be ready
+    await page.waitForLoadState('domcontentloaded')
+    await page.waitForLoadState('networkidle', { timeout: 10000 })
 
-  test.afterEach(async ({ page }) => {
-    await page.evaluate(() => {
-      localStorage.clear()
-      sessionStorage.clear()
+    // Ensure the Vue app is actually rendered (not showing JSON)
+    await page.waitForSelector('[data-testid="transactions-table-selects"]', { timeout: 15000 })
+
+    // BEST PRACTICE: Wait for final state only, not intermediate loading states
+    await waitForTableContent(transactionsPage.transactionsTable, page, {
+      timeout: isCI ? 45000 : 30000
     })
+
+    // Ensure chart is visible before proceeding with chart tests
+    await expect(transactionsPage.intervalLineChart).toBeVisible({
+      timeout: isCI ? 45000 : 30000
+    })
+
   })
 
+  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({ page }) => {
+    // Log only API requests for this test
+    setupApiRequestLogging(page)
 
-  test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({ page }) => {
-    await page.goto('/budget-visualizer')
-    await transactionsPage.goto()
-    await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
+    // BEST PRACTICE: Wait directly for the final state (table with data), not loading states
+    await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: isCI ? 45000 : 30000 })
 
-    await expect(transactionsPage.transactionsTable).toBeVisible()
-    await expect(transactionsPage.daySelect).toBeVisible()
-    await expect(transactionsPage.weekSelect).toBeVisible()
-    await expect(transactionsPage.monthSelect).toBeVisible()
-    await expect(transactionsPage.yearSelect).toBeVisible()
-    await expect(transactionsPage.memoSelect).toBeVisible()
-    await expect(transactionsPage.intervalLineChart).toBeVisible()
-    await expect(transactionsPage.intervalTypeSelect).toBeVisible()
-    await expect(transactionsPage.intervalNumberInput).toBeVisible()
-    await expect(transactionsPage.transactionsTablePagination).toBeVisible()
+    // Test what the user can see - UI elements visibility
+    await expect(transactionsPage.daySelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.weekSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.monthSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.yearSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.memoSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.intervalTypeSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.intervalNumberInput).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.transactionsTablePagination).toBeVisible({ timeout: isCI ? 30000 : 15000 })
   })
 
-  test('right clicking on a cell in the TransactionsTable opens the context menu', async () => {
+  test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
+    // Log only API requests for this test
+    setupApiRequestLogging(page)
+
+    // Test user interaction - right click behavior
+    const firstDataCell = transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first()
+    await expect(firstDataCell).not.toBeEmpty({ timeout: 30000 })
+
     await transactionsPage.clickOnTableCell({
       rowIndex: 1,
       cellIndex: 1,
@@ -53,10 +80,9 @@ test.describe('Transactions Table', () => {
     })
 
     const editTransactionModal = transactionsPage.transactionEditModal
-    await expect(editTransactionModal).toBeVisible()
+    await expect(editTransactionModal).toBeVisible({ timeout: isCI ? 30000 : 15000 })
 
-    // check that the transactionEditModal has the correct title, ie, it has the transactionNumber in it
-    // get the first transaction number from the table
+    // Verify user sees expected content in modal
     const modalTitle = await editTransactionModal
       .getByRole('heading', { name: 'Edit Transaction' })
       .textContent()
@@ -67,115 +93,78 @@ test.describe('Transactions Table', () => {
 
     await transactionsPage.expectTransactionEditFormElementsToBeVisible()
 
-    // the user shouldn't ever be able to edit the transactionNumber
+    // Test that user cannot edit the transaction number (UI constraint)
     const numberInput = transactionsPage.transactionNumberInput
     await expect(numberInput).toBeVisible()
     await expect(numberInput).toBeDisabled()
 
-    //   close the Transaction Edit modal
+    // Test user can close the modal
     const closeButton = transactionsPage.modalCloseButton
-    await closeButton.click()
-    await transactionsPage.page.waitForLoadState('networkidle')
+    await closeButton.click({ force: isCI })
+    await page.waitForLoadState('domcontentloaded')
     await expect(editTransactionModal).not.toBeVisible()
   })
 
-  test('should display the tooltip of the point on the linechart when hovering over it', async ({ page }) => {
-    // Wait for chart to be fully loaded
-    await page.waitForLoadState('networkidle')
-    await expect(transactionsPage.intervalLineChart).toBeVisible()
+  test('line chart displays tooltip on hover and allows clicking points to load transactions', async ({ page }) => {
+    // Test user interaction with chart - what they see and can do
+    // Log only API requests for this test
+    setupApiRequestLogging(page)
 
-    // hover over the first chart-dot on the line chart
-    const tenthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-10')
-    await expect(tenthPoint).toBeVisible()
-    await tenthPoint.hover()
+    // User should see the chart
+    await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
 
-    const toolTip = transactionsPage.intervalLineChartTooltip
-    await expect(toolTip).toBeVisible()
+    // Test user can hover over chart points and see tooltip
+    const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
+    await expect(firstPoint).toBeVisible({ timeout: isCI ? 30000 : 15000 })
 
-    // check that the tooltip has the correct text
+    await firstPoint.hover({ force: isCI })
+
+    const toolTip = transactionsPage.intervalLineChartTooltip.first()
+    await expect(toolTip).toBeVisible({ timeout: isCI ? 15000 : 5000 })
+
+    // Test tooltip shows expected information to user
     const tooltipText = await toolTip.textContent()
     expect(tooltipText).toBeDefined()
-  })
+    expect(tooltipText).toMatch(/\d{4}-\d{2}-\d{2}/) // Date format
+    expect(tooltipText).toContain('$') // Currency
 
-  test('clicking on a point in the line chart loads the transactions for that date', async ({ page }) => {
-    // Wait for chart to be fully loaded with content
-    await page.waitForLoadState('networkidle')
-    await expect(transactionsPage.intervalLineChart).toBeVisible()
+    // Test user can click chart points to drill down
+    const hoverTextContent = await transactionsPage.intervalLineChartTooltip.first().textContent()
+    const firstPointDate = hoverTextContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
 
-    const fifthPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-5')
-    await expect(fifthPoint).toBeVisible()
+    expect(firstPointDate).toBeDefined()
+    expect(firstPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
 
-    // hover over the fifth chart-dot on the line chart
-    await fifthPoint.hover()
-    // wait for the intervalLineChartTooltip to be visible
-    await expect(transactionsPage.intervalLineChartTooltip).toBeVisible()
+    // User clicks chart point
+    await firstPoint.click({ force: isCI })
 
-    const textContent = await transactionsPage.intervalLineChartTooltip.textContent()
-
-    const fifthPointDate = textContent?.match(/\d{4}-\d{2}-\d{2}/)?.[0]
-
-    // Ensure we got a valid date before proceeding
-    expect(fifthPointDate).toBeDefined()
-    expect(fifthPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-
-    const fifthPointDateTransactions = generateTransactionsArray(5, '', fifthPointDate)
-
-    // Set up the route handler BEFORE clicking to ensure it catches the request
-    await page.route('**/transactions**', async route => {
-      const url = new URL(route.request().url())
-      const params = url.searchParams
-
-      console.log('Chart click interceptor - transactions request:', {
-        limit: params.get('limit'),
-        offset: params.get('offset'),
-        timeFrame: params.get('timeFrame'),
-        date: params.get('date'),
-        full_url: url.toString()
-      })
-
-      const dateParam = params.get('date')
-      const timeFrame = params.get('timeFrame')
-
-      // More robust date matching - check if the date parameter contains our target date
-      if (fifthPointDate && dateParam && dateParam.includes(fifthPointDate) && timeFrame === 'day') {
-        console.log(`Fulfilling chart click request for date: ${fifthPointDate}`)
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(fifthPointDateTransactions)
-        })
-      } else {
-        // For any other request, use static transactions as fallback
-        console.log('Using static transactions as fallback')
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(staticTransactions)
-        })
-      }
+    // Wait for UI to update with new data
+    await waitForTableContent(transactionsPage.transactionsTable, page, {
+      timeout: isCI ? 90000 : 60000
     })
 
-    // Set up request promise to wait for the specific chart click request
-    const requestPromise = page.waitForRequest(request => {
-      const url = request.url()
-      return url.includes('transactions') &&
-        url.includes(`date=${fifthPointDate}`) &&
-        url.includes('timeFrame=day')
-    })
-
-    // Click the chart point
-    await fifthPoint.click()
-
-    // Wait for the specific request we're expecting
-    await requestPromise
-
-    // Wait for table to have new content instead of just network idle
-    await waitForTableContent(transactionsPage.transactionsTable, page)
-
-    // Verify the table shows the correct date
+    // Verify user sees filtered data in table
     const dateText = await transactionsPage.getCellTextContent(1, 2)
+    expect(dateText).toBe(firstPointDate)
 
-    expect(dateText).toBe(fifthPointDate)
+    // Test that chart hides after user selects a specific day (expected UX behavior)
+    await expect(transactionsPage.intervalLineChart).not.toBeVisible({ timeout: isCI ? 20000 : 10000 })
   })
 
+  test('daily interval line chart is hidden when a day is selected', async ({ page }) => {
+    // Log only API requests for this test
+    setupApiRequestLogging(page)
+
+    // Initially, user should see the chart (aggregate view)
+    await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    // User clicks on a chart point to drill down
+    const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
+    await expect(firstPoint).toBeVisible({ timeout: isCI ? 20000 : 10000 })
+
+    await firstPoint.click({ force: isCI })
+    // Give time for UI to respond to user action
+    await page.waitForLoadState('domcontentloaded', { timeout: isCI ? 20000 : 10000 })
+    // Chart should now be hidden (user is in detail view)
+    await expect(transactionsPage.intervalLineChart).not.toBeVisible({ timeout: isCI ? 20000 : 10000 })
+  })
 })

@@ -1,141 +1,75 @@
 <template>
-  <el-card data-testid="memo-summary-card">
+  <div>
     <AlertComponent
       v-if="isError && error"
       :title="error.name"
       :message="error?.message"
       type="error"
-      data-testid="memo-summary-table-error"
+      data-testid="memo-summary-error"
     />
-    <template #header>
-      <div class="header-content" v-if="props.memoName" data-testid="memo-summary-header">
-        <h2 class="memo-title" data-testid="memo-title">
-          {{ props.memoName }}
-        </h2>
-        <div data-testid="memo-budget-category-container">
+
+    <el-card data-testid="memo-summary-card">
+      <template #header>
+        <div class="header-content" data-testid="memo-summary-header">
+          <h2 class="memo-title" data-testid="memo-title">
+            {{ memoName }}
+          </h2>
           <MemoBudgetCategory
-            v-if="props.memoName"
-            :key="props.memoName"
-            :memoName="props.memoName"
-            data-testid="memo-budget-category-button"
+            v-if="memoName"
+            :memo-name="memoName"
+            data-testid="budget-category-button"
           />
         </div>
+      </template>
+
+      <div v-if="data" class="summary-stats" data-testid="memo-summary-stats">
+        <el-statistic
+          title="Total Amount Debit"
+          :value="data.sum_amount_debit"
+          prefix="$"
+          :precision="2"
+          class="stat-item"
+          :data-testid="`sum-amount-debit-${memoName}`"
+          :data-value="data.sum_amount_debit"
+        />
+        <el-statistic
+          title="Transactions Count"
+          :value="data.transactions_count"
+          class="stat-item"
+          :data-testid="`transactions-count-${memoName}`"
+          :data-value="data.transactions_count"
+        />
       </div>
-    </template>
 
-    <el-table
-      v-if="data"
-      :data="[data]"
-      table-layout="auto"
-      :loading="isLoadingCondition"
-      data-testid="memo-summary-table"
-      :row-key="() => 'summary'"
-      :cell-style="getCellStyle"
-      :row-style="getRowStyle"
-    >
-      <el-table-column
-        v-for="(column, columnIndex) in columns"
-        :key="column.prop"
-        :prop="column.prop"
-        :label="column.label"
-        :data-testid="`column-${column.prop}`"
-      >
-        <template #header>
-          <span :data-testid="`header-${column.prop}`">{{ column.label }}</span>
-        </template>
+      <div v-else-if="isLoadingCondition" class="loading-container">
+        <el-skeleton :rows="2" animated />
+      </div>
+    </el-card>
 
-        <template v-slot:default="scope">
-          <div
-            :data-testid="`cell-${scope.$index}-${columnIndex}`"
-            :data-row-id="'summary'"
-            :data-column="column.prop"
-            :data-row-index="scope.$index"
-            :data-column-index="columnIndex"
-            :data-memo-name="props.memoName"
-          >
-            <template v-if="column.prop === 'sumAmountDebit'">
-              <el-statistic
-                :value="scope.row.sum_amount_debit"
-                :data-testid="`sum-amount-debit-${props.memoName}`"
-                :data-value="scope.row.sum_amount_debit"
-              />
-            </template>
-            <template v-else-if="column.prop === 'transactionsCount'">
-              <el-statistic
-                :value="scope.row.transactions_count"
-                :data-testid="`transactions-count-${props.memoName}`"
-                :data-value="scope.row.transactions_count"
-              />
-            </template>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
-  </el-card>
-  <MemoTransactionsTable :memoName="props.memoName" data-testid="memo-transactions-table" />
-  <BackButton data-testid="memo-summary-back-button" />
+    <MemoTransactionsTable
+      :memo-name="memoName"
+      data-testid="memo-transactions-table"
+    />
+
+    <BackButton data-testid="memo-summary-back-button" />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ElCard, ElStatistic, ElTable, ElTableColumn } from 'element-plus'
-import type { Memo, MemoSummary } from '@types'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import useMemoSummary from '@api/hooks/transactions/useMemoSummary'
-import { type PropType, reactive, watch } from 'vue'
 import MemoTransactionsTable from '@components/transactions/MemoTransactionsTable.vue'
 import MemoBudgetCategory from '@components/transactions/MemoBudgetCategory.vue'
 import BackButton from '@components/shared/BackButton.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
-interface TableColumn {
-  property: string
-}
+const route = useRoute()
+const memoName = computed(() => route.params.memoName as string)
 
+const { data, isFetching, isLoading, isError, error } = useMemoSummary(memoName.value)
 
-const props = defineProps(
-  {
-    memoName: {
-      type: String as PropType<Memo['name']>,
-      required: true
-    }
-  }
-)
-
-const { data, refetch, isFetching, isLoading, isError, error } = useMemoSummary(props.memoName)
-
-const isLoadingCondition = reactive(isLoading || isFetching)
-
-const columns = [
-  { prop: 'sumAmountDebit', label: 'Sum Amount Debit' },
-  { prop: 'transactionsCount', label: 'Transactions Count' }
-]
-
-// Add styling functions for test attributes
-const getRowStyle = ({ rowIndex }: { row: MemoSummary, rowIndex: number }) => {
-  return {
-    '--row-id': 'summary',
-    '--row-index': rowIndex,
-    '--memo-name': props.memoName
-  }
-}
-
-const getCellStyle = ({ column, rowIndex, columnIndex }: {
-  row: MemoSummary,
-  column: TableColumn,
-  rowIndex: number,
-  columnIndex: number
-}) => {
-  return {
-    '--cell-row-id': 'summary',
-    '--cell-column': column.property,
-    '--cell-row-index': rowIndex,
-    '--cell-column-index': columnIndex,
-    '--memo-name': props.memoName
-  }
-}
-
-watch(() => props.memoName, () => {
-  refetch()
-})
+const isLoadingCondition = computed(() => isLoading.value || isFetching.value)
 </script>
 
 <style scoped>
@@ -143,11 +77,45 @@ watch(() => props.memoName, () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .memo-title {
   margin: 0;
   font-size: 1.5rem;
   font-weight: bold;
+  flex: 1;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin: 1rem 0;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  border: 1px solid var(--el-border-color-light);
+  border-radius: var(--el-border-radius-base);
+  background: var(--el-bg-color-page);
+}
+
+.loading-container {
+  padding: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .summary-stats {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 </style>

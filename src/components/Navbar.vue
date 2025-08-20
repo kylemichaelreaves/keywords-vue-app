@@ -14,6 +14,11 @@
       </el-tab-pane>
     </el-tabs>
 
+    <!-- Theme Toggle -->
+    <div class="navbar-actions">
+      <ThemeToggle />
+    </div>
+
     <!-- Login/Logout Tab Pane -->
     <el-tabs>
       <el-tab-pane class="login-control" label="login-control" name="login-control">
@@ -47,6 +52,7 @@ import { useRoute, useRouter } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { TabsPaneContext, ElTabs, ElTabPane } from 'element-plus'
 import { useAuthStore } from '@stores/auth'
+import ThemeToggle from '@components/ThemeToggle.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -121,8 +127,15 @@ async function handleLoginLogout() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #F5F7FA;
+  background-color: var(--app-card-bg);
   border-bottom: 7px solid #409EFF;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  margin: 0 1rem;
 }
 
 .login-control {

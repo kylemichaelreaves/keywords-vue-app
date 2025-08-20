@@ -8,9 +8,7 @@ test.describe('Memos Table', () => {
   test.beforeEach(async ({ page }) => {
     memosPage = new MemosTablePage(page)
 
-    console.time('setting up memosTableMocks')
     await setupMemosTableMocks(page)
-    console.timeEnd('setting up memosTableMocks')
 
     await memosPage.goTo()
     await memosPage.memosTable.waitFor({ state: 'visible' })

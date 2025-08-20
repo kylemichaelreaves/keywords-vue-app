@@ -1,23 +1,8 @@
 import type { Page } from '@playwright/test'
 import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock'
+import type { BudgetCategoryHierarchyOptions, MockMemoOptions } from '@types'
 
-export interface MockMemoOptions {
-  id?: number
-  name?: string
-  recurring?: boolean
-  necessary?: boolean
-  frequency?: string | null
-  budget_category?: string | null
-  ambiguous?: boolean
-  avatar_s3_url?: string | null
-}
 
-export interface BudgetCategoryHierarchyOptions {
-  timeFrame: 'week' | 'month' | 'day'
-  includeChildren?: boolean
-  maxParentCategories?: number
-  sourceId?: number
-}
 
 /**
  * Default memo mock data
@@ -43,10 +28,12 @@ export async function setupMemoRouteInterceptor(
 ) {
   // Clear existing route handlers if requested
   if (clearExisting) {
+
     await page.unroute('**/memos/*')
   }
 
   const mockMemo = { ...DEFAULT_MEMO, ...options }
+
 
   await page.route('**/memos/*', async route => {
     const url = new URL(route.request().url())
@@ -58,6 +45,7 @@ export async function setupMemoRouteInterceptor(
       body: JSON.stringify([mockMemo]) // Always return as array for consistency
     })
   })
+
 }
 
 /**
@@ -72,10 +60,10 @@ export async function setupBudgetCategoryHierarchyInterceptor(
 
   // Clear existing route handlers if requested
   if (clearExisting) {
-    await page.unroute(`**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`)
+    await page.unroute(`**/api/**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`)
   }
 
-  await page.route(`**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`, async route => {
+  await page.route(`**/api/**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`, async route => {
     const url = new URL(route.request().url())
     console.log(`Intercepted budget category hierarchy request (${timeFrame}):`, url.toString())
 

@@ -1,9 +1,9 @@
 <template>
-  <svg ref="svg" :width="width" :height="height" :data-testid='props.dataTestId' />
+  <svg ref="svg" :width="width" :height="height" :data-testid='props.dataTestId + "-svg"' />
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, type PropType, ref, watch, nextTick } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, type PropType, ref, watch } from 'vue'
 import type { SummaryTypeBase } from '@types'
 import { createLineChart } from './createLineChart'
 
