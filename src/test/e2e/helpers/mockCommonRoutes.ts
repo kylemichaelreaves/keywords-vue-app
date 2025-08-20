@@ -29,7 +29,7 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
   await Promise.all([
     // CRITICAL FIX: Use more specific API patterns to avoid intercepting page navigation
     // Mock transactions with year timeframe
-    await page.route('**/api/**/transactions?limit=100&offset=0&timeFrame=year', route => {
+    await page.route('**/transactions?limit=100&offset=0&timeFrame=year', route => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -37,7 +37,7 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
       })
     }),
     // Mock transaction count
-    await page.route('**/api/**/transactions?count=true', route => {
+    await page.route('**/transactions?count=true', route => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -45,7 +45,7 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
       })
     }),
     // mock **/transactions?limit=100&offset=0&timeFrame=day&date=
-    await page.route('**/api/**/transactions?limit=100&offset=0&timeFrame=day&date=*', route => {
+    await page.route('**/transactions?limit=100&offset=0&timeFrame=day&date=*', route => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -53,7 +53,7 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
       })
     }),
     //   transactions?limit=100&offset=0&timeFrame=year&date=
-    await page.route('**/api/**/transactions?limit=100&offset=0&timeFrame=year&date=', route => {
+    await page.route('**/transactions?limit=100&offset=0&timeFrame=year&date=', route => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -71,18 +71,8 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
  * CI FIX: Added proper CORS headers and longer timeouts for CI environment
  */
 export async function mockComprehensiveTransactionRoutes(page: Page, staticTransactions: any[], staticDailyIntervals: any[]) {
-  if (isCI) {
-    console.log('[CI MOCK SETUP] Starting comprehensive transaction mocking with:', {
-      staticTransactionsCount: staticTransactions.length,
-      staticDailyIntervalsCount: staticDailyIntervals.length
-    })
-  }
 
-  // CI-specific: Add more generous timeouts for route handlers
-  // CRITICAL FIX: Use more specific pattern to avoid intercepting page navigation
-  // OLD: **/transactions** (too broad, catches page routes)
-  // NEW: **/api/**/transactions** (specific to API endpoints only)
-  await page.route(`**/api/**/transactions**`, async (route: any) => {
+  await page.route(`**/transactions**`, async (route: any) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
     const isDailyTotals = params.get('dailyTotals') === 'true'
@@ -204,7 +194,7 @@ export async function mockDailyIntervalRoutes(page: Page, days: number = 30, sta
   const intervals = staticData || generateDailyIntervals(days)
 
   // CRITICAL FIX: Use specific API pattern that only matches dailyTotals requests to avoid conflicts
-  await page.route('**/api/**/transactions?*dailyTotals=true*', async route => {
+  await page.route('**/transactions?*dailyTotals=true*', async route => {
     const url = new URL(route.request().url())
     const params = url.searchParams
 
@@ -232,7 +222,7 @@ export async function mockDailyIntervalRoutes(page: Page, days: number = 30, sta
  * Mock budget category routes
  */
 export async function mockBudgetCategoryRoutes(page: Page) {
-  await page.route('**/api/**/budget-categories?flatten=false', route => {
+  await page.route('**/budget-categories?flatten=false', route => {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -240,7 +230,7 @@ export async function mockBudgetCategoryRoutes(page: Page) {
     })
   })
 
-  await page.route('**/api/**/transactions?budgetCategoryHierarchySum=true&timeFrame=month&date*', route => {
+  await page.route('**/transactions?budgetCategoryHierarchySum=true&timeFrame=month&date*', route => {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
