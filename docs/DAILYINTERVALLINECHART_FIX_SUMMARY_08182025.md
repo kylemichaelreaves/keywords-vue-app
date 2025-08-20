@@ -82,7 +82,53 @@ await page.route(`**/api/**/transactions**`, async (route: any) => {
 - **Test Reliability**: Eliminates the JSON-instead-of-UI bug that was breaking tests
 - **Future-Proof**: More specific patterns prevent similar issues with new routes
 
-### 2. Component Logic Fixes (`DailyIntervalLineChart.vue`)
+### 2. CI Environment Fixes (CRITICAL - August 19, 2025)
+
+#### Problem: Tests Passing Locally but Failing in CI
+- **Issue**: Tests work perfectly in local development but consistently fail in GitHub Actions CI
+- **Root Cause**: CI environment has different constraints (limited resources, stricter CORS, timing issues)
+- **Impact**: Unreliable CI pipeline despite working local tests
+
+#### Solution: CI-Specific Optimizations
+
+**CORS Headers for CI:**
+```typescript
+const ciHeaders = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+}
+```
+
+**CI-Specific Timeouts:**
+```typescript
+// Chart visibility: Increased from 60s to 90s in CI
+await expect(transactionsPage.intervalLineChart).toBeVisible({
+  timeout: isCI ? 90000 : 30000
+})
+
+// Route setup delays for CI
+if (isCI) {
+  await page.waitForTimeout(1500)
+}
+```
+
+**Enhanced CI Logging:**
+```typescript
+if (isCI) {
+  console.log('[CI SETUP] Starting comprehensive mock setup...')
+  console.log('[CI WAIT] Table content wait complete')
+}
+```
+
+#### Why This Fix is Critical:
+- **CI Reliability**: Ensures tests pass consistently in CI environment
+- **Resource Management**: Accounts for CI's limited CPU/memory resources
+- **CORS Compliance**: Handles stricter CI browser security requirements
+- **Debugging Capability**: Provides visibility into CI-specific issues
+
+### 3. Component Logic Fixes (`DailyIntervalLineChart.vue`)
 
 #### selectedValue Computed Property
 
@@ -109,7 +155,7 @@ const selectedValue = computed((): string | null => {
 
 **Why Critical**: Creates the nested test selector structure that test helpers depend on.
 
-### 3. API Route Mocking Fixes (`mockCommonRoutes.ts`)
+### 4. API Route Mocking Fixes (`mockCommonRoutes.ts`)
 
 #### Priority-Based Route Handling
 
@@ -144,7 +190,7 @@ if (hasLimit && hasOffset) {
 2. Table pagination requests are handled second for table data
 3. Other requests are handled with appropriate fallbacks
 
-### 4. Test Setup Fixes (`setupTestMocks.ts`)
+### 5. Test Setup Fixes (`setupTestMocks.ts`)
 
 #### Store State Initialization
 
@@ -166,7 +212,7 @@ await page.addInitScript(() => {
 
 **Why Critical**: Provides the initial date needed for the API hook's enabled condition and ensures clean test state.
 
-### 5. Wait Helper Fixes (`waitHelpers.ts`)
+### 6. Wait Helper Fixes (`waitHelpers.ts`)
 
 #### Correct SVG Selector
 

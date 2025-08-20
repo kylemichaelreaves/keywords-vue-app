@@ -30,11 +30,19 @@
   </el-dialog>
 
   <div @contextmenu.prevent>
+    <!-- Show skeleton when loading -->
+    <TableSkeleton
+      v-if="isLoadingCondition"
+      :columns="transactionColumns"
+      :rows="LIMIT"
+      data-testid="transactions-table-skeleton"
+    />
+
+    <!-- Show actual table when not loading -->
     <el-table
+      v-else-if="flattenedData && flattenedData.length >= 0"
       data-testid="transactions-table"
       :row-key="getRowKey"
-      v-if="flattenedData && flattenedData.length >= 0"
-      v-loading="isLoadingCondition"
       :data="paginatedData"
       height="auto"
       size="small"
@@ -96,6 +104,7 @@ import DailyIntervalLineChart from '@components/transactions/DailyIntervalLineCh
 import TransactionTablePagination from '@components/transactions/TransactionsTablePagination.vue'
 import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
 import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
+import TableSkeleton from '@components/shared/TableSkeleton.vue'
 import useURLSync from '@composables/useURLSync.ts'
 
 
