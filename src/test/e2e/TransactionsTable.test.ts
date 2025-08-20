@@ -13,6 +13,16 @@ test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
   test.beforeEach(async ({ page }) => {
+    page.on('request', request => {
+      console.log(`→ REQUEST: ${request.method()} ${request.url()}`)
+    })
+
+    page.on('response', response => {
+      if (response.status() !== 200) {
+        console.log(`← FAILED: ${response.status()} ${response.url()}`)
+      }
+    })
+
     // CI FIX: Enhanced logging and setup for CI environment
     if (isCI) {
       console.log('[CI TEST] Starting TransactionsTable test setup')
@@ -28,6 +38,9 @@ test.describe('Transactions Table', () => {
 
     // Navigate to page AFTER mocks are set up
     await transactionsPage.goto()
+
+    // wait for URL until domcontentloaded state
+    await page.waitForURL(/\/budget-visualizer\/transactions/, { waitUntil: 'domcontentloaded' })
 
     // CI FIX: Wait for both table and chart components to load properly with CI-appropriate timeouts
     await waitForTableContent(transactionsPage.transactionsTable, page, {

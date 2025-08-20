@@ -78,6 +78,7 @@ export class TransactionsPage {
 
   async selectFirstMonth(): Promise<string> {
     await this.monthSelect.click()
+    await this.page.getByRole('option').first().waitFor({ state: 'visible' })
     const firstMonth = await this.page.getByRole('option').first().textContent() ?? ''
     const firstOption = this.page.getByRole('option', { name: firstMonth }).first()
     await firstOption.click()
@@ -86,15 +87,10 @@ export class TransactionsPage {
 
   async selectFirstWeek(): Promise<string> {
     await this.weekSelect.click()
-    // wait for the week select options to be visible
     await this.page.getByRole('option').first().waitFor({ state: 'visible' })
-
-    // get the text content of the first option
     const firstWeekText = await this.page.getByRole('option').first().textContent() ?? ''
     const firstOption = this.page.getByRole('option', { name: firstWeekText }).first()
     await firstOption.click()
-    // a petite wait
-    await this.page.waitForLoadState('networkidle')
     return firstWeekText
   }
 

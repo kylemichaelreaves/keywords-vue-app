@@ -14,6 +14,16 @@ test.describe('Week Summary Table', () => {
   let selectedWeek: string | null
 
   test.beforeEach(async ({ page }) => {
+    page.on('request', request => {
+      console.log(`→ REQUEST: ${request.method()} ${request.url()}`)
+    })
+
+    page.on('response', response => {
+      if (response.status() !== 200) {
+        console.log(`← FAILED: ${response.status()} ${response.url()}`)
+      }
+    })
+
     transactionsPage = new TransactionsPage(page)
     weekSummaryPage = new WeekSummaryPage(page)
 
