@@ -84,18 +84,6 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     const hasLimit = params.has('limit')
     const hasOffset = params.has('offset')
 
-    // Log the actual request parameters for debugging
-    if (isCI) {
-      console.log('[CI MOCK DEBUG] Intercepted AWS API request:', {
-        url: url.toString(),
-        isDailyTotals,
-        interval: params.get('interval'),
-        date: params.get('date'),
-        hasLimit,
-        hasOffset
-      })
-    }
-
     // CI-specific: Standard headers for all responses
     const ciHeaders = {
       'Content-Type': 'application/json',
@@ -107,9 +95,6 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     try {
       // PRIORITY 1: Handle daily totals requests (for line chart) - MUST BE FIRST
       if (isDailyTotals && hasInterval && hasDate) {
-        if (isCI) {
-          console.log('[CI MOCK] Returning daily intervals for chart with', staticDailyIntervals.length, 'items')
-        }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -121,9 +106,6 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
 
       // PRIORITY 2: Handle basic daily totals requests (fallback)
       if (isDailyTotals) {
-        if (isCI) {
-          console.log('[CI MOCK] Returning basic daily intervals')
-        }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -135,9 +117,6 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
 
       // PRIORITY 3: Handle table data requests (limit/offset patterns for pagination)
       if (hasLimit && hasOffset) {
-        if (isCI) {
-          console.log('[CI MOCK] Returning transactions for table pagination')
-        }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -151,9 +130,6 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       if (timeFrame === 'day' && hasDate) {
         const dateParam = params.get('date')
         const targetTransactions = generateTransactionsArray(5, '', dateParam ?? undefined)
-        if (isCI) {
-          console.log('[CI MOCK] Returning day-specific transactions')
-        }
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -164,9 +140,6 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       }
 
       // PRIORITY 5: Handle other transaction requests
-      if (isCI) {
-        console.log('[CI MOCK] Returning default transaction data')
-      }
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -179,11 +152,6 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
       await route.continue()
     }
   })
-
-  // CI-specific: Add timeout for route setup
-  if (isCI) {
-    await page.waitForTimeout(1500) // Give CI more time for route handlers to register
-  }
 
   console.log('[CI MOCK] AWS API Gateway transaction mocks setup complete')
 }
@@ -202,11 +170,6 @@ export async function mockDailyIntervalRoutes(page: Page, days: number = 30, sta
 
     // Only handle requests that have dailyTotals=true
     if (params.get('dailyTotals') === 'true') {
-      if (isCI) {
-        console.log('Daily intervals mock - intercepted request:', url.toString())
-        console.log('Daily intervals mock - fulfilling request with data:', intervals.length, 'intervals')
-      }
-
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -251,11 +214,6 @@ export async function mockMemoRoutes(page: Page) {
     const url = new URL(route.request().url())
     const pathParts = url.pathname.split('/memos/')
     const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
-
-    // Only log in non-CI environments to reduce noise
-    if (!isCI) {
-      console.log('Mock intercepted memo request for:', memoName)
-    }
 
     await route.fulfill({
       status: 200,

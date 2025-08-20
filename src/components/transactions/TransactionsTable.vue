@@ -116,22 +116,13 @@ const selectedDay = computed(() => store.getSelectedDay)
 
 const firstDay = computed(() => {
   const days = store.getDays
-  console.log('[TransactionsTable DEBUG] Computing firstDay with store.getDays:', days)
-
   if (days.length > 0) {
-    console.log('[TransactionsTable DEBUG] Using first day from store:', days[0].day)
     return days[0].day
   }
-
-  // CRITICAL FIX: Always return a valid ISO date string as backup
-  // This ensures DailyIntervalLineChart always has a valid firstDay prop
   const now = new Date()
   const lastDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0)
-  const fallbackDate = lastDayOfPreviousMonth.toISOString().split('T')[0]
-  console.log('[TransactionsTable DEBUG] Using fallback date:', fallbackDate)
-  return fallbackDate
+  return lastDayOfPreviousMonth.toISOString().split('T')[0]
 })
-
 
 const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())
 const selectedValue = computed(() => dateTypeAndValue.value.selectedValue)

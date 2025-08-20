@@ -14,17 +14,6 @@ test.describe('Month Summary Page', () => {
   let selectedMonth: string | null
 
   test.beforeEach(async ({ page }) => {
-    page.on('request', request => {
-      console.log(`→ REQUEST: ${request.method()} ${request.url()}`)
-    })
-
-    page.on('response', response => {
-      if (response.status() !== 200) {
-        console.log(`← FAILED: ${response.status()} ${response.url()}`)
-      }
-    })
-
-
     transactionsPage = new TransactionsPage(page)
     monthSummaryPage = new MonthSummaryPage(page)
 
@@ -47,16 +36,12 @@ test.describe('Month Summary Page', () => {
     const title = await monthSummaryPage.getMonthTitle()
     expect(title).toContain('Month Summary for:')
     expect(title).toContain(selectedMonth)
-
     // Check main table visibility with content
     await expect(monthSummaryPage.monthSummaryTable).toBeVisible()
-
     // Check budget categories summary component
     await expect(monthSummaryPage.budgetCategorySummaries).toBeVisible()
-
     // Check navigation button group visibility
     await expect(monthSummaryPage.navigationButtonGroup).toBeVisible()
-
     // Check that next month button is disabled when on the latest month
     const nextButton = monthSummaryPage.navigationButtonGroup.getByRole('button', { name: 'Next Month' })
     expect(await nextButton.isDisabled()).toBeTruthy()
@@ -73,13 +58,9 @@ test.describe('Month Summary Page', () => {
 
   test('right clicking on a table row opens the memo edit modal', async ({ page }) => {
     // Set up the memo route interceptor with better timing and logging
-    console.log('Setting up memo route interceptor for monthly preset...')
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.monthly, true)
 
     await monthSummaryPage.expectMemoEditModalHidden()
-
-    // Log before right-clicking
-    console.log('Right-clicking on table row to open modal...')
 
     // Wait for the memo request to be made and responded to
     const responsePromise = page.waitForResponse(response =>
@@ -90,11 +71,8 @@ test.describe('Month Summary Page', () => {
 
     // Wait for modal to be visible before checking for form
     await monthSummaryPage.expectMemoEditModalVisible()
-    console.log('Modal is visible, waiting for memo data to load...')
-
     // Wait for the memo response to complete
     const response = await responsePromise
-    console.log('Memo response received:', response.status())
 
     // Now check if the form is visible
     try {
@@ -102,7 +80,6 @@ test.describe('Month Summary Page', () => {
       await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
     } catch (error) {
       // If form isn't visible, log the current state for debugging
-      console.log('Form not visible, checking modal content...')
       const modalContent = await page.locator('[data-testid="memo-edit-dialog"]').textContent()
       console.log('Modal content:', modalContent)
       throw error

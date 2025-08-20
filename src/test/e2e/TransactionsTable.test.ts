@@ -13,23 +13,6 @@ test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
   test.beforeEach(async ({ page }) => {
-    page.on('request', request => {
-      console.log(`→ REQUEST: ${request.method()} ${request.url()}`)
-    })
-
-    page.on('response', response => {
-      if (response.status() !== 200) {
-        console.log(`← FAILED: ${response.status()} ${response.url()}`)
-      }
-    })
-
-    // Listen for console errors that might prevent Vue from loading
-    page.on('console', msg => {
-      if (msg.type() === 'error') {
-        console.log(`[BROWSER ERROR]: ${msg.text()}`)
-      }
-    })
-
     // CI FIX: Enhanced logging and setup for CI environment
     if (isCI) {
       console.log('[CI TEST] Starting TransactionsTable test setup')
@@ -39,11 +22,8 @@ test.describe('Transactions Table', () => {
     transactionsPage = new TransactionsPage(page)
 
     // CRITICAL FIX: Set up API mocks FIRST before any navigation
-    console.time('TransactionsTableTestSetup')
     await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
-    console.timeEnd('TransactionsTableTestSetup')
 
-    // CRITICAL: Navigate to the base URL first to ensure Vue app loads
     // Now navigate to the transactions page
     await transactionsPage.goto()
 
@@ -64,9 +44,6 @@ test.describe('Transactions Table', () => {
       timeout: isCI ? 45000 : 30000
     })
 
-    if (isCI) {
-      console.log('[CI TEST] TransactionsTable setup complete')
-    }
   })
 
   test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({ page }) => {
