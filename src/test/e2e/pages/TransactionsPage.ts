@@ -69,7 +69,7 @@ export class TransactionsPage {
   }
 
   async goto() {
-    await this.page.goto('budget-visualizer/transactions')
+    await this.page.goto('/budget-visualizer/transactions')
   }
 
   async goTo() {

@@ -72,7 +72,9 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
  */
 export async function mockComprehensiveTransactionRoutes(page: Page, staticTransactions: any[], staticDailyIntervals: any[]) {
 
-  await page.route(`**/transactions**`, async (route: any) => {
+  // CRITICAL FIX: Use specific API patterns to avoid intercepting SPA navigation
+  // Only intercept actual API calls with query parameters, not page routes
+  await page.route(`**/transactions?**`, async (route: any) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
     const isDailyTotals = params.get('dailyTotals') === 'true'

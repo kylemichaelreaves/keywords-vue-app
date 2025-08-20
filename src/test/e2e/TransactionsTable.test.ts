@@ -23,6 +23,13 @@ test.describe('Transactions Table', () => {
       }
     })
 
+    // Listen for console errors that might prevent Vue from loading
+    page.on('console', msg => {
+      if (msg.type() === 'error') {
+        console.log(`[BROWSER ERROR]: ${msg.text()}`)
+      }
+    })
+
     // CI FIX: Enhanced logging and setup for CI environment
     if (isCI) {
       console.log('[CI TEST] Starting TransactionsTable test setup')
@@ -36,21 +43,25 @@ test.describe('Transactions Table', () => {
     await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
     console.timeEnd('TransactionsTableTestSetup')
 
-    // Navigate to page AFTER mocks are set up
+    // CRITICAL: Navigate to the base URL first to ensure Vue app loads
+    // Now navigate to the transactions page
     await transactionsPage.goto()
 
-    // wait for URL until domcontentloaded state
-    await page.waitForURL(/\/budget-visualizer\/transactions/, { waitUntil: 'domcontentloaded' })
+    // CRITICAL: Wait for Vue app to be mounted and DOM to be ready
+    await page.waitForLoadState('domcontentloaded')
+    await page.waitForLoadState('networkidle', { timeout: 10000 })
 
-    // CI FIX: Wait for both table and chart components to load properly with CI-appropriate timeouts
+    // Ensure the Vue app is actually rendered (not showing JSON)
+    await page.waitForSelector('[data-testid="transactions-table-selects"]', { timeout: 15000 })
+
+    // BEST PRACTICE: Wait for final state only, not intermediate loading states
     await waitForTableContent(transactionsPage.transactionsTable, page, {
-      timeout: isCI ? 120000 : 90000
+      timeout: isCI ? 45000 : 30000
     })
 
-    // CRITICAL: Ensure chart is visible before proceeding with chart tests
-    // CI FIX: More generous timeout for chart visibility in CI
+    // Ensure chart is visible before proceeding with chart tests
     await expect(transactionsPage.intervalLineChart).toBeVisible({
-      timeout: isCI ? 90000 : 30000  // Increased from 60000 to 90000 for CI
+      timeout: isCI ? 45000 : 30000
     })
 
     if (isCI) {
@@ -62,8 +73,10 @@ test.describe('Transactions Table', () => {
     // Log only API requests for this test
     setupApiRequestLogging(page)
 
+    // BEST PRACTICE: Wait directly for the final state (table with data), not loading states
+    await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: isCI ? 45000 : 30000 })
+
     // Test what the user can see - UI elements visibility
-    await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.daySelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.weekSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.monthSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
