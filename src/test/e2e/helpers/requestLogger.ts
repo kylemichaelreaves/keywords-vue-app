@@ -5,26 +5,19 @@ import type { Page } from '@playwright/test'
  * Logs requests that match the specified URL pattern to the console.
  *
  * @param page - The Playwright page instance
- * @param urlPattern - URL pattern to match (defaults to 'api' to catch all API requests)
- * @param logPrefix - Optional prefix for log messages (defaults to 'API Request:')
  */
-export function setupApiRequestLogging(
-  page: Page,
-  urlPattern: string = 'api',
-  logPrefix: string = 'API Request:'
-) {
-
-  page.on('console', msg => {
+export function setupApiRequestLogging(page: Page) {
+  page.on('console', (msg) => {
     if (msg.type() === 'log' || msg.type() === 'error' || msg.type() === 'warning') {
       console.log(`[BROWSER ${msg.type().toUpperCase()}]:`, msg.text())
     }
   })
   // Track all network requests to see what's happening
-  page.on('request', request => {
+  page.on('request', (request) => {
     console.log(`[REQUEST]: ${request.method()} ${request.url()}`)
   })
 
-  page.on('response', response => {
+  page.on('response', (response) => {
     console.log(`[RESPONSE]: ${response.status()} ${response.url()}`)
   })
 }
@@ -36,5 +29,5 @@ export function setupApiRequestLogging(
  * @param page - The Playwright page instance
  */
 export function setupAwsApiRequestLogging(page: Page): void {
-  setupApiRequestLogging(page, 'api.us-east-1', 'AWS API Request:')
+  setupApiRequestLogging(page)
 }

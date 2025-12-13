@@ -2,11 +2,10 @@ import { useInfiniteQuery } from '@tanstack/vue-query'
 import { computed } from 'vue'
 import { useTransactionsStore } from '@stores/transactions'
 import { fetchTransactions } from '@api/transactions/fetchTransactions'
-import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
+import { getTimeframeTypeAndValue } from '@components/transactions/helpers/getTimeframeTypeAndValue.ts'
 import type { Transaction } from '@types'
 
 export default function useTransactions() {
-
   const store = useTransactionsStore()
   const selectedMemo = computed(() => store.getSelectedMemo)
   const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())
@@ -19,7 +18,13 @@ export default function useTransactions() {
 
   return useInfiniteQuery<Array<Transaction>>({
     initialPageParam: 0,
-    queryKey: ['transactions', limit.value, selectedMemo.value, dateType.value, selectedValue.value],
+    queryKey: [
+      'transactions',
+      limit.value,
+      selectedMemo.value,
+      dateType.value,
+      selectedValue.value,
+    ],
     queryFn: async ({ pageParam = 0 }) => {
       const cachedTransactions = store.getTransactionsByOffset(Number(pageParam))
       if (cachedTransactions && cachedTransactions.length > 0) {
@@ -28,9 +33,9 @@ export default function useTransactions() {
         const transactions = await fetchTransactions({
           limit: limit.value,
           offset: Number(pageParam),
-          memo: selectedMemo.value,
+          memo: String(selectedMemo.value),
           timeFrame: dateType.value,
-          date: selectedValue.value
+          date: selectedValue.value,
         })
         store.setTransactionsByOffset(Number(pageParam), transactions as Transaction[])
         return transactions

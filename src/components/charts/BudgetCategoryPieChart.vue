@@ -5,11 +5,11 @@
       <el-skeleton
         animated
         :data-testid="`${props.dataTestId}-skeleton`"
-        style="height: 400px; width: 100%;"
+        style="height: 400px; width: 100%"
       >
         <template #template>
-          <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-            <el-skeleton-item variant="circle" style="width: 300px; height: 300px;" />
+          <div style="display: flex; justify-content: center; align-items: center; height: 100%">
+            <el-skeleton-item variant="circle" style="width: 300px; height: 300px" />
           </div>
         </template>
       </el-skeleton>
@@ -32,15 +32,8 @@
         />
       </div>
 
-      <el-space
-        direction="vertical"
-        class="w-full"
-        style="align-items: center;"
-      >
-        <el-text
-          size="large"
-          :data-testid="`${props.dataTestId}-title`"
-        >
+      <el-space direction="vertical" class="w-full" style="align-items: center">
+        <el-text size="large" :data-testid="`${props.dataTestId}-title`">
           {{ title }}
         </el-text>
       </el-space>
@@ -49,11 +42,7 @@
       <div class="chart-and-legend-container">
         <!-- Chart at the top -->
         <div class="chart-wrapper">
-          <svg
-            ref="svgRef"
-            :width="chartDimensions.width"
-            :height="chartDimensions.height"
-          ></svg>
+          <svg ref="svgRef" :width="chartDimensions.width" :height="chartDimensions.height"></svg>
         </div>
 
         <!-- Legend at the bottom -->
@@ -71,8 +60,11 @@
               :data-testid="`${props.dataTestId}-legend-item-${item.category_id}`"
             >
               <div class="legend-color" :style="{ backgroundColor: item.color }"></div>
-              <span class="legend-text">{{ item.category_name }} ({{ formatCurrency(Math.abs(item.total_amount_debit))
-                }})</span>
+              <span class="legend-text"
+                >{{ item.category_name }} ({{
+                  formatCurrency(Math.abs(item.total_amount_debit))
+                }})</span
+              >
             </div>
           </div>
         </div>
@@ -89,7 +81,7 @@
     </div>
 
     <!-- Show fallback when conditions don't match -->
-    <div v-else style="background: #ffe6e6; padding: 20px; text-align: center;">
+    <div v-else style="background: #ffe6e6; padding: 20px; text-align: center">
       <strong>FALLBACK STATE</strong><br />
       This shouldn't show if everything is working correctly.
     </div>
@@ -117,12 +109,11 @@ const chartContainer = ref<HTMLElement | null>(null)
 // Local state for legend visibility (if not controlled by props)
 const localShowLegend = ref(true)
 
-
 // Chart dimensions
 const chartDimensions = ref({
   width: 480,
   height: 400,
-  margin: { top: 10, right: 10, bottom: 10, left: 10 }
+  margin: { top: 10, right: 10, bottom: 10, left: 10 },
 })
 
 // Create pie chart data (show only parent categories since they already include child totals)
@@ -130,7 +121,7 @@ const pieData = computed(() => {
   console.log('PieChart: Computing pieData', {
     propsData: props.data,
     propsDataLength: props.data?.length || 0,
-    isLoading: props.isLoading
+    isLoading: props.isLoading,
   })
 
   if (!props.data?.length) {
@@ -139,28 +130,32 @@ const pieData = computed(() => {
   }
 
   // Let's examine the first few items to understand the data structure
-  console.log('PieChart: Sample data items:', props.data.slice(0, 3).map(item => ({
-    category_id: item.category_id,
-    category_name: item.category_name,
-    total_amount_debit: item.total_amount_debit,
-    budget_category: item.budget_category,
-    parent_id: item.parent_id,
-    level: item.level,
-    allProps: Object.keys(item)
-  })))
+  console.log(
+    'PieChart: Sample data items:',
+    props.data.slice(0, 3).map((item) => ({
+      category_id: item.category_id,
+      category_name: item.category_name,
+      total_amount_debit: item.total_amount_debit,
+      budget_category: item.budget_category,
+      parent_id: item.parent_id,
+      level: item.level,
+      allProps: Object.keys(item),
+    })),
+  )
 
   // Since backend already aggregates child totals into parents, just show parent categories
-  const parentCategories = props.data
-    .filter(cat => cat.parent_id === null && Math.abs(cat.total_amount_debit) > 0)
+  const parentCategories = props.data.filter(
+    (cat) => cat.parent_id === null && Math.abs(cat.total_amount_debit) > 0,
+  )
 
   console.log('PieChart: Parent categories for pie chart', {
     originalLength: props.data.length,
     parentCount: parentCategories.length,
-    parentData: parentCategories.map(p => ({
+    parentData: parentCategories.map((p) => ({
       name: p.category_name,
       total: p.total_amount_debit,
-      level: p.level
-    }))
+      level: p.level,
+    })),
   })
 
   return parentCategories
@@ -168,20 +163,22 @@ const pieData = computed(() => {
 
 // Generate color scheme with parent colors and child gradations
 const colorScheme = computed(() => {
-  const parentCategories = pieData.value.filter(cat => cat.parent_id === null)
+  const parentCategories = pieData.value.filter((cat) => cat.parent_id === null)
   const baseColors = d3.schemeCategory10.concat(d3.schemeSet2)
 
   const colorMap = new Map<string, string>()
 
   parentCategories.forEach((parent, index) => {
-    const baseColor = baseColors[index % baseColors.length]
+    const baseColor = baseColors[index % baseColors.length] || '#999999'
     colorMap.set(String(parent.category_id), baseColor)
 
     // Generate shades for children
-    const children = pieData.value.filter(cat => cat.parent_id === parent.category_id)
+    const children = pieData.value.filter((cat) => cat.parent_id === parent.category_id)
     children.forEach((child, childIndex) => {
-      const shade = d3.color(baseColor)?.darker(0.3 + (childIndex * 0.2))
-      colorMap.set(String(child.category_id), shade ? shade.toString() : baseColor)
+      const colorObj = d3.color(baseColor)
+      const shade = colorObj?.darker(0.3 + childIndex * 0.2)
+      const shadeColor = shade ? shade.toString() : baseColor
+      colorMap.set(String(child.category_id), shadeColor)
     })
   })
 
@@ -190,9 +187,9 @@ const colorScheme = computed(() => {
 
 // Legend items
 const legendItems = computed(() => {
-  return pieData.value.map(category => ({
+  return pieData.value.map((category) => ({
     ...category,
-    color: colorScheme.value.get(String(category.category_id)) || '#999999' // Fixed: Convert to string
+    color: colorScheme.value.get(String(category.category_id)) || '#999999', // Fixed: Convert to string
   }))
 })
 
@@ -200,7 +197,7 @@ const legendItems = computed(() => {
 const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'USD',
   }).format(amount)
 }
 
@@ -218,25 +215,27 @@ const drawChart = async () => {
   const chartHeight = height - margin.top - margin.bottom
   const radius = Math.min(chartWidth, chartHeight) / 2
 
-  const g = svg
-    .append('g')
-    .attr('transform', `translate(${width / 2}, ${height / 2})`)
+  const g = svg.append('g').attr('transform', `translate(${width / 2}, ${height / 2})`)
 
   // Create pie layout for parent categories
-  const pie = d3.pie<BudgetCategorySummary>()
-    .value(d => Math.abs(d.total_amount_debit))
+  const pie = d3
+    .pie<BudgetCategorySummary>()
+    .value((d) => Math.abs(d.total_amount_debit))
     .sort(null)
 
   // Create arc generators for different rings
-  const innerArc = d3.arc<d3.PieArcDatum<BudgetCategorySummary>>()
+  const innerArc = d3
+    .arc<d3.PieArcDatum<BudgetCategorySummary>>()
     .innerRadius(0)
     .outerRadius(radius * 0.6) // Inner ring for parents
 
-  const outerArc = d3.arc<d3.PieArcDatum<BudgetCategorySummary>>()
+  const outerArc = d3
+    .arc<d3.PieArcDatum<BudgetCategorySummary>>()
     .innerRadius(radius * 0.65) // Small gap
     .outerRadius(radius - 10) // Outer ring for children
 
-  const hoverArc = d3.arc<d3.PieArcDatum<BudgetCategorySummary>>()
+  const hoverArc = d3
+    .arc<d3.PieArcDatum<BudgetCategorySummary>>()
     .innerRadius(0)
     .outerRadius(radius * 0.65)
 
@@ -244,7 +243,8 @@ const drawChart = async () => {
   const pieDataGenerated = pie(pieData.value)
 
   // Create tooltip
-  const tooltip = d3.select('body')
+  const tooltip = d3
+    .select('body')
     .append('div')
     .attr('class', 'pie-chart-tooltip')
     .style('opacity', 0)
@@ -261,19 +261,21 @@ const drawChart = async () => {
   const childrenGroup = g.append('g').attr('class', 'children-slices')
 
   // Draw parent pie slices (inner ring)
-  const parentSlices = g.selectAll('.parent-arc')
+  const parentSlices = g
+    .selectAll('.parent-arc')
     .data(pieDataGenerated)
     .enter()
     .append('g')
     .attr('class', 'parent-arc')
 
-  parentSlices.append('path')
+  parentSlices
+    .append('path')
     .attr('d', innerArc)
-    .attr('fill', d => colorScheme.value.get(String(d.data.category_id)) || '#999999')
+    .attr('fill', (d) => colorScheme.value.get(String(d.data.category_id)) || '#999999')
     .attr('stroke', 'white')
     .attr('stroke-width', 2)
     .style('cursor', 'pointer')
-    .on('mouseover', function(event, d) {
+    .on('mouseover', function (event, d) {
       // Enlarge the hovered parent slice
       d3.select(this).transition().duration(200).attr('d', hoverArc(d))
 
@@ -281,27 +283,28 @@ const drawChart = async () => {
       showChildrenSlices(d)
 
       // Show tooltip
-      const children = props.data.filter(cat => cat.parent_id === d.data.category_id && Math.abs(cat.total_amount_debit) > 0)
+      const children = props.data.filter(
+        (cat) => cat.parent_id === d.data.category_id && Math.abs(cat.total_amount_debit) > 0,
+      )
 
       let tooltipContent = `<strong>${d.data.category_name}</strong><br/>`
       tooltipContent += `Total: ${formatCurrency(Math.abs(d.data.total_amount_debit))}<br/>`
-      tooltipContent += `Percentage: ${((Math.abs(d.data.total_amount_debit) / d3.sum(pieData.value, d => Math.abs(d.total_amount_debit))) * 100).toFixed(1)}%`
+      tooltipContent += `Percentage: ${((Math.abs(d.data.total_amount_debit) / d3.sum(pieData.value, (d) => Math.abs(d.total_amount_debit))) * 100).toFixed(1)}%`
 
       if (children.length > 0) {
         tooltipContent += `<br/><small>${children.length} subcategories</small>`
       }
 
       tooltip.transition().duration(200).style('opacity', 0.9)
-      tooltip.html(tooltipContent)
-        .style('left', (event.pageX + 10) + 'px')
-        .style('top', (event.pageY - 28) + 'px')
-    })
-    .on('mousemove', function(event) {
       tooltip
-        .style('left', (event.pageX + 10) + 'px')
-        .style('top', (event.pageY - 28) + 'px')
+        .html(tooltipContent)
+        .style('left', event.pageX + 10 + 'px')
+        .style('top', event.pageY - 28 + 'px')
     })
-    .on('mouseout', function(_event, d) {
+    .on('mousemove', function (event) {
+      tooltip.style('left', event.pageX + 10 + 'px').style('top', event.pageY - 28 + 'px')
+    })
+    .on('mouseout', function (_event, d) {
       // Reset parent slice
       d3.select(this).transition().duration(200).attr('d', innerArc(d))
 
@@ -313,32 +316,41 @@ const drawChart = async () => {
     })
 
   // Add labels for parent slices
-  const labelArc = d3.arc<d3.PieArcDatum<BudgetCategorySummary>>()
+  const labelArc = d3
+    .arc<d3.PieArcDatum<BudgetCategorySummary>>()
     .innerRadius(radius * 0.3)
     .outerRadius(radius * 0.3)
 
-  parentSlices.append('text')
-    .attr('transform', d => `translate(${labelArc.centroid(d)})`)
+  parentSlices
+    .append('text')
+    .attr('transform', (d) => `translate(${labelArc.centroid(d)})`)
     .attr('dy', '0.35em')
     .style('text-anchor', 'middle')
     .style('font-size', '11px')
     .style('font-weight', 'bold')
     .style('fill', 'white')
     .style('text-shadow', '1px 1px 2px rgba(0,0,0,0.7)')
-    .text(d => {
-      const percentage = (Math.abs(d.data.total_amount_debit) / d3.sum(pieData.value, d => Math.abs(d.total_amount_debit))) * 100
+    .text((d) => {
+      const percentage =
+        (Math.abs(d.data.total_amount_debit) /
+          d3.sum(pieData.value, (d) => Math.abs(d.total_amount_debit))) *
+        100
       return percentage > 8 ? `${percentage.toFixed(0)}%` : ''
     })
 
   // Function to show children slices in outer ring
   function showChildrenSlices(parentData: d3.PieArcDatum<BudgetCategorySummary>) {
-    const children = props.data.filter(cat => cat.parent_id === parentData.data.category_id && Math.abs(cat.total_amount_debit) > 0)
+    const children = props.data.filter(
+      (cat) =>
+        cat.parent_id === parentData.data.category_id && Math.abs(cat.total_amount_debit) > 0,
+    )
 
     if (children.length === 0) return
 
     // Create pie layout for children within the parent's angle range
-    const childPie = d3.pie<BudgetCategorySummary>()
-      .value(d => Math.abs(d.total_amount_debit))
+    const childPie = d3
+      .pie<BudgetCategorySummary>()
+      .value((d) => Math.abs(d.total_amount_debit))
       .startAngle(parentData.startAngle)
       .endAngle(parentData.endAngle)
       .sort(null)
@@ -347,16 +359,18 @@ const drawChart = async () => {
     const parentBaseColor = colorScheme.value.get(String(parentData.data.category_id)) || '#999999'
 
     // Draw children slices
-    const childSlices = childrenGroup.selectAll('.child-arc')
+    const childSlices = childrenGroup
+      .selectAll('.child-arc')
       .data(childrenData)
       .enter()
       .append('g')
       .attr('class', 'child-arc')
 
-    childSlices.append('path')
+    childSlices
+      .append('path')
       .attr('d', outerArc)
       .attr('fill', (d, i) => {
-        const shade = d3.color(parentBaseColor)?.darker(0.2 + (i * 0.3))
+        const shade = d3.color(parentBaseColor)?.darker(0.2 + i * 0.3)
         return shade ? shade.toString() : parentBaseColor
       })
       .attr('stroke', 'white')
@@ -367,12 +381,14 @@ const drawChart = async () => {
       .style('opacity', 0.9)
 
     // Add labels for children (only for larger slices)
-    const childLabelArc = d3.arc<d3.PieArcDatum<BudgetCategorySummary>>()
+    const childLabelArc = d3
+      .arc<d3.PieArcDatum<BudgetCategorySummary>>()
       .innerRadius(radius * 0.8)
       .outerRadius(radius * 0.8)
 
-    childSlices.append('text')
-      .attr('transform', d => `translate(${childLabelArc.centroid(d)})`)
+    childSlices
+      .append('text')
+      .attr('transform', (d) => `translate(${childLabelArc.centroid(d)})`)
       .attr('dy', '0.35em')
       .style('text-anchor', 'middle')
       .style('font-size', '9px')
@@ -380,8 +396,9 @@ const drawChart = async () => {
       .style('fill', 'white')
       .style('text-shadow', '1px 1px 2px rgba(0,0,0,0.8)')
       .style('opacity', 0)
-      .text(d => {
-        const childPercentage = (Math.abs(d.data.total_amount_debit) / Math.abs(parentData.data.total_amount_debit)) * 100
+      .text((d) => {
+        const childPercentage =
+          (Math.abs(d.data.total_amount_debit) / Math.abs(parentData.data.total_amount_debit)) * 100
         return childPercentage > 15 ? d.data.category_name.substring(0, 8) : ''
       })
       .transition()
@@ -391,48 +408,55 @@ const drawChart = async () => {
 
   // Function to hide children slices
   function hideChildrenSlices() {
-    childrenGroup.selectAll('.child-arc')
-      .transition()
-      .duration(200)
-      .style('opacity', 0)
-      .remove()
+    childrenGroup.selectAll('.child-arc').transition().duration(200).style('opacity', 0).remove()
   }
 }
 
 // Watch for data changes and redraw
-watch(() => props.data, async (newData, oldData) => {
-  console.log('PieChart: Data prop changed', {
-    newDataLength: newData?.length || 0,
-    oldDataLength: oldData?.length || 0,
-    hasNewData: !!newData?.length,
-    isLoading: props.isLoading
-  })
+watch(
+  () => props.data,
+  async (newData, oldData) => {
+    console.log('PieChart: Data prop changed', {
+      newDataLength: newData?.length || 0,
+      oldDataLength: oldData?.length || 0,
+      hasNewData: !!newData?.length,
+      isLoading: props.isLoading,
+    })
 
-  if (!props.isLoading && newData && newData.length > 0) {
-    await nextTick()
-    drawChart()
-  }
-}, { immediate: true, deep: true })
+    if (!props.isLoading && newData && newData.length > 0) {
+      await nextTick()
+      drawChart()
+    }
+  },
+  { immediate: true, deep: true },
+)
 
 // Also watch for loading state changes
-watch(() => props.isLoading, async (isLoading) => {
-  console.log('PieChart: Loading state changed', { isLoading })
+watch(
+  () => props.isLoading,
+  async (isLoading) => {
+    console.log('PieChart: Loading state changed', { isLoading })
 
-  if (!isLoading && props.data && props.data.length > 0) {
-    await nextTick()
-    drawChart()
-  }
-}, { immediate: true })
+    if (!isLoading && props.data && props.data.length > 0) {
+      await nextTick()
+      drawChart()
+    }
+  },
+  { immediate: true },
+)
 
 // Watch for legend visibility changes
-watch(() => localShowLegend.value, () => {
-  // No need to redraw chart, just toggle legend visibility
-})
+watch(
+  () => localShowLegend.value,
+  () => {
+    // No need to redraw chart, just toggle legend visibility
+  },
+)
 
 onMounted(async () => {
   console.log('PieChart: Component mounted', {
     hasData: !!props.data?.length,
-    isLoading: props.isLoading
+    isLoading: props.isLoading,
   })
 
   if (!props.isLoading && props.data && props.data.length > 0) {

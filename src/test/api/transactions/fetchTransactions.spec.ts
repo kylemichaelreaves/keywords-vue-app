@@ -19,7 +19,7 @@ describe('fetchTransactions', () => {
       http.all('*', ({ request }) => {
         console.log('unmatched request:', request.method, request.url)
         return new HttpResponse('Unmatched request', { status: 500 })
-      })
+      }),
     )
   })
 
@@ -35,7 +35,7 @@ describe('fetchTransactions', () => {
       memo: '',
       timeFrame: undefined,
       oldestDate: undefined,
-      count: undefined
+      count: undefined,
     }
 
     const transactions = await fetchTransactions(queryParms)

@@ -16,14 +16,18 @@ test.describe('NavBar loads the Budget Visualizer tab', () => {
     await expect(budgetVisualizerTab).toBeVisible()
   })
 
-  test('the Budget Visualizer tab is clickable and its components are visible after clicking', async ({ page }) => {
+  test('the Budget Visualizer tab is clickable and its components are visible after clicking', async ({
+    page,
+  }) => {
     const navBar = page.locator('.el-tabs')
     const budgetVisualizerTab = navBar.getByRole('tab', { name: 'budget-visualizer' })
     await budgetVisualizerTab.click()
 
     await expect(page.getByRole('heading', { name: 'Budget Visualizer' })).toBeVisible()
     await expect(page.getByRole('menubar')).toBeVisible()
-    await expect(page.locator('div').filter({ hasText: 'Budget Visualizer Add New' }).nth(3)).toBeVisible()
+    await expect(
+      page.locator('div').filter({ hasText: 'Budget Visualizer Add New' }).nth(3),
+    ).toBeVisible()
     await expect(page.getByRole('button', { name: 'Add New Transaction' })).toBeVisible()
     await expect(page.getByRole('link').first()).toBeVisible()
     await expect(page.getByRole('link').nth(1)).toBeVisible()
@@ -31,14 +35,9 @@ test.describe('NavBar loads the Budget Visualizer tab', () => {
   })
 
   test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({
-                                                                                                 transactionsPage
-                                                                                               }) => {
+    transactionsPage,
+  }) => {
     await transactionsPage.goto()
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
   })
-
-
 })
-
-
-

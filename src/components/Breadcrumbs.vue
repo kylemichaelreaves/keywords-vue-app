@@ -7,65 +7,67 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, watch} from 'vue';
-import {type RouteLocationNormalizedLoaded, useRoute, useRouter} from 'vue-router';
-import type {RouteRecordRaw} from 'vue-router';
-import type {Breadcrumb} from "@types";
+import { reactive, watch } from 'vue'
+import { type RouteLocationNormalizedLoaded, useRoute, useRouter } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+import type { Breadcrumb } from '@types'
 
-const breadcrumbs = reactive<Breadcrumb[]>([]);
-const route = useRoute();
-const router = useRouter();
+const breadcrumbs = reactive<Breadcrumb[]>([])
+const route = useRoute()
+const router = useRouter()
 
-const routes = router.options.routes;
+const routes = router.options.routes
 
 watch(
-    () => [route.name, route.params],
-    () => {
-      generateBreadcrumbs(route);
-    },
-    {immediate: true}
-);
+  () => [route.name, route.params],
+  () => {
+    generateBreadcrumbs(route)
+  },
+  { immediate: true },
+)
 
 // Generate breadcrumbs based on the current route
 function generateBreadcrumbs(route: RouteLocationNormalizedLoaded) {
-  breadcrumbs.length = 0;
+  breadcrumbs.length = 0
 
-  const matchedRoutes = findRouteChain(routes, String(route.name));
+  const matchedRoutes = findRouteChain(routes, String(route.name))
 
   if (matchedRoutes) {
     matchedRoutes.forEach((r, index) => {
       // If it's a parent route like transactions, assign the correct path
-      let routePath = r.path;
+      let routePath = r.path
 
       // If the route is a parent route (like transactions) with children, don't pass it as part of a child route
       if (r.children && index === matchedRoutes.length - 1) {
-        routePath = r.path;
+        routePath = r.path
       }
 
       breadcrumbs.push({
         label: String(r.name) || r.path,
-        to: routePath
-      });
-    });
+        to: routePath,
+      })
+    })
   }
 }
 
-function findRouteChain(routes: readonly RouteRecordRaw[], currentRouteName: string | undefined): RouteRecordRaw[] | null {
+function findRouteChain(
+  routes: readonly RouteRecordRaw[],
+  currentRouteName: string | undefined,
+): RouteRecordRaw[] | null {
   for (const route of routes) {
     if (route.name === currentRouteName) {
-      return [route];
+      return [route]
     }
 
     if (route.children) {
-      const childChain = findRouteChain(route.children, currentRouteName);
+      const childChain = findRouteChain(route.children, currentRouteName)
       if (childChain) {
-        return [route, ...childChain];
+        return [route, ...childChain]
       }
     }
   }
-  return null;
+  return null
 }
-
 </script>
 
 <style scoped>

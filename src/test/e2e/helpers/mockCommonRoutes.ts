@@ -13,53 +13,73 @@
  * are still processed with highest priority.
  */
 
-import type { Page } from '@playwright/test'
+import type { Page, Route } from '@playwright/test'
+import type { Transaction, DailyInterval } from '@types'
 import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
 import { generateDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
 
 const isCI = !!process.env.CI
 
+// Define interfaces for mock data structures
+interface TransactionCountResponse {
+  count: number
+}
+
+interface MockMemo {
+  id: number
+  name: string
+  budget_category: string
+  necessary: boolean
+  recurring: boolean
+  frequency: string
+  ambiguous: boolean
+}
+
 /**
  * Mock basic transaction routes that are commonly used across tests
  */
-export async function mockBasicTransactionRoutes(page: Page, staticData?: any[]) {
+export async function mockBasicTransactionRoutes(
+  page: Page,
+  staticData?: Transaction[],
+): Promise<void> {
   const transactions = staticData || generateTransactionsArray(100)
 
   await Promise.all([
     // CRITICAL FIX: Use more specific API patterns to avoid intercepting page navigation
     // Mock transactions with year timeframe
-    await page.route('**/transactions?limit=100&offset=0&timeFrame=year', route => {
+    page.route('**/transactions?limit=100&offset=0&timeFrame=year', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(transactions)
+        body: JSON.stringify(transactions),
       })
     }),
     // Mock transaction count
-    await page.route('**/transactions?count=true', route => {
+    page.route('**/transactions?count=true', (route) => {
+      const countResponse: TransactionCountResponse = { count: 200 }
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ count: 200 })
+        body: JSON.stringify(countResponse),
       })
     }),
     // mock **/transactions?limit=100&offset=0&timeFrame=day&date=
-    await page.route('**/transactions?limit=100&offset=0&timeFrame=day&date=*', route => {
+    page.route('**/transactions?limit=100&offset=0&timeFrame=day&date=*', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(transactions)
+        body: JSON.stringify(transactions),
       })
     }),
     //   transactions?limit=100&offset=0&timeFrame=year&date=
-    await page.route('**/transactions?limit=100&offset=0&timeFrame=year&date=', route => {
+    page.route('**/transactions?limit=100&offset=0&timeFrame=year&date=', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(transactions)
+        body: JSON.stringify(transactions),
       })
-    })
+    }),
   ])
 }
 
@@ -70,11 +90,14 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: any[])
  * FIXED: Removed hardcoded API URL for security - requires environment variable to be set
  * CI FIX: Added proper CORS headers and longer timeouts for CI environment
  */
-export async function mockComprehensiveTransactionRoutes(page: Page, staticTransactions: any[], staticDailyIntervals: any[]) {
-
+export async function mockComprehensiveTransactionRoutes(
+  page: Page,
+  staticTransactions: Transaction[],
+  staticDailyIntervals: DailyInterval[],
+): Promise<void> {
   // CRITICAL FIX: Use specific API patterns to avoid intercepting SPA navigation
   // Only intercept actual API calls with query parameters, not page routes
-  await page.route(`**/transactions?**`, async (route: any) => {
+  await page.route(`**/transactions?**`, async (route: Route) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
     const isDailyTotals = params.get('dailyTotals') === 'true'
@@ -85,11 +108,15 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     const hasOffset = params.has('offset')
 
     // CI-specific: Standard headers for all responses
-    const ciHeaders = {
+    const ciHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    }
+
+    // Add CI-specific headers when running in CI environment
+    if (isCI) {
+      ciHeaders['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+      ciHeaders['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     }
 
     try {
@@ -99,7 +126,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(staticDailyIntervals),
-          headers: ciHeaders
+          headers: ciHeaders,
         })
         return
       }
@@ -110,7 +137,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(staticDailyIntervals),
-          headers: ciHeaders
+          headers: ciHeaders,
         })
         return
       }
@@ -121,7 +148,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(staticTransactions),
-          headers: ciHeaders
+          headers: ciHeaders,
         })
         return
       }
@@ -134,7 +161,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(targetTransactions),
-          headers: ciHeaders
+          headers: ciHeaders,
         })
         return
       }
@@ -144,7 +171,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(staticTransactions),
-        headers: ciHeaders
+        headers: ciHeaders,
       })
     } catch (error) {
       console.error('[CI MOCK ERROR] Failed to fulfill route:', error)
@@ -153,18 +180,24 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
     }
   })
 
-  console.log('[CI MOCK] AWS API Gateway transaction mocks setup complete')
+  if (isCI) {
+    console.log('[CI MOCK] AWS API Gateway transaction mocks setup complete')
+  }
 }
 
 /**
  * Mock daily interval routes with various parameter orders
  * FIXED: Use more specific pattern to avoid conflicts with comprehensive routes
  */
-export async function mockDailyIntervalRoutes(page: Page, days: number = 30, staticData?: any[]) {
+export async function mockDailyIntervalRoutes(
+  page: Page,
+  days: number = 30,
+  staticData?: DailyInterval[],
+): Promise<void> {
   const intervals = staticData || generateDailyIntervals(days)
 
   // CRITICAL FIX: Use specific API pattern that only matches dailyTotals requests to avoid conflicts
-  await page.route('**/transactions?*dailyTotals=true*', async route => {
+  await page.route('**/transactions?*dailyTotals=true*', async (route: Route) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
 
@@ -173,7 +206,7 @@ export async function mockDailyIntervalRoutes(page: Page, days: number = 30, sta
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(intervals)
+        body: JSON.stringify(intervals),
       })
       return
     }
@@ -181,56 +214,65 @@ export async function mockDailyIntervalRoutes(page: Page, days: number = 30, sta
     // Continue to other handlers if not a daily totals request
     await route.continue()
   })
+
+  if (isCI) {
+    console.log('[CI MOCK] Daily interval mocks setup complete')
+  }
 }
 
 /**
  * Mock budget category routes
  */
-export async function mockBudgetCategoryRoutes(page: Page) {
-  await page.route('**/budget-categories?flatten=false', route => {
+export async function mockBudgetCategoryRoutes(page: Page): Promise<void> {
+  await page.route('**/budget-categories?flatten=false', (route) => {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(generateBudgetCategoryHierarchy())
+      body: JSON.stringify(generateBudgetCategoryHierarchy()),
     })
   })
 
-  await page.route('**/transactions?budgetCategoryHierarchySum=true&timeFrame=month&date*', route => {
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(generateBudgetCategoryHierarchy())
-    })
-  })
+  await page.route(
+    '**/transactions?budgetCategoryHierarchySum=true&timeFrame=month&date*',
+    (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(generateBudgetCategoryHierarchy()),
+      })
+    },
+  )
 }
 
 /**
  * Mock individual memo API calls for context menu functionality
  * FIXED: Simplified and consolidated memo route handlers to prevent conflicts
  */
-export async function mockMemoRoutes(page: Page) {
+export async function mockMemoRoutes(page: Page): Promise<void> {
   // Single comprehensive memo route handler to avoid conflicts
-  await page.route('**/memos/**', async route => {
+  await page.route('**/memos/**', async (route: Route) => {
     const url = new URL(route.request().url())
     const pathParts = url.pathname.split('/memos/')
     const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
 
+    const mockMemo: MockMemo = {
+      id: 1,
+      name: memoName,
+      budget_category: 'Groceries',
+      necessary: true,
+      recurring: false,
+      frequency: 'monthly',
+      ambiguous: false,
+    }
+
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify([{
-        id: 1,
-        name: memoName,
-        budget_category: 'Groceries',
-        necessary: true,
-        recurring: false,
-        frequency: 'monthly',
-        ambiguous: false
-      }]),
+      body: JSON.stringify([mockMemo]),
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
+        'Access-Control-Allow-Origin': '*',
+      },
     })
   })
 }

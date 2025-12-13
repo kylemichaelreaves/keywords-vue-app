@@ -1,14 +1,18 @@
 import type { Summaries } from '@types'
 import { httpClient } from '@api/httpClient'
 
-export async function fetchSummaries(timeFrame: string, summary=true, summaryType='historical') {
+export async function fetchSummaries(
+  timeFrame: string,
+  summary = true,
+  summaryType = 'historical',
+) {
   try {
     const res = await httpClient.get<Array<Summaries>>(`/transactions`, {
       params: {
         summary,
         summaryType,
-        timeFrame
-      }
+        timeFrame,
+      },
     })
     return res.data
   } catch (err) {

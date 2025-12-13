@@ -52,74 +52,72 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { useIsIntervalGreaterThanOldestDate } from "@api/hooks/transactions/useIsIntervalGreaterThanOldestDate";
-import AlertComponent from "@components/shared/AlertComponent.vue";
-
+import { ref, computed, watch } from 'vue'
+import { useIsIntervalGreaterThanOldestDate } from '@api/hooks/transactions/useIsIntervalGreaterThanOldestDate'
+import AlertComponent from '@components/shared/AlertComponent.vue'
 
 const props = defineProps({
   dataTestId: {
     type: String,
-    default: 'interval-form'
-  }
-});
-
+    default: 'interval-form',
+  },
+})
 
 // Using defineModel for the interval value
 const intervalValue = defineModel<string>('intervalValue', {
-  default: '1 month'
-});
+  default: '1 month',
+})
 
-
-const intervalSelect = ref("month");
-const numberInput = ref(1);
+const intervalSelect = ref('month')
+const numberInput = ref(1)
 
 // Computed property to build the interval string
 const computedIntervalValue = computed(() => {
-  return `${numberInput.value} ${intervalSelect.value}`;
-});
+  return `${numberInput.value} ${intervalSelect.value}`
+})
 
-const { data, error, isError, isLoading, isFetching, refetch } = useIsIntervalGreaterThanOldestDate(computedIntervalValue);
+const { data, error, isError, isLoading, isFetching, refetch } =
+  useIsIntervalGreaterThanOldestDate(computedIntervalValue)
 
 // get is_out_of_range from the data object
 const isOutOfRange = computed(() => {
-  return data?.value?.map((item: { is_out_of_range: boolean }) => item.is_out_of_range)[0];
-});
+  return data?.value?.map((item: { is_out_of_range: boolean }) => item.is_out_of_range)[0]
+})
 
 const handleNumberInputChange = (value: number) => {
-  numberInput.value = value;
+  numberInput.value = value
 }
 
 const onClose = () => {
-  intervalSelect.value = "month";
-  numberInput.value = 1;
+  intervalSelect.value = 'month'
+  numberInput.value = 1
 }
 
 const onClearIntervalSelect = () => {
-  intervalSelect.value = "";
+  intervalSelect.value = ''
 }
 
 const selectOptions = computed(() => {
   return [
-    { value: "days", label: numberInput.value == 1 ? "Day" : "Days" },
-    { value: "weeks", label: numberInput.value == 1 ? "Week" : "Weeks" },
-    { value: "months", label: numberInput.value == 1 ? "Month" : "Months" },
-    { value: "years", label: numberInput.value == 1 ? "Year" : "Years" },
-  ];
-});
+    { value: 'days', label: numberInput.value == 1 ? 'Day' : 'Days' },
+    { value: 'weeks', label: numberInput.value == 1 ? 'Week' : 'Weeks' },
+    { value: 'months', label: numberInput.value == 1 ? 'Month' : 'Months' },
+    { value: 'years', label: numberInput.value == 1 ? 'Year' : 'Years' },
+  ]
+})
 
 // Update the model value whenever the computed interval changes
 watch(computedIntervalValue, (newVal) => {
   if (newVal) {
-    intervalValue.value = newVal;
+    intervalValue.value = newVal
   }
-});
+})
 
 watch(intervalSelect, (newVal) => {
   if (newVal) {
-    refetch();
+    refetch()
   }
-});
+})
 </script>
 
 <style scoped>

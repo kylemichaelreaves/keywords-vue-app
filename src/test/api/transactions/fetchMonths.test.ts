@@ -1,4 +1,4 @@
-import { fetchMonths } from '@api/transactions/fetchMonths'
+import { fetchMonths } from '@api/timeUnits/months/fetchMonths.ts'
 import { vi, test } from 'vitest'
 import { monthsMock } from '@mocks/transaction/'
 import { createPinia, setActivePinia } from 'pinia'
@@ -8,7 +8,6 @@ describe('fetchMonths', () => {
     setActivePinia(createPinia())
   })
 
-
   afterEach(() => {
     vi.resetAllMocks()
   })
@@ -17,6 +16,4 @@ describe('fetchMonths', () => {
     const months = await fetchMonths()
     expect(months).toEqual(monthsMock)
   })
-
-
 })

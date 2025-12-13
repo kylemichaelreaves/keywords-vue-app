@@ -5,8 +5,9 @@ import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import {
   MEMO_PRESETS,
   setupBudgetCategoryHierarchyInterceptor,
-  setupMemoRouteInterceptor
+  setupMemoRouteInterceptor,
 } from '@test/e2e/helpers/memoRouteHelper'
+import { Timeframe } from '@types'
 
 test.describe('Week Summary Table', () => {
   let transactionsPage: TransactionsPage
@@ -19,15 +20,16 @@ test.describe('Week Summary Table', () => {
 
     await setupWeekSummaryMocks(page)
     await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
-    await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: 'week' })
+    await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: Timeframe.Week })
 
     await transactionsPage.goto()
     selectedWeek = await transactionsPage.selectFirstWeek()
 
-    await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, { waitUntil: 'domcontentloaded' })
+    await page.waitForURL(/\/budget-visualizer\/transactions\/weeks\/.*\/summary/, {
+      waitUntil: 'domcontentloaded',
+    })
     await weekSummaryPage.expectTableHasData()
   })
-
 
   test('should display the week summary table elements correctly', async () => {
     await weekSummaryPage.expectTableVisible()
@@ -38,11 +40,12 @@ test.describe('Week Summary Table', () => {
 
   test('should reset the week when reset button is clicked', async () => {
     await weekSummaryPage.clickResetButton()
-    await weekSummaryPage.page.waitForURL('/budget-visualizer/transactions', { waitUntil: 'networkidle' })
+    await weekSummaryPage.page.waitForURL('/budget-visualizer/transactions', {
+      waitUntil: 'networkidle',
+    })
     const weekSelectValue = await transactionsPage.getWeekSelectValue()
     expect(weekSelectValue).toBe('')
   })
-
 
   test('memo edit modal workflow: open, display content, and close', async ({ page }) => {
     // Set up the memo route interceptor for weekly preset
@@ -51,8 +54,8 @@ test.describe('Week Summary Table', () => {
     await weekSummaryPage.expectMemoEditModalHidden()
 
     // Wait for the memo request to be made and responded to
-    const responsePromise = page.waitForResponse(response =>
-      response.url().includes('/memos/') && response.status() === 200
+    const responsePromise = page.waitForResponse(
+      (response) => response.url().includes('/memos/') && response.status() === 200,
     )
 
     await weekSummaryPage.rightClickOnTableRow(1)

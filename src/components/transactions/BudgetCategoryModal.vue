@@ -1,6 +1,11 @@
 <template>
   <el-dialog v-model="dialogVisible" :title="title">
-    <AlertComponent v-if="error && isError" :title="error.name" :message="error.message" type="error" />
+    <AlertComponent
+      v-if="error && isError"
+      :title="error.name"
+      :message="error.message"
+      type="error"
+    />
     <el-text size="large">{{ memoDisplayName }}</el-text>
     <BudgetCategoriesTreeSelect v-model="selectedCategory" />
     <template #footer>
@@ -17,18 +22,18 @@ import { useQueryClient } from '@tanstack/vue-query'
 import BudgetCategoriesTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import type { Memo } from '@types'
-import mutateMemo from '@api/hooks/transactions/mutateMemo.ts'
-import useMemo from '@api/hooks/transactions/useMemo'
+import mutateMemo from '@api/hooks/memos/mutateMemo.ts'
+import useMemo from '@api/hooks/memos/useMemo.ts'
 
 const props = defineProps({
   title: {
     type: String,
-    default: 'Assign Budget Category'
+    default: 'Assign Budget Category',
   },
   memo: {
-    type: [Object, String] as PropType<Memo | string>,
-    required: true
-  }
+    type: Object as PropType<Memo>,
+    required: true,
+  },
 })
 
 const dialogVisible = defineModel<boolean>('visible', { default: false })
@@ -36,36 +41,30 @@ const selectedCategory = defineModel<string>('selectedBudgetCategory', { default
 
 const emit = defineEmits(['categoryUpdated', 'memoUpdated'])
 
-const memoName = computed(() =>
-  typeof props.memo === 'string' ? props.memo : props.memo.name
-)
+const memoId = computed(() => props.memo.id)
 
-const { data: memoData, refetch } = useMemo(memoName)
+const { data: memoData, refetch } = useMemo(memoId)
 
 const memoObject = computed(() => {
   if (typeof props.memo === 'object') {
     return props.memo
   }
-  return memoData.value || null
+  return memoData.value
 })
 
-const memoDisplayName = computed(() =>
-  typeof props.memo === 'string' ? props.memo : props.memo.name
-)
+const memoDisplayName = computed(() => props.memo.name)
 
 const { error, mutate, isError } = mutateMemo()
 
 const queryClient = useQueryClient()
 
 const saveCategory = () => {
-
   if (!selectedCategory.value) {
     ElMessage.warning('Please select a budget category before saving.')
     return
   }
 
   const memo = memoObject.value
-
 
   if (!memo) {
     console.error('Memo object is null/undefined')
@@ -85,13 +84,12 @@ const saveCategory = () => {
     return
   }
 
-
   const mutationPayload = {
     memo: {
       id: memo.id,
       name: memo.name,
-      budgetCategory: selectedCategory.value
-    }
+      budgetCategory: selectedCategory.value,
+    },
   }
 
   mutate(mutationPayload, {
@@ -111,7 +109,7 @@ const saveCategory = () => {
     onError: (error) => {
       console.error('Mutation error:', error)
       ElMessage.error(`An error occurred while assigning the budget category: ${error.message}`)
-    }
+    },
   })
 
   console.log('Mutate function called')

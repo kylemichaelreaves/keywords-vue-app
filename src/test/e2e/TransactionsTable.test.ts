@@ -22,7 +22,11 @@ test.describe('Transactions Table', () => {
     transactionsPage = new TransactionsPage(page)
 
     // CRITICAL FIX: Set up API mocks FIRST before any navigation
-    await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
+    await setupTransactionsTableWithComprehensiveMocks(
+      page,
+      staticTransactions.reverse(),
+      staticDailyIntervals,
+    )
 
     // Now navigate to the transactions page
     await transactionsPage.goto()
@@ -36,17 +40,18 @@ test.describe('Transactions Table', () => {
 
     // BEST PRACTICE: Wait for final state only, not intermediate loading states
     await waitForTableContent(transactionsPage.transactionsTable, page, {
-      timeout: isCI ? 45000 : 30000
+      timeout: isCI ? 45000 : 30000,
     })
 
     // Ensure chart is visible before proceeding with chart tests
     await expect(transactionsPage.intervalLineChart).toBeVisible({
-      timeout: isCI ? 45000 : 30000
+      timeout: isCI ? 45000 : 30000,
     })
-
   })
 
-  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({ page }) => {
+  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({
+    page,
+  }) => {
     // Log only API requests for this test
     setupApiRequestLogging(page)
 
@@ -61,22 +66,32 @@ test.describe('Transactions Table', () => {
     await expect(transactionsPage.memoSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.intervalTypeSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
-    await expect(transactionsPage.intervalNumberInput).toBeVisible({ timeout: isCI ? 30000 : 15000 })
-    await expect(transactionsPage.transactionsTablePagination).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.intervalNumberInput).toBeVisible({
+      timeout: isCI ? 30000 : 15000,
+    })
+    await expect(transactionsPage.transactionsTablePagination).toBeVisible({
+      timeout: isCI ? 30000 : 15000,
+    })
   })
 
-  test('right clicking on a cell in the TransactionsTable opens the context menu', async ({ page }) => {
+  test('right clicking on a cell in the TransactionsTable opens the context menu', async ({
+    page,
+  }) => {
     // Log only API requests for this test
     setupApiRequestLogging(page)
 
     // Test user interaction - right click behavior
-    const firstDataCell = transactionsPage.transactionsTable.getByRole('row').nth(1).getByRole('cell').first()
+    const firstDataCell = transactionsPage.transactionsTable
+      .getByRole('row')
+      .nth(1)
+      .getByRole('cell')
+      .first()
     await expect(firstDataCell).not.toBeEmpty({ timeout: 30000 })
 
     await transactionsPage.clickOnTableCell({
       rowIndex: 1,
       cellIndex: 1,
-      clickOptions: { button: 'right' }
+      clickOptions: { button: 'right' },
     })
 
     const editTransactionModal = transactionsPage.transactionEditModal
@@ -105,7 +120,9 @@ test.describe('Transactions Table', () => {
     await expect(editTransactionModal).not.toBeVisible()
   })
 
-  test('line chart displays tooltip on hover and allows clicking points to load transactions', async ({ page }) => {
+  test('line chart displays tooltip on hover and allows clicking points to load transactions', async ({
+    page,
+  }) => {
     // Test user interaction with chart - what they see and can do
     // Log only API requests for this test
     setupApiRequestLogging(page)
@@ -140,7 +157,7 @@ test.describe('Transactions Table', () => {
 
     // Wait for UI to update with new data
     await waitForTableContent(transactionsPage.transactionsTable, page, {
-      timeout: isCI ? 90000 : 60000
+      timeout: isCI ? 90000 : 60000,
     })
 
     // Verify user sees filtered data in table
@@ -148,7 +165,9 @@ test.describe('Transactions Table', () => {
     expect(dateText).toBe(firstPointDate)
 
     // Test that chart hides after user selects a specific day (expected UX behavior)
-    await expect(transactionsPage.intervalLineChart).not.toBeVisible({ timeout: isCI ? 20000 : 10000 })
+    await expect(transactionsPage.intervalLineChart).not.toBeVisible({
+      timeout: isCI ? 20000 : 10000,
+    })
   })
 
   test('daily interval line chart is hidden when a day is selected', async ({ page }) => {
@@ -165,6 +184,8 @@ test.describe('Transactions Table', () => {
     // Give time for UI to respond to user action
     await page.waitForLoadState('domcontentloaded', { timeout: isCI ? 20000 : 10000 })
     // Chart should now be hidden (user is in detail view)
-    await expect(transactionsPage.intervalLineChart).not.toBeVisible({ timeout: isCI ? 20000 : 10000 })
+    await expect(transactionsPage.intervalLineChart).not.toBeVisible({
+      timeout: isCI ? 20000 : 10000,
+    })
   })
 })

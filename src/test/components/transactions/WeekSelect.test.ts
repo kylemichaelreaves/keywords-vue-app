@@ -1,145 +1,104 @@
-import WeekSelect from "@components/transactions/WeekSelect.vue";
-import {createTestingPinia} from "@pinia/testing";
-import type {TestingPinia} from "@pinia/testing";
-import {useTransactionsStore} from "@stores/transactions";
-import {mount, VueWrapper} from "@vue/test-utils";
-import {VueQueryPlugin} from "@tanstack/vue-query";
-import {afterEach, test, vi} from "vitest";
+import WeekSelect from '@components/transactions/selects/WeekSelect.vue'
+import { createTestingPinia } from '@pinia/testing'
+import type { TestingPinia } from '@pinia/testing'
+import { useTransactionsStore } from '@stores/transactions'
+import { mount, VueWrapper } from '@vue/test-utils'
+import { VueQueryPlugin } from '@tanstack/vue-query'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { ref } from 'vue'
+
+// Mock the useWeeks hook
+vi.mock('@api/hooks/transactions/useWeeks', () => ({
+  useWeeks: () => ({
+    data: ref([{ week_year: '42/2022' }, { week_year: '43/2022' }]),
+    isLoading: ref(false),
+    isFetching: ref(false),
+    isError: ref(false),
+    error: ref(null),
+  }),
+}))
 
 describe('WeekSelect', () => {
-    let store: TestingPinia;
-    let transactionsStore: ReturnType<typeof useTransactionsStore>;
-    let wrapper: VueWrapper;
+  let store: TestingPinia
+  let transactionsStore: ReturnType<typeof useTransactionsStore>
+  let wrapper: VueWrapper
 
-
-    beforeEach(async () => {
-        store = createTestingPinia();
-        transactionsStore = useTransactionsStore(store);
-        wrapper = mount(WeekSelect, {
-            global: {
-                plugins: [VueQueryPlugin,
-                    createTestingPinia({
-                        initialState: {
-                            transactions: {
-                                weeks: [],
-                                selectedMonth: '',
-                                selectedWeek: '',
-                            }
-                        },
-                        stubActions: false,
-                    })],
-            }
-        });
+  beforeEach(async () => {
+    store = createTestingPinia({
+      initialState: {
+        transactions: {
+          weeks: [],
+          selectedMonth: '',
+          selectedWeek: '',
+        },
+      },
+      stubActions: false,
     })
 
-    afterEach(() => {
-        vi.resetAllMocks()
-        transactionsStore.selectedMonth = '';
-        transactionsStore.selectedWeek = '';
-        transactionsStore.weeks = [];
+    transactionsStore = useTransactionsStore(store)
+
+    wrapper = mount(WeekSelect, {
+      global: {
+        plugins: [VueQueryPlugin, store],
+      },
     })
+  })
 
+  afterEach(() => {
+    vi.resetAllMocks()
+    transactionsStore.selectedMonth = ''
+    transactionsStore.selectedWeek = ''
+    transactionsStore.weeks = []
+  })
 
-    test('should render', () => {
-        expect(wrapper.exists()).toBe(true)
-    })
+  test('should render', () => {
+    expect(wrapper.exists()).toBe(true)
+  })
 
-    test('clearable should be true', async () => {
-        const select = wrapper.findComponent({name: 'ElSelect'})
-        expect(select.vm.clearable).toBe(true)
-    })
+  test('clearable should be true', async () => {
+    const select = wrapper.findComponent({ name: 'ElSelect' })
+    expect(select.vm.clearable).toBe(true)
+  })
 
-    // TODO when there is a selectedMonth, the weeks of that month should populate the weekSelect
-    test.skip('should not be disabled when there is a selectedMonth in the store', async () => {
+  test('should update selected week when store value changes', async () => {
+    // Update the store directly
+    transactionsStore.setSelectedWeek('42/2022')
 
+    await wrapper.vm.$nextTick()
 
-        wrapper.vm._pStores?.transactions.$patch((state) => {
-            state.selectedWeek = '11/2022';
-        });
+    const select = wrapper.findComponent({ name: 'ElSelect' })
+    expect(select.vm.modelValue).toBe('42/2022')
+  })
 
-        await wrapper.vm.$nextTick();
+  test('should call setSelectedWeek when onChange is triggered', async () => {
+    const setSelectedWeekSpy = vi.spyOn(transactionsStore, 'setSelectedWeek')
 
+    const select = wrapper.findComponent({ name: 'ElSelect' })
+    await select.vm.$emit('change', '43/2022')
 
-        const select = wrapper.findComponent({name: 'ElSelect'})
+    expect(setSelectedWeekSpy).toHaveBeenCalledWith('43/2022')
+  })
 
+  test('should clear selected week when onClear is triggered', async () => {
+    // Set initial value
+    transactionsStore.setSelectedWeek('42/2022')
+    await wrapper.vm.$nextTick()
 
-        expect(select.vm.select).toBe(false);
-    });
+    const setSelectedWeekSpy = vi.spyOn(transactionsStore, 'setSelectedWeek')
 
-    test('should update selected week when model value changes', async () => {
-        wrapper.vm._pStores?.transactions.$patch((state) => {
-            state.selectedWeek = '42/2022';
-        });
+    const select = wrapper.findComponent({ name: 'ElSelect' })
+    await select.vm.$emit('clear')
 
-        transactionsStore.selectedWeek = '42/2022';
+    expect(setSelectedWeekSpy).toHaveBeenCalledWith('')
+  })
 
+  test('should display week options from mocked data', async () => {
+    await wrapper.vm.$nextTick()
 
-        await wrapper.vm.$nextTick();
+    const options = wrapper.findAllComponents({ name: 'ElOption' })
+    expect(options).toHaveLength(2)
 
-
-        const select = wrapper.findComponent({name: 'ElSelect'})
-
-
-        // @ts-ignore
-        expect(select.vm.modelValue).toBe('42/2022');
-    })
-
-    test.skip('should populate weekOptions when data is available', async () => {
-        // TODO: figure out how to set data in wrapper.vm, not in the store but through the VueQueryPlugin
-
-        transactionsStore.weeks = [{week_year: '42/2022'}];
-
-
-        await wrapper.vm.$nextTick();
-
-
-        const select = wrapper.findComponent({name: 'ElSelect'})
-
-        // @ts-ignore
-        expect(select.weekOptions).toEqual([{value: '42/2022', label: '42/2022'}]);
-    })
-
-    test('should not populate weekOptions when data is not available', async () => {
-        transactionsStore.weeks = [];
-        await wrapper.vm.$nextTick();
-        // @ts-ignore
-        expect(wrapper.vm.weekOptions).toEqual([]);
-    })
-
-    test('updateSelectedWeek updates selectedWeek in the store', () => {
-        const week = '42/2022';
-
-        transactionsStore.setSelectedWeek(week);
-
-        wrapper.vm._pStores?.transactions.setSelectedWeek(week);
-
-        // @ts-ignore
-        wrapper.vm.updateSelectedWeek(week);
-
-
-        expect(transactionsStore.setSelectedWeek).toHaveBeenCalledWith(week);
-    });
-
-    test.skip('weekOptions maps data.value to the required format', () => {
-        const expectedWeekOptions = transactionsStore.weeks.map(week => ({
-            value: week.week_year,
-            label: week.week_year
-        }));
-        expect(wrapper.vm.$refs.weekOptions).toEqual(expectedWeekOptions);
-    });
-
-    test.skip('selectedWeek returns selectedWeek from the store', async () => {
-        const week = '42/2022';
-        wrapper.vm._pStores?.transactions.$patch((state) => {
-            state.selectedWeek = '42/2022';
-        });
-        await wrapper.vm.$nextTick();
-        expect(wrapper.vm.$refs.selectedWeek).toBe(week);
-        // expect(wrapper.vm.$refs.selectedWeek).toBe(transactionsStore.getSelectedWeek);
-    });
-
-    test.skip('selectedMonth returns selectedMonth from the store', () => {
-        expect(wrapper.vm.$refs.selectedMonth).toBe(transactionsStore.getSelectedMonth);
-    });
-
+    expect(options[0]?.vm.value).toBe('42/2022')
+    expect(options[1]?.vm.value).toBe('43/2022')
+  })
 })

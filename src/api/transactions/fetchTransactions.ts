@@ -1,26 +1,17 @@
 import { httpClient } from '@api/httpClient'
 import type { TransactionQueryParams } from '@types'
+import { isValidParam } from '@api/helpers/isValidParam'
 
 export async function fetchTransactions(queryParams: TransactionQueryParams) {
-
-  function isValidParam(key: string, value: unknown): boolean {
-    if (value === undefined) return false
-    if (key === 'memo' && value === '') return false
-    return !(key === 'date' && (
-      (typeof value === 'number' && isNaN(value)) ||
-      (value instanceof Date && isNaN(value.getTime()))
-    ))
-  }
-
   const filteredQueryParams = Object.fromEntries(
-    Object.entries(queryParams).filter(([key, value]) => isValidParam(key, value))
+    Object.entries(queryParams).filter(([key, value]) => isValidParam(key, value)),
   )
 
   console.log('Filtered Query Params:', filteredQueryParams)
 
   try {
     const response = await httpClient.get('/transactions', {
-      params: filteredQueryParams
+      params: filteredQueryParams,
     })
     return response.data
   } catch (err) {
@@ -28,4 +19,3 @@ export async function fetchTransactions(queryParams: TransactionQueryParams) {
     throw err
   }
 }
-

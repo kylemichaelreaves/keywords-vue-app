@@ -44,3 +44,6 @@ src/keywords-vue-app/playwright/.auth/
 
 /src/test/e2e/playwright/.auth/
 /src/test/e2e/playwright/.auth/storageState.json
+
+*storybook.log
+storybook-static

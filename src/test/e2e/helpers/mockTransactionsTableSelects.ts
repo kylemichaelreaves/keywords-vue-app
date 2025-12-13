@@ -9,7 +9,7 @@ export async function mockTransactionsTableSelects(page: Page) {
   await Promise.all([
     // CRITICAL FIX: Use more specific API patterns to avoid intercepting page navigation
     // AND ensure they work in both local and CI environments
-    await page.route(`**/memos?limit=100&offset=0`, route => {
+    await page.route(`**/memos?limit=100&offset=0`, (route) => {
       console.log('[MOCK] Returning memos data for select dropdown')
       route.fulfill({
         status: 200,
@@ -18,14 +18,14 @@ export async function mockTransactionsTableSelects(page: Page) {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        }
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
       })
     }),
 
     // CRITICAL FIX: Return multiple days to ensure chart can render properly
     // The DailyIntervalLineChart needs multiple data points to create a line chart
-    await page.route(`**/transactions/days`, route => {
+    await page.route(`**/transactions/days`, (route) => {
       const today = new Date()
       const days = []
 
@@ -44,12 +44,12 @@ export async function mockTransactionsTableSelects(page: Page) {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        }
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
       })
     }),
 
-    await page.route(`**/transactions/weeks`, route => {
+    await page.route(`**/transactions/weeks`, (route) => {
       console.log('[MOCK] Returning weeks data for select dropdown')
       route.fulfill({
         status: 200,
@@ -58,12 +58,12 @@ export async function mockTransactionsTableSelects(page: Page) {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        }
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
       })
     }),
 
-    await page.route(`**/transactions/months`, route => {
+    await page.route(`**/transactions/months`, (route) => {
       console.log('[MOCK] Returning months data for select dropdown')
       route.fulfill({
         status: 200,
@@ -72,12 +72,12 @@ export async function mockTransactionsTableSelects(page: Page) {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        }
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
       })
     }),
 
-    await page.route(`**/transactions/years`, route => {
+    await page.route(`**/transactions/years`, (route) => {
       console.log('[MOCK] Returning years data for select dropdown')
       route.fulfill({
         status: 200,
@@ -86,9 +86,9 @@ export async function mockTransactionsTableSelects(page: Page) {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        }
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
       })
-    })
+    }),
   ])
 }

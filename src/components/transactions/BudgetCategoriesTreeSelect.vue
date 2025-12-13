@@ -19,9 +19,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { ElTreeSelect } from 'element-plus'
-import { useBudgetCategories } from '@api/hooks/transactions/useBudgetCategories'
+import { useBudgetCategories } from '@api/hooks/budgetCategories/useBudgetCategories.ts'
 import { convertToTree } from '@api/helpers/convertToTree'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
@@ -32,13 +32,27 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   placeholder: 'Select a budget category',
-  dataTestId: 'budget-category-tree-select'
+  dataTestId: 'budget-category-tree-select',
 })
-
 
 const model = defineModel<string>({
-  default: ''
+  default: '',
 })
+
+console.log('[BudgetCategoryTreeSelect] Initial model value:', model.value)
+
+// Watch for changes to the model value
+watch(
+  () => model.value,
+  (newValue, oldValue) => {
+    console.log('[BudgetCategoryTreeSelect] Model value changed:', {
+      oldValue,
+      newValue,
+      timestamp: new Date().toISOString()
+    })
+  },
+  { immediate: true }
+)
 
 const { data, isError, error } = useBudgetCategories(undefined, undefined, false)
 
@@ -49,7 +63,12 @@ const selectTreeData = computed(() => {
   const categoryData = data.value[0]?.data
   if (!categoryData) return []
 
-  return convertToTree(categoryData).flat()
+  const treeData = convertToTree(categoryData).flat()
+  console.log('[BudgetCategoryTreeSelect] Tree data loaded:', {
+    numberOfCategories: treeData.length,
+    currentModelValue: model.value
+  })
+  return treeData
 })
 </script>
 

@@ -26,12 +26,11 @@ import { computed, onMounted } from 'vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import { useTransactionsStore } from '@stores/transactions'
 
-
 const props = defineProps({
   dataTestId: {
     type: String,
-    default: 'transactions-table-pagination'
-  }
+    default: 'transactions-table-pagination',
+  },
 })
 
 const { data, isError, error, refetch } = useTransactionsCount()
@@ -42,14 +41,14 @@ const transactionsCount = computed(() => {
   if (!data.value) {
     return 0
   }
-  return data.value[0].count
+  return data.value
 })
 
 const currentPage = computed({
   get: () => Math.floor(store.transactionsTableOffset / store.transactionsTableLimit) + 1,
   set: (val: number) => {
     store.updateTransactionsTableOffset((val - 1) * store.transactionsTableLimit)
-  }
+  },
 })
 
 const limit = computed({
@@ -57,7 +56,7 @@ const limit = computed({
   set: (val: number) => {
     store.setTransactionsTableLimit(val)
     store.updateTransactionsTableOffset(0)
-  }
+  },
 })
 
 function handleCurrentChange(newPage: number) {
@@ -73,10 +72,7 @@ onMounted(() => {
   refetch()
   store.updateTransactionsTableOffset(0)
   if (data.value) {
-    store.setTransactionsCount(data.value[0].count)
+    store.setTransactionsCount(data.value)
   }
 })
-
-
 </script>
-

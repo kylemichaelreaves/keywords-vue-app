@@ -1,13 +1,6 @@
 <template>
   <div class="table-skeleton" data-testid="table-skeleton">
-    <el-table
-      :data="skeletonData"
-      height="auto"
-      size="small"
-      border
-      stripe
-      show-summary
-    >
+    <el-table :data="skeletonData" height="auto" size="small" border stripe show-summary>
       <el-table-column
         v-for="column in columns"
         :key="column.prop"
@@ -18,10 +11,7 @@
         <template v-slot:default>
           <el-skeleton animated>
             <template #template>
-              <el-skeleton-item
-                variant="text"
-                :style="{ width: getSkeletonWidth(column.prop) }"
-              />
+              <el-skeleton-item variant="text" :style="{ width: getSkeletonWidth(column.prop) }" />
             </template>
           </el-skeleton>
         </template>
@@ -44,14 +34,14 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  rows: 10
+  rows: 10,
 })
 
 // Create skeleton data with the specified number of rows
 const skeletonData = computed(() => {
   return Array.from({ length: props.rows }, (_, index) => {
     const row: Record<string, string> = {}
-    props.columns.forEach(column => {
+    props.columns.forEach((column) => {
       row[column.prop] = `skeleton-${index}-${column.prop}`
     })
     return row
@@ -70,7 +60,7 @@ const getSkeletonWidth = (columnProp: string): string => {
     amount_debit: '100px',
     amount_credit: '100px',
     balance: '100px',
-    budget_category: '150px'
+    budget_category: '150px',
   }
 
   return widthMap[columnProp] || '120px'

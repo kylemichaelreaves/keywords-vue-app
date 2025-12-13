@@ -53,16 +53,30 @@ export class TransactionsPage {
     this.transactionEditModal = this.page.getByRole('dialog', { name: /edit transaction/i })
     this.transactionEditForm = this.transactionEditModal.getByRole('form')
 
-    this.transactionNumberInput = this.transactionEditModal.getByRole('textbox', { name: /transaction number/i })
+    this.transactionNumberInput = this.transactionEditModal.getByRole('textbox', {
+      name: /transaction number/i,
+    })
     this.transactionDatePicker = this.transactionEditModal.getByRole('combobox', { name: /date/i })
-    this.transactionAmountDebitInput = this.transactionEditModal.getByRole('textbox', { name: /amount debit/i })
-    this.transactionAmountCreditInput = this.transactionEditModal.getByRole('textbox', { name: /amount credit/i })
-    this.transactionDescriptionInput = this.transactionEditModal.getByRole('textbox', { name: /description/i })
+    this.transactionAmountDebitInput = this.transactionEditModal.getByRole('textbox', {
+      name: /amount debit/i,
+    })
+    this.transactionAmountCreditInput = this.transactionEditModal.getByRole('textbox', {
+      name: /amount credit/i,
+    })
+    this.transactionDescriptionInput = this.transactionEditModal.getByRole('textbox', {
+      name: /description/i,
+    })
     this.transactionMemoInput = this.transactionEditModal.getByRole('combobox', { name: /memo/i })
-    this.transactionBudgetCategoryTreeSelect = this.transactionEditModal.getByRole('combobox', { name: /budget category/i })
-    this.transactionCheckNumberInput = this.transactionEditModal.getByRole('textbox', { name: /check number/i })
+    this.transactionBudgetCategoryTreeSelect = this.transactionEditModal.getByRole('combobox', {
+      name: /budget category/i,
+    })
+    this.transactionCheckNumberInput = this.transactionEditModal.getByRole('textbox', {
+      name: /check number/i,
+    })
     this.transactionFeesInput = this.transactionEditModal.getByRole('textbox', { name: /fees/i })
-    this.transactionBalanceInput = this.transactionEditModal.getByRole('textbox', { name: /balance/i })
+    this.transactionBalanceInput = this.transactionEditModal.getByRole('textbox', {
+      name: /balance/i,
+    })
 
     this.modalCloseButton = this.transactionEditModal.getByRole('button', { name: /close/i })
     this.modalSaveButton = this.transactionEditModal.getByRole('button', { name: /save/i })
@@ -79,7 +93,7 @@ export class TransactionsPage {
   async selectFirstMonth(): Promise<string> {
     await this.monthSelect.click()
     await this.page.getByRole('option').first().waitFor({ state: 'visible' })
-    const firstMonth = await this.page.getByRole('option').first().textContent() ?? ''
+    const firstMonth = (await this.page.getByRole('option').first().textContent()) ?? ''
     const firstOption = this.page.getByRole('option', { name: firstMonth }).first()
     await firstOption.click()
     return firstMonth
@@ -88,7 +102,7 @@ export class TransactionsPage {
   async selectFirstWeek(): Promise<string> {
     await this.weekSelect.click()
     await this.page.getByRole('option').first().waitFor({ state: 'visible' })
-    const firstWeekText = await this.page.getByRole('option').first().textContent() ?? ''
+    const firstWeekText = (await this.page.getByRole('option').first().textContent()) ?? ''
     const firstOption = this.page.getByRole('option', { name: firstWeekText }).first()
     await firstOption.click()
     return firstWeekText
@@ -99,11 +113,17 @@ export class TransactionsPage {
   }
 
   async clickIncreaseInterval() {
-    await this.page.locator('button').filter({ hasText: /^Increase Interval$/ }).click()
+    await this.page
+      .locator('button')
+      .filter({ hasText: /^Increase Interval$/ })
+      .click()
   }
 
   async clickDecreaseInterval() {
-    await this.page.locator('button').filter({ hasText: /^Decrease Interval$/ }).click()
+    await this.page
+      .locator('button')
+      .filter({ hasText: /^Decrease Interval$/ })
+      .click()
   }
 
   // Method to wait for transactions table to be fully ready
@@ -112,11 +132,13 @@ export class TransactionsPage {
   }
 
   // Improved table cell clicking with proper Element UI loading handling
-  async clickOnTableCell(options: {
-    rowIndex?: number
-    cellIndex?: number
-    clickOptions?: { button?: 'left' | 'right' | 'middle' }
-  } = {}) {
+  async clickOnTableCell(
+    options: {
+      rowIndex?: number
+      cellIndex?: number
+      clickOptions?: { button?: 'left' | 'right' | 'middle' }
+    } = {},
+  ) {
     const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
 
     await clickElementTableCell(
@@ -124,7 +146,7 @@ export class TransactionsPage {
       this.page,
       rowIndex,
       cellIndex,
-      clickOptions
+      clickOptions,
     )
   }
 
@@ -146,7 +168,7 @@ export class TransactionsPage {
   async getMonthSelectValue(): Promise<string> {
     // Try to get the input value first (most reliable)
     const input = this.monthSelect.locator('input')
-    if (await input.count() > 0) {
+    if ((await input.count()) > 0) {
       const value = await input.inputValue()
       if (value) return value
     }
@@ -163,19 +185,15 @@ export class TransactionsPage {
     return trimmedText
   }
 
-
   // getWeekSelectValue method to get the value of the week select
   async getWeekSelectValue(): Promise<string> {
     return this.getSelectValue(this.weekSelect, 'select a week')
   }
 
-  private async getSelectValue(
-    selector: Locator,
-    expectedPlaceholder?: string
-  ): Promise<string> {
+  private async getSelectValue(selector: Locator, expectedPlaceholder?: string): Promise<string> {
     // Try to get the input value first (most reliable)
     const input = selector.locator('input')
-    if (await input.count() > 0) {
+    if ((await input.count()) > 0) {
       const value = await input.inputValue()
       if (value) return value
     }
@@ -185,13 +203,13 @@ export class TransactionsPage {
     const trimmedText = selectText?.trim() ?? ''
 
     // If it shows placeholder text, consider it empty
-    const isPlaceholder = trimmedText === '' ||
+    const isPlaceholder =
+      trimmedText === '' ||
       trimmedText.includes('select') ||
       (expectedPlaceholder && trimmedText === expectedPlaceholder)
 
     return isPlaceholder ? '' : trimmedText
   }
-
 
   async rightClickOnFirstTransaction() {
     await this.clickOnTableCell({ rowIndex: 1, cellIndex: 1, clickOptions: { button: 'right' } })

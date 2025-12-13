@@ -6,7 +6,6 @@ import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
 import { mockMemoTableRoutes } from '@test/e2e/helpers/mockMemoRoutes.ts'
 import type { Memo } from '@types'
 
-
 test.describe('Memo Summary Table', () => {
   let memoSummaryTablePage: MemoSummaryTablePage
   let memosPage: MemosTablePage
@@ -20,14 +19,14 @@ test.describe('Memo Summary Table', () => {
     const memos = generateMemosArray()
     memoWithoutBudgetCategory = {
       ...memos[0],
-      budget_category: null
+      budget_category: null,
     } as Memo
 
     // Use the shared mock helper for most routes
     await mockMemoTableRoutes(page)
 
     // Override the single memo route to return memo WITH budget_category null from the start
-    await page.route('**/memos/**', route => {
+    await page.route('**/memos/**', (route) => {
       const url = new URL(route.request().url())
       const pathSegments = url.pathname.split('/')
       const lastSegment = pathSegments[pathSegments.length - 1]
@@ -40,36 +39,34 @@ test.describe('Memo Summary Table', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify([memoWithoutBudgetCategory]) // Return array containing the memo object
+        body: JSON.stringify([memoWithoutBudgetCategory]), // Return array containing the memo object
       })
     })
 
     // mock /dev/memos/**/summary
-    await page.route('**/memos/**/summary', route => {
+    await page.route('**/memos/**/summary', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify([
           {
-            'total_amount_debit': 3000,
-            'transactions_count': 15
-          }
-        ])
+            total_amount_debit: 3000,
+            transactions_count: 15,
+          },
+        ]),
       })
     })
 
     // mock /transactions?memo=*
-    await page.route('**/transactions?memo=*', route => {
+    await page.route('**/transactions?memo=*', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(generateTransactionsArray(5, memos[0].name))
+        body: JSON.stringify(generateTransactionsArray(5, memos[0]?.name)),
       })
     })
 
-
     await memosPage.goTo()
-
 
     firstMemoName = await memosPage.getFirstMemoName()
 
@@ -86,7 +83,6 @@ test.describe('Memo Summary Table', () => {
     })
   })
 
-
   test('should display the memo title', async () => {
     const title = await memoSummaryTablePage.getMemoTitle()
     expect(title).toBe(firstMemoName)
@@ -101,7 +97,9 @@ test.describe('Memo Summary Table', () => {
     await expect(memoSummaryTablePage.page).toHaveURL(/\/budget-visualizer\/memos/)
   })
 
-  test('when the memo lacks a budget_category, the budget category button should be visible and clickable', async ({ page }) => {
+  test('when the memo lacks a budget_category, the budget_category button should be visible and clickable', async ({
+    page,
+  }) => {
     // Clear the existing memo route specifically
     await page.unroute('**/memos/**')
 
@@ -117,11 +115,11 @@ test.describe('Memo Summary Table', () => {
       frequency: null,
       budget_category: null, // This is the key - no budget category
       ambiguous: false,
-      avatar_s3_url: null
+      avatar_s3_url: null,
     }
 
     // Set up a more specific route interceptor that doesn't interfere with summary endpoint
-    await page.route('**/memos/**', async route => {
+    await page.route('**/memos/**', async (route) => {
       const url = new URL(route.request().url())
       const pathSegments = url.pathname.split('/')
       const lastSegment = pathSegments[pathSegments.length - 1]
@@ -131,7 +129,7 @@ test.describe('Memo Summary Table', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify([memoWithoutBudgetCategory]) // Array containing the memo object
+          body: JSON.stringify([memoWithoutBudgetCategory]), // Array containing the memo object
         })
       } else {
         // Let summary routes pass through to the original mock

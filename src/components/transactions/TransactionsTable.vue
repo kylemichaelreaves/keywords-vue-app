@@ -40,7 +40,7 @@
 
     <!-- Show actual table when not loading -->
     <el-table
-      v-else-if="flattenedData && flattenedData.length >= 0"
+      v-else-if="paginatedData.length"
       data-testid="transactions-table"
       :row-key="getRowKey"
       :data="paginatedData"
@@ -64,7 +64,7 @@
         <template v-slot:default="scope">
           <template v-if="column.prop === 'id'">
             <router-link
-              :to="{name: 'transaction-edit', params: {transactionId: scope.row[column.prop]}}"
+              :to="{ name: 'transaction-edit', params: { transactionId: scope.row[column.prop] } }"
               :data-testid="`transaction-link-${scope.row[column.prop]}`"
             >
               {{ scope.row[column.prop] }}
@@ -75,8 +75,12 @@
               {{ formatDate(scope.row[column.prop]) }}
             </div>
           </template>
-          <template v-else-if="column.prop === 'memo'">
-            <router-link :to="`memos/${scope.row[column.prop]}/summary`" data-testid="memo-link">
+          <template v-else-if="column.prop === 'memo_id'">
+            <router-link
+              v-if="scope.row[column.prop] && scope.row[column.prop].toString().trim()"
+              :to="{ name: 'memo-summary', params: { memoId: scope.row[column.prop] } }"
+              data-testid="memo-link"
+            >
               {{ scope.row[column.prop] }}
             </router-link>
           </template>
@@ -94,19 +98,17 @@
 import { computed, ref, watch } from 'vue'
 import type { Transaction } from '@types'
 import { formatDate } from '@api/helpers/formatDate'
-import MonthSummaryTable from '@components/transactions/MonthSummaryTable.vue'
-import WeekSummaryTable from '@components/transactions/WeekSummaryTable.vue'
+import MonthSummaryTable from '@components/transactions/summaries/month/MonthSummaryTable.vue'
+import WeekSummaryTable from '@components/transactions/summaries/week/WeekSummaryTable.vue'
 import { useTransactionsStore } from '@stores/transactions'
 import useTransactions from '@api/hooks/transactions/useTransactions'
 import TransactionsTableSelects from '@components/transactions/TransactionsTableSelects.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import DailyIntervalLineChart from '@components/transactions/DailyIntervalLineChart.vue'
 import TransactionTablePagination from '@components/transactions/TransactionsTablePagination.vue'
-import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
+import { getTimeframeTypeAndValue } from '@components/transactions/helpers/getTimeframeTypeAndValue.ts'
 import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
 import TableSkeleton from '@components/shared/TableSkeleton.vue'
-import useURLSync from '@composables/useURLSync.ts'
-
 
 const store = useTransactionsStore()
 
@@ -117,7 +119,7 @@ const selectedDay = computed(() => store.getSelectedDay)
 const firstDay = computed(() => {
   const days = store.getDays
   if (days.length > 0) {
-    return days[0].day
+    return days[0]?.day
   }
   const now = new Date()
   const lastDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0)
@@ -147,9 +149,12 @@ const editModalTitle = computed(() => {
 })
 
 // disable the pagination if day, week, or month is selected
-const isPaginationDisabled = computed(() => selectedDay.value || selectedWeek.value || selectedMonth.value)
+const isPaginationDisabled = computed(
+  () => selectedDay.value || selectedWeek.value || selectedMonth.value,
+)
 
 const LIMIT = computed(() => store.getTransactionsTableLimit)
+console.log('TransactionsTable LIMIT:', LIMIT.value)
 
 const {
   data,
@@ -162,33 +167,43 @@ const {
   isRefetching,
   refetch,
   fetchNextPage,
-  hasNextPage
+  hasNextPage,
 } = useTransactions()
 
-const isLoadingCondition = computed(() =>
-  isLoading.value ||
-  isFetching.value ||
-  isRefetching.value ||
-  isFetchingNextPage.value ||
-  isFetchingPreviousPage.value
+const isLoadingCondition = computed(
+  () =>
+    isLoading.value ||
+    isFetching.value ||
+    isRefetching.value ||
+    isFetchingNextPage.value ||
+    isFetchingPreviousPage.value,
 )
 
 const flattenedData = computed(() => {
-  return data?.value?.pages.flat() || []
+  if (!data?.value?.pages) {
+    return []
+  }
+  const flattened = data.value.pages.flat()
+  console.log('Flattened Data:', flattened)
+  return flattened
 })
+
+console.log('Flattened Transactions Data:', flattenedData.value)
 
 const currentPage = computed({
   get: () => Math.floor(store.transactionsTableOffset / store.transactionsTableLimit) + 1,
   set: (val: number) => {
     store.updateTransactionsTableOffset((val - 1) * store.transactionsTableLimit)
-  }
+  },
 })
+
 
 const paginatedData = computed(() => {
   const start = (currentPage.value - 1) * LIMIT.value
   const end = start + LIMIT.value
   return flattenedData.value.slice(start, end)
 })
+
 
 const loadMorePagesIfNeeded = async () => {
   const requiredDataCount = currentPage.value * LIMIT.value
@@ -201,10 +216,6 @@ watch(currentPage, () => {
   loadMorePagesIfNeeded()
 })
 
-
-useURLSync()
-
-
 // this block allows the DailyIntervalLineChart to set the selectedDay and trigger a refetch
 watch(
   [selectedValue],
@@ -212,7 +223,7 @@ watch(
     store.clearTransactionsByOffset()
     refetch()
   },
-  { immediate: false }
+  { immediate: false },
 )
 
 // Define table columns
@@ -226,11 +237,10 @@ const transactionColumns = [
   { prop: 'amount_debit', label: 'Amount Debit', sortable: false },
   { prop: 'amount_credit', label: 'Amount Credit', sortable: false },
   { prop: 'balance', label: 'Balance', sortable: false },
-  { prop: 'budget_category', label: 'Budget Category', sortable: false }
+  { prop: 'budget_category', label: 'Budget Category', sortable: false },
 ]
 
 function getRowKey(row: Transaction): string {
   return row.transaction_number ?? ''
 }
-
 </script>

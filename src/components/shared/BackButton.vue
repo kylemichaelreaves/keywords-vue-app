@@ -1,5 +1,7 @@
 <template>
-  <el-button id="back-button" type='primary' @click="goBack" :data-test-id="props.dataTestId">Go Back</el-button>
+  <el-button id="back-button" type="primary" @click="goBack" :data-test-id="props.dataTestId"
+    >Go Back</el-button
+  >
 </template>
 
 <script setup lang="ts">
@@ -15,11 +17,9 @@ const props = defineProps({
   dataTestId: {
     type: String,
     default: '',
-    required: false
-  }
+    required: false,
+  },
 })
-
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

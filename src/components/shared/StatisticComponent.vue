@@ -16,26 +16,26 @@ import { computed } from 'vue'
 const props = defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   value: {
     type: [Number, String],
-    required: true
+    required: true,
   },
   previousValue: {
     type: [Number, String],
-    required: false
+    required: false,
   },
   size: {
     type: String,
     default: 'default',
     required: false,
-    validator: (value: string) => ['small', 'default', 'large'].includes(value)
+    validator: (value: string) => ['small', 'default', 'large'].includes(value),
   },
   dataTestId: {
     type: String,
     default: '',
-    required: false
+    required: false,
   },
 })
 

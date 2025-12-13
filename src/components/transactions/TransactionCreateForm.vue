@@ -1,9 +1,5 @@
 <template>
-  <el-form
-    :model="formState"
-    v-loading="isPending"
-    data-testid="transaction-form"
-  >
+  <el-form :model="formState" v-loading="isPending" data-testid="transaction-form">
     <AlertComponent
       v-if="isError && error"
       :title="error.name"
@@ -51,11 +47,11 @@ import type { Transaction } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
 interface FormField {
-  component: string;
-  label: string;
-  placeholder?: string;
-  props?: Record<string, unknown>;
-  computedProps?: () => Record<string, unknown>;
+  component: string
+  label: string
+  placeholder?: string
+  props?: Record<string, unknown>
+  computedProps?: () => Record<string, unknown>
 }
 
 const isDebit = ref(true)
@@ -64,7 +60,7 @@ const formState = reactive<Transaction>({
   description: '',
   memo: '',
   amount_debit: '',
-  amount_credit: ''
+  amount_credit: '',
 })
 
 // mutation for creating transactions
@@ -77,13 +73,13 @@ const { isPending, isError, error, mutate } = useMutation({
       description: '',
       memo: '',
       amount_debit: '',
-      amount_credit: ''
+      amount_credit: '',
     })
     ElMessage.success('Transaction created')
   },
   onError: (error) => {
     ElMessage.error(error.message)
-  }
+  },
 })
 
 const saveTransaction = () => {
@@ -96,48 +92,50 @@ const saveTransaction = () => {
   const transactionData: Transaction = {
     ...formState,
     amount_debit: formState.amount_debit,
-    amount_credit: formState.amount_credit
+    amount_credit: formState.amount_credit,
   }
 
   mutate({ transaction: transactionData })
 }
 
-
-const fieldConfig: Record<keyof Pick<Transaction, 'date' | 'description' | 'memo' | 'amount_debit' | 'amount_credit'>, FormField> = {
+const fieldConfig: Record<
+  keyof Pick<Transaction, 'date' | 'description' | 'memo' | 'amount_debit' | 'amount_credit'>,
+  FormField
+> = {
   date: {
     component: 'el-date-picker',
     label: 'Date',
     placeholder: 'Select a date',
     props: {
-      valueFormat: 'YYYY-MM-DD'
-    }
+      valueFormat: 'YYYY-MM-DD',
+    },
   },
   description: {
     component: 'el-input',
     label: 'Description',
-    placeholder: 'Enter description'
+    placeholder: 'Enter description',
   },
   memo: {
     component: 'el-input',
     label: 'Memo',
-    placeholder: 'Enter memo'
+    placeholder: 'Enter memo',
   },
   amount_debit: {
     component: 'el-input',
     label: 'Amount Debit',
     placeholder: 'Enter debit amount',
     computedProps: () => ({
-      disabled: !isDebit.value
-    })
+      disabled: !isDebit.value,
+    }),
   },
   amount_credit: {
     component: 'el-input',
     label: 'Amount Credit',
     placeholder: 'Enter credit amount',
     computedProps: () => ({
-      disabled: isDebit.value
-    })
-  }
+      disabled: isDebit.value,
+    }),
+  },
 }
 
 // Make fields reactive and available to template
@@ -151,5 +149,4 @@ const getFieldProps = (field: FormField) => {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

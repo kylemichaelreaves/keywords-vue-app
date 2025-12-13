@@ -20,8 +20,8 @@ const themeStore = useThemeStore()
 const props = defineProps({
   dataTestId: {
     type: String,
-    default: 'theme-toggle'
-  }
+    default: 'theme-toggle',
+  },
 })
 </script>
 

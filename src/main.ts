@@ -32,14 +32,14 @@ const queryClient = new QueryClient({
 const user = localStorage.getItem('user')
 const token = localStorage.getItem('token')
 
-if (user && token && user !== "undefined") {
+if (user && token && user !== 'undefined') {
   try {
     const authStore = useAuthStore()
     authStore.setUser(JSON.parse(user))
     authStore.setToken(token)
     authStore.setIsUserAuthenticated(true)
   } catch (error) {
-    console.error("Failed to parse user data:", error)
+    console.error('Failed to parse user data:', error)
     localStorage.removeItem('user')
     localStorage.removeItem('token')
   }
@@ -49,12 +49,7 @@ if (user && token && user !== "undefined") {
 const themeStore = useThemeStore()
 themeStore.initializeTheme()
 
-app
-  .use(router)
-  .use(VueQueryPlugin, { queryClient })
-  .use(ElementPlus)
-  .use(VueTippy)
-
+app.use(router).use(VueQueryPlugin, { queryClient }).use(ElementPlus).use(VueTippy)
 
 // NAV GUARD!!! only authenticated users can access auth routes
 router.beforeEach((to, from, next) => {
@@ -70,6 +65,5 @@ router.beforeEach((to, from, next) => {
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
-
 
 app.mount('#app')

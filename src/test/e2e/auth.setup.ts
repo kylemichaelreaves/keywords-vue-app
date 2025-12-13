@@ -29,7 +29,7 @@ setup('authenticate', async ({ page }) => {
     lastName: 'User',
     username: 'testAdminUser',
     email: 'test@example.com',
-    role: 'admin'
+    role: 'admin',
   }
   const token = 'playwright-test-token'
 
@@ -52,17 +52,19 @@ setup('authenticate', async ({ page }) => {
     console.log('Current URL after login attempt:', page.url())
 
     // Ensure we have auth tokens regardless of UI login success
-    await page.evaluate(({ user, tkn }) => {
-      localStorage.setItem('token', tkn)
-      localStorage.setItem('user', JSON.stringify(user))
-    }, { user: testUser, tkn: token })
+    await page.evaluate(
+      ({ user, tkn }) => {
+        localStorage.setItem('token', tkn)
+        localStorage.setItem('user', JSON.stringify(user))
+      },
+      { user: testUser, tkn: token },
+    )
 
     console.log('Auth tokens set through browser')
 
     // Create auth state from current browser state
     await page.context().storageState({ path: authFile })
     console.log('Auth file created from browser state')
-
   } catch (error) {
     console.error('Complete browser failure:', error instanceof Error ? error.message : error)
 
@@ -74,10 +76,10 @@ setup('authenticate', async ({ page }) => {
           origin: baseURL, // Use environment-specific base URL
           localStorage: [
             { name: 'token', value: token },
-            { name: 'user', value: JSON.stringify(testUser) }
-          ]
-        }
-      ]
+            { name: 'user', value: JSON.stringify(testUser) },
+          ],
+        },
+      ],
     }
 
     fs.writeFileSync(authFile, JSON.stringify(minimalAuthState, null, 2))

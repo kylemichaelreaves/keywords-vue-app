@@ -51,7 +51,7 @@ export class MonthSummaryPage extends BaseSummaryPage {
   async getStats() {
     return {
       transactionsCount: await this.transactionsCount.textContent(),
-      transactionsAmount: await this.transactionsAmount.textContent()
+      transactionsAmount: await this.transactionsAmount.textContent(),
     }
   }
 }

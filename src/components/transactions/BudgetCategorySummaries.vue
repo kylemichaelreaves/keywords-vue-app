@@ -7,15 +7,8 @@
       :data-testid="`${props.dataTestId}-error-alert`"
       v-if="isError && error"
     />
-    <el-space
-      direction="vertical"
-      class="w-full"
-      :data-testid="`${props.dataTestId}-header`"
-    >
-      <el-text
-        size="large"
-        :data-testid="`${props.dataTestId}-title`"
-      >
+    <el-space direction="vertical" class="w-full" :data-testid="`${props.dataTestId}-header`">
+      <el-text size="large" :data-testid="`${props.dataTestId}-title`">
         Sums of the amount_debit column for a budget_category
       </el-text>
     </el-space>
@@ -23,23 +16,39 @@
     <!-- Show skeleton while loading -->
     <div v-if="isLoading || isFetching || isRefetching">
       <!-- Pie chart skeleton -->
-      <div class="chart-container" style="margin-bottom: 32px;">
+      <div class="chart-container" style="margin-bottom: 32px">
         <el-skeleton
           animated
           :data-testid="`${props.dataTestId}-pie-skeleton`"
-          style="height: 400px; width: 100%;"
+          style="height: 400px; width: 100%"
         >
           <template #template>
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; height: 100%;">
-              <el-skeleton-item variant="text" style="width: 60%; height: 24px;" />
-              <el-skeleton-item variant="circle" style="width: 300px; height: 300px;" />
-              <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-width: 600px;">
-                <el-skeleton-item variant="text" style="width: 120px; height: 16px;" />
-                <el-skeleton-item variant="text" style="width: 150px; height: 16px;" />
-                <el-skeleton-item variant="text" style="width: 100px; height: 16px;" />
-                <el-skeleton-item variant="text" style="width: 130px; height: 16px;" />
-                <el-skeleton-item variant="text" style="width: 110px; height: 16px;" />
-                <el-skeleton-item variant="text" style="width: 140px; height: 16px;" />
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                height: 100%;
+              "
+            >
+              <el-skeleton-item variant="text" style="width: 60%; height: 24px" />
+              <el-skeleton-item variant="circle" style="width: 300px; height: 300px" />
+              <div
+                style="
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 12px;
+                  justify-content: center;
+                  max-width: 600px;
+                "
+              >
+                <el-skeleton-item variant="text" style="width: 120px; height: 16px" />
+                <el-skeleton-item variant="text" style="width: 150px; height: 16px" />
+                <el-skeleton-item variant="text" style="width: 100px; height: 16px" />
+                <el-skeleton-item variant="text" style="width: 130px; height: 16px" />
+                <el-skeleton-item variant="text" style="width: 110px; height: 16px" />
+                <el-skeleton-item variant="text" style="width: 140px; height: 16px" />
               </div>
             </div>
           </template>
@@ -52,13 +61,18 @@
         :key="`skeleton-${index}`"
         animated
         :data-testid="`${props.dataTestId}-skeleton-${index}`"
-        style="margin-bottom: 16px;"
+        style="margin-bottom: 16px"
       >
         <template #template>
-          <div style="display: flex; align-items: center; gap: 12px;"
-               :style="{ marginLeft: `${category.level * 20}px` }">
-            <el-skeleton-item variant="text" :style="{ width: category.level > 0 ? '50%' : '60%' }" />
-            <el-skeleton-item variant="text" style="width: 20%;" />
+          <div
+            style="display: flex; align-items: center; gap: 12px"
+            :style="{ marginLeft: `${category.level * 20}px` }"
+          >
+            <el-skeleton-item
+              variant="text"
+              :style="{ width: category.level > 0 ? '50%' : '60%' }"
+            />
+            <el-skeleton-item variant="text" style="width: 20%" />
           </div>
         </template>
       </el-skeleton>
@@ -100,7 +114,7 @@
     </div>
 
     <!-- Show message when no data -->
-    <div v-else style="margin-top: 16px;">
+    <div v-else style="margin-top: 16px">
       <el-empty
         description="No data available for the selected period."
         :data-testid="`${props.dataTestId}-no-data`"
@@ -119,26 +133,26 @@
 
 <script setup lang="ts">
 import { computed, type PropType, watch } from 'vue'
-import { useBudgetCategorySummary } from '@api/hooks/transactions/useBudgetCategorySummary.ts'
+import { useBudgetCategorySummary } from '@api/hooks/budgetCategories/useBudgetCategorySummary.ts'
 import StatisticComponent from '@components/shared/StatisticComponent.vue'
 import BudgetCategoryPieChart from '@components/charts/BudgetCategoryPieChart.vue'
 import { useTransactionsStore } from '@stores/transactions'
-import type { BudgetCategorySummary, TimeframeType } from '@types'
+import type { BudgetCategorySummary, Timeframe } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
 const props = defineProps({
   date: {
     type: String,
-    required: true
+    required: true,
   },
   timeFrame: {
-    type: String as PropType<TimeframeType>,
-    required: true
+    type: String as PropType<Timeframe>,
+    required: true,
   },
   dataTestId: {
     type: String,
-    default: 'budget-category-summaries'
-  }
+    default: 'budget-category-summaries',
+  },
 })
 
 const store = useTransactionsStore()
@@ -147,36 +161,49 @@ const store = useTransactionsStore()
 const reactiveTimeFrame = computed(() => props.timeFrame)
 const reactiveDate = computed(() => props.date)
 
-const { data, isLoading, isFetching, isRefetching, isError, error, refetch } = useBudgetCategorySummary(
-  reactiveTimeFrame,
-  reactiveDate
-)
+const { data, isLoading, isFetching, isRefetching, isError, error, refetch } =
+  useBudgetCategorySummary(reactiveTimeFrame, reactiveDate)
 
 // Watch for changes in store values and force refetch
-watch(() => store.getSelectedMonth, (newMonth, oldMonth) => {
-  if (props.timeFrame === 'month' && newMonth !== oldMonth) {
-    refetch()
-  }
-}, { immediate: false })
+watch(
+  () => store.getSelectedMonth,
+  (newMonth, oldMonth) => {
+    if (props.timeFrame === 'month' && newMonth !== oldMonth) {
+      refetch()
+    }
+  },
+  { immediate: false },
+)
 
-watch(() => store.getSelectedWeek, (newWeek, oldWeek) => {
-  if (props.timeFrame === 'week' && newWeek !== oldWeek) {
-    refetch()
-  }
-}, { immediate: false })
+watch(
+  () => store.getSelectedWeek,
+  (newWeek, oldWeek) => {
+    if (props.timeFrame === 'week' && newWeek !== oldWeek) {
+      refetch()
+    }
+  },
+  { immediate: false },
+)
 
-watch(() => store.getSelectedDay, (newDay, oldDay) => {
-  if (props.timeFrame === 'day' && newDay !== oldDay) {
-    refetch()
-  }
-}, { immediate: false })
+watch(
+  () => store.getSelectedDay,
+  (newDay, oldDay) => {
+    if (props.timeFrame === 'day' && newDay !== oldDay) {
+      refetch()
+    }
+  },
+  { immediate: false },
+)
 // Also watch for changes to the props themselves
-watch(() => [props.date, props.timeFrame], ([newDate, newTimeFrame], [oldDate, oldTimeFrame]) => {
-  if (newDate !== oldDate || newTimeFrame !== oldTimeFrame) {
-    refetch()
-  }
-}, { immediate: false })
-
+watch(
+  () => [props.date, props.timeFrame],
+  ([newDate, newTimeFrame], [oldDate, oldTimeFrame]) => {
+    if (newDate !== oldDate || newTimeFrame !== oldTimeFrame) {
+      refetch()
+    }
+  },
+  { immediate: false },
+)
 
 const categorySummaries = computed((): BudgetCategorySummary[] => {
   if (!data?.value) {
@@ -195,7 +222,7 @@ const hierarchicalSummaries = computed((): BudgetCategorySummary[] => {
   const childrenMap = new Map<number, BudgetCategorySummary[]>()
 
   // build maps
-  categorySummaries.value.forEach(category => {
+  categorySummaries.value.forEach((category) => {
     if (category.parent_id !== null) {
       if (!childrenMap.has(category.parent_id)) {
         childrenMap.set(category.parent_id, [])
@@ -208,11 +235,11 @@ const hierarchicalSummaries = computed((): BudgetCategorySummary[] => {
   const buildHierarchy = (parentId: number | null): BudgetCategorySummary[] => {
     const result: BudgetCategorySummary[] = []
     // get categories with the specified parent_id
-    const categories = categorySummaries.value.filter(cat => cat.parent_id === parentId)
+    const categories = categorySummaries.value.filter((cat) => cat.parent_id === parentId)
     // sort by category name for consistent ordering
     categories.sort((a, b) => a.category_name.localeCompare(b.category_name))
     // add the parent category and recursively add its children
-    categories.forEach(category => {
+    categories.forEach((category) => {
       result.push(category)
       const children = buildHierarchy(category.category_id)
       result.push(...children)
@@ -223,14 +250,13 @@ const hierarchicalSummaries = computed((): BudgetCategorySummary[] => {
 })
 
 const skeletonItems = computed(() => {
-  return hierarchicalSummaries.value.map(category => {
+  return hierarchicalSummaries.value.map((category) => {
     return {
       ...category,
-      total_amount_debit: null
+      total_amount_debit: null,
     }
   })
 })
-
 </script>
 
 <style scoped>
@@ -239,7 +265,7 @@ const skeletonItems = computed(() => {
 }
 
 .child-category::before {
-  content: "└─";
+  content: '└─';
   color: #888;
   margin-right: 16px;
 }
@@ -273,5 +299,4 @@ const skeletonItems = computed(() => {
   font-size: 13px !important;
   margin-bottom: 2px !important;
 }
-
 </style>

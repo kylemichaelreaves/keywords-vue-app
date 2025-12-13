@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import IntervalForm from '@components/transactions/IntervalForm.vue'
 import { computed, ref } from 'vue'
-import { useDailyTotalAmountDebit } from '@api/hooks/transactions/useDailyTotalAmountDebit'
+import { useDailyTotalAmountDebit } from '@api/hooks/timeUnits/days/useDailyTotalAmountDebit.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import LineChart from '@components/charts/LineChart.vue'
 import { useTransactionsStore } from '@stores/transactions'
@@ -40,12 +40,12 @@ import { DateTime } from 'luxon'
 const props = defineProps({
   dataTestId: {
     type: String,
-    default: 'daily-interval-line-chart'
+    default: 'daily-interval-line-chart',
   },
   firstDay: {
     type: String,
-    default: ''
-  }
+    default: '',
+  },
 })
 
 const intervalFormDataTestId = computed(() => {
@@ -75,50 +75,34 @@ const selectedDay = computed(() => store.selectedDay)
  * DO NOT change this logic without updating test mocks accordingly.
  */
 const selectedValue = computed((): string | null => {
-  console.log('[DailyIntervalLineChart DEBUG] Computing selectedValue...')
-  console.log('[DailyIntervalLineChart DEBUG] selectedWeek:', selectedWeek.value)
-  console.log('[DailyIntervalLineChart DEBUG] selectedMonth:', selectedMonth.value)
-  console.log('[DailyIntervalLineChart DEBUG] selectedDay:', selectedDay.value)
-  console.log('[DailyIntervalLineChart DEBUG] props.firstDay:', props.firstDay)
-
   if (selectedWeek.value) {
-    const result = parseDateIWIYYY(selectedWeek.value)?.toISOString().split('T')[0] ?? null
-    console.log('[DailyIntervalLineChart DEBUG] Using selectedWeek, result:', result)
-    return result
+    return parseDateIWIYYY(selectedWeek.value)?.toISOString().split('T')[0] ?? null
   }
   if (selectedMonth.value) {
-    const result = parseDateMMYYYY(selectedMonth.value)?.toISOString().split('T')[0] ?? null
-    console.log('[DailyIntervalLineChart DEBUG] Using selectedMonth, result:', result)
-    return result
+    return parseDateMMYYYY(selectedMonth.value)?.toISOString().split('T')[0] ?? null
   }
   if (selectedDay.value) {
-    console.log('[DailyIntervalLineChart DEBUG] Using selectedDay:', selectedDay.value)
     return selectedDay.value
   }
   // CRITICAL FIX: Ensure we always have a valid date to enable the API call
   // Use firstDay prop or fall back to last day of previous month
   // This prevents the API hook from being disabled due to empty/null startDate
   if (props.firstDay) {
-    console.log('[DailyIntervalLineChart DEBUG] Using props.firstDay:', props.firstDay)
     return props.firstDay
   }
-
   // Fall back to last day of previous month (which is what the date will always be when there are days)
   // Using Luxon for cleaner date manipulation
   const lastDayOfPreviousMonth = DateTime.now().minus({ months: 1 }).endOf('month')
-  const fallbackDate = lastDayOfPreviousMonth.toISODate()
-  console.log('[DailyIntervalLineChart DEBUG] Using fallback date:', fallbackDate)
-  return fallbackDate
+  return lastDayOfPreviousMonth.toISODate()
 })
 
 function handleIntervalChange(newInterval: string) {
   intervalValue.value = newInterval
 }
 
-
 const { data, error, isError, isLoading, isFetching } = useDailyTotalAmountDebit(
   intervalValue,
-  selectedValue
+  selectedValue,
 )
 
 const handleOnDayClicked = (selection: string) => {
@@ -146,22 +130,13 @@ const shouldShowChart = computed(() => {
 })
 </script>
 
-/**
- * CRITICAL FIX DOCUMENTATION - DailyIntervalLineChart Loading Issues
- *
- * This component had several issues that prevented it from loading in Playwright tests:
- *
- * 1. API Hook Enabled Condition: The useDailyTotalAmountDebit hook requires a valid
- *    startDate to be enabled. The selectedValue computed property MUST always return
- *    a valid date string, never null or empty string.
- *
- * 2. Chart Visibility Logic: The shouldShowChart computed property controls when the
- *    chart is visible. It should show in aggregate view (no specific day/week/month
- *    selected) and hide when drilling down to specific time periods.
- *
- * 3. Test Data-TestId Propagation: The LineChart component needs the proper data-testid
- *    attribute passed through for test selectors to work correctly.
- *
- * DO NOT MODIFY the selectedValue computed property to return null/empty without
- * ensuring the API hook can still function properly in tests.
- */
+/** * CRITICAL FIX DOCUMENTATION - DailyIntervalLineChart Loading Issues * * This component had
+several issues that prevented it from loading in Playwright tests: * * 1. API Hook Enabled
+Condition: The useDailyTotalAmountDebit hook requires a valid * startDate to be enabled. The
+selectedValue computed property MUST always return * a valid date string, never null or empty
+string. * * 2. Chart Visibility Logic: The shouldShowChart computed property controls when the *
+chart is visible. It should show in aggregate view (no specific day/week/month * selected) and hide
+when drilling down to specific time periods. * * 3. Test Data-TestId Propagation: The LineChart
+component needs the proper data-testid * attribute passed through for test selectors to work
+correctly. * * DO NOT MODIFY the selectedValue computed property to return null/empty without *
+ensuring the API hook can still function properly in tests. */
