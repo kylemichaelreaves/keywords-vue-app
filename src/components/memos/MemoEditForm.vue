@@ -56,7 +56,7 @@ import { ElMessage, ElOption, type FormInstance, type FormRules } from 'element-
 import { useQueryClient } from '@tanstack/vue-query'
 import type { Frequency, Memo, MemoFormFields, MemoKeys } from '@types'
 import mutateMemo from '@api/hooks/memos/mutateMemo.ts'
-import BudgetCategoryTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
+import BudgetCategoryTreeSelect from '@components/transactions/selects/BudgetCategoriesTreeSelect.vue'
 import MemoAvatar from '@components/memos/MemoAvatar.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 

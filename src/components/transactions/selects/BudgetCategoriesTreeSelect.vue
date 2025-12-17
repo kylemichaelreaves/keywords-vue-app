@@ -22,7 +22,7 @@
 import { computed, watch } from 'vue'
 import { ElTreeSelect } from 'element-plus'
 import { useBudgetCategories } from '@api/hooks/budgetCategories/useBudgetCategories.ts'
-import { convertToTree } from '@api/helpers/convertToTree'
+import { convertToTree } from '@api/helpers/convertToTree.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
 interface Props {

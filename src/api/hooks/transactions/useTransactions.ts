@@ -20,10 +20,10 @@ export default function useTransactions() {
     initialPageParam: 0,
     queryKey: [
       'transactions',
-      limit.value,
-      selectedMemo.value,
-      dateType.value,
-      selectedValue.value,
+      limit,
+      selectedMemo,
+      dateType,
+      selectedValue,
     ],
     queryFn: async ({ pageParam = 0 }) => {
       const cachedTransactions = store.getTransactionsByOffset(Number(pageParam))

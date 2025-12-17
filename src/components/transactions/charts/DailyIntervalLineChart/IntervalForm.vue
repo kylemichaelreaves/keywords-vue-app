@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useIsIntervalGreaterThanOldestDate } from '@api/hooks/transactions/useIsIntervalGreaterThanOldestDate'
+import { useIsIntervalGreaterThanOldestDate } from '@api/hooks/transactions/useIsIntervalGreaterThanOldestDate.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
 const props = defineProps({

@@ -151,7 +151,7 @@ import AlertComponent from '@components/shared/AlertComponent.vue'
 import { router } from '@router'
 import MonthSummaryHeader from '@components/transactions/summaries/month/MonthSummaryHeader.vue'
 import MemoEditModal from '@components/memos/MemoEditModal.vue'
-import BudgetCategorySummaries from '@components/transactions/BudgetCategorySummaries.vue'
+import BudgetCategorySummaries from '@components/transactions/summaries/BudgetCategorySummaries.vue'
 import { getTimeframeTypeAndValue } from '@components/transactions/helpers/getTimeframeTypeAndValue.ts'
 
 interface MonthSummaryRow {

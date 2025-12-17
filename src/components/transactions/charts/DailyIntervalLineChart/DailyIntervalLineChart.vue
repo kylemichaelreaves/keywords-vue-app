@@ -27,14 +27,14 @@
 </template>
 
 <script setup lang="ts">
-import IntervalForm from '@components/transactions/IntervalForm.vue'
+import IntervalForm from '@components/transactions/charts/DailyIntervalLineChart/IntervalForm.vue'
 import { computed, ref } from 'vue'
 import { useDailyTotalAmountDebit } from '@api/hooks/timeUnits/days/useDailyTotalAmountDebit.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import LineChart from '@components/charts/LineChart.vue'
-import { useTransactionsStore } from '@stores/transactions'
-import { parseDateMMYYYY } from '@api/helpers/parseDateMMYYYY'
-import { parseDateIWIYYY } from '@api/helpers/parseDateIWIYYY'
+import { useTransactionsStore } from '@stores/transactions.ts'
+import { parseDateMMYYYY } from '@api/helpers/parseDateMMYYYY.ts'
+import { parseDateIWIYYY } from '@api/helpers/parseDateIWIYYY.ts'
 import { DateTime } from 'luxon'
 
 const props = defineProps({

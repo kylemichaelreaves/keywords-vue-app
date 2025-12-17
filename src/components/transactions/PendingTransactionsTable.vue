@@ -117,7 +117,10 @@
       </el-table-column>
     </el-table>
   </div>
-  <TransactionTablePagination v-if="!isPaginationDisabled" />
+  <TransactionTablePagination
+    v-if="!isPaginationDisabled"
+    :status="viewMode as 'pending' | 'reviewed'"
+  />
 </template>
 
 <script setup lang="ts">

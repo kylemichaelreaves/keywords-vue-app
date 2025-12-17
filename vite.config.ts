@@ -1,11 +1,13 @@
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { defineConfig } from 'vite'
+import { defineConfig, PluginOption } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import Icons from 'unplugin-icons/vite'
+import IconsResolver from 'unplugin-icons/resolver'
 
 const isStorybookProcess =
   process.env.npm_lifecycle_event === 'storybook' || process.env.SB_MODE === 'development'
@@ -20,21 +22,38 @@ const ALIASES: string[] = [
   'stores',
   'test',
   'types',
-  'router'
+  'router',
 ]
 
 export default defineConfig(async () => {
-  const plugins = [
+  const plugins: PluginOption[] = [
     vue(),
     tsconfigPaths({
-      configNames: ['tsconfig.app.json']
+      configNames: ['tsconfig.app.json'],
     }),
     AutoImport({
-      resolvers: [ElementPlusResolver()]
+      resolvers: [
+        ElementPlusResolver(),
+        // Auto import icons
+        IconsResolver({
+          prefix: 'Icon',
+        }),
+      ],
+      dts: 'src/auto-imports.d.ts',
     }),
     Components({
-      resolvers: [ElementPlusResolver()]
-    })
+      resolvers: [
+        ElementPlusResolver(),
+        // Auto register icon components
+        IconsResolver({
+          enabledCollections: ['ep'], // Element Plus icons
+        }),
+      ],
+      dts: 'src/components.d.ts',
+    }),
+    Icons({
+      autoInstall: true,
+    }),
   ]
 
   // Only load vueDevTools when not in Storybook
@@ -47,22 +66,14 @@ export default defineConfig(async () => {
     server: {
       host: 'localhost',
       port: 5173,
-      // proxy: {
-      //   '/api': {
-      //     target: import.meta.env.VITE_APIGATEWAY_URL,
-      //     changeOrigin: true,
-      //     rewrite: (path) => path.replace(/^\/api/, '/dev'),
-      //     secure: true
-      //   }
-      // }
     },
     root: fileURLToPath(new URL('./', import.meta.url)),
     plugins,
     resolve: {
       alias: ALIASES.map((alias) => ({
         find: `@${alias}`,
-        replacement: path.resolve(__dirname, `src/${alias}`)
-      }))
-    }
+        replacement: path.resolve(__dirname, `src/${alias}`),
+      })),
+    },
   }
 })

@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import { ElCard, ElTable, ElTableColumn } from 'element-plus'
-import { useTransactionsStore } from '@stores/transactions'
+import { useTransactionsStore } from '@stores/transactions.ts'
 import useDaySummary from '@api/hooks/timeUnits/days/useDaySummary.ts'
 
 const store = useTransactionsStore()

@@ -7,9 +7,12 @@
         :placeholder="field.placeholder"
         :data-testid="`${dataTestId}-${key}`"
         v-bind="field.props || {}"
+        @update:splits="handleSplitsUpdate"
+        @update:is-split="handleIsSplitUpdate"
       >
       </component>
     </el-form-item>
+
     <el-button type="primary" @click="saveTransaction" :data-testid="`${dataTestId}-save-button`">
       Save
     </el-button>
@@ -17,13 +20,24 @@
 </template>
 
 <script setup lang="ts">
-import { type PropType, reactive, ref, watch } from 'vue'
-import type { Transaction, TransactionFormFields, TransactionKeys, PendingTransaction } from '@types'
+import { type PropType, reactive, ref, watch, computed } from 'vue'
+import type {
+  Transaction,
+  TransactionFormFields,
+  TransactionKeys,
+  PendingTransaction,
+} from '@types'
 import mutateTransaction from '@api/hooks/transactions/mutateTransaction'
 import mutatePendingTransaction from '@api/hooks/transactions/mutatePendingTransaction'
 import { type ElForm, ElMessage } from 'element-plus'
-import BudgetCategoryTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
 import MemoSelect from '@components/transactions/selects/MemoSelect.vue'
+import BudgetCategoryFormField from '@components/transactions/BudgetCategoryFormField.vue'
+
+interface SplitCategory {
+  id: string
+  budget_category_id: number | null
+  amount_debit: number | null
+}
 
 const props = defineProps({
   transaction: {
@@ -47,6 +61,8 @@ const props = defineProps({
 const emit = defineEmits<(e: 'close') => void>()
 
 const transaction = reactive({ ...props.transaction })
+const splitCategories = ref<SplitCategory[]>([])
+const isSplitTransaction = ref(false)
 
 console.log('[TransactionEditForm] Initial transaction data:', {
   id: transaction.id,
@@ -56,6 +72,11 @@ console.log('[TransactionEditForm] Initial transaction data:', {
 })
 
 const formRef = ref<InstanceType<typeof ElForm> | null>(null)
+
+// Computed property for transaction amount (debit or credit)
+const transactionAmount = computed(() => {
+  return Number.parseFloat(transaction.amount_debit || transaction.amount_credit || '0')
+})
 
 const fields: Record<TransactionKeys, TransactionFormFields> = {
   id: {
@@ -134,10 +155,14 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     },
   },
   budget_category: {
-    component: BudgetCategoryTreeSelect,
+    component: BudgetCategoryFormField,
     label: 'Budget Category',
     placeholder: 'Select a budget category',
-    dataTestId: `${props.dataTestId}-budget_category-tree_select`,
+    props: {
+      splits: splitCategories.value,
+      transactionAmount: transactionAmount.value,
+    },
+    dataTestId: `${props.dataTestId}-budget_category`,
   },
   fees: {
     component: 'el-input',
@@ -150,6 +175,37 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
 const { mutate: mutateRegularTransaction } = mutateTransaction()
 const { mutate: mutatePending } = mutatePendingTransaction()
 
+// Initialize splits from transaction if it has split_budget_categories
+watch(
+  () => props.transaction,
+  (newTransaction) => {
+    console.log('[TransactionEditForm] Props transaction changed:', {
+      budget_category: newTransaction.budget_category,
+      transactionId: newTransaction.id,
+    })
+    Object.assign(transaction, newTransaction)
+
+    // Initialize splits if they exist in the transaction
+    if (
+      newTransaction?.is_split &&
+      Array.isArray(newTransaction.budget_category)
+    ) {
+      splitCategories.value = newTransaction.budget_category.map(
+        (split: any, index: number) => ({
+          id: `split_${index}_${Date.now()}`,
+          budget_category_id: split.budget_category_id,
+          amount_debit: split.amount_debit,
+        }),
+      )
+      isSplitTransaction.value = true
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+)
+
 // Watch for changes to budget_category specifically
 watch(
   () => transaction.budget_category,
@@ -158,25 +214,25 @@ watch(
       oldValue,
       newValue,
       transactionId: transaction.id,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
-  }
+  },
 )
 
-watch(
-  () => props.transaction,
-  (newTransaction) => {
-    console.log('[TransactionEditForm] Props transaction changed:', {
-      budget_category: newTransaction.budget_category,
-      transactionId: newTransaction.id
-    })
-    Object.assign(transaction, newTransaction)
-  },
-  {
-    deep: true,
-    immediate: true,
-  },
-)
+// Handle splits update from BudgetCategoryFormField
+const handleSplitsUpdate = (splits: SplitCategory[]) => {
+  splitCategories.value = splits
+  // Update the props for the budget_category field
+  fields.budget_category.props = {
+    splits: splitCategories.value,
+    transactionAmount: transactionAmount.value,
+  }
+}
+
+// Handle is_split toggle
+const handleIsSplitUpdate = (value: boolean) => {
+  isSplitTransaction.value = value
+}
 
 const saveTransaction = () => {
   console.log('[TransactionEditForm] Save transaction called with:', {
@@ -184,22 +240,29 @@ const saveTransaction = () => {
     pendingTransactionId: props.pendingTransactionId,
     transaction: transaction,
     budget_category: transaction.budget_category,
+    isSplit: isSplitTransaction.value,
+    splitCategories: splitCategories.value,
   })
+
+  // Prepare transaction data with splits if applicable
+  const transactionData = {
+    ...transaction,
+    split_budget_categories:
+      isSplitTransaction.value && splitCategories.value.length > 0 ? splitCategories.value : null,
+  }
 
   if (props.isPending && props.pendingTransactionId) {
     console.log('[TransactionEditForm] Using pending transaction mutation')
-    console.log('[TransactionEditForm] Sending budget_category value:', transaction.budget_category)
 
-    // Map budget_category to assigned_category for pending transactions
     const pendingTransactionData: PendingTransaction = {
       id: props.pendingTransactionId,
-      created_at: '', // This will be ignored by the API
-      transaction_data: transaction as unknown as Transaction,
+      created_at: '',
+      transaction_data: transactionData as unknown as Transaction,
       amount_debit: transaction.amount_debit || '0.00',
       transaction_date: transaction.date,
       memo_name: transaction.memo,
       assigned_category: transaction.budget_category,
-      status: 'reviewed', // Mark as reviewed when saving
+      status: 'reviewed',
     }
 
     console.log('[TransactionEditForm] Mapped pending transaction data:', pendingTransactionData)
@@ -211,9 +274,8 @@ const saveTransaction = () => {
       },
       {
         onSuccess: async () => {
-          console.log('[TransactionEditForm] Pending transaction mutation completed, waiting for refetch...')
-          // Wait a bit to ensure the query refetch completes
-          await new Promise(resolve => setTimeout(resolve, 500))
+          console.log('[TransactionEditForm] Pending transaction mutation completed')
+          await new Promise((resolve) => setTimeout(resolve, 500))
           ElMessage.success('Pending transaction saved')
           emit('close')
         },
@@ -227,7 +289,7 @@ const saveTransaction = () => {
     console.log('[TransactionEditForm] Using regular transaction mutation')
     mutateRegularTransaction(
       {
-        transaction: transaction,
+        transaction: transactionData,
       },
       {
         onSuccess: () => {

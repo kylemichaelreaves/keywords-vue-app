@@ -26,7 +26,7 @@ import { computed, watch } from 'vue'
 import { useDaySummariesForSelectedWeek } from '@api/hooks/timeUnits/days/useDaySummariesForSelectedWeek.ts'
 import TableComponent from '@components/shared/TableComponent.vue'
 import { DateTime } from 'luxon'
-import { useTransactionsStore } from '@stores/transactions'
+import { useTransactionsStore } from '@stores/transactions.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
 const { data, isError, refetch, isFetching, isLoading, isRefetching, error } =

@@ -1,0 +1,1 @@
+export const generateId = () => Number(`${Date.now()}${Math.random()}`)

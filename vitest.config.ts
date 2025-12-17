@@ -1,61 +1,59 @@
 import { fileURLToPath } from 'node:url'
-import { mergeConfig, defineConfig, configDefaults } from 'vitest/config'
-import viteConfig from './vite.config'
+import { defineConfig, configDefaults } from 'vitest/config'
 import path from 'node:path'
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 import { playwright } from '@vitest/browser-playwright'
+
 const dirname =
-  typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url))
+  typeof __dirname === 'undefined' ? path.dirname(fileURLToPath(import.meta.url)) : __dirname
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
-export default mergeConfig(
-  viteConfig,
-  defineConfig({
-    test: {
-      projects: [
-        {
-          extends: true,
-          test: {
-            globals: true,
-            environment: 'jsdom',
-            exclude: [...configDefaults.exclude, './src/test/e2e/**', './tests-examples/*'],
-            setupFiles: ['./src/test/test-setup.ts'],
-            root: fileURLToPath(new URL('./', import.meta.url)),
-            include: ['src/test/**/*.{test,spec}.{ts,tsx,jsx,js}'],
-            reporters: ['default', 'html'],
-            typecheck: {
-              checker: 'vue-tsc',
-            },
-            deps: {
-              inline: ['element-plus'],
-            },
-          },
-        },
-        {
-          extends: true,
-          plugins: [
-            // The plugin will run tests for the stories defined in your Storybook config
-            // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
-            storybookTest({
-              configDir: path.join(dirname, '.storybook'),
-            }),
-          ],
-          test: {
-            name: 'storybook',
-            browser: {
-              enabled: true,
-              headless: true,
-              provider: playwright({}),
-              instances: [
-                {
-                  browser: 'chromium',
-                },
-              ],
-            },
-            setupFiles: ['.storybook/vitest.setup.ts'],
-          },
-        },
-      ],
+export default defineConfig({
+  test: {
+    // Root-level options
+    reporters: ['default', 'html'],
+    server: {
+      deps: {
+        inline: ['element-plus'],
+      },
     },
-  }),
-)
+    projects: [
+      {
+        extends: true,
+        test: {
+          globals: true,
+          environment: 'jsdom',
+          exclude: [...configDefaults.exclude, './src/test/e2e/**', './tests-examples/*'],
+          setupFiles: ['./src/test/test-setup.ts'],
+          root: fileURLToPath(new URL('./', import.meta.url)),
+          include: ['src/test/**/*.{test,spec}.{ts,tsx,jsx,js}'],
+          typecheck: {
+            checker: 'vue-tsc',
+          },
+        },
+      },
+      {
+        extends: true,
+        plugins: [
+          storybookTest({
+            configDir: path.join(dirname, '.storybook'),
+          }),
+        ],
+        test: {
+          name: 'storybook',
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright({}),
+            instances: [
+              {
+                browser: 'chromium',
+              },
+            ],
+          },
+          setupFiles: ['.storybook/vitest.setup.ts'],
+        },
+      },
+    ],
+  },
+})

@@ -15,9 +15,9 @@ export default function usePendingTransactions() {
     initialPageParam: 0,
     queryKey: [
       'pending-transactions',
-      limit.value,
-      selectedMemo.value,
-      selectedStatus.value,
+      limit,
+      selectedMemo,
+      selectedStatus,
     ],
     queryFn: async ({ pageParam = 0 }) => {
       const cachedTransactions = store.getPendingTransactionsByOffset(Number(pageParam))

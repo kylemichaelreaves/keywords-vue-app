@@ -98,7 +98,7 @@ import { useBudgetCategorySummary } from '@api/hooks/budgetCategories/useBudgetC
 import { useBudgetCategoryColors } from '@composables/useBudgetCategoryColors.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import { router } from '@router'
-import BudgetCategorySummaries from '@components/transactions/BudgetCategorySummaries.vue'
+import BudgetCategorySummaries from '@components/transactions/summaries/BudgetCategorySummaries.vue'
 import WeekSummaryHeader from './WeekSummaryHeader.vue'
 import MemoEditModal from '@components/memos/MemoEditModal.vue'
 import TableSkeleton from '@components/shared/TableSkeleton.vue'

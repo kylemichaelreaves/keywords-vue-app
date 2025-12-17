@@ -19,7 +19,7 @@
 import { ElButton, ElDialog, ElMessage } from 'element-plus'
 import { computed, type PropType } from 'vue'
 import { useQueryClient } from '@tanstack/vue-query'
-import BudgetCategoriesTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
+import BudgetCategoriesTreeSelect from '@components/transactions/selects/BudgetCategoriesTreeSelect.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import type { Memo } from '@types'
 import mutateMemo from '@api/hooks/memos/mutateMemo.ts'

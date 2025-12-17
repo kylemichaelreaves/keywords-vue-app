@@ -254,7 +254,14 @@ export type Transaction = {
   balance?: string
   check_number?: string
   fees?: string
-  budget_category?: string
+  budget_category?: string | SplitBudgetCategory[]
+  is_split?: boolean
+}
+
+export type SplitBudgetCategory = {
+  id: number
+  budget_category: string
+  amount_debit: number
 }
 
 export type PendingTransaction = {
@@ -265,9 +272,10 @@ export type PendingTransaction = {
   amount_debit: string
   transaction_date: string
   memo_name: string
-  assigned_category?: string
+  assigned_category?: string | SplitBudgetCategory[]
   status: PendingTransactionStatus
 }
+
 
 export type PendingTransactionStatus = 'pending' | 'reviewed'
 
@@ -302,6 +310,7 @@ export interface TransactionQueryParams {
   timeFrame?: Timeframe
   oldestDate?: boolean
   count?: boolean
+  isSplit?: boolean
   budgetCategory?: BudgetCategory['name']
   historical?: boolean
   totalAmountDebit?: boolean

@@ -73,6 +73,7 @@ export const routes = [
             })
 
             next({ name: 'pending-transactions' })
+            next({ name: 'transactions' })
           } else {
             const store = useTransactionsStore()
             store.setSelectedDay('')
@@ -192,7 +193,7 @@ export const routes = [
       {
         path: 'budget-categories',
         name: 'budget-categories',
-        component: () => import('@components/transactions/BudgetCategoriesTreeSelect.vue'),
+        component: () => import('@components/transactions/selects/BudgetCategoriesTreeSelect.vue'),
         meta: { requiresAuth: true },
       },
     ],

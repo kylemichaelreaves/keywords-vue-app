@@ -25,15 +25,14 @@ import useTransactionsCount from '@api/hooks/transactions/useTransactionsCount'
 import { computed, onMounted } from 'vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import { useTransactionsStore } from '@stores/transactions'
+import type { PendingTransactionStatus } from '@types'
 
-const props = defineProps({
-  dataTestId: {
-    type: String,
-    default: 'transactions-table-pagination',
-  },
-})
+const props = defineProps<{
+  dataTestId?: string
+  status?: PendingTransactionStatus
+}>()
 
-const { data, isError, error, refetch } = useTransactionsCount()
+const { data, isError, error, refetch } = useTransactionsCount(props.status)
 
 const store = useTransactionsStore()
 

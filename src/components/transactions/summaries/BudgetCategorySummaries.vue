@@ -135,8 +135,8 @@
 import { computed, type PropType, watch } from 'vue'
 import { useBudgetCategorySummary } from '@api/hooks/budgetCategories/useBudgetCategorySummary.ts'
 import StatisticComponent from '@components/shared/StatisticComponent.vue'
-import BudgetCategoryPieChart from '@components/charts/BudgetCategoryPieChart.vue'
-import { useTransactionsStore } from '@stores/transactions'
+import BudgetCategoryPieChart from '@components/transactions/charts/BudgetCategoryPieChart.vue'
+import { useTransactionsStore } from '@stores/transactions.ts'
 import type { BudgetCategorySummary, Timeframe } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
