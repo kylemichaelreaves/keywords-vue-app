@@ -9,6 +9,7 @@
     <div class="split-budget-category-drawer">
       <!-- Amount Summary -->
       <el-alert
+        v-if="hasBeenTouched"
         :type="isValidTotal ? 'success' : 'warning'"
         :closable="false"
         show-icon
@@ -88,7 +89,7 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-// Type the column configuration
+
 interface SplitTableColumn {
   prop: string
   label: string
@@ -103,21 +104,42 @@ interface SplitTableColumn {
 
 const visible = computed({
   get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
+  set: (value) => {
+    if (!value) {
+      hasBeenTouched.value = false  // Reset touched state when drawer closes
+    }
+    emit('update:modelValue', value)
+  },
 })
 
-const localSplits = ref<SplitBudgetCategory[]>([...props.splits])
+const hasBeenTouched = ref(false)
+
+const initializeSplits = (splits: SplitBudgetCategory[]): SplitBudgetCategory[] => {
+  const newSplits = [...splits]
+  while (newSplits.length < 2) {
+    const remainingAmount = props.transactionAmount - newSplits.reduce((sum, split) => sum + (Number(split.amount_debit) || 0), 0)
+    newSplits.push({
+      id: Number(generateId()),
+      budget_category: '',
+      amount_debit: remainingAmount > 0 ? Number((remainingAmount / (2 - newSplits.length)).toFixed(2)) : 0,
+    })
+  }
+  return newSplits
+}
+
+const localSplits = ref<SplitBudgetCategory[]>(initializeSplits(props.splits))
 
 watch(
   () => props.splits,
   (newValue) => {
-    localSplits.value = [...newValue]
+    localSplits.value = initializeSplits(newValue)
   },
   { deep: true },
 )
 
 // Explicit handler for amount changes to ensure reactivity
 const handleAmountChange = (index: number, value: unknown) => {
+  hasBeenTouched.value = true
   const split = localSplits.value[index]
   if (split) {
     split.amount_debit = (value as number) ?? 0
@@ -126,6 +148,7 @@ const handleAmountChange = (index: number, value: unknown) => {
 
 // Explicit handler for category changes
 const handleCategoryChange = (index: number, value: unknown) => {
+  hasBeenTouched.value = true
   const split = localSplits.value[index]
   if (split) {
     split.budget_category = value as string
@@ -140,7 +163,7 @@ const handleRemove = (index: number) => {
   }
 }
 
-// Column configuration - similar to your TransactionEditForm fields pattern
+
 const columns: SplitTableColumn[] = [
   {
     prop: 'budget_category',
