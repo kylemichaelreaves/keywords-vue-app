@@ -73,7 +73,6 @@ export const routes = [
             })
 
             next({ name: 'pending-transactions' })
-            next({ name: 'transactions' })
           } else {
             const store = useTransactionsStore()
             store.setSelectedDay('')
