@@ -8,7 +8,7 @@ export async function updatePendingTransaction(pendingTransactionId: number, pen
         pendingTransactionId,
         pendingTransaction,
         budget_category: JSON.parse(pendingTransaction.transaction_data).budget_category,
-        assigned_category: (pendingTransaction as any).assigned_category
+        assigned_category: (pendingTransaction).assigned_category
       })
     }
 

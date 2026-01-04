@@ -1,8 +1,8 @@
 <template>
   <AlertComponent
     v-if="isError && error"
-    :title="error.name"
-    :message="error.message"
+    :title="(error as Error)?.name || 'Error'"
+    :message="(error as Error)?.message || 'An error occurred while loading pending transactions'"
     type="error"
     data-testid="pending-transactions-table-error-alert"
   />
@@ -30,10 +30,10 @@
     data-testid="pending-transaction-edit-dialog"
   >
     <TransactionEditForm
-      v-if="selectedTransaction"
-      :transaction="selectedTransaction"
+      v-if="unwrappedSelectedTransaction"
+      :transaction="unwrappedSelectedTransaction"
       :isPending="true"
-      :pendingTransactionId="originalPendingTransaction?.id"
+      :pendingTransactionId="unwrappedPendingTransactionId"
       @close="closeTransactionEditModal"
     />
   </el-dialog>
@@ -42,7 +42,7 @@
     <!-- Show skeleton when loading -->
     <TableSkeleton
       v-if="isLoadingCondition"
-      :columns="transactionColumns"
+      :columns="transactionColumns.map(col => ({ prop: col.prop, label: col.label }))"
       :rows="LIMIT"
       data-testid="pending-transactions-table-skeleton"
     />
@@ -119,12 +119,12 @@
   </div>
   <TransactionTablePagination
     v-if="!isPaginationDisabled"
-    :status="viewMode as 'pending' | 'reviewed'"
+    :status="paginationStatus"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, toValue } from 'vue'
 import type { PendingTransaction, Transaction } from '@types'
 import { formatDate } from '@api/helpers/formatDate'
 import { useTransactionsStore } from '@stores/transactions'
@@ -133,11 +133,10 @@ import AlertComponent from '@components/shared/AlertComponent.vue'
 import TransactionTablePagination from '@components/transactions/TransactionsTablePagination.vue'
 import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
 import TableSkeleton from '@components/shared/TableSkeleton.vue'
-import { useRouter } from 'vue-router'
 
 const store = useTransactionsStore()
 
-const router = useRouter()
+
 
 // Segmented control for view mode
 const viewMode = computed({
@@ -152,6 +151,9 @@ const viewOptions = [
   { label: 'Reviewed', value: 'reviewed' }
 ]
 
+// Properly typed status for pagination component
+const paginationStatus = computed(() => viewMode.value as 'pending' | 'reviewed')
+
 const selectedMonth = computed(() => store.getSelectedMonth)
 const selectedWeek = computed(() => store.getSelectedWeek)
 const selectedDay = computed(() => store.getSelectedDay)
@@ -159,6 +161,17 @@ const selectedDay = computed(() => store.getSelectedDay)
 const showTransactionEditModal = ref(false)
 const selectedTransaction = ref<Transaction | null>(null)
 const originalPendingTransaction = ref<PendingTransaction | null>(null)
+
+// Computed properties for properly typed values
+const unwrappedSelectedTransaction = computed(() => {
+  const txn = toValue(selectedTransaction)
+  return txn as Transaction | null
+})
+
+const unwrappedPendingTransactionId = computed(() => {
+  const pending = toValue(originalPendingTransaction) as PendingTransaction | null
+  return pending ? pending.id : undefined
+})
 
 const openTransactionEditModal = (row: PendingTransaction) => {
   // Debug: Log the row data to see what we're receiving
@@ -212,8 +225,9 @@ const closeTransactionEditModal = () => {
 }
 
 const editModalTitle = computed(() => {
-  return selectedTransaction.value
-    ? `Review Pending Transaction: ${selectedTransaction.value.id}`
+  const transaction = unwrappedSelectedTransaction.value as Transaction | null
+  return transaction
+    ? `Review Pending Transaction: ${transaction.id ?? 'N/A'}`
     : 'Review Pending Transaction'
 })
 
@@ -303,5 +317,5 @@ const transactionColumns = [
   { prop: 'reviewed_at', label: 'Reviewed At', sortable: true }
 ]
 
-const getRowKey = (row: PendingTransaction) => row.id
+const getRowKey = (row: PendingTransaction) => row.id.toString()
 </script>

@@ -12,7 +12,7 @@
       :data="selectTreeData"
       v-model="model"
       class="tree-select"
-      :data-testid="dataTestId"
+      :data-testid="props.dataTestId"
     />
   </div>
 </template>

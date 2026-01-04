@@ -1,11 +1,12 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
 
 import pluginVue from 'eslint-plugin-vue'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 import pluginVitest from '@vitest/eslint-plugin'
 import pluginPlaywright from 'eslint-plugin-playwright'
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
+import storybook from 'eslint-plugin-storybook'
+
 
 export default defineConfigWithVueTs(
   // Global ignores - must be the first config object and ONLY contain ignores
@@ -17,9 +18,11 @@ export default defineConfigWithVueTs(
       '**/node_modules/**',
       '**/test-results/**',
       '**/playwright-report/**',
+      '**/storybook-static/**',
       '**/html/**',
       '**/*.min.js',
-      '**/trace/**'
+      '**/trace/**',
+      '**/src/stories/**'
     ]
   },
 
@@ -49,6 +52,14 @@ export default defineConfigWithVueTs(
   {
     ...pluginPlaywright.configs['flat/recommended'],
     files: ['e2e/**/*.{test,spec}.{js,ts,jsx,tsx}']
+  },
+
+  ...storybook.configs['flat/recommended'],
+  {
+    files: ['**/*.stories.{js,ts,jsx,tsx,vue}'],
+    rules: {
+      'import/no-anonymous-default-export': 'off'
+    },
   },
 
   skipFormatting

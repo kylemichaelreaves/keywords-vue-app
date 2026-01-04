@@ -102,7 +102,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { Delete, Plus } from '@element-plus/icons-vue'
-import { ElInputNumber, ElMessage, ElMessageBox, type ElMessageBoxOptions, type FormInstance } from 'element-plus'
+import {
+  ElInputNumber,
+  ElMessage,
+  ElMessageBox,
+  type ElMessageBoxOptions,
+  type FormInstance,
+  FormItemRule
+} from 'element-plus'
 import BudgetCategoryTreeSelect from '@components/transactions/selects/BudgetCategoriesTreeSelect.vue'
 import type { SplitBudgetCategory } from '@types'
 import { generateId } from '@components/transactions/helpers/generateId.ts'
@@ -155,11 +162,12 @@ watch(
   { immediate: true }
 )
 
+
 // Dynamic validation rules for each category field
-function getCategoryRules(index: number) {
+function getCategoryRules(index: number): FormItemRule[] {
   return [
     {
-      validator: (_rule: any, _value: any, callback: any) => {
+      validator: (_rule: FormItemRule, _value: string, callback: (error?: Error) => void) => {
         const split = localSplits.value[index]
         if (!split) {
           callback()

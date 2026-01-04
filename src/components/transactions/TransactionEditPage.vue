@@ -8,8 +8,8 @@
 
     <AlertComponent
       v-if="isError && error"
-      :title="error.name"
-      :message="error.message"
+      :title="(error as Error)?.name || 'Error'"
+      :message="(error as Error)?.message || 'An error occurred while loading the transaction'"
       type="error"
       data-testid="transaction-edit-error-alert"
     />
@@ -39,11 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, toValue } from 'vue'
 import { useRouter } from 'vue-router'
 import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import useTransaction from '@api/hooks/transactions/useTransaction'
+import type { PendingTransaction } from '@types'
 
 const props = defineProps({
   transactionId: {
@@ -70,18 +71,19 @@ const {
 } = useTransaction(Number(entityId.value))
 
 const transaction = computed(() => {
-  if (!transactionData.value) return null
+  const data = toValue(transactionData)
+  if (!data) return null
 
   // If it's a pending transaction, extract the transaction data from the transaction_data field
-  if (isPending.value && transactionData.value) {
-    const pendingTxn = transactionData.value as any
+  if (isPending.value && data) {
+    const pendingTxn = data as PendingTransaction
     if (typeof pendingTxn.transaction_data === 'string') {
       return JSON.parse(pendingTxn.transaction_data)
     }
     return pendingTxn.transaction_data
   }
 
-  return transactionData.value
+  return data
 })
 
 const pageTitle = computed(() => {

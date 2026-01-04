@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, nextTick } from 'vue'
+import { computed, ref, nextTick } from 'vue'
 import BudgetCategoryTreeSelect from '@components/transactions/selects/BudgetCategoriesTreeSelect.vue'
 import SplitBudgetCategoryDrawer from '@components/transactions/SplitBudgetCategoryDrawer.vue'
 import type { BudgetCategoryState, SplitBudgetCategory } from '@types'

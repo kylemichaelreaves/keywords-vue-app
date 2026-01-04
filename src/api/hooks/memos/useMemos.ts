@@ -3,6 +3,7 @@ import { useInfiniteQuery } from '@tanstack/vue-query'
 import { fetchMemos } from '@api/memos/fetchMemos.ts'
 import type { Memo, MemoQueryParams } from '@types'
 import { computed, type Ref } from 'vue'
+import { Timeframe } from '@types'
 
 interface UseMemosParams {
   date?: Ref<string> | string
@@ -38,7 +39,7 @@ export function useMemos(params: UseMemosParams = {}) {
       }
 
       if (date.value) queryParams.date = date.value
-      if (timeFrame.value) queryParams.timeFrame = timeFrame.value as any
+      if (timeFrame.value) queryParams.timeFrame = timeFrame.value as Timeframe
       if (count.value !== undefined) queryParams.count = count.value
 
       return await fetchMemos(queryParams)
