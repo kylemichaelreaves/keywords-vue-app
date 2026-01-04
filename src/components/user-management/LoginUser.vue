@@ -44,12 +44,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
-import type { LoginFormFields, loginFormKeys } from '@types'
+import { computed, ref, onMounted, type Component } from 'vue'
+import type { loginFormKeys } from '@types'
 import { useMutation } from '@tanstack/vue-query'
 import { useAuthStore } from '@stores/auth.ts'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElInput } from 'element-plus'
+
+interface LoginFormField {
+  component: Component
+  label: string
+  placeholder: string
+  type: string
+  showPassword?: boolean
+}
 
 const user = ref({
   username: '',
@@ -103,15 +111,15 @@ const submitForm = () => {
   mutate({ username: user.value.username, password: user.value.password })
 }
 
-const loginFormFields: Record<loginFormKeys, LoginFormFields> = {
+const loginFormFields: Record<loginFormKeys, LoginFormField> = {
   username: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Username',
     placeholder: 'Enter username',
     type: 'text',
   },
   password: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Password',
     placeholder: 'Enter password',
     type: 'password',

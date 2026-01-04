@@ -29,7 +29,7 @@ import type {
 } from '@types'
 import mutateTransaction from '@api/hooks/transactions/mutateTransaction'
 import mutatePendingTransaction from '@api/hooks/transactions/mutatePendingTransaction'
-import { type ElForm, ElMessage } from 'element-plus'
+import {type ElForm, ElMessage, ElInput, ElDatePicker} from 'element-plus'
 import MemoSelect from '@components/transactions/selects/MemoSelect.vue'
 import BudgetCategoryFormField from '@components/transactions/BudgetCategoryFormField.vue'
 
@@ -80,7 +80,7 @@ const transactionAmount = computed(() => {
 
 const fields: Record<TransactionKeys, TransactionFormFields> = {
   id: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Id',
     placeholder: 'Transaction Id',
     props: {
@@ -89,7 +89,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     dataTestId: `${props.dataTestId}-id-input`,
   },
   transaction_number: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Transaction Number',
     placeholder: 'Enter a transaction number',
     props: {
@@ -98,7 +98,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     dataTestId: `${props.dataTestId}-transaction_number-input`,
   },
   date: {
-    component: 'el-date-picker',
+    component: ElDatePicker,
     label: 'Date',
     placeholder: 'Select a date',
     props: {
@@ -107,7 +107,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     dataTestId: `${props.dataTestId}-date-picker`,
   },
   amount_debit: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Amount Debit',
     placeholder: 'Enter a debit amount',
     props: {
@@ -116,7 +116,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     dataTestId: `${props.dataTestId}-amount_debit-input`,
   },
   amount_credit: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Amount Credit ',
     placeholder: 'Enter a credit amount',
     props: {
@@ -125,7 +125,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     dataTestId: `${props.dataTestId}-amount_credit-input`,
   },
   description: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Description',
     placeholder: 'Enter a description',
     dataTestId: `${props.dataTestId}-description-input`,
@@ -140,13 +140,13 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     dataTestId: `${props.dataTestId}-memo-select`,
   },
   balance: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Balance',
     placeholder: 'Enter a balance',
     dataTestId: `${props.dataTestId}-balance-input`,
   },
   check_number: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Check Number',
     placeholder: 'Enter a check number',
     dataTestId: `${props.dataTestId}-check-number-input`,
@@ -165,7 +165,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     dataTestId: `${props.dataTestId}-budget_category`,
   },
   fees: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Fees',
     placeholder: 'Enter fees',
     dataTestId: `${props.dataTestId}-fees-input`,

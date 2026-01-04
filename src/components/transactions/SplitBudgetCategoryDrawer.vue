@@ -1,19 +1,19 @@
 <template>
   <el-drawer
-    v-model="visible"
-    title="Split Transaction"
-    direction="rtl"
-    size="700px"
-    :before-close="handleCancel"
+      v-model="visible"
+      title="Split Transaction"
+      direction="rtl"
+      size="700px"
+      :before-close="handleCancel"
   >
     <div class="split-budget-category-drawer">
       <!-- Amount Summary -->
       <el-alert
-        v-if="hasBeenTouched"
-        :type="isValidTotal ? 'success' : 'warning'"
-        :closable="false"
-        show-icon
-        class="amount-alert"
+          v-if="hasBeenTouched"
+          :type="isValidTotal ? 'success' : 'warning'"
+          :closable="false"
+          show-icon
+          class="amount-alert"
       >
         <template #title>
           <div class="amount-summary">
@@ -29,20 +29,20 @@
       <!-- Splits Table -->
       <el-table :data="localSplits" style="width: 100%" :border="true" class="splits-table">
         <el-table-column
-          v-for="column in columns"
-          :key="column.prop"
-          :label="column.label"
-          :width="column.width"
-          :min-width="column.minWidth"
-          :align="column.align"
+            v-for="column in columns"
+            :key="column.prop"
+            :label="column.label"
+            :width="column.width"
+            :min-width="column.minWidth"
+            :align="column.align"
         >
           <template #default="{ $index }">
             <component
-              v-if="localSplits[$index]"
-              :is="column.component"
-              v-bind="column.getProps?.($index, localSplits[$index]) || {}"
-              @update:model-value="column.onUpdate?.($index, $event)"
-              @click="column.onClick?.($index)"
+                v-if="localSplits[$index]"
+                :is="column.component"
+                v-bind="column.getProps?.($index, localSplits[$index]) || {}"
+                @update:model-value="column.onUpdate?.($index, $event)"
+                @click="column.onClick?.($index)"
             />
           </template>
         </el-table-column>
@@ -67,12 +67,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, type Component } from 'vue'
-import { Delete, Plus } from '@element-plus/icons-vue'
-import { ElMessage, ElButton, ElInputNumber } from 'element-plus'
+import {computed, ref, watch, type Component} from 'vue'
+import {Delete, Plus} from '@element-plus/icons-vue'
+import {ElMessage, ElButton, ElInputNumber} from 'element-plus'
 import BudgetCategoryTreeSelect from '@components/transactions/selects/BudgetCategoriesTreeSelect.vue'
-import type { SplitBudgetCategory } from '@types'
-import { generateId } from '@components/transactions/helpers/generateId.ts'
+import type {SplitBudgetCategory} from '@types'
+import {generateId} from '@components/transactions/helpers/generateId.ts'
 
 interface Props {
   modelValue: boolean
@@ -82,7 +82,9 @@ interface Props {
 
 interface Emits {
   (e: 'update:modelValue', value: boolean): void
+
   (e: 'submit', splits: SplitBudgetCategory[]): void
+
   (e: 'cancel'): void
 }
 
@@ -115,26 +117,48 @@ const visible = computed({
 const hasBeenTouched = ref(false)
 
 const initializeSplits = (splits: SplitBudgetCategory[]): SplitBudgetCategory[] => {
-  const newSplits = [...splits]
-  while (newSplits.length < 2) {
-    const remainingAmount = props.transactionAmount - newSplits.reduce((sum, split) => sum + (Number(split.amount_debit) || 0), 0)
+  // If splits array is empty or has only one item, initialize with 2 splits
+  if (splits.length === 0) {
+    const halfAmount = Number((props.transactionAmount / 2).toFixed(2))
+    return [
+      {
+        id: Number(generateId()),
+        budget_category: '',
+        amount_debit: halfAmount,
+      },
+      {
+        id: Number(generateId()),
+        budget_category: '',
+        amount_debit: halfAmount,
+      },
+    ]
+  }
+
+  // If we have exactly one split, add another split with remaining amount
+  if (splits.length === 1) {
+    const newSplits = [...splits]
+    const firstSplit = splits[0]
+    const remainingAmount = props.transactionAmount - (Number(firstSplit?.amount_debit) || 0)
     newSplits.push({
       id: Number(generateId()),
       budget_category: '',
-      amount_debit: remainingAmount > 0 ? Number((remainingAmount / (2 - newSplits.length)).toFixed(2)) : 0,
+      amount_debit: remainingAmount > 0 ? Number(remainingAmount.toFixed(2)) : 0,
     })
+    return newSplits
   }
-  return newSplits
+
+  // Otherwise return the splits as-is
+  return [...splits]
 }
 
 const localSplits = ref<SplitBudgetCategory[]>(initializeSplits(props.splits))
 
 watch(
-  () => props.splits,
-  (newValue) => {
-    localSplits.value = initializeSplits(newValue)
-  },
-  { deep: true },
+    () => props.splits,
+    (newValue) => {
+      localSplits.value = initializeSplits(newValue)
+    },
+    {deep: true},
 )
 
 // Explicit handler for amount changes to ensure reactivity
@@ -196,7 +220,7 @@ const columns: SplitTableColumn[] = [
     width: '60',
     align: 'center',
     component: ElButton,
-    getProps: (index: number) => ({
+    getProps: (_index: number) => ({
       icon: Delete,
       circle: true,
       size: 'small',
@@ -227,7 +251,7 @@ const hasExceededTotal = computed(() => {
 
 const allCategoriesSelected = computed(() => {
   return localSplits.value.every(
-    (split) => split.budget_category !== null && split.budget_category !== '',
+      (split) => split.budget_category !== null && split.budget_category !== '',
   )
 })
 

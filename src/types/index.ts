@@ -1,4 +1,5 @@
 import type { Component, ComputedRef } from 'vue'
+import type { ElInput } from 'element-plus'
 
 export interface AddressFields {
   streetAddress: string

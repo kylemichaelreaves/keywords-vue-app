@@ -39,15 +39,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import {type Component, computed, reactive, ref} from 'vue'
 import { useMutation } from '@tanstack/vue-query'
 import { createTransaction } from '@api/transactions/createTransaction.ts'
-import { ElMessage } from 'element-plus'
+import {ElDatePicker, ElMessage} from 'element-plus'
 import type { Transaction } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
 interface FormField {
-  component: string
+  component: string | Component
   label: string
   placeholder?: string
   props?: Record<string, unknown>
@@ -103,7 +103,7 @@ const fieldConfig: Record<
   FormField
 > = {
   date: {
-    component: 'el-date-picker',
+    component: ElDatePicker,
     label: 'Date',
     placeholder: 'Select a date',
     props: {
@@ -111,17 +111,17 @@ const fieldConfig: Record<
     },
   },
   description: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Description',
     placeholder: 'Enter description',
   },
   memo: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Memo',
     placeholder: 'Enter memo',
   },
   amount_debit: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Amount Debit',
     placeholder: 'Enter debit amount',
     computedProps: () => ({
@@ -129,7 +129,7 @@ const fieldConfig: Record<
     }),
   },
   amount_credit: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Amount Credit',
     placeholder: 'Enter credit amount',
     computedProps: () => ({
