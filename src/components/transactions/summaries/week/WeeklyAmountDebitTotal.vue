@@ -30,7 +30,7 @@ const { data, isLoading, isFetching, isRefetching, isError, error, refetch } =
   useSumAmountDebitByDate('week', selectedWeek.value)
 
 const weekTotalAmountDebit = computed(() => {
-  return data.value ? data?.value[0]?.total_amount_debit : 0
+  return data?.value?.[0]?.total_amount_debit ?? 0
 })
 
 watch(
