@@ -90,18 +90,18 @@ const handleFetchSuggestions = (
 
   // Otherwise, fall back to client-side filtering
   if (!queryString || queryString.length === 0) {
-    const limitedResults = props.options.slice(0, 50)
-    callback(limitedResults)
+    const limitedResults = props.options?.slice(0, 50)
+    callback(limitedResults || [])
     return
   }
 
   if (queryString.length < props.minCharacters) {
-    const limitedResults = props.options.slice(0, 50)
-    callback(limitedResults)
+    const limitedResults = props.options?.slice(0, 50)
+    callback(limitedResults || [])
     return
   }
 
-  const results = props.options.filter((option) =>
+  const results = props.options?.filter((option) =>
     option.label.toLowerCase().includes(queryString.toLowerCase()),
   )
 
@@ -117,7 +117,7 @@ const handleSelect = (item: Record<string, unknown>): void => {
 
 const handleChange = (value: string | number): void => {
   const stringValue = String(value)
-  const existingOption = props.options.find((option) => option.label === stringValue)
+  const existingOption = props.options?.find((option) => option.label === stringValue)
   if (existingOption) {
     selectedValue.value = existingOption.value // Direct assignment!
   } else {

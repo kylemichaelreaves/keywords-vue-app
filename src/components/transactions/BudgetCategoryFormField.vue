@@ -3,14 +3,16 @@
     <div class="field-container">
       <BudgetCategoryTreeSelect
         v-if="!isSplit"
-        :model-value="modelValue"
-        @update:model-value="handleCategoryUpdate"
+        :model-value="categoryId || undefined"
+        @update:model-value="updateCategory"
         :data-testid="dataTestId"
-        class="tree-select"
       />
       <div v-else class="split-info">
         <el-tag type="info" size="large">
-          Split into {{ splits.length }} {{ splits.length === 1 ? 'category' : 'categories' }}
+          {{ splits.length }} {{ splits.length === 1 ? 'category' : 'categories' }}
+          <template v-if="validationError">
+            <span class="validation-error">{{ validationError }}</span>
+          </template>
         </el-tag>
         <el-button
           type="primary"
@@ -23,121 +25,146 @@
     </div>
 
     <el-checkbox
-      v-model="isSplit"
-      class="split-checkbox"
+      :model-value="isSplit"
+      @update:model-value="toggleMode"
       :data-testid="`${dataTestId}-split-checkbox`"
     >
       Split into multiple categories
     </el-checkbox>
 
-    <!-- Split Drawer -->
     <SplitBudgetCategoryDrawer
       v-model="splitDrawerVisible"
-      :splits="localSplits"
+      :splits="splits"
       :transaction-amount="transactionAmount"
-      @submit="handleSplitsSubmit"
-      @cancel="handleSplitsCancel"
+      @submit="updateSplits"
+      @cancel="handleDrawerCancel"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
+import { computed, ref, watch, nextTick } from 'vue'
 import BudgetCategoryTreeSelect from '@components/transactions/selects/BudgetCategoriesTreeSelect.vue'
 import SplitBudgetCategoryDrawer from '@components/transactions/SplitBudgetCategoryDrawer.vue'
-import type { SplitBudgetCategory } from '@types'
+import type { BudgetCategoryState, SplitBudgetCategory } from '@types'
 import { generateId } from '@components/transactions/helpers/generateId.ts'
 
 interface Props {
-  modelValue: string
-  splits?: SplitBudgetCategory[]
+  modelValue: BudgetCategoryState
   transactionAmount: number
   dataTestId?: string
 }
 
-interface Emits {
-  (e: 'update:modelValue', value: string | null): void
-  (e: 'update:splits', value: SplitBudgetCategory[]): void
-  (e: 'update:isSplit', value: boolean): void
-}
-
 const props = withDefaults(defineProps<Props>(), {
   dataTestId: 'budget-category-form-field',
-  splits: () => [],
 })
 
-const emit = defineEmits<Emits>()
+type EmitType = (e: 'update:modelValue', value: BudgetCategoryState) => void
+const emit = defineEmits<EmitType>()
 
 const splitDrawerVisible = ref(false)
-const localSplits = ref<SplitBudgetCategory[]>([...props.splits])
-const isSplit = ref(props.splits.length > 0)
 
-// Watch for external changes to splits
-watch(
-  () => props.splits,
-  (newValue) => {
-    localSplits.value = [...newValue]
-    // Update isSplit if splits are provided externally
-    if (newValue.length > 0 && !isSplit.value) {
-      isSplit.value = true
-    }
-  },
-  { deep: true },
+
+// Computed properties derived from modelValue
+const isSplit = computed(() => props.modelValue.mode === 'split')
+
+const splits = computed(() =>
+  props.modelValue.mode === 'split' ? props.modelValue.splits : []
 )
 
-// Watch isSplit toggle
-watch(isSplit, (newValue) => {
-  emit('update:isSplit', newValue)
+const categoryId = computed(() =>
+  props.modelValue.mode === 'single' ? props.modelValue.categoryId : null
+)
 
-  if (newValue) {
-    // Switching to split mode
-    if (localSplits.value.length === 0) {
-      // Initialize with current category if one is selected
-      localSplits.value = [
-        {
-          id: generateId(),
-          budget_category: props.modelValue ? props.modelValue : "",
-          amount_debit: props.transactionAmount,
-        },
-      ]
-      emit('update:splits', localSplits.value)
-    }
-    // Clear single category
-    emit('update:modelValue', null)
-    // Auto-open drawer when enabling split mode
-    splitDrawerVisible.value = true
-  } else {
-    // Switching back to single category mode
-    // Clear splits
-    localSplits.value = []
-    emit('update:splits', [])
+// Validation
+const validationError = computed(() => {
+  if (props.modelValue.mode !== 'split') return null
+
+  const sum = props.modelValue.splits.reduce((acc, s) => acc + s.amount_debit, 0)
+  const diff = Math.abs(sum - props.transactionAmount)
+
+  if (diff > 0.01) {
+    return `Total $${sum.toFixed(2)} doesn't match transaction $${props.transactionAmount.toFixed(2)}`
   }
+
+  return null
 })
 
-// Handle single category update
-const handleCategoryUpdate = (value: string | null) => {
-  emit('update:modelValue', value)
+// Toggle between single and split mode
+function toggleMode(value: boolean | string | number) {
+  const enableSplit = Boolean(value)
+
+  if (enableSplit) {
+    // Initialize with current category if one is selected
+    const initialSplits: SplitBudgetCategory[] = []
+
+    if (categoryId.value) {
+      initialSplits.push({
+        id: `${generateId()}`,
+        budget_category_id: categoryId.value,
+        amount_debit: props.transactionAmount,
+      })
+    }
+
+    const splitState: BudgetCategoryState = {
+      mode: 'split',
+      splits: initialSplits
+    }
+
+    emit('update:modelValue', splitState)
+
+    // Auto-open drawer for first-time setup
+    if (initialSplits.length === 0) {
+      // Use nextTick to ensure state is updated before opening drawer
+      nextTick(() => {
+        splitDrawerVisible.value = true
+      })
+    }
+  } else {
+    const singleState: BudgetCategoryState = {
+      mode: 'single',
+      categoryId: null
+    }
+
+    emit('update:modelValue', singleState)
+  }
 }
 
 // Open split drawer
-const openSplitDrawer = () => {
+function openSplitDrawer() {
   splitDrawerVisible.value = true
 }
 
-// Handle split submission
-const handleSplitsSubmit = (splits: SplitBudgetCategory[]) => {
-  localSplits.value = splits
-  emit('update:splits', splits)
-  ElMessage.success('Splits saved')
+// Update single category
+function updateCategory(value: string | null) {
+  const singleState: BudgetCategoryState = {
+    mode: 'single',
+    categoryId: value
+  }
+
+  emit('update:modelValue', singleState)
 }
 
-// Handle split cancellation
-const handleSplitsCancel = () => {
-  // If no splits exist and user cancels, turn off split mode
-  if (localSplits.value.length === 0) {
-    isSplit.value = false
+// Update splits from drawer
+function updateSplits(newSplits: SplitBudgetCategory[]) {
+  const splitState: BudgetCategoryState = {
+    mode: 'split',
+    splits: newSplits
   }
+
+  emit('update:modelValue', splitState)
+  splitDrawerVisible.value = false
+}
+
+// Handle drawer cancel - revert to single mode
+function handleDrawerCancel() {
+  const singleState: BudgetCategoryState = {
+    mode: 'single',
+    categoryId: null
+  }
+
+  emit('update:modelValue', singleState)
+  splitDrawerVisible.value = false
 }
 </script>
 
@@ -154,15 +181,17 @@ const handleSplitsCancel = () => {
     align-items: center;
     width: 100%;
 
-    .tree-select {
-      flex: 1;
-    }
-
     .split-info {
       display: flex;
       gap: 12px;
       align-items: center;
       flex: 1;
+
+      .validation-error {
+        margin-left: 8px;
+        color: var(--el-color-danger);
+        font-size: 12px;
+      }
     }
   }
 

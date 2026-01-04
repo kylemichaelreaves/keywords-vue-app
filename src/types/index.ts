@@ -1,5 +1,4 @@
 import type { Component, ComputedRef } from 'vue'
-import type { ElInput } from 'element-plus'
 
 export interface AddressFields {
   streetAddress: string
@@ -259,11 +258,6 @@ export type Transaction = {
   is_split?: boolean
 }
 
-export type SplitBudgetCategory = {
-  id: number
-  budget_category: string
-  amount_debit: number
-}
 
 export type PendingTransaction = {
   id: number
@@ -294,7 +288,7 @@ export type TransactionKeys =
   | 'budget_category'
 
 export type TransactionFormFields = {
-  component: 'el-input' | 'el-date-picker' | 'el-select' | Component
+  component: Component | string
   label: string
   placeholder?: string
   props?: Record<string, unknown>
@@ -380,4 +374,14 @@ export interface SelectComponentProps {
   disabled?: boolean
   loading?: boolean
   loadingText?: string
+}
+
+export type BudgetCategoryState =
+  | { mode: 'single'; categoryId: string | null }
+  | { mode: 'split'; splits: SplitBudgetCategory[] }
+
+export interface SplitBudgetCategory {
+  id: string
+  budget_category_id: string
+  amount_debit: number
 }
