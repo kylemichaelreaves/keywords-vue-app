@@ -10,60 +10,30 @@
     "src/**/__tests__/*",
     "src/test/*"
   ],
-  "module": "ESNext",
-  "target": "ESNext",
-  "composite": true,
-  "moduleResolution": "Bundler",
-  "strict": true,
-  "skipLibCheck": true,
-  "esModuleInterop": true,
-  "forceConsistentCasingInFileNames": true,
   "compilerOptions": {
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "types": [
-      "vitest/globals",
-      "vite/client",
-      "node",
-      "jsdom"
-    ],
-    "baseUrl": "./src",
+    "composite": true,
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "/*"
-      ],
-      "@components/*": [
-        "components/*"
-      ],
-      "@composables/*": [
-        "composables/*"
-      ],
-      "@types": [
-        "types/index.ts"
-      ],
-      "@test/*": [
-        "test/*"
-      ],
-      "@mocks/*": [
-        "mocks/*"
-      ],
-      "@api/*": [
-        "api/*"
-      ],
-      "@stores/*": [
-        "stores/*"
-      ],
-      "@constants": [
-        "constants.ts"
-      ],
-      "@main": [
-        "main.ts"
-      ],
-      "@router": [
-        "router/index.ts"
-      ]
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@composables/*": ["src/composables/*"],
+      "@types": ["src/types/index.ts"],
+      "@test/*": ["src/test/*"],
+      "@mocks/*": ["src/mocks/*"],
+      "@api/*": ["src/api/*"],
+      "@stores/*": ["src/stores/*"],
+      "@constants": ["src/constants.ts"],
+      "@main": ["src/main.ts"],
+      "@router": ["src/router/index.ts"]
     }
   }
 }

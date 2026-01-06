@@ -15,7 +15,7 @@
       "node",
       "jsdom",
       "vitest/globals",
-      "vite/client",
+      "vite/client"
     ]
   }
 }
