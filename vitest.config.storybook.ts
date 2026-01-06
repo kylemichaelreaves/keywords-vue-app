@@ -1,10 +1,7 @@
 import { defineConfig } from 'vitest/config'
-import path from 'node:path'
 import { playwright } from '@vitest/browser-playwright'
 import vue from '@vitejs/plugin-vue'
 import { UserConfig } from 'vite'
-
-const dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default defineConfig({
   plugins: [vue()],
