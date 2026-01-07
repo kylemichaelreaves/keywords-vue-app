@@ -10,9 +10,7 @@
       />
     </el-form-item>
 
-    <el-button type="primary" @click="saveTransaction">
-      Save
-    </el-button>
+    <el-button type="primary" @click="saveTransaction"> Save </el-button>
   </el-form>
 </template>
 
@@ -24,7 +22,7 @@ import type {
   PendingTransaction,
   BudgetCategoryState,
   SplitBudgetCategory,
-  TransactionKeys
+  TransactionKeys,
 } from '@types'
 import mutateTransaction from '@api/hooks/transactions/mutateTransaction'
 import mutatePendingTransaction from '@api/hooks/transactions/mutatePendingTransaction'
@@ -35,20 +33,20 @@ import BudgetCategoryFormField from '@components/transactions/BudgetCategoryForm
 const props = defineProps({
   transaction: {
     type: Object as PropType<Transaction>,
-    required: true
+    required: true,
   },
   dataTestId: {
     type: String,
-    default: 'transaction-edit-form'
+    default: 'transaction-edit-form',
   },
   isPending: {
     type: Boolean,
-    default: false
+    default: false,
   },
   pendingTransactionId: {
     type: Number,
-    default: undefined
-  }
+    default: undefined,
+  },
 })
 
 const emit = defineEmits<{
@@ -60,12 +58,12 @@ const transaction = reactive<Transaction>(props.transaction as Transaction)
 
 // Budget category state - single source of truth
 const budgetCategoryState = ref<BudgetCategoryState>(
-  initializeBudgetCategoryState(props.transaction!)
+  initializeBudgetCategoryState(props.transaction!),
 )
 
 // Computed transaction amount
 const transactionAmount = computed(() =>
-  Number.parseFloat(transaction.amount_debit || transaction.amount_credit || '0')
+  Number.parseFloat(transaction.amount_debit || transaction.amount_credit || '0'),
 )
 
 // Initialize budget category state from transaction
@@ -76,14 +74,14 @@ function initializeBudgetCategoryState(txn: Transaction): BudgetCategoryState {
       splits: txn.budget_category.map((split, index) => ({
         id: `split_${index}_${Date.now()}`,
         budget_category_id: split.budget_category_id,
-        amount_debit: split.amount_debit
-      }))
+        amount_debit: split.amount_debit,
+      })),
     }
   }
 
   return {
     mode: 'single',
-    categoryId: typeof txn.budget_category === 'string' ? txn.budget_category : null
+    categoryId: typeof txn.budget_category === 'string' ? txn.budget_category : null,
   }
 }
 
@@ -94,7 +92,7 @@ const formValues = computed(() => {
   // Create getter/setter for each field
   const keys = Object.keys(fields) as TransactionKeys[]
 
-  keys.forEach(key => {
+  keys.forEach((key) => {
     Object.defineProperty(values, key, {
       get() {
         if (key === 'budget_category') {
@@ -111,7 +109,7 @@ const formValues = computed(() => {
         }
       },
       enumerable: true,
-      configurable: true
+      configurable: true,
     })
   })
 
@@ -123,53 +121,53 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     component: ElInput,
     label: 'Id',
     placeholder: 'Transaction Id',
-    props: { disabled: true }
+    props: { disabled: true },
   },
   transaction_number: {
     component: ElInput,
     label: 'Transaction Number',
     placeholder: 'Enter a transaction number',
-    props: { disabled: true }
+    props: { disabled: true },
   },
   date: {
     component: ElDatePicker,
     label: 'Date',
     placeholder: 'Select a date',
-    props: { valueFormat: 'YYYY-MM-DD' }
+    props: { valueFormat: 'YYYY-MM-DD' },
   },
   amount_debit: {
     component: ElInput,
     label: 'Amount Debit',
     placeholder: 'Enter a debit amount',
-    props: { disabled: !!transaction.amount_credit }
+    props: { disabled: !!transaction.amount_credit },
   },
   amount_credit: {
     component: ElInput,
     label: 'Amount Credit',
     placeholder: 'Enter a credit amount',
-    props: { disabled: !!transaction.amount_debit }
+    props: { disabled: !!transaction.amount_debit },
   },
   description: {
     component: ElInput,
     label: 'Description',
-    placeholder: 'Enter a description'
+    placeholder: 'Enter a description',
   },
   memo: {
     component: MemoSelect,
     label: 'Memo',
     placeholder: 'Select a memo',
-    props: { modelValue: transaction.memo }
+    props: { modelValue: transaction.memo },
   },
   balance: {
     component: ElInput,
     label: 'Balance',
-    placeholder: 'Enter a balance'
+    placeholder: 'Enter a balance',
   },
   check_number: {
     component: ElInput,
     label: 'Check Number',
     placeholder: 'Enter a check number',
-    props: { disabled: transaction.description !== 'CHECK' }
+    props: { disabled: transaction.description !== 'CHECK' },
   },
   budget_category: {
     component: BudgetCategoryFormField,
@@ -177,13 +175,13 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     placeholder: 'Select a budget category',
     props: {
       transactionAmount: transactionAmount.value,
-    }
+    },
   },
   fees: {
     component: ElInput,
     label: 'Fees',
-    placeholder: 'Enter fees'
-  }
+    placeholder: 'Enter fees',
+  },
 }
 
 const { mutate: mutateRegularTransaction } = mutateTransaction()
@@ -204,7 +202,7 @@ watch(
     Object.assign(transaction, newTransaction)
     budgetCategoryState.value = initializeBudgetCategoryState(newTransaction!)
   },
-  { deep: true }
+  { deep: true },
 )
 
 // Save transaction
@@ -215,7 +213,7 @@ const saveTransaction = () => {
   const transactionData: Transaction = {
     ...transaction,
     budget_category: budgetCategory,
-    is_split: state.mode === 'split'
+    is_split: state.mode === 'split',
   }
 
   if (props.isPending && props.pendingTransactionId) {
@@ -229,13 +227,13 @@ const saveTransaction = () => {
       transaction_date: transaction.date,
       memo_name: transaction.memo,
       assigned_category: assignedCategory,
-      status: 'reviewed'
+      status: 'reviewed',
     }
 
     mutatePending(
       {
         pendingTransactionId: props.pendingTransactionId,
-        pendingTransaction: pendingTransactionData
+        pendingTransaction: pendingTransactionData,
       },
       {
         onSuccess: () => {
@@ -244,8 +242,8 @@ const saveTransaction = () => {
         },
         onError: (error) => {
           ElMessage.error(error.message)
-        }
-      }
+        },
+      },
     )
   } else {
     mutateRegularTransaction(
@@ -257,8 +255,8 @@ const saveTransaction = () => {
         },
         onError: (error) => {
           ElMessage.error(error.message)
-        }
-      }
+        },
+      },
     )
   }
 }

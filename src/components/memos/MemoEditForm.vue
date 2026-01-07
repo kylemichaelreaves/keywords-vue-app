@@ -63,12 +63,12 @@ import AlertComponent from '@components/shared/AlertComponent.vue'
 const props = defineProps({
   memo: {
     type: Object as PropType<Memo>,
-    required: true
+    required: true,
   },
   dataTestId: {
     type: String,
-    default: 'memo-edit-form'
-  }
+    default: 'memo-edit-form',
+  },
 })
 
 const emit = defineEmits(['close', 'updated'])
@@ -81,12 +81,11 @@ const formData = reactive<Memo>({
   frequency: props.memo.frequency,
   budget_category: props.memo.budget_category || null,
   ambiguous: props.memo.ambiguous || false,
-  avatar_s3_url: props.memo.avatar_s3_url
+  avatar_s3_url: props.memo.avatar_s3_url,
 })
 
 const { mutate, error, isError, isPending } = mutateMemo()
 const queryClient = useQueryClient()
-
 
 const formRef = ref<FormInstance>()
 
@@ -95,8 +94,8 @@ const formRules: FormRules = {
     {
       required: true,
       message: 'Memo name is required',
-      trigger: 'blur'
-    }
+      trigger: 'blur',
+    },
   ],
   frequency: [
     {
@@ -108,11 +107,10 @@ const formRules: FormRules = {
           callback()
         }
       },
-      trigger: 'change'
-    }
-  ]
+      trigger: 'change',
+    },
+  ],
 }
-
 
 watch(
   () => props.memo,
@@ -126,14 +124,14 @@ watch(
         frequency: newMemo.frequency,
         budget_category: newMemo.budget_category || null,
         ambiguous: newMemo.ambiguous || false,
-        avatar_s3_url: newMemo.avatar_s3_url
+        avatar_s3_url: newMemo.avatar_s3_url,
       })
     }
   },
   {
     deep: true,
-    immediate: true
-  }
+    immediate: true,
+  },
 )
 
 // Clear the frequency if recurring is set to false / disabled
@@ -143,7 +141,7 @@ watch(
     if (!isRecurring) {
       formData.frequency = undefined
     }
-  }
+  },
 )
 
 const fields: Record<MemoKeys, MemoFormFields> = {
@@ -151,23 +149,23 @@ const fields: Record<MemoKeys, MemoFormFields> = {
     component: MemoAvatar,
     label: 'Logo',
     placeholder: 'Upload a logo for this vendor',
-    dataTestId: `${props.dataTestId}-avatar`
+    dataTestId: `${props.dataTestId}-avatar`,
   },
   name: {
     component: 'el-input',
     label: 'Memo Name',
     placeholder: 'Enter a memo name',
-    dataTestId: `${props.dataTestId}-name-input`
+    dataTestId: `${props.dataTestId}-name-input`,
   },
   recurring: {
     component: 'el-switch',
     label: 'Recurring',
-    dataTestId: `${props.dataTestId}-recurring-switch`
+    dataTestId: `${props.dataTestId}-recurring-switch`,
   },
   necessary: {
     component: 'el-switch',
     label: 'Necessary',
-    dataTestId: `${props.dataTestId}-necessary-switch`
+    dataTestId: `${props.dataTestId}-necessary-switch`,
   },
   frequency: {
     component: 'el-select',
@@ -178,21 +176,21 @@ const fields: Record<MemoKeys, MemoFormFields> = {
       { value: 'daily' as Frequency, label: 'Daily' },
       { value: 'weekly' as Frequency, label: 'Weekly' },
       { value: 'monthly' as Frequency, label: 'Monthly' },
-      { value: 'yearly' as Frequency, label: 'Yearly' }
+      { value: 'yearly' as Frequency, label: 'Yearly' },
     ],
-    dataTestId: `${props.dataTestId}-frequency-select`
+    dataTestId: `${props.dataTestId}-frequency-select`,
   },
   budget_category: {
     component: BudgetCategoryTreeSelect,
     label: 'Budget Category',
     placeholder: 'Select a budget category',
-    dataTestId: `${props.dataTestId}-budget-category-tree-select`
+    dataTestId: `${props.dataTestId}-budget-category-tree-select`,
   },
   ambiguous: {
     component: 'el-switch',
     label: 'Ambiguous',
-    dataTestId: `${props.dataTestId}-ambiguous-switch`
-  }
+    dataTestId: `${props.dataTestId}-ambiguous-switch`,
+  },
 }
 
 const saveMemo = () => {
@@ -204,7 +202,7 @@ const saveMemo = () => {
 
     mutate(
       {
-        memo: formData
+        memo: formData,
       },
       {
         onSuccess: () => {
@@ -215,7 +213,7 @@ const saveMemo = () => {
             'budget-category-amount-debit',
             'month-summary',
             'week-summary',
-            'memo'
+            'memo',
           ]
 
           for (const query of queries) {
@@ -231,14 +229,12 @@ const saveMemo = () => {
         },
         onError: (error) => {
           ElMessage.error(`An error occurred while updating the memo: ${error.message}`)
-        }
-      }
+        },
+      },
     )
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     ElMessage.error(`An unexpected error occurred: ${errorMessage}`)
   }
 }
-
-
 </script>

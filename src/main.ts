@@ -18,7 +18,6 @@ const pinia = createPinia()
 
 app.use(pinia)
 
-
 const user = localStorage.getItem('user')
 const token = localStorage.getItem('token')
 

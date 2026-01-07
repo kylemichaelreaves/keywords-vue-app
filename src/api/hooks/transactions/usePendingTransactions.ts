@@ -4,7 +4,6 @@ import { useTransactionsStore } from '@stores/transactions'
 import { fetchPendingTransactions } from '@api/transactions/fetchPendingTransactions'
 import type { PendingTransaction } from '@types'
 
-
 export default function usePendingTransactions() {
   const store = useTransactionsStore()
   const selectedMemo = computed(() => store.getSelectedMemo)
@@ -13,12 +12,7 @@ export default function usePendingTransactions() {
 
   return useInfiniteQuery<Array<PendingTransaction>>({
     initialPageParam: 0,
-    queryKey: [
-      'pending-transactions',
-      limit,
-      selectedMemo,
-      selectedStatus,
-    ],
+    queryKey: ['pending-transactions', limit, selectedMemo, selectedStatus],
     queryFn: async ({ pageParam = 0 }) => {
       const cachedTransactions = store.getPendingTransactionsByOffset(Number(pageParam))
       if (cachedTransactions && cachedTransactions.length > 0) {

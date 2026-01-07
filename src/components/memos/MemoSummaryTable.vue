@@ -67,11 +67,7 @@ const route = useRoute()
 const memoId = computed(() => Number.parseInt(route.params.memoId as string))
 
 // Fetch memo data to get the memo name and other details
-const {
-  data: memoData,
-  isLoading: memoLoading,
-  isFetching: memoFetching,
-} = useMemo(memoId.value)
+const { data: memoData, isLoading: memoLoading, isFetching: memoFetching } = useMemo(memoId.value)
 
 // Fetch memo summary data
 const {
@@ -94,7 +90,11 @@ const typedMemoLoading = memoLoading as Ref<boolean>
 const typedMemoFetching = memoFetching as Ref<boolean>
 
 const isLoadingCondition = computed(
-  () => typedSummaryLoading.value || typedSummaryFetching.value || typedMemoLoading.value || typedMemoFetching.value,
+  () =>
+    typedSummaryLoading.value ||
+    typedSummaryFetching.value ||
+    typedMemoLoading.value ||
+    typedMemoFetching.value,
 )
 </script>
 

@@ -9,7 +9,13 @@ export default function mutatePendingTransaction() {
 
   return useMutation({
     mutationKey: ['mutate-pending-transaction'],
-    mutationFn: async ({ pendingTransactionId, pendingTransaction }: { pendingTransactionId: number, pendingTransaction: PendingTransaction }) => {
+    mutationFn: async ({
+      pendingTransactionId,
+      pendingTransaction,
+    }: {
+      pendingTransactionId: number
+      pendingTransaction: PendingTransaction
+    }) => {
       return updatePendingTransaction(pendingTransactionId, pendingTransaction)
     },
     onSuccess: async () => {
@@ -20,7 +26,7 @@ export default function mutatePendingTransaction() {
       // Invalidate and refetch pending transactions query
       await queryClient.invalidateQueries({
         queryKey: ['pending-transactions'],
-        refetchType: 'active'
+        refetchType: 'active',
       })
       console.log('Queries invalidated and refetched')
     },

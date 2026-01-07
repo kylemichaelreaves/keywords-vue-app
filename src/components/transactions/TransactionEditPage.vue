@@ -63,12 +63,7 @@ const isPending = computed(() => !!props.pendingTransactionId)
 const entityId = computed(() => props.pendingTransactionId || props.transactionId)
 
 // Fetch the specific transaction by ID
-const {
-  data: transactionData,
-  isLoading,
-  isError,
-  error,
-} = useTransaction(Number(entityId.value))
+const { data: transactionData, isLoading, isError, error } = useTransaction(Number(entityId.value))
 
 const transaction = computed(() => {
   const data = toValue(transactionData)
@@ -77,12 +72,7 @@ const transaction = computed(() => {
   // Type guard to check if it's a PendingTransaction
   // We need to use unknown since Transaction and PendingTransaction don't overlap
   const isPendingTransaction = (obj: unknown): obj is PendingTransaction => {
-    return (
-      typeof obj === 'object' &&
-      obj !== null &&
-      'transaction_data' in obj &&
-      'status' in obj
-    )
+    return typeof obj === 'object' && obj !== null && 'transaction_data' in obj && 'status' in obj
   }
 
   // If it's a pending transaction, extract the transaction data from the transaction_data field

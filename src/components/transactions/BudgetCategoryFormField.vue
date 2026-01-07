@@ -64,16 +64,13 @@ const emit = defineEmits<EmitType>()
 
 const splitDrawerVisible = ref(false)
 
-
 // Computed properties derived from modelValue
 const isSplit = computed(() => props.modelValue.mode === 'split')
 
-const splits = computed(() =>
-  props.modelValue.mode === 'split' ? props.modelValue.splits : []
-)
+const splits = computed(() => (props.modelValue.mode === 'split' ? props.modelValue.splits : []))
 
 const categoryId = computed(() =>
-  props.modelValue.mode === 'single' ? props.modelValue.categoryId : null
+  props.modelValue.mode === 'single' ? props.modelValue.categoryId : null,
 )
 
 // Validation
@@ -108,7 +105,7 @@ function toggleMode(value: boolean | string | number) {
 
     const splitState: BudgetCategoryState = {
       mode: 'split',
-      splits: initialSplits
+      splits: initialSplits,
     }
 
     emit('update:modelValue', splitState)
@@ -123,7 +120,7 @@ function toggleMode(value: boolean | string | number) {
   } else {
     const singleState: BudgetCategoryState = {
       mode: 'single',
-      categoryId: null
+      categoryId: null,
     }
 
     emit('update:modelValue', singleState)
@@ -139,7 +136,7 @@ function openSplitDrawer() {
 function updateCategory(value: string | null) {
   const singleState: BudgetCategoryState = {
     mode: 'single',
-    categoryId: value
+    categoryId: value,
   }
 
   emit('update:modelValue', singleState)
@@ -149,7 +146,7 @@ function updateCategory(value: string | null) {
 function updateSplits(newSplits: SplitBudgetCategory[]) {
   const splitState: BudgetCategoryState = {
     mode: 'split',
-    splits: newSplits
+    splits: newSplits,
   }
 
   emit('update:modelValue', splitState)
@@ -160,7 +157,7 @@ function updateSplits(newSplits: SplitBudgetCategory[]) {
 function handleDrawerCancel() {
   const singleState: BudgetCategoryState = {
     mode: 'single',
-    categoryId: null
+    categoryId: null,
   }
 
   emit('update:modelValue', singleState)

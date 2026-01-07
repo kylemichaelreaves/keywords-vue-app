@@ -258,7 +258,6 @@ export type Transaction = {
   is_split?: boolean
 }
 
-
 export type PendingTransaction = {
   id: number
   created_at: string
@@ -270,7 +269,6 @@ export type PendingTransaction = {
   assigned_category?: string | SplitBudgetCategory[]
   status: PendingTransactionStatus
 }
-
 
 export type PendingTransactionStatus = 'pending' | 'reviewed'
 

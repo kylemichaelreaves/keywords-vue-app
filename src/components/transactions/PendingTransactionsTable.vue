@@ -12,14 +12,9 @@
       <span class="text-large font-600 mr-3"> Pending Transactions </span>
     </template>
     <template #extra>
-      <el-segmented
-        v-model="viewMode"
-        :options="viewOptions"
-        data-testid="view-mode-segmented"
-      />
+      <el-segmented v-model="viewMode" :options="viewOptions" data-testid="view-mode-segmented" />
     </template>
   </el-page-header>
-
 
   <el-dialog
     v-model="showTransactionEditModal"
@@ -42,7 +37,7 @@
     <!-- Show skeleton when loading -->
     <TableSkeleton
       v-if="isLoadingCondition"
-      :columns="transactionColumns.map(col => ({ prop: col.prop, label: col.label }))"
+      :columns="transactionColumns.map((col) => ({ prop: col.prop, label: col.label }))"
       :rows="LIMIT"
       data-testid="pending-transactions-table-skeleton"
     />
@@ -117,10 +112,7 @@
       </el-table-column>
     </el-table>
   </div>
-  <TransactionTablePagination
-    v-if="!isPaginationDisabled"
-    :status="paginationStatus"
-  />
+  <TransactionTablePagination v-if="!isPaginationDisabled" :status="paginationStatus" />
 </template>
 
 <script setup lang="ts">
@@ -136,19 +128,17 @@ import TableSkeleton from '@components/shared/TableSkeleton.vue'
 
 const store = useTransactionsStore()
 
-
-
 // Segmented control for view mode
 const viewMode = computed({
   get: () => store.getSelectedStatus || '',
   set: (value: string) => {
     store.setSelectedStatus(value as 'pending' | 'reviewed')
     store.clearPendingTransactionsByOffset()
-  }
+  },
 })
 const viewOptions = [
   { label: 'Pending', value: 'pending' },
-  { label: 'Reviewed', value: 'reviewed' }
+  { label: 'Reviewed', value: 'reviewed' },
 ]
 
 // Properly typed status for pagination component
@@ -204,7 +194,7 @@ const openTransactionEditModal = (row: PendingTransaction) => {
     balance: transactionData?.balance?.toString() || '',
     check_number: transactionData?.check_number || '',
     fees: transactionData?.fees?.toString() || '',
-    budget_category: row.assigned_category || transactionData?.budget_category || ''
+    budget_category: row.assigned_category || transactionData?.budget_category || '',
   }
 
   console.log('Constructed transaction for form:', transactionFromData)
@@ -213,7 +203,10 @@ const openTransactionEditModal = (row: PendingTransaction) => {
   selectedTransaction.value = transactionFromData
 
   console.log('Setting originalPendingTransaction.value.id:', originalPendingTransaction.value.id)
-  console.log('Will pass isPending=true and pendingTransactionId:', originalPendingTransaction.value.id)
+  console.log(
+    'Will pass isPending=true and pendingTransactionId:',
+    originalPendingTransaction.value.id,
+  )
 
   showTransactionEditModal.value = true
 }
@@ -233,7 +226,7 @@ const editModalTitle = computed(() => {
 
 // disable the pagination if day, week, or month is selected
 const isPaginationDisabled = computed(
-  () => selectedDay.value || selectedWeek.value || selectedMonth.value
+  () => selectedDay.value || selectedWeek.value || selectedMonth.value,
 )
 
 const LIMIT = computed(() => store.getTransactionsTableLimit)
@@ -249,7 +242,7 @@ const {
   isRefetching,
   fetchNextPage,
   hasNextPage,
-  refetch
+  refetch,
 } = usePendingTransactions()
 
 // Watch for status changes and refetch data
@@ -260,7 +253,7 @@ watch(
     store.updateTransactionsTableOffset(0)
     // Refetch the data with the new status
     refetch()
-  }
+  },
 )
 
 const isLoadingCondition = computed(
@@ -269,7 +262,7 @@ const isLoadingCondition = computed(
     isFetching.value ||
     isRefetching.value ||
     isFetchingNextPage.value ||
-    isFetchingPreviousPage.value
+    isFetchingPreviousPage.value,
 )
 
 const flattenedData = computed(() => {
@@ -280,7 +273,7 @@ const currentPage = computed({
   get: () => Math.floor(store.transactionsTableOffset / store.transactionsTableLimit) + 1,
   set: (val: number) => {
     store.updateTransactionsTableOffset((val - 1) * store.transactionsTableLimit)
-  }
+  },
 })
 
 const paginatedData = computed(() => {
@@ -301,7 +294,7 @@ watch(
   () => {
     loadMorePagesIfNeeded()
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Pending transaction columns definition based on the database schema
@@ -314,7 +307,7 @@ const transactionColumns = [
   { prop: 'assigned_category', label: 'Assigned Category', sortable: true },
   { prop: 'status', label: 'Status', sortable: true },
   { prop: 'created_at', label: 'Created At', sortable: true },
-  { prop: 'reviewed_at', label: 'Reviewed At', sortable: true }
+  { prop: 'reviewed_at', label: 'Reviewed At', sortable: true },
 ]
 
 const getRowKey = (row: PendingTransaction) => row.id.toString()

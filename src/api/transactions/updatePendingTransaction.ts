@@ -1,14 +1,17 @@
 import { httpClient } from '@api/httpClient'
 import type { PendingTransaction } from '@types'
 
-export async function updatePendingTransaction(pendingTransactionId: number, pendingTransaction: PendingTransaction): Promise<void> {
+export async function updatePendingTransaction(
+  pendingTransactionId: number,
+  pendingTransaction: PendingTransaction,
+): Promise<void> {
   try {
     if (typeof pendingTransaction.transaction_data === 'string') {
       console.log('[updatePendingTransaction] API call with:', {
         pendingTransactionId,
         pendingTransaction,
         budget_category: JSON.parse(pendingTransaction.transaction_data).budget_category,
-        assigned_category: (pendingTransaction).assigned_category
+        assigned_category: pendingTransaction.assigned_category,
       })
     }
 

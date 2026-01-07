@@ -18,7 +18,11 @@
           <div class="validation-content">
             <div>Transaction: ${{ absTransactionAmount.toFixed(2) }}</div>
             <div>Split Total: ${{ totalAmount.toFixed(2) }}</div>
-            <div v-if="validationMessage.difference" class="difference" :class="{ 'over-amount': isOver }">
+            <div
+              v-if="validationMessage.difference"
+              class="difference"
+              :class="{ 'over-amount': isOver }"
+            >
               Difference: {{ validationMessage.difference }}
             </div>
           </div>
@@ -27,11 +31,7 @@
 
       <el-form ref="formRef" :model="{ splits: localSplits }" class="splits-form">
         <div class="splits-list">
-          <div
-            v-for="(split, index) in localSplits"
-            :key="split.id"
-            class="split-row"
-          >
+          <div v-for="(split, index) in localSplits" :key="split.id" class="split-row">
             <el-form-item
               :prop="`splits.${index}.budget_category_id`"
               :rules="getCategoryRules(index)"
@@ -73,11 +73,7 @@
       </el-form>
 
       <div class="add-split-section">
-        <el-button
-          :icon="Plus as any"
-          @click="addSplit"
-          :disabled="addSplitDisabled"
-        >
+        <el-button :icon="Plus as any" @click="addSplit" :disabled="addSplitDisabled">
           Add Split
         </el-button>
         <span v-if="addSplitHintText" class="hint">
@@ -87,11 +83,7 @@
 
       <div class="drawer-footer">
         <el-button @click="handleCancel">Cancel</el-button>
-        <el-button
-          type="primary"
-          :disabled="!isValid"
-          @click="handleSubmit"
-        >
+        <el-button type="primary" :disabled="!isValid" @click="handleSubmit">
           Save Splits
         </el-button>
       </div>
@@ -108,7 +100,7 @@ import {
   ElMessageBox,
   type ElMessageBoxOptions,
   type FormInstance,
-  type FormItemRule
+  type FormItemRule,
 } from 'element-plus'
 import BudgetCategoryTreeSelect from '@components/transactions/selects/BudgetCategoriesTreeSelect.vue'
 import type { SplitBudgetCategory } from '@types'
@@ -133,7 +125,7 @@ const formRef = ref<FormInstance>()
 // Drawer visibility
 const visible = computed({
   get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
+  set: (value) => emit('update:modelValue', value),
 })
 
 // Local copy of splits for editing
@@ -143,7 +135,7 @@ watch(
   () => props.modelValue,
   (isOpen) => {
     if (isOpen) {
-      localSplits.value = props.splits.map(split => ({ ...split }))
+      localSplits.value = props.splits.map((split) => ({ ...split }))
 
       if (localSplits.value.length === 0) {
         const halfAmount = Number((props.transactionAmount / 2).toFixed(2))
@@ -151,17 +143,16 @@ watch(
           {
             id: `${generateId()}`,
             budget_category_id: '',
-            amount_debit: halfAmount
-          }
+            amount_debit: halfAmount,
+          },
         ]
       }
       // Reset form validation when opening
       formRef.value?.clearValidate()
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
-
 
 // Dynamic validation rules for each category field
 function getCategoryRules(index: number): FormItemRule[] {
@@ -183,33 +174,27 @@ function getCategoryRules(index: number): FormItemRule[] {
           callback()
         }
       },
-      trigger: 'change'
-    }
+      trigger: 'change',
+    },
   ]
 }
 
 const absTransactionAmount = computed(() => Math.abs(props.transactionAmount))
 
 const totalAmount = computed(() =>
-  localSplits.value.reduce((sum, split) => sum + (split.amount_debit || 0), 0)
+  localSplits.value.reduce((sum, split) => sum + (split.amount_debit || 0), 0),
 )
 
-const difference = computed(() =>
-  Math.abs(absTransactionAmount.value - totalAmount.value)
-)
+const difference = computed(() => Math.abs(absTransactionAmount.value - totalAmount.value))
 
-const isOver = computed(() =>
-  totalAmount.value > absTransactionAmount.value
-)
+const isOver = computed(() => totalAmount.value > absTransactionAmount.value)
 
-const isUnder = computed(() =>
-  totalAmount.value < absTransactionAmount.value
-)
+const isUnder = computed(() => totalAmount.value < absTransactionAmount.value)
 
 const isValidTotal = computed(() => difference.value < 0.01)
 
 const allCategoriesSelected = computed(() =>
-  localSplits.value.every(split => {
+  localSplits.value.every((split) => {
     const hasAmount = split.amount_debit && split.amount_debit > 0
     const hasCategory = split.budget_category_id?.trim()
 
@@ -219,23 +204,21 @@ const allCategoriesSelected = computed(() =>
     }
     // If no amount, category is optional
     return true
-  })
+  }),
 )
 
-const isValid = computed(() =>
-  isValidTotal.value &&
-  allCategoriesSelected.value &&
-  !isOver.value
-)
+const isValid = computed(() => isValidTotal.value && allCategoriesSelected.value && !isOver.value)
 
 const isDirty = computed(() => {
   if (localSplits.value.length !== props.splits.length) return true
 
   return localSplits.value.some((split, index) => {
     const original = props.splits[index]
-    return !original ||
+    return (
+      !original ||
       split.budget_category_id !== original.budget_category_id ||
       Math.abs((split.amount_debit || 0) - (original.amount_debit || 0)) > 0.001
+    )
   })
 })
 
@@ -248,28 +231,28 @@ const validationMessage = computed<{
   if (isOver.value) {
     return {
       type: 'warning',
-      difference: `$${difference.value.toFixed(2)} over`
+      difference: `$${difference.value.toFixed(2)} over`,
     }
   }
 
   if (isUnder.value) {
     return {
       type: 'warning',
-      difference: `$${difference.value.toFixed(2)} under`
+      difference: `$${difference.value.toFixed(2)} under`,
     }
   }
 
   if (!isValidTotal.value) {
     return {
       type: 'warning',
-      difference: `$${difference.value.toFixed(2)}`
+      difference: `$${difference.value.toFixed(2)}`,
     }
   }
 
   if (isValid.value) {
     return {
       type: 'success',
-      difference: null
+      difference: null,
     }
   }
 
@@ -297,9 +280,7 @@ const getMaxAmountForSplit = (index: number): number => {
   return Number(maxAmount.toFixed(2))
 }
 
-const addSplitDisabled = computed(() =>
-  totalAmount.value >= absTransactionAmount.value
-)
+const addSplitDisabled = computed(() => totalAmount.value >= absTransactionAmount.value)
 
 const addSplitHintText = computed(() => {
   if (!addSplitDisabled.value) return ''
@@ -336,7 +317,7 @@ function addSplit() {
   const newSplit = {
     id: `${generateId()}`,
     budget_category_id: '',
-    amount_debit: remaining > 0 ? Number(remaining.toFixed(2)) : 0
+    amount_debit: remaining > 0 ? Number(remaining.toFixed(2)) : 0,
   }
 
   localSplits.value.push(newSplit)
@@ -357,13 +338,13 @@ async function handleBeforeClose(done: () => void) {
       const options: ElMessageBoxOptions = {
         confirmButtonText: 'Discard',
         cancelButtonText: 'Keep Editing',
-        type: 'warning'
+        type: 'warning',
       }
 
       await ElMessageBox.confirm(
         'You have unsaved changes. Are you sure you want to close?',
         'Unsaved Changes',
-        options
+        options,
       )
       emit('cancel')
       done()
@@ -394,7 +375,9 @@ async function handleSubmit() {
   // Then check other business logic
   if (!isValid.value) {
     if (isOver.value) {
-      ElMessage.error(`Splits exceed transaction amount by $${Math.abs(difference.value).toFixed(2)}`)
+      ElMessage.error(
+        `Splits exceed transaction amount by $${Math.abs(difference.value).toFixed(2)}`,
+      )
     } else if (!isValidTotal.value) {
       ElMessage.error(`Splits must total $${absTransactionAmount.value.toFixed(2)}`)
     }

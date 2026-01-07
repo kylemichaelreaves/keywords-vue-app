@@ -197,13 +197,11 @@ const currentPage = computed({
   },
 })
 
-
 const paginatedData = computed(() => {
   const start = (currentPage.value - 1) * LIMIT.value
   const end = start + LIMIT.value
   return flattenedData.value.slice(start, end)
 })
-
 
 const loadMorePagesIfNeeded = async () => {
   const requiredDataCount = currentPage.value * LIMIT.value

@@ -39,10 +39,10 @@
 </template>
 
 <script setup lang="ts">
-import {type Component, computed, reactive, ref} from 'vue'
+import { type Component, computed, reactive, ref } from 'vue'
 import { useMutation } from '@tanstack/vue-query'
 import { createTransaction } from '@api/transactions/createTransaction.ts'
-import {ElDatePicker, ElMessage} from 'element-plus'
+import { ElDatePicker, ElMessage } from 'element-plus'
 import type { Transaction } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 

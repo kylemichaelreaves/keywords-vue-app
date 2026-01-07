@@ -18,13 +18,7 @@ export default function useTransactions() {
 
   return useInfiniteQuery<Array<Transaction>>({
     initialPageParam: 0,
-    queryKey: [
-      'transactions',
-      limit,
-      selectedMemo,
-      dateType,
-      selectedValue,
-    ],
+    queryKey: ['transactions', limit, selectedMemo, dateType, selectedValue],
     queryFn: async ({ pageParam = 0 }) => {
       const cachedTransactions = store.getTransactionsByOffset(Number(pageParam))
       if (cachedTransactions && cachedTransactions.length > 0) {

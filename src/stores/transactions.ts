@@ -88,8 +88,11 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const getAllTransactions = computed(() => Object.values(transactionsByOffset.value).flat())
   const getTransactionsCount = computed(() => transactionsCount.value)
   const getMemosCount = computed(() => memosCount.value)
-  const getPendingTransactionsByOffset = (offset: number) => pendingTransactionsByOffset.value[offset] || []
-  const getAllPendingTransactions = computed(() => Object.values(pendingTransactionsByOffset.value).flat())
+  const getPendingTransactionsByOffset = (offset: number) =>
+    pendingTransactionsByOffset.value[offset] || []
+  const getAllPendingTransactions = computed(() =>
+    Object.values(pendingTransactionsByOffset.value).flat(),
+  )
   const getPendingTransactionsCount = computed(() => pendingTransactionsCount.value)
 
   // Actions
@@ -237,7 +240,10 @@ export const useTransactionsStore = defineStore('transactions', () => {
     memosCount.value = count
   }
 
-  function setPendingTransactionsByOffset(offset: number, transactionsArray: Array<PendingTransaction>) {
+  function setPendingTransactionsByOffset(
+    offset: number,
+    transactionsArray: Array<PendingTransaction>,
+  ) {
     pendingTransactionsByOffset.value[offset] = transactionsArray
   }
 
@@ -369,4 +375,3 @@ export const useTransactionsStore = defineStore('transactions', () => {
     setPendingTransactionsCount,
   }
 })
-

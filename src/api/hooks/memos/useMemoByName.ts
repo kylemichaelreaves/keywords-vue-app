@@ -19,7 +19,7 @@ export default function useMemoByName(memoName: MaybeRefOrGetter<string>) {
       }
 
       const memos = await fetchMemos({ name, limit: 1 })
-      return memos.length > 0 ? memos[0] ?? null : null
+      return memos.length > 0 ? (memos[0] ?? null) : null
     },
     refetchOnWindowFocus: false,
     enabled: isValidMemoName,
@@ -29,4 +29,3 @@ export default function useMemoByName(memoName: MaybeRefOrGetter<string>) {
     gcTime: 0,
   })
 }
-
