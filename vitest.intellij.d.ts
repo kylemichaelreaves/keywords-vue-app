@@ -1,7 +1,5 @@
-/// <reference types="vitest" />
-/// <reference types="vitest/globals" />
-
 import 'vitest'
+import 'vitest/globals'
 
 declare global {
   const expect: typeof import('vitest').expect

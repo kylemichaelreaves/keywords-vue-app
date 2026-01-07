@@ -84,7 +84,7 @@ const isOutOfRange = computed(() => {
   return data?.value?.map((item: { is_out_of_range: boolean }) => item.is_out_of_range)[0]
 })
 
-const handleNumberInputChange = (cur: number | undefined, _prev: number | undefined) => {
+const handleNumberInputChange = (cur: number | undefined) => {
   if (cur !== undefined) {
     numberInput.value = cur
   }
