@@ -25,8 +25,8 @@ describe('fetchMemoSummary', () => {
   test('fetchMemoSummary returns memo summary data', async () => {
     server.use(mockAPIHandler)
 
-    const memo = 'Memo: Test'
-    const result = await fetchMemoSummary(memo)
+    const memoId = 1
+    const result = await fetchMemoSummary(memoId)
 
     expect(result.sum_amount_debit).toBe(100)
     expect(result.transactions_count).toBe(1)

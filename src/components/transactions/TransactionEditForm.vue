@@ -106,7 +106,8 @@ const formValues = computed(() => {
         if (key === 'budget_category') {
           budgetCategoryState.value = value as BudgetCategoryState
         } else {
-          transaction[key] = value
+          // Type-safe assignment for transaction properties
+          ;(transaction as Record<string, unknown>)[key] = value
         }
       },
       enumerable: true,

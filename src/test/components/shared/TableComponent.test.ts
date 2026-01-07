@@ -10,16 +10,16 @@ describe('TableComponent', () => {
   let store: TestingPinia
   let wrapper: VueWrapper
   let transactionsStore: ReturnType<typeof useTransactionsStore>
-  let mockHandleSizeChange: ReturnType<typeof vi.fn>
-  let mockHandleCurrentChange: ReturnType<typeof vi.fn>
+  let mockHandleSizeChange: ReturnType<typeof vi.fn<(val: number) => void>>
+  let mockHandleCurrentChange: ReturnType<typeof vi.fn<(val: number) => void>>
 
   beforeEach(() => {
     store = createTestingPinia()
     transactionsStore = useTransactionsStore(store)
 
     // Create mock functions
-    mockHandleSizeChange = vi.fn()
-    mockHandleCurrentChange = vi.fn()
+    mockHandleSizeChange = vi.fn<(val: number) => void>()
+    mockHandleCurrentChange = vi.fn<(val: number) => void>()
 
     // Create proper mock data that matches the expected table data structure
     // Use empty objects to satisfy the Record<string, never>[] type requirement

@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, type PropType, reactive, ref, watch } from 'vue'
+import { computed, type PropType, reactive, ref, watch } from 'vue'
 import { ElMessage, ElOption, type FormInstance, type FormRules } from 'element-plus'
 import { useQueryClient } from '@tanstack/vue-query'
 import type { Frequency, Memo, MemoFormFields, MemoKeys } from '@types'

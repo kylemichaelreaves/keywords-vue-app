@@ -53,20 +53,7 @@ export default defineConfig({
             checker: 'vue-tsc'
           }
         }
-      },
-      // {
-      //   ...sharedConfig,
-      //   test: {
-      //     name: 'storybook',
-      //     browser: {
-      //       enabled: true,
-      //       headless: true,
-      //       provider: playwright({}),
-      //       instances: [{ browser: 'chromium' }]
-      //     },
-      //     setupFiles: ['.storybook/vitest.setup.ts']
-      //   }
-      // }
+      }
     ]
   }
 } as UserConfig)

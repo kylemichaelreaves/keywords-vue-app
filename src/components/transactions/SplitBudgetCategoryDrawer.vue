@@ -108,7 +108,7 @@ import {
   ElMessageBox,
   type ElMessageBoxOptions,
   type FormInstance,
-  FormItemRule
+  type FormItemRule
 } from 'element-plus'
 import BudgetCategoryTreeSelect from '@components/transactions/selects/BudgetCategoriesTreeSelect.vue'
 import type { SplitBudgetCategory } from '@types'
@@ -167,7 +167,7 @@ watch(
 function getCategoryRules(index: number): FormItemRule[] {
   return [
     {
-      validator: (_rule: FormItemRule, _value: string, callback: (error?: Error) => void) => {
+      validator: (_rule, _value, callback) => {
         const split = localSplits.value[index]
         if (!split) {
           callback()
@@ -321,7 +321,10 @@ function updateSplitAmount(index: number, value: number | null | undefined) {
     newValue = Number(value)
   }
 
-  localSplits.value[index].amount_debit = newValue
+  const split = localSplits.value[index]
+  if (split) {
+    split.amount_debit = newValue
+  }
 
   // Trigger validation for this field
   formRef.value?.validateField(`splits.${index}.budget_category_id`)

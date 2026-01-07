@@ -1,5 +1,5 @@
 <template>
-  <el-form-item :label="field.label" :prop="field.prop">
+  <el-form-item :label="field.label" :prop="String(field.prop)">
     <el-tooltip v-if="field.tooltip" effect="dark" :content="field.tooltip" placement="top">
       <component
         :is="inputComponent"

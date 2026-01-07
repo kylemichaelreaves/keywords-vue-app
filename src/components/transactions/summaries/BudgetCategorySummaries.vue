@@ -121,7 +121,7 @@
       >
         <el-button
           type="primary"
-          @click="refetch"
+          @click="handleRefetch"
           :data-testid="`${props.dataTestId}-refetch-button`"
         >
           Retry
@@ -163,6 +163,10 @@ const reactiveDate = computed(() => props.date)
 
 const { data, isLoading, isFetching, isRefetching, isError, error, refetch } =
   useBudgetCategorySummary(reactiveTimeFrame, reactiveDate)
+
+const handleRefetch = () => {
+  refetch()
+}
 
 // Watch for changes in store values and force refetch
 watch(

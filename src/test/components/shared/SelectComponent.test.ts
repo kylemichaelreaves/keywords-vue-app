@@ -8,10 +8,10 @@ type SelectComponentInstance = InstanceType<typeof SelectComponent>
 
 describe('SelectComponent', () => {
   let wrapper: VueWrapper<SelectComponentInstance>
-  let mockOnChange: ReturnType<typeof vi.fn>
+  let mockOnChange: ReturnType<typeof vi.fn<(value: string) => void>>
 
   beforeEach(() => {
-    mockOnChange = vi.fn()
+    mockOnChange = vi.fn<(value: string) => void>()
     wrapper = mount(SelectComponent, {
       props: {
         options: [
@@ -99,7 +99,7 @@ describe('SelectComponent', () => {
         options: [],
         selectedValue: '1',
         placeholder: 'Select an option',
-        onChange: vi.fn(),
+        onChange: vi.fn<(value: string) => void>(),
       } satisfies SelectComponentProps,
     })
 

@@ -44,7 +44,7 @@ import { useRouter } from 'vue-router'
 import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import useTransaction from '@api/hooks/transactions/useTransaction'
-import type { PendingTransaction } from '@types'
+import type { PendingTransaction, Transaction } from '@types'
 
 const props = defineProps({
   transactionId: {
@@ -74,13 +74,23 @@ const transaction = computed(() => {
   const data = toValue(transactionData)
   if (!data) return null
 
+  // Type guard to check if it's a PendingTransaction
+  // We need to use unknown since Transaction and PendingTransaction don't overlap
+  const isPendingTransaction = (obj: unknown): obj is PendingTransaction => {
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      'transaction_data' in obj &&
+      'status' in obj
+    )
+  }
+
   // If it's a pending transaction, extract the transaction data from the transaction_data field
-  if (isPending.value && data) {
-    const pendingTxn = data as PendingTransaction
-    if (typeof pendingTxn.transaction_data === 'string') {
-      return JSON.parse(pendingTxn.transaction_data)
+  if (isPending.value && isPendingTransaction(data)) {
+    if (typeof data.transaction_data === 'string') {
+      return JSON.parse(data.transaction_data) as Transaction
     }
-    return pendingTxn.transaction_data
+    return data.transaction_data as Transaction
   }
 
   return data

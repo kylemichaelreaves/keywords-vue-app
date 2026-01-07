@@ -29,7 +29,7 @@
 import { computed, ref } from 'vue'
 import MemoEditForm from '@components/memos/MemoEditForm.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
-import useMemo from '@api/hooks/memos/useMemo.ts'
+import useMemoByName from '@api/hooks/memos/useMemoByName.ts'
 import type { Memo } from '@types'
 
 // Props
@@ -45,8 +45,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const isVisible = ref(false)
 
-// Use useMemo hook when memoName is provided
-const { data, isLoading, isError, error } = useMemo(computed(() => props.memoName || ''))
+// Use useMemoByName hook when memoName is provided
+const { data, isLoading, isError, error } = useMemoByName(computed(() => props.memoName || ''))
 
 // For backwards compatibility when no memo fetching is needed
 const legacyIsError = ref(false)

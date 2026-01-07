@@ -22,9 +22,11 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
 
+type AlertType = 'success' | 'warning' | 'info' | 'error'
+
 const props = defineProps({
   type: {
-    type: String,
+    type: String as PropType<AlertType>,
     required: true,
   },
   message: {
@@ -47,4 +49,3 @@ const props = defineProps({
 })
 </script>
 
-<style scoped></style>

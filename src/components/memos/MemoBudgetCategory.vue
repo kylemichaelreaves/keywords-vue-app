@@ -49,6 +49,7 @@
     <BudgetCategoryModal
       v-model:visible="isModalVisible"
       v-model:selectedBudgetCategory="selectedBudgetCategory"
+      v-if="memoObject"
       :memo="memoObject"
       @categoryUpdated="onCategoryUpdated"
       @memoUpdated="onMemoUpdated"

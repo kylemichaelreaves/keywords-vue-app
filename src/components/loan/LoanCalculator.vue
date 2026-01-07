@@ -4,7 +4,7 @@
 
     {{ loanEstimate }}
 
-    <el-form :ref="ruleFormRef" :model="loanForm" label-width="120px" :rules="rules">
+    <el-form ref="ruleFormRef" :model="loanForm" label-width="120px" :rules="rules">
       <loan-form-field
         v-for="(field, index) in loanFormFields"
         :key="index"
