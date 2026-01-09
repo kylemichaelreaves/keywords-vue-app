@@ -11,7 +11,7 @@ import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 
 export default defineConfigWithVueTs(
   {
-    ignores: ['**/*.d.ts', '**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
+    ignores: ['**/*.d.ts', '**/dist/**', '**/dist-ssr/**', '**/coverage/**', '**/html/**'],
   },
   {
     name: 'app/files-to-lint',
@@ -20,7 +20,7 @@ export default defineConfigWithVueTs(
 
   {
     name: 'app/files-to-ignore',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', '*.d.ts', '**/*.d.ts'],
+    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', '*.d.ts', '**/*.d.ts', '**/html/**'],
   },
 
   pluginVue.configs['flat/essential'],

@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
-// import { http, HttpResponse } - unused from 'msw'
+import { http, HttpResponse } from 'msw'
 import { fetchTransactions } from '@api/transactions/fetchTransactions'
 import { transactionsMock } from '@mocks/transaction'
-// import { server } - unused from '@test/test-setup'
+import { server } from '@test/test-setup'
 
 console.error = vi.fn()
 

@@ -6,7 +6,7 @@ describe('CoordinatesTable.vue', () => {
     test('renders the CoordinatesTable with the provided latitude and longitude', () => {
         const latitude = "40.7128";
         const longitude = -"74.0060";
-        const _wrapper = mount(CoordinatesTable, {
+        const wrapper = mount(CoordinatesTable, {
             props: {
                 coordinates: {
                     latitude: latitude,

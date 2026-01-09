@@ -4,7 +4,7 @@ import { ElCheckTag } from "element-plus";
 
 describe("TimeframeToggle.vue", () => {
     it("renders the component", () => {
-        const _wrapper = mount(TimeframeToggle, {
+        const wrapper = mount(TimeframeToggle, {
             global: {
                 components: {
                     ElCheckTag,
@@ -17,14 +17,14 @@ describe("TimeframeToggle.vue", () => {
     });
 
     it("has 'monthly' as the default selected option", () => {
-        const _wrapper = mount(TimeframeToggle);
+        const wrapper = mount(TimeframeToggle);
         const selectedOption = wrapper.vm.selectedOption;
 
         expect(selectedOption).toBe("monthly");
     });
 
     it("handleChange updates the selectedOption", async () => {
-        const _wrapper = mount(TimeframeToggle, {
+        const wrapper = mount(TimeframeToggle, {
             global: {
                 components: {
                     ElCheckTag,

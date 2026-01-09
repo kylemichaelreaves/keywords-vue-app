@@ -6,7 +6,7 @@ import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from "@pinia/testing";
 
 describe('MemoSelect', () => {
-    const _wrapper = mount(MemoSelect, {
+    const wrapper = mount(MemoSelect, {
         global: {
             plugins: [ElSelect, ElOption, VueQueryPlugin, createTestingPinia()],
         },

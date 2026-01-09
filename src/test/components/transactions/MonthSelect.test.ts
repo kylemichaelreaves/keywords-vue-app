@@ -9,7 +9,7 @@ import {useTransactionsStore} from "@stores/transactions";
 import {monthsMock} from "@mocks/transaction";
 
 describe('MonthsSelect', () => {
-    const _wrapper = mount(MonthSelect, {
+    const wrapper = mount(MonthSelect, {
         props: {
             options: monthsMock,
             selectedValue: '11/2022',
