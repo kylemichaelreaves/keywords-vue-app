@@ -113,6 +113,7 @@ declare module 'vue' {
     StatisticComponent: typeof import('./src/components/shared/StatisticComponent.vue')['default']
     SummaryHeader: typeof import('./src/components/shared/SummaryHeader.vue')['default']
     TableComponent: typeof import('./src/components/shared/TableComponent.vue')['default']
+    TableSkeleton: typeof import('./src/components/shared/TableSkeleton.vue')['default']
     ThemeToggle: typeof import('./src/components/ThemeToggle.vue')['default']
     TimeframeToggle: typeof import('./src/components/shared/TimeframeToggle.vue')['default']
     TimelineBarChart: typeof import('./src/components/charts/TimelineBarChart.vue')['default']

@@ -84,7 +84,7 @@ const clearSelectedMemo = () => {
 }
 
 const updateSelectedMemo = (memo: string) => {
-  // transactionsStore.setSelectedMemo(memo)
+  transactionsStore.setSelectedMemo(memo)
   emit('update:modelValue', memo)
 }
 
