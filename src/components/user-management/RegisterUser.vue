@@ -56,7 +56,7 @@
 
 <script lang="ts" setup>
 import { ref, reactive, computed } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
+import type { FormInstance, FormRules, FormItemRule } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useMutation } from '@tanstack/vue-query'
@@ -150,7 +150,7 @@ const validateConfirmPassword = (rule, value, callback) => {
   }
 }
 
-const validateUsername = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
+const validateUsername = (_rule: FormItemRule, value: string, callback: (error?: Error) => void) => {
   const minLength = 6
   const maxLength = 20
 

@@ -127,7 +127,6 @@ const MemoBarChart = defineComponent({
 
 export default MemoBarChart;
 
-
 </script>
 
 <style scoped>
