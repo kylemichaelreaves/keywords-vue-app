@@ -29,17 +29,19 @@ dist-ssr
 # don't commit the .nvmrc file
 .nvmrc
 
-# build artifacts
-*.d.ts
-!env.d.ts
-!vite-env.d.ts
+# build artifacts - generated type definitions
+auto-imports.d.ts
+components.d.ts
+eslint.config.d.ts
+eslint.config.js
+playwright.config.d.ts
+playwright.config.js
+vite.config.d.ts
+vite.config.js
+vitest.config.d.ts
+vitest.config.js
 *.tsbuildinfo
-*.js
-!vite.config.ts
-!vitest.config.ts
-!eslint.config.ts
-!playwright.config.ts
-html/
+html/*.json.gz
 
 html/assets
 /test-results/
