@@ -37,7 +37,7 @@ describe('AddressResults.vue', () => {
                     "el-table-column": {
                         template: "<div><slot name='default' v-bind='scope' /></div>",
                         props: ["prop"],
-                        setup(props) {
+                        setup(_props) {
                             return {
                                 scope: {
                                     row: testData[0],

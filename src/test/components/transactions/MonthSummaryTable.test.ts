@@ -1,11 +1,10 @@
-import {mount, shallowMount} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 import MonthSummaryTable from "@components/transactions/MonthSummaryTable.vue";
 import {ElCard, ElForm, ElFormItem, ElIcon, ElStatistic, ElTable, ElTableColumn} from "element-plus";
 import {VueQueryPlugin} from "@tanstack/vue-query";
 import {createTestingPinia} from '@pinia/testing'
 import {useTransactionsStore} from "@stores/transactions";
 import {monthSummaryMock} from "@mocks/transaction";
-import {waitFor} from "@testing-library/vue";
 
 // Add this to the beginning of your test file or a test setup file
 // global.requestAnimationFrame = (cb) => {

@@ -70,7 +70,7 @@ export async function mockBasicTransactionRoutes(page: Page, staticData?: unknow
  * FIXED: Removed hardcoded API URL for security - requires environment variable to be set
  * CI FIX: Added proper CORS headers and longer timeouts for CI environment
  */
-export async function mockComprehensiveTransactionRoutes(page: Page, staticTransactions: any[], staticDailyIntervals: any[]) {
+export async function mockComprehensiveTransactionRoutes(page: Page, staticTransactions: unknown[], staticDailyIntervals: unknown[]) {
 
   // CRITICAL FIX: Use specific API patterns to avoid intercepting SPA navigation
   // Only intercept actual API calls with query parameters, not page routes

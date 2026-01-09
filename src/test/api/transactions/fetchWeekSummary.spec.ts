@@ -19,7 +19,7 @@ describe('fetchWeekSummary', () => {
 
     test.skip('fetchWeekSummary should throw an error if the request fails', async () => {
         server.use(
-            http.get('*/transactions/get-week-summary', (info) => {
+            http.get('*/transactions/get-week-summary', (_info) => {
                 // return res(ctx.status(500));
                 return new HttpResponse('Unhandled request', {status: 500})
             })

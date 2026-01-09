@@ -18,7 +18,7 @@ describe('Keywords.vue', () => {
         wrapper.unmount();
     });
 
-    it('initializes "keywords" ref with an empty string', (done) => {
+    it('initializes "keywords" ref with an empty string', (_done) => {
         setTimeout(() => {
             if (wrapper.emitted()['update:keywords']) {
                 expect(wrapper.emitted()['update:keywords'][0]).toEqual(['']);

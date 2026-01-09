@@ -13,8 +13,9 @@ const memoSummary: MemoSummary =
         transactions_count: 1,
         // Add other properties as needed
     }
+
 // Create a mock API handler
-const mockAPIHandler = http.get('/transactions/get-memo-summary', (info) => {
+const mockAPIHandler = http.get('/transactions/get-memo-summary', (_info) => {
     return new HttpResponse(JSON.stringify(memoSummary), {status: 200})
 });
 

@@ -1,4 +1,5 @@
 <template>
+  <!-- eslint-disable vue/no-mutating-props -->
   <el-form-item :label="field.label" :prop="field.prop">
     <el-tooltip v-if="field.tooltip" effect="dark" :content="field.tooltip" placement="top">
       <component
@@ -16,6 +17,7 @@
         v-bind="inputNumberProps"
     />
   </el-form-item>
+  <!-- eslint-enable vue/no-mutating-props -->
 </template>
 
 <script lang="ts">

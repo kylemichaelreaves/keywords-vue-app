@@ -46,8 +46,8 @@ describe('WeekSummaryTable', function () {
         expect(columns[0].props('label')).toBe('Memo');
         expect(columns[1].props('label')).toBe('Weekly Amount Debit');
 
-        const memo = wrapper.find('[data-testid="memo-week-summary"]');
-        const weeklyAmountDebit = wrapper.find('[data-testid="weekly-amount-debit"]');
+        wrapper.find('[data-testid="memo-week-summary"]');
+        wrapper.find('[data-testid="weekly-amount-debit"]');
 
         // TODO mock the hooks so that the components which depend on them can be tested
         // expect(memo.text()).toBe("Example Memo");
