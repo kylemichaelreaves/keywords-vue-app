@@ -16,12 +16,12 @@ import {
   createRouter,
   createWebHistory,
   type RouteLocationNormalized,
-  type NavigationGuardNext,
+  // type NavigationGuardNext,
 } from 'vue-router'
 import { useTransactionsStore } from '@stores/transactions.ts'
 import TransactionEditPage from '@components/transactions/TransactionEditPage.vue'
-import { checkForPendingTransactions } from '@api/helpers/checkForPendingTransactions'
-import { ElMessage } from 'element-plus'
+// import { checkForPendingTransactions } from '@api/helpers/checkForPendingTransactions'
+// import { ElMessage } from 'element-plus'
 
 export const routes = [
   {
