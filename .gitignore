@@ -29,6 +29,18 @@ dist-ssr
 # don't commit the .nvmrc file
 .nvmrc
 
+# build artifacts
+*.d.ts
+!env.d.ts
+!vite-env.d.ts
+*.tsbuildinfo
+*.js
+!vite.config.ts
+!vitest.config.ts
+!eslint.config.ts
+!playwright.config.ts
+html/
+
 html/assets
 /test-results/
 /playwright-report/
