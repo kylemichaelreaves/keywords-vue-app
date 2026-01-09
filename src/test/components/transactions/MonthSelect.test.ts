@@ -8,7 +8,7 @@ import { monthsMock } from '@mocks/transaction'
 
 // Mock the useMonths hook
 const mockUseMonths = vi.fn()
-vi.mock('@api/hooks/transactions/useMonths', () => ({
+vi.mock('@api/hooks/timeUnits/months/useMonths', () => ({
   useMonths: () => mockUseMonths(),
 }))
 

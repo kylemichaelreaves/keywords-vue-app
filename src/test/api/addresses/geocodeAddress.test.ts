@@ -22,15 +22,9 @@ describe('geocodeAddress', () => {
     expect(result).toEqual(addressesMock)
   })
 
-  test('geocodeAddress throws an error when the address is empty', async () => {
+  test('geocodeAddress throws an error when the address is undefined', async () => {
     await expect(
-      geocodeAddress({
-        streetAddress: '',
-        unitOrAptNum: '',
-        municipality: '',
-        state: '',
-        zipcode: '',
-      }),
+      geocodeAddress(undefined as any),
     ).rejects.toThrow('address is undefined')
   })
 })

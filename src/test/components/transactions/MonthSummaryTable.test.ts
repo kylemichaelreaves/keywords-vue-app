@@ -26,36 +26,46 @@ vi.mock('@router', () => ({
 const mockMonthSummaryData = [
   {
     memo: 'Test Memo 1',
+    memo_id: 1,
     total_amount_debit: 100.5,
     budget_category: 'Food',
-    category_id: 1,
+    budget_category_id: 1,
   },
   {
     memo: 'Test Memo 2',
+    memo_id: 2,
     total_amount_debit: 250.75,
     budget_category: 'Transport',
-    category_id: 2,
+    budget_category_id: 2,
   },
 ]
 
+// Create refs that we can update in tests
+const mockData = ref<typeof mockMonthSummaryData | null>(mockMonthSummaryData)
+const mockIsError = ref(false)
+const mockIsFetching = ref(false)
+const mockIsLoading = ref(false)
+const mockIsRefetching = ref(false)
+const mockError = ref<{ name: string; message: string } | null>(null)
+
 // Mock the hooks
-vi.mock('@api/hooks/transactions/useMonthSummary', () => {
+vi.mock('@api/hooks/timeUnits/months/useMonthSummary', () => {
   return {
     default: () => {
       return {
-        data: ref(mockMonthSummaryData),
-        isError: ref(false),
+        data: mockData,
+        isError: mockIsError,
         refetch: vi.fn(),
-        isFetching: ref(false),
-        isLoading: ref(false),
-        isRefetching: ref(false),
-        error: ref(null),
+        isFetching: mockIsFetching,
+        isLoading: mockIsLoading,
+        isRefetching: mockIsRefetching,
+        error: mockError,
       }
     },
   }
 })
 
-vi.mock('@api/hooks/transactions/useBudgetCategorySummary', () => ({
+vi.mock('@api/hooks/budgetCategories/useBudgetCategorySummary', () => ({
   useBudgetCategorySummary: () => ({
     data: ref([
       { id: 1, name: 'Food', color: '#ff0000' },
@@ -71,7 +81,15 @@ vi.mock('@composables/useBudgetCategoryColors', () => ({
   }),
 }))
 
-vi.mock('@components/transactions/getTimeframeTypeAndValue', () => ({
+vi.mock('@components/transactions/summaries/BudgetCategorySummaries.vue', () => ({
+  default: {
+    name: 'BudgetCategorySummaries',
+    template: '<div data-testid="budget-category-summaries"></div>',
+    props: ['timeFrame', 'date']
+  },
+}))
+
+vi.mock('@components/transactions/helpers/getTimeframeTypeAndValue', () => ({
   getTimeframeTypeAndValue: () => ({
     timeFrame: 'month',
     selectedValue: '01/2023',
@@ -80,31 +98,46 @@ vi.mock('@components/transactions/getTimeframeTypeAndValue', () => ({
 
 // Mock child components
 vi.mock('@components/shared/AlertComponent.vue', () => ({
-  default: { template: '<div data-testid="alert-component"></div>' },
-}))
-
-vi.mock('@components/transactions/MonthSummaryHeader.vue', () => ({
-  default: { template: '<div data-testid="month-summary-header"></div>' },
-}))
-
-vi.mock('@components/transactions/MemoEditModal.vue', () => ({
   default: {
+    name: 'AlertComponent',
+    template: '<div v-bind="$attrs"><slot /></div>',
+    props: ['message', 'type', 'title'],
+    inheritAttrs: true
+  },
+}))
+
+vi.mock('@components/transactions/summaries/month/MonthSummaryHeader.vue', () => ({
+  default: {
+    name: 'MonthSummaryHeader',
+    template: '<div data-testid="month-summary-header"></div>',
+    props: ['selectedMonth', 'isLastMonth', 'isFirstMonth', 'goToNextMonth', 'goToPreviousMonth', 'resetSelectedMonth']
+  },
+}))
+
+vi.mock('@components/memos/MemoEditModal.vue', () => ({
+  default: {
+    name: 'MemoEditModal',
     template: '<div data-testid="memo-edit-modal"></div>',
+    props: ['memoName'],
     methods: {
       openModal: vi.fn(),
     },
   },
 }))
 
-vi.mock('@components/transactions/BudgetCategorySummaries.vue', () => ({
-  default: { template: '<div data-testid="budget-category-summaries"></div>' },
-}))
 
 describe('MonthSummaryTable', () => {
   let store: ReturnType<typeof useTransactionsStore>
 
   beforeEach(() => {
     vi.clearAllMocks()
+    // Reset mock refs to initial state
+    mockData.value = mockMonthSummaryData
+    mockIsError.value = false
+    mockIsFetching.value = false
+    mockIsLoading.value = false
+    mockIsRefetching.value = false
+    mockError.value = null
   })
 
   afterEach(() => {
@@ -143,6 +176,7 @@ describe('MonthSummaryTable', () => {
 
     // Wait for the component to finish loading data
     await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick() // Extra tick for reactive updates
 
     const table = wrapper.findComponent(ElTable)
     const columns = wrapper.findAllComponents(ElTableColumn)
@@ -150,14 +184,16 @@ describe('MonthSummaryTable', () => {
     // Check if the table is rendered
     expect(table.exists()).toBe(true)
 
-    // Check if the correct number of columns is rendered (3 columns: memo, total_amount_debit, budget_category)
-    expect(columns.length).toBe(3)
+    // Check if the correct number of columns is rendered (5 columns: memo, memo_id, total_amount_debit, category_id, budget_category)
+    expect(columns.length).toBe(5)
 
     // Check columns exist with proper null safety
-    if (columns.length >= 3) {
+    if (columns.length >= 5) {
       expect(columns[0]?.props('label')).toBe('Memo')
-      expect(columns[1]?.props('label')).toBe('Total Amount Debit')
-      expect(columns[2]?.props('label')).toBe('Budget Category')
+      expect(columns[1]?.props('label')).toBe('Memo ID')
+      expect(columns[2]?.props('label')).toBe('Total Amount Debit')
+      expect(columns[3]?.props('label')).toBe('Category ID')
+      expect(columns[4]?.props('label')).toBe('Budget Category')
     }
 
     // Check if the component renders the mocked data
@@ -166,27 +202,22 @@ describe('MonthSummaryTable', () => {
 
     if (tableData && Array.isArray(tableData)) {
       expect(tableData[0].memo).toBe('Test Memo 1')
+      expect(tableData[0].memo_id).toBe(1)
       expect(tableData[0].total_amount_debit).toBe(100.5)
       expect(tableData[1].memo).toBe('Test Memo 2')
+      expect(tableData[1].memo_id).toBe(2)
       expect(tableData[1].total_amount_debit).toBe(250.75)
     }
   })
 
   test('renders loading skeleton when data is loading', async () => {
-    // Create a new mock for loading state
-    vi.doMock('@api/hooks/transactions/useMonthSummary', () => {
-      return {
-        default: () => ({
-          data: ref(null),
-          isError: ref(false),
-          refetch: vi.fn(),
-          isFetching: ref(true),
-          isLoading: ref(true),
-          isRefetching: ref(false),
-          error: ref(null),
-        }),
-      }
-    })
+    // Update mock refs to simulate loading state
+    mockData.value = null
+    mockIsError.value = false
+    mockIsFetching.value = true
+    mockIsLoading.value = true
+    mockIsRefetching.value = false
+    mockError.value = null
 
     const wrapper = mount(MonthSummaryTable, {
       global: {
@@ -222,20 +253,13 @@ describe('MonthSummaryTable', () => {
   })
 
   test('handles error state correctly', async () => {
-    // Create a new mock for error state
-    vi.doMock('@api/hooks/transactions/useMonthSummary', () => {
-      return {
-        default: () => ({
-          data: ref(null),
-          isError: ref(true),
-          refetch: vi.fn(),
-          isFetching: ref(false),
-          isLoading: ref(false),
-          isRefetching: ref(false),
-          error: ref({ name: 'Test Error', message: 'Test error message' }),
-        }),
-      }
-    })
+    // Update mock refs to simulate error state
+    mockData.value = null
+    mockIsError.value = true
+    mockIsFetching.value = false
+    mockIsLoading.value = false
+    mockIsRefetching.value = false
+    mockError.value = { name: 'Test Error', message: 'Test error message' }
 
     const wrapper = mount(MonthSummaryTable, {
       global: {
@@ -264,8 +288,9 @@ describe('MonthSummaryTable', () => {
     })
 
     await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick() // Extra tick for reactive updates
 
-    const alert = wrapper.find('[data-testid="alert-component"]')
+    const alert = wrapper.find('[data-testid="month-summary-table-error"]')
     expect(alert.exists()).toBe(true)
   })
 })

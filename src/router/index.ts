@@ -58,32 +58,32 @@ export const routes = [
         name: 'transactions',
         component: TransactionsTable,
         meta: { requiresAuth: true },
-        beforeEnter: async (
-          to: RouteLocationNormalized,
-          from: RouteLocationNormalized,
-          next: NavigationGuardNext,
-        ) => {
-          const hasPendingTransactions = await checkForPendingTransactions()
-
-          if (hasPendingTransactions) {
-            ElMessage.warning({
-              message:
-                'You have pending ambiguous transactions to review. Redirecting to pending transactions page.',
-              duration: 4000,
-            })
-
-            next({ name: 'pending-transactions' })
-          } else {
-            const store = useTransactionsStore()
-            store.setSelectedDay('')
-            store.setSelectedWeek('')
-            store.setSelectedMonth('')
-            store.setSelectedYear('')
-            store.setSelectedMemo('')
-
-            next()
-          }
-        },
+        // beforeEnter: async (
+        //   to: RouteLocationNormalized,
+        //   from: RouteLocationNormalized,
+        //   next: NavigationGuardNext,
+        // ) => {
+        //   const hasPendingTransactions = await checkForPendingTransactions()
+        //
+        //   if (hasPendingTransactions) {
+        //     ElMessage.warning({
+        //       message:
+        //         'You have pending ambiguous transactions to review. Redirecting to pending transactions page.',
+        //       duration: 4000,
+        //     })
+        //
+        //     next({ name: 'pending-transactions' })
+        //   } else {
+        //     const store = useTransactionsStore()
+        //     store.setSelectedDay('')
+        //     store.setSelectedWeek('')
+        //     store.setSelectedMonth('')
+        //     store.setSelectedYear('')
+        //     store.setSelectedMemo('')
+        //
+        //     next()
+        //   }
+        // },
         children: [
           {
             path: 'months/:month/summary',

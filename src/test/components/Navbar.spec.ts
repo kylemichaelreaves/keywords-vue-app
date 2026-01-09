@@ -12,6 +12,10 @@ type NavbarInstance = InstanceType<typeof Navbar>
 describe('Navbar.vue', () => {
   let wrapper: VueWrapper<NavbarInstance>
 
+  // Define the same exclusions as the Navbar component
+  const excludedRoutes = ['not-found', 'login', 'register']
+  const displayedRoutes = routes.filter((r) => !excludedRoutes.includes(r.name as string))
+
   beforeEach(() => {
     const router = createRouter({
       history: createWebHistory(),
@@ -44,7 +48,7 @@ describe('Navbar.vue', () => {
     const tabs = wrapper.findAllComponents(ElTabPane)
     // Filter out login control tab, only count route tabs
     const routeTabs = tabs.filter((tab) => !tab.classes().includes('login-control'))
-    expect(routeTabs.length).toBe(routes.length)
+    expect(routeTabs.length).toBe(displayedRoutes.length)
   })
 
   it('clicking on a tab changes the active tab', async () => {
@@ -82,6 +86,6 @@ describe('Navbar.vue', () => {
   it('displays correct number of navigation routes', () => {
     // Test that the component renders all available routes
     const routeElements = wrapper.findAll('.custom-tabs-label')
-    expect(routeElements.length).toBe(routes.length)
+    expect(routeElements.length).toBe(displayedRoutes.length)
   })
 })

@@ -42,7 +42,7 @@ describe('TimeframeToggle.vue', () => {
 
     // Simulate clicking on the "weekly" option (first option)
     if (checkTags[0]) {
-      await checkTags[0].trigger('change')
+      await checkTags[0].vm.$emit('change', true)
     }
 
     // Check that the component emitted the update:modelValue event

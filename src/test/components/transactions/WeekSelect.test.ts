@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { ref } from 'vue'
 
 // Mock the useWeeks hook
-vi.mock('@api/hooks/transactions/useWeeks', () => ({
+vi.mock('@api/hooks/timeUnits/weeks/useWeeks', () => ({
   useWeeks: () => ({
     data: ref([{ week_year: '42/2022' }, { week_year: '43/2022' }]),
     isLoading: ref(false),

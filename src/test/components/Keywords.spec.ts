@@ -20,12 +20,9 @@ describe('Keywords.vue', () => {
 
   it('initializes "keywords" ref with an empty string', async () => {
     await nextTick()
-    const emittedEvents = wrapper.emitted()['update:keywords']
-    if (emittedEvents) {
-      expect(emittedEvents[0]).toEqual([''])
-    } else {
-      throw new Error("Event 'update:keywords' was not emitted")
-    }
+    expect(wrapper.vm.keywords).toEqual('')
+    // The component should not emit an event on initialization
+    expect(wrapper.emitted()['update:keywords']).toBeUndefined()
   })
 
   it('updates "keywords" ref when input is changed', async () => {

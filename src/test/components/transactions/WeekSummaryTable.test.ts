@@ -14,28 +14,14 @@ vi.mock('@router', () => ({
   },
 }))
 
+
 // Mock the hooks
-vi.mock('@api/hooks/transactions/useWeekSummary', () => ({
-  default: () => ({
-    data: ref([
-      { memo: 'Test Memo 1', total_amount_debit: 100.5, budget_category: 'Food', category_id: 1 },
-      {
-        memo: 'Test Memo 2',
-        total_amount_debit: 250.75,
-        budget_category: 'Transport',
-        category_id: 2,
-      },
-    ]),
-    isError: ref(false),
-    refetch: vi.fn(),
-    isFetching: ref(false),
-    isLoading: ref(false),
-    isRefetching: ref(false),
-    error: ref(null),
-  }),
+const mockUseWeekSummary = vi.fn()
+vi.mock('@api/hooks/timeUnits/weeks/useWeekSummary.ts', () => ({
+  default: () => mockUseWeekSummary(),
 }))
 
-vi.mock('@api/hooks/transactions/useBudgetCategorySummary', () => ({
+vi.mock('@api/hooks/budgetCategories/useBudgetCategorySummary.ts', () => ({
   useBudgetCategorySummary: () => ({
     data: ref([
       { id: 1, name: 'Food', color: '#ff0000' },
@@ -56,11 +42,11 @@ vi.mock('@components/shared/AlertComponent.vue', () => ({
   default: { template: '<div data-testid="alert-component"></div>' },
 }))
 
-vi.mock('@components/transactions/WeekSummaryHeader.vue', () => ({
+vi.mock('@components/transactions/summaries/week/WeekSummaryHeader.vue', () => ({
   default: { template: '<div data-testid="week-summary-header"></div>' },
 }))
 
-vi.mock('@components/transactions/MemoEditModal.vue', () => ({
+vi.mock('@components/memos/MemoEditModal.vue', () => ({
   default: {
     template: '<div data-testid="memo-edit-modal"></div>',
     methods: {
@@ -73,7 +59,7 @@ vi.mock('@components/shared/TableSkeleton.vue', () => ({
   default: { template: '<div data-testid="table-skeleton"></div>' },
 }))
 
-vi.mock('@components/transactions/BudgetCategorySummaries.vue', () => ({
+vi.mock('@components/transactions/summaries/BudgetCategorySummaries.vue', () => ({
   default: { template: '<div data-testid="budget-category-summaries"></div>' },
 }))
 
@@ -90,6 +76,25 @@ describe('WeekSummaryTable', () => {
   })
 
   test('renders the WeekSummaryTable with the correct fields', async () => {
+    // Mock successful data loading
+    mockUseWeekSummary.mockReturnValue({
+      data: ref([
+        { memo: 'Test Memo 1', total_amount_debit: 100.5, budget_category: 'Food', category_id: 1 },
+        {
+          memo: 'Test Memo 2',
+          total_amount_debit: 250.75,
+          budget_category: 'Transport',
+          category_id: 2,
+        },
+      ]),
+      isError: ref(false),
+      refetch: vi.fn(),
+      isFetching: ref(false),
+      isLoading: ref(false),
+      isRefetching: ref(false),
+      error: ref(null),
+    })
+
     const wrapper = mount(WeekSummaryTable, {
       global: {
         components: {
@@ -119,13 +124,13 @@ describe('WeekSummaryTable', () => {
     // Wait for the component to finish loading data
     await wrapper.vm.$nextTick()
 
-    const table = wrapper.findComponent(ElTable)
-    const columns = wrapper.findAllComponents(ElTableColumn)
+    const table = wrapper.find('[data-testid="week-summary-table"]')
 
     // Check if the table is rendered
     expect(table.exists()).toBe(true)
 
     // Check if the correct number of columns is rendered (3 columns: memo, amount, budget_category)
+    const columns = table.findAllComponents(ElTableColumn)
     expect(columns.length).toBe(3)
 
     // Check columns exist with proper null safety
@@ -137,7 +142,8 @@ describe('WeekSummaryTable', () => {
     }
 
     // Check if the component renders the mocked data
-    const tableData = table.props('data')
+    const tableComponent = wrapper.findComponent(ElTable)
+    const tableData = tableComponent.props('data')
     expect(tableData).toHaveLength(2)
 
     if (tableData && Array.isArray(tableData)) {
@@ -150,17 +156,15 @@ describe('WeekSummaryTable', () => {
 
   test('renders loading skeleton when data is loading', async () => {
     // Mock loading state
-    vi.doMock('@api/hooks/transactions/useWeekSummary', () => ({
-      default: () => ({
-        data: ref(null),
-        isError: ref(false),
-        refetch: vi.fn(),
-        isFetching: ref(true),
-        isLoading: ref(true),
-        isRefetching: ref(false),
-        error: ref(null),
-      }),
-    }))
+    mockUseWeekSummary.mockReturnValue({
+      data: ref(null),
+      isError: ref(false),
+      refetch: vi.fn(),
+      isFetching: ref(true),
+      isLoading: ref(true),
+      isRefetching: ref(false),
+      error: ref(null),
+    })
 
     const wrapper = mount(WeekSummaryTable, {
       global: {
@@ -187,23 +191,21 @@ describe('WeekSummaryTable', () => {
 
     await wrapper.vm.$nextTick()
 
-    const skeleton = wrapper.find('[data-testid="table-skeleton"]')
+    const skeleton = wrapper.find('[data-testid="week-summary-table-skeleton"]')
     expect(skeleton.exists()).toBe(true)
   })
 
   test('handles error state correctly', async () => {
     // Mock error state
-    vi.doMock('@api/hooks/transactions/useWeekSummary', () => ({
-      default: () => ({
-        data: ref(null),
-        isError: ref(true),
-        refetch: vi.fn(),
-        isFetching: ref(false),
-        isLoading: ref(false),
-        isRefetching: ref(false),
-        error: ref({ name: 'Test Error', message: 'Test error message' }),
-      }),
-    }))
+    mockUseWeekSummary.mockReturnValue({
+      data: ref(null),
+      isError: ref(true),
+      refetch: vi.fn(),
+      isFetching: ref(false),
+      isLoading: ref(false),
+      isRefetching: ref(false),
+      error: ref({ name: 'Test Error', message: 'Test error message' }),
+    })
 
     const wrapper = mount(WeekSummaryTable, {
       global: {
