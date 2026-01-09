@@ -7,7 +7,7 @@ import { QueryClient, VueQueryPlugin} from "@tanstack/vue-query";
 import ElementPlus from "element-plus";
 
 export const renderWithQueryClient = (component: Component,
-                                      options?: RenderOptions<{}> | undefined,
+                                      options?: RenderOptions<Record<string, never>> | undefined,
                                       config?: QueryClientConfig) => {
     const queryClient = new QueryClient({
         defaultOptions: {

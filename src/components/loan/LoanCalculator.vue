@@ -25,13 +25,6 @@ import type { FormInstance, FormRules } from 'element-plus'
 
 const ruleFormRef = ref<FormInstance>()
 
-const loanEstimateColumns = [
-  { prop: 'monthlyPayment', label: 'Monthly Payment' },
-  { prop: 'totalInterest', label: 'Total Interest' },
-  { prop: 'totalCost', label: 'Total Cost' },
-  { prop: 'payoffDate', label: 'Payoff Date' }
-]
-
 type LoanEstimateType = {
   monthlyPayment: number;
   totalInterest: number;
@@ -67,13 +60,6 @@ const isFormInItsInitialState = computed(() => {
 })
 
 const loanForm: LoanFormType = reactive({ ...initialLoanFormState })
-
-const hasFormChanged = computed(() => {
-  return loanForm.loanAmount !== 0 ||
-    loanForm.interestRate !== 0 ||
-    loanForm.loanTerm !== 0 ||
-    loanForm.startDate !== new Date()
-})
 
 // const isFormInItsInitialState = computed(() => {
 //   return loanForm.loanAmount === initialLoanFormState.loanAmount &&

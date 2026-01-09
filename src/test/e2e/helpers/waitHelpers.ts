@@ -85,7 +85,7 @@ export async function waitForTableContent(table: Locator, page: Page, options: {
   await expect(anyRow).toBeVisible({ timeout })
 
   // CI FIX: More robust table content detection
-  await page.waitForFunction((timeoutMs) => {
+  await page.waitForFunction((_timeoutMs) => {
     const tableElement = document.querySelector('[data-testid="transactions-table"]')
     if (!tableElement) {
       console.log('[CI DEBUG] Table element not found')

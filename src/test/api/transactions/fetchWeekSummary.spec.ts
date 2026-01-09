@@ -1,7 +1,7 @@
 import {fetchWeekSummary} from "@api/transactions/fetchWeekSummary";
 import {weekSummaryMock} from "@mocks/transaction";
-import {server} from "@test/test-setup";
-import {http, HttpResponse} from "msw";
+// import { server } - unused from "@test/test-setup";
+// import { http, HttpResponse } - unused from "msw";
 import {describe, test, vi} from "vitest";
 
 

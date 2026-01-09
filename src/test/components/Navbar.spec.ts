@@ -31,7 +31,7 @@ describe('Navbar.vue', () => {
 
     it.skip('renders the correct number of tabs', () => {
         const tabs = wrapper.findAllComponents(ElTabPane);
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(tabs.length).toBe(wrapper.vm.routes.length);
     });
 
@@ -40,7 +40,7 @@ describe('Navbar.vue', () => {
         const firstTab = wrapper.findComponent(ElTabPane);
         await firstTab.trigger('click');
 
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.vm.activeTab).toBe(0);
     });
 

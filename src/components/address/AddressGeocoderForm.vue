@@ -94,7 +94,7 @@ const rules = {
   ]
 }
 
-const {isLoading, isFetching, isError, data, error, refetch} = useGeocodeAddress(formData.value)
+const {isFetching, data, error, refetch} = useGeocodeAddress(formData.value)
 
 
 const submitForm = (event: Event) => {

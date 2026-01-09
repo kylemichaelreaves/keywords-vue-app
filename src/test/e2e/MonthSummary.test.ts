@@ -72,7 +72,7 @@ test.describe('Month Summary Page', () => {
     // Wait for modal to be visible before checking for form
     await monthSummaryPage.expectMemoEditModalVisible()
     // Wait for the memo response to complete
-    const response = await responsePromise
+    const _response = await responsePromise
 
     // Now check if the form is visible
     try {

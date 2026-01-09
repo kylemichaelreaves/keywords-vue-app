@@ -15,7 +15,7 @@ describe('WeekSummaryTable', function () {
 
     test.skip('renders the WeekSummaryTable with the correct fields', async () => {
 
-        const wrapper = mount(WeekSummaryTable, {
+        const _wrapper = mount(WeekSummaryTable, {
             global: {
                 components: {
                     ElTable,
@@ -33,7 +33,7 @@ describe('WeekSummaryTable', function () {
         // Wait for the component to finish loading data
         await wrapper.vm.$nextTick();
 
-        const table = wrapper.findComponent(ElTable);
+        const _table = wrapper.findComponent(ElTable);
         const columns = wrapper.findAllComponents(ElTableColumn);
 
         // Check if the table is rendered

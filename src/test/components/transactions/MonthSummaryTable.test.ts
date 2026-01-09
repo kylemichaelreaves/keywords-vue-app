@@ -32,7 +32,7 @@ vi.mock("@api/hooks/transactions/useMonthSummary", () => {
 
 describe('MonthSummaryTable', function () {
     test.skip('renders the MonthlySummaryTable with the correct fields', async () => {
-        const wrapper = shallowMount(MonthSummaryTable, {
+        const _wrapper = shallowMount(MonthSummaryTable, {
             global: {
                 components: {
                     ElTable,
@@ -61,7 +61,7 @@ describe('MonthSummaryTable', function () {
         // wrapper.vm.isLoading = false;
         wrapper.vm.monthSummaryData = monthSummaryMock;
 
-        const table = wrapper.findComponent(ElTable);
+        const _table = wrapper.findComponent(ElTable);
         const columns = wrapper.findAllComponents(ElTableColumn);
 
         // Check if the table is rendered

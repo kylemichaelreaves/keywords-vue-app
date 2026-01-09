@@ -36,7 +36,7 @@ const TimelineBarChart = defineComponent({
 
       console.log('x', x)
 
-      const [minAmount, maxAmount] = d3.extent(data.value, (d) => d.amount) as [number, number];
+      const [minAmount] = d3.extent(data.value, (d) => d.amount) as [number, number];
 
       const y = d3.scaleLinear()
           .range([height, 0])
@@ -84,7 +84,7 @@ const TimelineBarChart = defineComponent({
     }
 
 
-    watch(() => selectedMonth, (newVal, oldVal) => {
+    watch(() => selectedMonth, (newVal) => {
       data.value = props.data.filter((d) =>
           `${d.date.split('/')[0]}/${d.date.split('/')[1]}` === newVal.value
       );

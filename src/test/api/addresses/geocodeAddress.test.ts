@@ -25,7 +25,7 @@ describe('geocodeAddress', () => {
 
 
     test('geocodeAddress throws an error when the address is undefined', async () => {
-        await expect(geocodeAddress(undefined as any)).rejects.toThrow('address is undefined');
+        await expect(geocodeAddress(undefined as unknown)).rejects.toThrow('address is undefined');
     });
 
 })

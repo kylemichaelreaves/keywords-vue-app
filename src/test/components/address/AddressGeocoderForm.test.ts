@@ -9,7 +9,7 @@ describe('AddressGeocoderForm', () => {
     vi.mock("element-plus/theme-chalk/base.css", () => ({}));
 
 
-    const wrapper = mount(AddressGeocoderForm, {
+    const _wrapper = mount(AddressGeocoderForm, {
         global: {
             plugins: [ElInput, ElButton, VueQueryPlugin, createTestingPinia()],
         }

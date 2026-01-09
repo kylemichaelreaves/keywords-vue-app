@@ -80,7 +80,7 @@ describe('WeekSelect', () => {
         const select = wrapper.findComponent({name: 'ElSelect'})
 
 
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(select.vm.modelValue).toBe('42/2022');
     })
 
@@ -95,14 +95,14 @@ describe('WeekSelect', () => {
 
         const select = wrapper.findComponent({name: 'ElSelect'})
 
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(select.weekOptions).toEqual([{value: '42/2022', label: '42/2022'}]);
     })
 
     test('should not populate weekOptions when data is not available', async () => {
         transactionsStore.weeks = [];
         await wrapper.vm.$nextTick();
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.vm.weekOptions).toEqual([]);
     })
 
@@ -113,7 +113,7 @@ describe('WeekSelect', () => {
 
         wrapper.vm._pStores?.transactions.setSelectedWeek(week);
 
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         wrapper.vm.updateSelectedWeek(week);
 
 

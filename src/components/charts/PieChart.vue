@@ -42,13 +42,13 @@ const PieChart = defineComponent( {
       const g = svgElement.append('g')
           .attr('transform', `translate(${width / 2},${height / 2})`);
 
-      const arcPath = g.selectAll('path')
+      g.selectAll('path')
           .data(pieData)
           .enter().append('path')
           .attr('fill', (d) => color(d.data.label)!)
           .attr('d', arc);
 
-      const text = g.selectAll('text')
+      g.selectAll('text')
           .data(pieData)
           .enter().append('text')
           .attr('transform', (d) => `translate(${arc.centroid(d)})`)

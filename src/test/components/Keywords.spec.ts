@@ -33,7 +33,7 @@ describe('Keywords.vue', () => {
         await elInput.setValue('testing');
         await elInput.trigger('input');
         await nextTick();
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.vm.keywords).toEqual('testing');
     });
 
@@ -47,7 +47,7 @@ describe('Keywords.vue', () => {
         await elInput.setValue('');
         await elInput.trigger('input');
         await nextTick();
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.vm.keywords).toEqual('');
     });
 

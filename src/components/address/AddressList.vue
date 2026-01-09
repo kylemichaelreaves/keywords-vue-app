@@ -1,10 +1,12 @@
 <template>
-    <el-card v-if="addresses.length > 0" v-for="item in addresses" :key="item.id">
-        <template #header>
-            <div class="card-header">{{ item.name }}</div>
-        </template>
-        <p>{{ item.description }}</p>
-    </el-card>
+    <div v-if="addresses.length > 0">
+        <el-card v-for="item in addresses" :key="item.id">
+            <template #header>
+                <div class="card-header">{{ item.name }}</div>
+            </template>
+            <p>{{ item.description }}</p>
+        </el-card>
+    </div>
     <el-alert v-else type="error" title="Error: {{error}}"></el-alert>
 </template>
 
@@ -28,9 +30,8 @@ export default defineComponent({
             }
         }
     },
-    setup(props) {
-        const {addresses} = props;
-        return {addresses};
+    setup() {
+        return {};
     }
 });
 

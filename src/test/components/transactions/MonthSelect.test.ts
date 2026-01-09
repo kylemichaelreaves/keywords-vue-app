@@ -9,7 +9,7 @@ import {useTransactionsStore} from "@stores/transactions";
 import {monthsMock} from "@mocks/transaction";
 
 describe('MonthsSelect', () => {
-    const wrapper = mount(MonthSelect, {
+    const _wrapper = mount(MonthSelect, {
         props: {
             options: monthsMock,
             selectedValue: '11/2022',
@@ -53,7 +53,7 @@ describe('MonthsSelect', () => {
         const transactionsStore = useTransactionsStore(createTestingPinia());
 
         // Get the transformedData from the component's setup function
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         const transformedData = wrapper.vm.transformedData;
 
         // Assuming you have some transformed data to be rendered as options

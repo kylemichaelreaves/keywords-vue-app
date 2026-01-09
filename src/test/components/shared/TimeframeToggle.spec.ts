@@ -1,10 +1,10 @@
-import { mount } from "@vue/test-utils";
+// import { mount } - unused from "@vue/test-utils";
 import TimeframeToggle from "@components/shared/TimeframeToggle.vue";
 import { ElCheckTag } from "element-plus";
 
 describe("TimeframeToggle.vue", () => {
     it("renders the component", () => {
-        const wrapper = mount(TimeframeToggle, {
+        const _wrapper = mount(TimeframeToggle, {
             global: {
                 components: {
                     ElCheckTag,
@@ -17,14 +17,14 @@ describe("TimeframeToggle.vue", () => {
     });
 
     it("has 'monthly' as the default selected option", () => {
-        const wrapper = mount(TimeframeToggle);
+        const _wrapper = mount(TimeframeToggle);
         const selectedOption = wrapper.vm.selectedOption;
 
         expect(selectedOption).toBe("monthly");
     });
 
     it("handleChange updates the selectedOption", async () => {
-        const wrapper = mount(TimeframeToggle, {
+        const _wrapper = mount(TimeframeToggle, {
             global: {
                 components: {
                     ElCheckTag,

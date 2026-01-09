@@ -73,15 +73,15 @@ describe('TableComponent', () => {
     it('updates page size when handleSizeChange is called', async () => {
         const store = useTransactionsStore();
         store.transactionsPageSize = 20
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         await wrapper.vm.handleSizeChange(20)
 
         await wrapper.vm.$nextTick()
 
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.vm.pageSize).toBe(20)
 
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.vm.store.getTransactionsPageSize).toBe(20)
     })
 
@@ -91,18 +91,18 @@ describe('TableComponent', () => {
 
         store.transactionsCurrentPage = 1
 
-        const table = wrapper.findComponent({name: 'TableComponent'})
+        const _table = wrapper.findComponent({name: 'TableComponent'})
 
         // console.log('pagination.vm', pagination.vm);
 
         store.transactionsCurrentPage = 2
 
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         await wrapper.vm.handleCurrentChange(2)
 
         await wrapper.vm.$nextTick()
 
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.vm.currentPage).toBe(2)
 
         expect(store.getTransactionsCurrentPage).toBe(2)

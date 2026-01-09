@@ -53,7 +53,7 @@ interface MonthlyData {
   transactions: Partial<Transaction>[];
 }
 
-const props = defineProps({
+defineProps({
   monthlyData: {
     type: Array as () => MonthlyData[],
     required: true

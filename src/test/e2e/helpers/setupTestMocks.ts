@@ -16,9 +16,9 @@ import { mockMemoTableRoutes } from './mockMemoRoutes'
 
 
 export interface TestMockOptions {
-  basicTransactions?: boolean | any[] // Can pass static data
-  comprehensiveTransactions?: { staticTransactions: any[], staticDailyIntervals: any[] } // For full transaction table mocking
-  dailyIntervals?: boolean | number | any[] // boolean, number of days, or static data
+  basicTransactions?: boolean | unknown[] // Can pass static data
+  comprehensiveTransactions?: { staticTransactions: unknown[], staticDailyIntervals: unknown[] } // For full transaction table mocking
+  dailyIntervals?: boolean | number | unknown[] // boolean, number of days, or static data
   budgetCategories?: boolean
   memos?: boolean
   transactionSelects?: boolean
@@ -72,7 +72,7 @@ async function setupTransactionMocks(page: Page, config: TestMockOptions) {
 /**
  * Helper function to setup daily interval mocks with different configurations
  */
-async function setupDailyIntervalMocks(page: Page, intervalConfig: boolean | number | any[]) {
+async function setupDailyIntervalMocks(page: Page, intervalConfig: boolean | number | unknown[]) {
   if (Array.isArray(intervalConfig)) {
     // Static data provided
     await mockDailyIntervalRoutes(page, 30, intervalConfig)
@@ -178,7 +178,7 @@ export const setupMemosTableMocks = (page: Page) => setupTestMocks(page, MOCK_PR
  * Enhanced setup for TransactionsTable tests with comprehensive mocking
  * Simplified error handling and CI-specific configurations
  */
-export const setupTransactionsTableWithComprehensiveMocks = async (page: Page, staticTransactions: any[], staticIntervals: any[]) => {
+export const setupTransactionsTableWithComprehensiveMocks = async (page: Page, staticTransactions: unknown[], staticIntervals: unknown[]) => {
   const mockOptions = {
     comprehensiveTransactions: {
       staticTransactions,

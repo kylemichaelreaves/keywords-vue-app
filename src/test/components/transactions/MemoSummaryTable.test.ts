@@ -30,7 +30,7 @@ vi.mock('vue-router', () => ({
 }))
 
 describe('MemoSummaryTable.vue', () => {
-  let wrapper: VueWrapper<any>
+  let wrapper: VueWrapper<InstanceType<typeof MemoSummaryTable>>
 
   beforeEach(() => {
     wrapper = mount(MemoSummaryTable, {

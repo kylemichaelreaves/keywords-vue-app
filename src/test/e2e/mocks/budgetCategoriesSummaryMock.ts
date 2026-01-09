@@ -124,6 +124,7 @@ function generateSingleBudgetCategory(options: {
 }
 
 // Generate an array of random budget categories
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function generateBudgetCategories(count: number): BudgetCategoryHierarchySummaryResponse[] {
   return Array.from({ length: count }, (_, index) =>
     generateSingleBudgetCategory({ categoryId: index + 1 })

@@ -25,7 +25,7 @@ describe('AddressResults.vue', () => {
     ];
 
     test('renders AddressResults component', async () => {
-        const wrapper = mount(AddressResults, {
+        const _wrapper = mount(AddressResults, {
             props: {
                 message: testData,
             },

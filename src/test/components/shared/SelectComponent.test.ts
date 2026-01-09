@@ -19,7 +19,7 @@ describe('SelectComponent', () => {
     });
 
     test('renders with correct options', () => {
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         const options = wrapper.componentVM.options
         expect(options.length).toBe(2);
         expect(options[0].label).toBe('Option 1');
@@ -27,7 +27,7 @@ describe('SelectComponent', () => {
     });
 
     test('renders with correct selected value', () => {
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.props().selectedValue).toBe('1');
     });
 
@@ -40,32 +40,32 @@ describe('SelectComponent', () => {
         await option.trigger('click');
 
         // Directly call the onChange method, since the event doesn't propagate to the parent component
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         wrapper.vm.onChange('2');
 
         expect(onChangeMock).toHaveBeenCalled();
     });
 
     test('renders with correct placeholder', () => {
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.props().placeholder).toBe('Select an option');
     });
 
     test('renders as disabled when disabled prop is true', async () => {
         await wrapper.setProps({disabled: true});
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.props().disabled).toBe(true);
     });
 
     test('renders with correct loading text when loading', async () => {
         await wrapper.setProps({loading: true});
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.props().loadingText).toBe('Loading...');
     });
 
     test('renders with correct loading state when loading prop is true', async () => {
         await wrapper.setProps({loading: true});
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.props().loading).toBe(true);
     });
 
@@ -74,12 +74,12 @@ describe('SelectComponent', () => {
         const select = wrapper.findComponent({name: 'ElSelect'});
         const option = wrapper.findAllComponents({name: 'ElOption'})[1];
 
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         if (!wrapper.props().disabled) {
             await select.trigger('click');
             await option.trigger('click');
         }
-        // @ts-ignore
+        // @ts-expect-error - Type testing
         expect(wrapper.vm.onChange).not.toHaveBeenCalled();
     });
 

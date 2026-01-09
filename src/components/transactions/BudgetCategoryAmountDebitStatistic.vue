@@ -43,7 +43,7 @@ const props = defineProps({
 const { timeFrame, selectedValue } = getTimeframeTypeAndValue()
 
 
-const { data, isLoading, isFetching, isRefetching, refetch, isError, error } = useBudgetCategoryAmountDebit(
+const { data, isLoading, isFetching, isRefetching, isError, error } = useBudgetCategoryAmountDebit(
   props.budgetCategoryName,
   timeFrame,
   selectedValue?.value ? selectedValue.value : '',

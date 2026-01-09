@@ -82,14 +82,6 @@ const message = ref<string | null>(null)
 
 const isFormValid = ref(false)
 
-function onFieldValidate() {
-  // After each field is validated, re-check the entire form’s validity
-  if (!formRef.value) return
-
-  formRef.value.validate((valid: boolean) => {
-    isFormValid.value = valid
-  })
-}
 
 const { mutate, isPending, isError, error } = useMutation({
   mutationKey: ['createUser'],
@@ -158,7 +150,7 @@ const validateConfirmPassword = (rule, value, callback) => {
   }
 }
 
-const validateUsername = (rule: any, value: string, callback: (error?: Error) => void) => {
+const validateUsername = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
   const minLength = 6
   const maxLength = 20
 

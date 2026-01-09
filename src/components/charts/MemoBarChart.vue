@@ -7,11 +7,6 @@ import {ref, onMounted, defineComponent, watch, computed} from 'vue';
 import * as d3 from 'd3';
 import type {Transaction} from '@types';
 
-interface MemoDataPoint {
-  memo: string;
-  amount: number;
-}
-
 
 const MemoBarChart = defineComponent({
   name: 'MemoBarChart',
@@ -129,6 +124,8 @@ const MemoBarChart = defineComponent({
     });
   }
 });
+
+export default MemoBarChart;
 
 
 </script>

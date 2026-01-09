@@ -47,8 +47,7 @@ const {
   data,
   isLoading,
   isError,
-  error,
-  refetch
+  error
 } = useMemo(computed(() => props.memoName || ''))
 
 // For backwards compatibility when no memo fetching is needed

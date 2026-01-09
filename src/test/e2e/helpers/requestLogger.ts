@@ -10,8 +10,8 @@ import type { Page } from '@playwright/test'
  */
 export function setupApiRequestLogging(
   page: Page,
-  urlPattern: string = 'api',
-  logPrefix: string = 'API Request:'
+  _urlPattern: string = 'api',
+  _logPrefix: string = 'API Request:'
 ) {
 
   page.on('console', msg => {

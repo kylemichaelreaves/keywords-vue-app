@@ -18,12 +18,12 @@ import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
 import { generateDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
 
-const isCI = !!process.env.CI
+const _isCI = !!process.env.CI
 
 /**
  * Mock basic transaction routes that are commonly used across tests
  */
-export async function mockBasicTransactionRoutes(page: Page, staticData?: any[]) {
+export async function mockBasicTransactionRoutes(page: Page, staticData?: unknown[]) {
   const transactions = staticData || generateTransactionsArray(100)
 
   await Promise.all([
@@ -74,7 +74,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
 
   // CRITICAL FIX: Use specific API patterns to avoid intercepting SPA navigation
   // Only intercept actual API calls with query parameters, not page routes
-  await page.route(`**/transactions?**`, async (route: any) => {
+  await page.route(`**/transactions?**`, async (route: unknown) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
     const isDailyTotals = params.get('dailyTotals') === 'true'
@@ -160,7 +160,7 @@ export async function mockComprehensiveTransactionRoutes(page: Page, staticTrans
  * Mock daily interval routes with various parameter orders
  * FIXED: Use more specific pattern to avoid conflicts with comprehensive routes
  */
-export async function mockDailyIntervalRoutes(page: Page, days: number = 30, staticData?: any[]) {
+export async function mockDailyIntervalRoutes(page: Page, days: number = 30, staticData?: unknown[]) {
   const intervals = staticData || generateDailyIntervals(days)
 
   // CRITICAL FIX: Use specific API pattern that only matches dailyTotals requests to avoid conflicts

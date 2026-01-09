@@ -19,8 +19,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, ref} from 'vue';
-import type { FormInstance } from 'element-plus'
+import {defineComponent, computed} from 'vue';
 
 export default defineComponent({
   name: 'FormFieldComponent',
@@ -44,8 +43,6 @@ export default defineComponent({
         return 'el-input';
       }
     });
-
-    const formRef = ref<FormInstance>()
 
     const inputNumberProps = computed(() => {
       if (props.field.type === 'number' && props.field.prop === 'loanTerm') {
