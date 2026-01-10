@@ -51,3 +51,12 @@ storybook-static
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# Compiled config files
+*.config.js
+*.config.d.ts
+!vitest.config.ts
+!vite.config.ts
+!playwright.config.ts
+!eslint.config.ts
+!vitest.config.storybook.ts
