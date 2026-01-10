@@ -12,7 +12,7 @@ type MemoSummaryTableInstance = InstanceType<typeof MemoSummaryTable>
 
 
 // Create controllable mock state
-let mockMemoSummaryState = {
+const mockMemoSummaryState = {
   data: ref({
     sum_amount_debit: -300.5,
     transactions_count: 5,
@@ -23,7 +23,7 @@ let mockMemoSummaryState = {
   error: ref(null as { name: string; message: string } | null),
 }
 
-let mockMemoState = {
+const mockMemoState = {
   data: ref({
     id: 1,
     name: 'Test Memo',
