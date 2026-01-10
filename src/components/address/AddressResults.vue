@@ -10,7 +10,10 @@
         <CoordinatesTable
           v-if="column.prop === 'coordinates'"
           data-test="coordinates-table"
-          :coordinates="{ latitude: parseFloat(scope.row.lat), longitude: parseFloat(scope.row.lon) }"
+          :coordinates="{
+            latitude: parseFloat(scope.row.lat),
+            longitude: parseFloat(scope.row.lon),
+          }"
         />
         <AddressResultFieldsTable
           v-else-if="column.prop === 'address'"

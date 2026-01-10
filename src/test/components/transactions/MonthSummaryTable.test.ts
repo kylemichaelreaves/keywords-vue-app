@@ -85,7 +85,7 @@ vi.mock('@components/transactions/summaries/BudgetCategorySummaries.vue', () => 
   default: {
     name: 'BudgetCategorySummaries',
     template: '<div data-testid="budget-category-summaries"></div>',
-    props: ['timeFrame', 'date']
+    props: ['timeFrame', 'date'],
   },
 }))
 
@@ -102,7 +102,7 @@ vi.mock('@components/shared/AlertComponent.vue', () => ({
     name: 'AlertComponent',
     template: '<div v-bind="$attrs"><slot /></div>',
     props: ['message', 'type', 'title'],
-    inheritAttrs: true
+    inheritAttrs: true,
   },
 }))
 
@@ -110,7 +110,14 @@ vi.mock('@components/transactions/summaries/month/MonthSummaryHeader.vue', () =>
   default: {
     name: 'MonthSummaryHeader',
     template: '<div data-testid="month-summary-header"></div>',
-    props: ['selectedMonth', 'isLastMonth', 'isFirstMonth', 'goToNextMonth', 'goToPreviousMonth', 'resetSelectedMonth']
+    props: [
+      'selectedMonth',
+      'isLastMonth',
+      'isFirstMonth',
+      'goToNextMonth',
+      'goToPreviousMonth',
+      'resetSelectedMonth',
+    ],
   },
 }))
 
@@ -124,7 +131,6 @@ vi.mock('@components/memos/MemoEditModal.vue', () => ({
     },
   },
 }))
-
 
 describe('MonthSummaryTable', () => {
   let store: ReturnType<typeof useTransactionsStore>

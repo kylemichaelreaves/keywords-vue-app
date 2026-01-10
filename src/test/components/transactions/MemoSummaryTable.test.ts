@@ -10,7 +10,6 @@ import type { MemoSummary } from '@types'
 // Define the component instance type
 type MemoSummaryTableInstance = InstanceType<typeof MemoSummaryTable>
 
-
 // Create controllable mock state
 const mockMemoSummaryState = {
   data: ref({

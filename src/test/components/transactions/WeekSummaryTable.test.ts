@@ -14,7 +14,6 @@ vi.mock('@router', () => ({
   },
 }))
 
-
 // Mock the hooks
 const mockUseWeekSummary = vi.fn()
 vi.mock('@api/hooks/timeUnits/weeks/useWeekSummary.ts', () => ({
