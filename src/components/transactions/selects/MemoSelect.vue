@@ -90,10 +90,6 @@ const clearSelectedMemo = () => {
 // Watch model changes and update the store to trigger useTransactions filtering
 watch(model, (newValue) => {
   // model value is the memo ID as a string
-  if (newValue) {
-    transactionsStore.setSelectedMemo(newValue)
-  } else {
-    transactionsStore.setSelectedMemo('')
-  }
+  transactionsStore.setSelectedMemo(newValue || '')
 })
 </script>
