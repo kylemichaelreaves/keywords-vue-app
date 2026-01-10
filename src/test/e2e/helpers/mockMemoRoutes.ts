@@ -17,12 +17,50 @@ export async function mockMemoTableRoutes(page: Page) {
     })
   })
 
-  // Mock memos list
-  await page.route('**/memos?limit=100&offset=0', (route) => {
+  // Mock memos list with flexible limit/offset matching and ID/name filtering
+  await page.route('**/memos?**', (route) => {
+    const url = new URL(route.request().url())
+    
+    // Check if this is a count request
+    if (url.searchParams.get('count') === 'true') {
+      // Let the count route handle it
+      return route.continue()
+    }
+    
+    const limit = parseInt(url.searchParams.get('limit') || '20', 10)
+    const offset = parseInt(url.searchParams.get('offset') || '0', 10)
+    const idParam = url.searchParams.get('id')
+    const nameParam = url.searchParams.get('name')
+    
+    // If ID or name is specified, return specific memo
+    if (idParam) {
+      const memoId = parseInt(idParam, 10)
+      const memo = memos.find((m) => m.id === memoId)
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(memo ? [memo] : []),
+      })
+      return
+    }
+    
+    if (nameParam) {
+      const memo = memos.find((m) => m.name === nameParam)
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(memo ? [memo] : []),
+      })
+      return
+    }
+    
+    // Return paginated list of memos
+    const paginatedMemos = memos.slice(offset, offset + limit)
+    
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(memos),
+      body: JSON.stringify(paginatedMemos),
     })
   })
 
@@ -31,12 +69,10 @@ export async function mockMemoTableRoutes(page: Page) {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify([
-        {
-          sum_amount_debit: 0,
-          transactions_count: 1,
-        },
-      ]),
+      body: JSON.stringify({
+        sum_amount_debit: 0,
+        transactions_count: 1,
+      }),
     })
   })
 
@@ -84,23 +120,26 @@ export async function mockMemoTableRoutes(page: Page) {
     }
   })
 
-  // Mock transactions for a specific memo
-  await page.route('**/transactions?memo=*', (route) => {
+  // Mock transactions for a specific memo by ID
+  await page.route('**/transactions?memoId=*', (route) => {
     const url = new URL(route.request().url())
-    const memoParam = url.searchParams.get('memo')
+    const memoIdParam = url.searchParams.get('memoId')
 
-    if (memoParam) {
-      const decodedMemoName = decodeURIComponent(memoParam)
+    if (memoIdParam) {
+      const memoId = parseInt(memoIdParam, 10)
+      const memo = memos.find((m) => m.id === memoId)
+      const memoName = memo?.name || 'Unknown Memo'
+      
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(generateTransactionsArray(5, decodedMemoName)),
+        body: JSON.stringify(generateTransactionsArray(5, memoName)),
       })
     } else {
       route.fulfill({
         status: 400,
         contentType: 'application/json',
-        body: JSON.stringify({ error: 'Memo parameter required' }),
+        body: JSON.stringify({ error: 'Memo ID parameter required' }),
       })
     }
   })

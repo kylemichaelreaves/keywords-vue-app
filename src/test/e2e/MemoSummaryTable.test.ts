@@ -48,17 +48,15 @@ test.describe('Memo Summary Table', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            total_amount_debit: 3000,
-            transactions_count: 15,
-          },
-        ]),
+        body: JSON.stringify({
+          sum_amount_debit: 3000,
+          transactions_count: 15,
+        }),
       })
     })
 
-    // mock /transactions?memo=*
-    await page.route('**/transactions?memo=*', (route) => {
+    // mock /transactions?memoId=*
+    await page.route('**/transactions?memoId=*', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
