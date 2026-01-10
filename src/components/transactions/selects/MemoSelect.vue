@@ -91,6 +91,8 @@ const clearSelectedMemo = () => {
 watch(model, (newValue) => {
   if (newValue) {
     transactionsStore.setSelectedMemo(newValue)
+  } else {
+    transactionsStore.setSelectedMemo('')
   }
 })
 </script>
