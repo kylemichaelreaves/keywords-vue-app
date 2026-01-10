@@ -36,12 +36,12 @@ export class TransactionsPage {
   readonly modalSaveButton: Locator
 
   constructor(public readonly page: Page) {
-    this.transactionsTable = this.page.getByTestId('transactions-table')
-    this.daySelect = this.page.getByTestId('transactions-table-day-select')
-    this.weekSelect = this.page.getByTestId('transactions-table-week-select')
-    this.monthSelect = this.page.getByTestId('transactions-table-month-select')
-    this.yearSelect = this.page.getByTestId('transactions-table-year-select')
-    this.memoSelect = this.page.getByTestId('transactions-table-memo-select')
+    this.transactionsTable = this.page.getByRole('table').first()
+    this.daySelect = this.page.getByRole('combobox', { name: 'Day selector' })
+    this.weekSelect = this.page.getByRole('combobox', { name: 'Week selector' })
+    this.monthSelect = this.page.getByRole('combobox', { name: 'Month selector' })
+    this.yearSelect = this.page.getByRole('combobox', { name: 'Year selector' })
+    this.memoSelect = this.page.getByRole('combobox', { name: 'Memo selector' })
 
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
     this.intervalForm = this.page.getByTestId('daily-interval-line-chart-form')

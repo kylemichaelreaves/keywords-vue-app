@@ -11,14 +11,14 @@ export class WeekSummaryPage extends BaseSummaryPage {
     super(page)
 
     // Initialize week-specific elements
-    this.weekSummaryTable = page.getByTestId('week-summary-table')
+    this.weekSummaryTable = page.getByRole('table').first()
     this.weekTitle = page.locator('h2')
-    this.daySummariesTable = page.getByTestId('day-summaries-for-selected-week-table')
+    this.daySummariesTable = page.getByRole('table').nth(1)
   }
 
   // Implement abstract methods from base class
   getErrorAlert(): Locator {
-    return this.page.getByTestId('week-error-alert')
+    return this.page.getByRole('alert').first()
   }
 
   getResetButton(): Locator {

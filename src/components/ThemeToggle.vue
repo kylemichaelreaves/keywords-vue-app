@@ -7,6 +7,7 @@
     active-color="#409EFF"
     inactive-color="#E6A23C"
     :data-testid="props.dataTestId"
+    aria-label="Theme toggle"
   />
 </template>
 

@@ -11,6 +11,7 @@
       :options="dayOptions"
       :selectedValue="selectedDay"
       placeholder="select a day"
+      aria-label="Day selector"
       :onChange="updateSelectedDay"
       :onClear="clearSelectedDay"
       :loading="isLoading || isFetching"

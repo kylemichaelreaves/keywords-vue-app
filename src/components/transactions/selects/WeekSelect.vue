@@ -10,6 +10,7 @@
       :options="weekOptions"
       :selectedValue="selectedWeek"
       placeholder="select a week"
+      aria-label="Week selector"
       :onChange="updateSelectedWeek"
       :onClear="clearSelectedYear"
       :disabled="isLoading || isFetching"

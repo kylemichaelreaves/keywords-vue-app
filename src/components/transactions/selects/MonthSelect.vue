@@ -11,6 +11,7 @@
       :options="monthOptions"
       :selectedValue="store.selectedMonth"
       placeholder="select a month"
+      aria-label="Month selector"
       :disabled="isLoading || isFetching"
       :onChange="updateSelectedMonth"
       :on-clear="clearSelectedMonth"
