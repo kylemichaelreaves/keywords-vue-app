@@ -12,7 +12,7 @@ export class HomePage {
   constructor(page: Page) {
     this.page = page
     this.navbar = page.locator('[data-test-id="navbar"]')
-    this.themeToggle = this.navbar.getByTestId('theme-toggle')
+    this.themeToggle = this.navbar.getByRole('switch', { name: 'Theme toggle' })
     this.htmlElement = page.locator('html')
     this.heading = page.getByRole('heading')
     this.body = page.locator('body')

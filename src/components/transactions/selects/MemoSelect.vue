@@ -14,6 +14,7 @@
       :options="memoOptions"
       :disabled="isLoading"
       :data-testid="props.dataTestId"
+      aria-label="Memo selector"
       :min-characters="1"
       :on-clear="clearSelectedMemo"
       :on-search="handleSearch"

@@ -23,10 +23,10 @@ export class MemosTablePage {
   constructor(page: Page) {
     this.page = page
 
-    this.errorAlert = page.getByTestId('memo-summary-table-error')
-    this.memosTable = page.getByTestId('memos-table')
-    this.memosPageTitle = page.getByTestId('memos-table-title')
-    this.memoEditModal = page.getByTestId('memo-edit-dialog')
+    this.errorAlert = page.getByRole('alert').first()
+    this.memosTable = page.getByRole('table').first()
+    this.memosPageTitle = page.getByRole('heading', { name: /memos table/i })
+    this.memoEditModal = page.getByRole('dialog')
 
     this.memoEditForm = this.page.getByTestId('memo-edit-form')
     this.memoEditFormAvatar = this.memoEditForm.getByTestId('memo-edit-form-avatar')

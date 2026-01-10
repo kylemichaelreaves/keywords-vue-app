@@ -5,6 +5,7 @@
     @change="props.onChange($event)"
     @clear="props.onClear"
     :disabled="props.disabled"
+    :aria-label="props.ariaLabel"
     clearable
     filterable
     :loading="props.loading"
@@ -59,6 +60,10 @@ const props = defineProps({
     default: 'Loading...',
   },
   dataTestId: {
+    type: String,
+    default: '',
+  },
+  ariaLabel: {
     type: String,
     default: '',
   },

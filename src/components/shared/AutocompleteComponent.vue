@@ -7,6 +7,7 @@
     @change="(value: string | number) => handleChange(value)"
     @clear="handleClear"
     :disabled="props.disabled"
+    :aria-label="props.ariaLabel"
     clearable
     :loading="props.loading"
     :loading-text="props.loadingText"
@@ -75,6 +76,10 @@ const props = defineProps({
   minCharacters: {
     type: Number,
     default: 0,
+  },
+  ariaLabel: {
+    type: String,
+    default: '',
   },
 })
 

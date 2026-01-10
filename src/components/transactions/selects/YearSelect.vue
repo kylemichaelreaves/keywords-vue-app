@@ -11,6 +11,7 @@
       :data-testid="props.dataTestId"
       :selectedValue="selectedYear"
       placeholder="select a year"
+      aria-label="Year selector"
       :options="yearOptions"
       :isLoading="isLoading"
       :isFetching="isFetching"
