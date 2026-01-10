@@ -82,7 +82,7 @@ const handleSearch = (
 }
 
 const clearSelectedMemo = () => {
-  transactionsStore.setSelectedMemo('')
+  // The watcher will handle calling setSelectedMemo when model changes
   emit('update:modelValue', '')
   searchQuery.value = ''
 }
