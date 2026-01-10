@@ -88,8 +88,8 @@ const clearSelectedMemo = () => {
 }
 
 // Watch model changes and update the store to trigger useTransactions filtering
+// model value is the memo ID as a string, or empty string for no selection
 watch(model, (newValue) => {
-  // model value is the memo ID as a string
   transactionsStore.setSelectedMemo(newValue || '')
 })
 </script>
