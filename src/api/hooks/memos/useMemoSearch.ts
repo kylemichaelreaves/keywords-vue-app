@@ -20,7 +20,7 @@ export function useMemoSearch(params: UseMemoSearchParams) {
   )
 
   return useQuery<Array<Memo>>({
-    queryKey: ['memos', 'search', searchQuery.value],
+    queryKey: computed(() => ['memos', 'search', searchQuery.value]),
     queryFn: async () => {
       if (!searchQuery.value) {
         return await fetchMemos({ limit: params.limit || 50 })

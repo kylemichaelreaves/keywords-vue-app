@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useMemoSearch } from '@api/hooks/memos/useMemoSearch.ts'
 import { useTransactionsStore } from '@stores/transactions.ts'
 import type { Memo } from '@types'
@@ -67,7 +67,7 @@ const memoOptions = computed(() => {
   if (!memos.value) return []
 
   return memos.value.map((memo: Memo) => ({
-    value: memo.name,
+    value: String(memo.id),
     label: memo.name,
   }))
 })
@@ -82,8 +82,14 @@ const handleSearch = (
 }
 
 const clearSelectedMemo = () => {
-  transactionsStore.setSelectedMemo('')
+  // The watcher will handle calling setSelectedMemo when model changes
   emit('update:modelValue', '')
   searchQuery.value = ''
 }
+
+// Watch model changes and update the store to trigger useTransactions filtering
+// model value is the memo ID as a string, or empty string for no selection
+watch(model, (newValue) => {
+  transactionsStore.setSelectedMemo(newValue || '')
+})
 </script>

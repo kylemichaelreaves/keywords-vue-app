@@ -27,7 +27,8 @@ export default function useTransactions() {
         const transactions = await fetchTransactions({
           limit: limit.value,
           offset: Number(pageParam),
-          memo: String(selectedMemo.value),
+          // Use memoId if a memo is selected (non-zero), otherwise undefined to fetch all
+          memoId: selectedMemo.value || undefined,
           timeFrame: dateType.value,
           date: selectedValue.value,
         })
