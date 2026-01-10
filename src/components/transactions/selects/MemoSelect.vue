@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useMemoSearch } from '@api/hooks/memos/useMemoSearch.ts'
 import { useTransactionsStore } from '@stores/transactions.ts'
 import type { Memo } from '@types'
@@ -86,4 +86,11 @@ const clearSelectedMemo = () => {
   emit('update:modelValue', '')
   searchQuery.value = ''
 }
+
+// Watch model changes and update the store to trigger useTransactions filtering
+watch(model, (newValue) => {
+  if (newValue) {
+    transactionsStore.setSelectedMemo(newValue)
+  }
+})
 </script>
