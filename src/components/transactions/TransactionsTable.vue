@@ -137,14 +137,17 @@ const firstDay = computed(() => {
     if (firstMonth && typeof firstMonth === 'string') {
       // Parse month_year format "MM/YYYY" to get the first day of that month
       const [monthStr, yearStr] = firstMonth.split('/')
-      const month = Number.parseInt(monthStr, 10)
-      const year = Number.parseInt(yearStr, 10)
 
-      // Create date for the FIRST day of that month
-      const firstDayOfMonth = new Date(year, month - 1, 1) // month is 1-based in MM/YYYY format
-      const fallback = firstDayOfMonth.toISOString().split('T')[0]
-      console.log('[TransactionsTable DEBUG] firstDay from first month in store:', fallback)
-      return fallback
+      if (monthStr && yearStr) {
+        const month = Number.parseInt(monthStr, 10)
+        const year = Number.parseInt(yearStr, 10)
+
+        // Create date for the FIRST day of that month
+        const firstDayOfMonth = new Date(year, month - 1, 1) // month is 1-based in MM/YYYY format
+        const fallback = firstDayOfMonth.toISOString().split('T')[0]
+        console.log('[TransactionsTable DEBUG] firstDay from first month in store:', fallback)
+        return fallback
+      }
     }
   }
 
