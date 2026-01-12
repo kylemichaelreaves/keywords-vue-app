@@ -219,16 +219,6 @@ const editModalTitle = computed(() => {
   return selectedMemo.value ? `Edit Memo: ${selectedMemo.value.name}` : 'Edit Memo'
 })
 
-const testOpenModal = () => {
-  console.log('🟣 TEST: testOpenModal called')
-  console.log('🟣 TEST: flattenedData:', flattenedData.value)
-  if (flattenedData.value.length > 0) {
-    openMemoEditModal(flattenedData.value[0]!)
-  } else {
-    console.log('🟣 TEST: No data available')
-  }
-}
-
 // Expose pagination controls for child components
 defineExpose({
   currentPage,
