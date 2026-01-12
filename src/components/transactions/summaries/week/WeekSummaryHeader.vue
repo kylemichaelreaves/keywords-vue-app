@@ -8,6 +8,7 @@
     :go-to-previous="goToPreviousWeek"
     :reset="resetSelectedWeek"
     data-testid="week-summary-header"
+    aria-label="Week Summary Header"
   >
     <template #subtitle>
       <el-text size="default">From: {{ weekRange.startDate }} To: {{ weekRange.endDate }}</el-text>

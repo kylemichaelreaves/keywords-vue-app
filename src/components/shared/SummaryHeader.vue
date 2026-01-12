@@ -22,6 +22,7 @@
         :go-to-previous="goToPrevious"
         :reset="reset"
         :data-testid="`${timeFrame.toLowerCase()}-summary-navigation-button-group`"
+        aria-label="Navigation Button Group"
       />
     </div>
   </div>

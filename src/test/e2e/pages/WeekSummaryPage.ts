@@ -3,6 +3,8 @@ import { BaseSummaryPage } from './BaseSummaryPage'
 
 export class WeekSummaryPage extends BaseSummaryPage {
   // Week-specific elements
+  readonly weekSummaryHeader: Locator
+  readonly headerNavButtonGroup: Locator
   readonly weekSummaryTable: Locator
   readonly weekTitle: Locator
   readonly daySummariesTable: Locator
@@ -11,6 +13,8 @@ export class WeekSummaryPage extends BaseSummaryPage {
     super(page)
 
     // Initialize week-specific elements
+    this.weekSummaryHeader = page.getByLabel('Week Summary Header')
+    this.headerNavButtonGroup = this.weekSummaryHeader.getByLabel('Navigation Button Group')
     this.weekSummaryTable = page.getByRole('table').first()
     this.weekTitle = page.locator('h2')
     this.daySummariesTable = page.getByRole('table').nth(1)
@@ -30,7 +34,7 @@ export class WeekSummaryPage extends BaseSummaryPage {
   }
 
   getNavigationButtonGroup(): Locator {
-    return this.page.getByTestId('week-navigation-button-group')
+    return this.page.getByLabel('Navigation Button Group')
   }
 
   getSummaryTable(): Locator {
