@@ -1,3 +1,5 @@
+import { safelyGenerateRandomNumber } from '@components/transactions/helpers/safelyGenerateRandomNumber.ts'
+
 /**
  * Generates an array of memo/debit amount objects for testing
  * @param {number} count - Number of objects to generate
@@ -34,27 +36,27 @@ export function generateMonthSummaryArray(count = 75) {
     'Professional Services',
     'Education Expense',
     'Travel Expense',
-    'Pet Care',
+    'Pet Care'
   ]
 
   for (let i = 0; i < count; i++) {
     // Randomly select memo description
-    const memo = memoDescriptions[Math.floor(Math.random() * memoDescriptions.length)]
+    const memo = memoDescriptions[Math.floor(safelyGenerateRandomNumber() / 0xFFFFFFFF * memoDescriptions.length)]
 
     // Generate realistic debit amounts
     // Most transactions are small ($5-$100), some medium ($100-$500), few large ($500-$2000)
     let amount
-    const rand = Math.random()
+    const rand = safelyGenerateRandomNumber() / 0xFFFFFFFF
 
     if (rand < 0.6) {
       // 60% small transactions ($5-$100)
-      amount = Math.random() * 95 + 5
+      amount = safelyGenerateRandomNumber() / 0xFFFFFFFF * 95 + 5
     } else if (rand < 0.9) {
       // 30% medium transactions ($100-$500)
-      amount = Math.random() * 400 + 100
+      amount = safelyGenerateRandomNumber() / 0xFFFFFFFF * 400 + 100
     } else {
       // 10% large transactions ($500-$2000)
-      amount = Math.random() * 1500 + 500
+      amount = safelyGenerateRandomNumber() / 0xFFFFFFFF * 1500 + 500
     }
 
     // Round to 2 decimal places
@@ -62,7 +64,7 @@ export function generateMonthSummaryArray(count = 75) {
 
     memos.push({
       memo: memo,
-      total_amount_debit: amount,
+      total_amount_debit: amount
     })
   }
 
