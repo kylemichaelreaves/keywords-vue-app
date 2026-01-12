@@ -14,7 +14,7 @@
       :options="memoOptions"
       :disabled="isLoading"
       :data-testid="props.dataTestId"
-      aria-label="Memo selector"
+      aria-label="Memo Selector"
       :min-characters="1"
       :on-clear="clearSelectedMemo"
       :on-search="handleSearch"
@@ -67,10 +67,12 @@ const {
 const memoOptions = computed(() => {
   if (!memos.value) return []
 
-  return memos.value.map((memo: Memo) => ({
-    value: String(memo.id),
-    label: memo.name,
-  }))
+  return memos.value
+    .filter((memo: Memo) => memo.name && memo.name.trim() !== '')
+    .map((memo: Memo) => ({
+      value: String(memo.id),
+      label: memo.name,
+    }))
 })
 
 const handleSearch = (

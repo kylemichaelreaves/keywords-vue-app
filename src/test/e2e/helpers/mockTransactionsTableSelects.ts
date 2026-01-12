@@ -7,9 +7,9 @@ import type { Page } from '@playwright/test'
 
 export async function mockTransactionsTableSelects(page: Page) {
   await Promise.all([
-    // CRITICAL FIX: Use more specific API patterns to avoid intercepting page navigation
+    // CRITICAL FIX: Use execute-api pattern to avoid intercepting /src requests
     // AND ensure they work in both local and CI environments
-    await page.route(`**/memos?limit=100&offset=0`, (route) => {
+    page.route(`**/execute-api.*/*/memos?limit=100&offset=0`, (route) => {
       console.log('[MOCK] Returning memos data for select dropdown')
       route.fulfill({
         status: 200,
@@ -25,7 +25,7 @@ export async function mockTransactionsTableSelects(page: Page) {
 
     // CRITICAL FIX: Return multiple days to ensure chart can render properly
     // The DailyIntervalLineChart needs multiple data points to create a line chart
-    await page.route(`**/transactions/days`, (route) => {
+    page.route(`**/execute-api.*/*/transactions/days`, (route) => {
       const today = new Date()
       const days = []
 
@@ -49,7 +49,7 @@ export async function mockTransactionsTableSelects(page: Page) {
       })
     }),
 
-    await page.route(`**/transactions/weeks`, (route) => {
+    page.route(`**/execute-api.*/*/transactions/weeks`, (route) => {
       console.log('[MOCK] Returning weeks data for select dropdown')
       route.fulfill({
         status: 200,
@@ -63,7 +63,7 @@ export async function mockTransactionsTableSelects(page: Page) {
       })
     }),
 
-    await page.route(`**/transactions/months`, (route) => {
+    page.route(`**/execute-api.*/*/transactions/months`, (route) => {
       console.log('[MOCK] Returning months data for select dropdown')
       route.fulfill({
         status: 200,
@@ -77,7 +77,7 @@ export async function mockTransactionsTableSelects(page: Page) {
       })
     }),
 
-    await page.route(`**/transactions/years`, (route) => {
+    page.route(`**/execute-api.*/*/transactions/years`, (route) => {
       console.log('[MOCK] Returning years data for select dropdown')
       route.fulfill({
         status: 200,

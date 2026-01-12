@@ -43,6 +43,7 @@ export class MemosTablePage {
     this.memoEditFormBudgetCategoryTreeSelect = this.memoEditForm
       .getByTestId('memo-edit-form-budget_category-form-item')
       .getByTestId('budget-category-tree-select')
+      .first()
     this.memoEditFormAmbiguousSwitch = this.memoEditForm.getByTestId(
       'memo-edit-form-ambiguous-switch',
     )
@@ -84,8 +85,9 @@ export class MemosTablePage {
   }
 
   async getFirstMemoName(): Promise<string> {
-    const cell = this.page.getByTestId('cell-0-1')
-    return (await cell.textContent()) ?? ''
+    const firstRow = this.memosTable.getByRole('row').nth(1) // Skip header row
+    const nameCell = firstRow.getByRole('cell').nth(1) // Second cell (after index/id)
+    return (await nameCell.textContent()) ?? ''
   }
 
   async getFirstMemoNameByDataAttributes(): Promise<string> {
@@ -94,15 +96,13 @@ export class MemosTablePage {
   }
 
   async getFirstMemoNameByRole(): Promise<string> {
-    const table = this.page.getByTestId('memos-table')
-    const firstRow = table.getByRole('row').nth(1)
+    const firstRow = this.memosTable.getByRole('row').nth(1)
     const nameCell = firstRow.getByRole('cell').nth(1)
     return (await nameCell.textContent()) ?? ''
   }
 
   async getCellTextContent(rowIndex: number, columnIndex: number): Promise<string> {
-    const table = this.page.getByTestId('memos-table')
-    const row = table.getByRole('row').nth(rowIndex)
+    const row = this.memosTable.getByRole('row').nth(rowIndex)
     const cell = row.getByRole('cell').nth(columnIndex)
     return (await cell.textContent()) ?? ''
   }
@@ -125,9 +125,9 @@ export class MemosTablePage {
   }
 
   async rightClickOnFirstMemo() {
-    const cell = this.page.locator('[data-row-index="0"][data-column="name"]')
-    const link = cell.locator('a')
-    await link.click({ button: 'right' })
+    // Right-click on the first row (skip header row which is index 0)
+    const firstRow = this.memosTable.getByRole('row').nth(1)
+    await firstRow.click({ button: 'right' })
   }
 
   async expectMemoEditModalToBeVisible() {

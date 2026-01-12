@@ -30,6 +30,7 @@
           />
           <el-table
             v-else-if="data"
+            aria-label="Week Summary Transactions Table"
             :data="data"
             table-layout="auto"
             size="default"
@@ -129,7 +130,10 @@ const { getColorByName, getColorById } = useBudgetCategoryColors(budgetCategoryD
 
 const isLoadingCondition = computed(() => isFetching.value || isLoading.value || isRefetching.value)
 
-const weeks = computed(() => store.getWeeks)
+// Filter out any blank or invalid weeks from the store
+const weeks = computed(() =>
+  store.getWeeks.filter((week) => week.week_year != null && week.week_year.trim() !== ''),
+)
 
 // first, meaning: the most recent week
 const isFirstWeek = computed(() => {
@@ -151,15 +155,15 @@ const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
 const selectedMemoName = ref<string>('')
 
 const adjustSelectedWeek = (adjustment: number) => {
-  const selectedWeek = store.getSelectedWeek
-  const weeks = store.getWeeks
+  const currentWeek = selectedWeek.value
+  const filteredWeeks = weeks.value
 
-  if (selectedWeek && weeks.some((week) => week.week_year === selectedWeek)) {
-    const currentIndex = weeks.findIndex((week) => week.week_year === selectedWeek)
+  if (currentWeek && filteredWeeks.some((week) => week.week_year === currentWeek)) {
+    const currentIndex = filteredWeeks.findIndex((week) => week.week_year === currentWeek)
     const newIndex = currentIndex + adjustment
 
-    if (newIndex >= 0 && newIndex < weeks.length) {
-      const weekAtIndex = weeks[newIndex]
+    if (newIndex >= 0 && newIndex < filteredWeeks.length) {
+      const weekAtIndex = filteredWeeks[newIndex]
       if (weekAtIndex) {
         const adjustedWeek = weekAtIndex.week_year
         store.setSelectedWeek(adjustedWeek)

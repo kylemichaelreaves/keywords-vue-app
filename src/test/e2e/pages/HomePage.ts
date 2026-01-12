@@ -11,8 +11,8 @@ export class HomePage {
 
   constructor(page: Page) {
     this.page = page
-    this.navbar = page.locator('[data-test-id="navbar"]')
-    this.themeToggle = this.navbar.getByRole('switch', { name: 'Theme toggle' })
+    this.navbar = page.getByTestId('navbar')
+    this.themeToggle = this.navbar.getByTestId('theme-toggle')
     this.htmlElement = page.locator('html')
     this.heading = page.getByRole('heading')
     this.body = page.locator('body')
@@ -47,6 +47,9 @@ export class HomePage {
   }
 
   async toggleTheme() {
+    // expect the theme toggle to be visible
+    await expect(this.themeToggle).toBeVisible()
+    // interact with the theme toggle
     await this.themeToggle.click()
   }
 

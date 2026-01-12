@@ -7,4 +7,5 @@
 export {}
 declare global {
   const ElInput: typeof import('element-plus/es').ElInput
+  const ElSelect: typeof import('element-plus/es').ElSelect
 }

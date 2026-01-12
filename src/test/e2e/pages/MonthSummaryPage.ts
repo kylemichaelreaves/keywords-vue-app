@@ -12,7 +12,7 @@ export class MonthSummaryPage extends BaseSummaryPage {
     super(page)
 
     // Initialize month-specific elements
-    this.monthSummaryTable = page.getByRole('table').first()
+    this.monthSummaryTable = page.getByLabel('Month Summary Transactions Table')
     this.transactionsCount = page.getByTestId('transactions-count').locator('div')
     this.transactionsAmount = page.getByTestId('sum-amount-debit').locator('div')
     this.monthTitle = page.locator('h2')

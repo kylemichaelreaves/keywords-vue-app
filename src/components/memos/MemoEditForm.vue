@@ -23,19 +23,15 @@
           :is="field.component"
           v-model="formData[key]"
           :placeholder="field.placeholder"
-          :disabled="field.disabledCondition ? field.disabledCondition : false"
+          :disabled="
+            typeof field.disabledCondition === 'boolean'
+              ? field.disabledCondition
+              : (field.disabledCondition?.value ?? false)
+          "
           :data-testid="field.dataTestId || `${props.dataTestId}-${key}`"
-        >
-          <template v-if="field.component === 'el-select'">
-            <el-option
-              v-for="option in field.options"
-              :key="option.value"
-              :value="option.value"
-              :label="option.label"
-              :data-testid="`${props.dataTestId}-${key}-option-${option.value}`"
-            />
-          </template>
-        </component>
+          :options="field.options"
+          :teleported="field.teleported"
+        />
       </el-form-item>
       <el-button
         type="primary"
@@ -51,8 +47,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type PropType, reactive, ref, watch } from 'vue'
-import { ElMessage, ElOption, type FormInstance, type FormRules } from 'element-plus'
+import { computed, onMounted, type PropType, reactive, ref, watch } from 'vue'
+import {
+  ElInput,
+  ElMessage,
+  ElSelect,
+  ElSwitch,
+  type FormInstance,
+  type FormRules,
+} from 'element-plus'
 import { useQueryClient } from '@tanstack/vue-query'
 import type { Frequency, Memo, MemoFormFields, MemoKeys } from '@types'
 import mutateMemo from '@api/hooks/memos/mutateMemo.ts'
@@ -69,6 +72,12 @@ const props = defineProps({
     type: String,
     default: 'memo-edit-form',
   },
+})
+
+console.log('🟢 MemoEditForm script setup - props.memo:', props.memo)
+
+onMounted(() => {
+  console.log('🟢 MemoEditForm mounted with memo:', props.memo)
 })
 
 const emit = defineEmits(['close', 'updated'])
@@ -152,26 +161,27 @@ const fields: Record<MemoKeys, MemoFormFields> = {
     dataTestId: `${props.dataTestId}-avatar`,
   },
   name: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Memo Name',
     placeholder: 'Enter a memo name',
     dataTestId: `${props.dataTestId}-name-input`,
   },
   recurring: {
-    component: 'el-switch',
+    component: ElSwitch,
     label: 'Recurring',
     dataTestId: `${props.dataTestId}-recurring-switch`,
   },
   necessary: {
-    component: 'el-switch',
+    component: ElSwitch,
     label: 'Necessary',
     dataTestId: `${props.dataTestId}-necessary-switch`,
   },
   frequency: {
-    component: 'el-select',
+    component: ElSelect,
     label: 'Frequency',
     placeholder: 'Select frequency',
     disabledCondition: computed(() => !formData.recurring),
+    teleported: false,
     options: [
       { value: 'daily' as Frequency, label: 'Daily' },
       { value: 'weekly' as Frequency, label: 'Weekly' },
@@ -185,9 +195,10 @@ const fields: Record<MemoKeys, MemoFormFields> = {
     label: 'Budget Category',
     placeholder: 'Select a budget category',
     dataTestId: `${props.dataTestId}-budget-category-tree-select`,
+    teleported: false,
   },
   ambiguous: {
-    component: 'el-switch',
+    component: ElSwitch,
     label: 'Ambiguous',
     dataTestId: `${props.dataTestId}-ambiguous-switch`,
   },

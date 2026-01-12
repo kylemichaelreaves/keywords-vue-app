@@ -43,6 +43,7 @@
 
           <el-table
             v-else-if="data"
+            aria-label="Month Summary Transactions Table"
             :data="data"
             :default-sort="{ prop: 'total_amount_debit', order: 'ascending' }"
             size="small"
@@ -164,7 +165,12 @@ interface MonthSummaryRow {
 
 const store = useTransactionsStore()
 const selectedMonth = computed(() => store.getSelectedMonth)
-const months = computed(() => store.getMonths)
+// Filter out any blank or invalid months from the store
+const months = computed(() =>
+  store.getMonths.filter(
+    (month: MonthYear) => month.month_year != null && month.month_year.trim() !== '',
+  ),
+)
 
 const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
 const selectedMemoName = ref<string>('')
@@ -208,15 +214,20 @@ const isLastMonth = computed(() => {
 })
 
 const goToPreviousMonth = () => {
-  const selectedMonth = store.getSelectedMonth
-  const months = store.getMonths
+  const currentMonth = selectedMonth.value
+  const filteredMonths = months.value
 
-  if (selectedMonth && months.some((month: MonthYear) => month.month_year === selectedMonth)) {
-    const currentIndex = months.findIndex((month: MonthYear) => month.month_year === selectedMonth)
+  if (
+    currentMonth &&
+    filteredMonths.some((month: MonthYear) => month.month_year === currentMonth)
+  ) {
+    const currentIndex = filteredMonths.findIndex(
+      (month: MonthYear) => month.month_year === currentMonth,
+    )
     const newIndex = currentIndex + 1
 
-    if (newIndex >= 0 && newIndex < months.length) {
-      const adjustedMonth = months[newIndex]
+    if (newIndex >= 0 && newIndex < filteredMonths.length) {
+      const adjustedMonth = filteredMonths[newIndex]
       if (adjustedMonth) {
         store.setSelectedMonth(adjustedMonth.month_year)
       }
@@ -225,15 +236,20 @@ const goToPreviousMonth = () => {
 }
 
 const goToNextMonth = () => {
-  const selectedMonth = store.getSelectedMonth
-  const months = store.getMonths
+  const currentMonth = selectedMonth.value
+  const filteredMonths = months.value
 
-  if (selectedMonth && months.some((month: MonthYear) => month.month_year === selectedMonth)) {
-    const currentIndex = months.findIndex((month: MonthYear) => month.month_year === selectedMonth)
+  if (
+    currentMonth &&
+    filteredMonths.some((month: MonthYear) => month.month_year === currentMonth)
+  ) {
+    const currentIndex = filteredMonths.findIndex(
+      (month: MonthYear) => month.month_year === currentMonth,
+    )
     const newIndex = currentIndex - 1
 
-    if (newIndex >= 0 && newIndex < months.length) {
-      const adjustedMonth = months[newIndex]
+    if (newIndex >= 0 && newIndex < filteredMonths.length) {
+      const adjustedMonth = filteredMonths[newIndex]
       if (adjustedMonth) {
         store.setSelectedMonth(adjustedMonth.month_year)
       }

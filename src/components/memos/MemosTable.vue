@@ -13,7 +13,19 @@
       Along with the total Amount Debit and Budget Category, if there is one assigned to it
     </el-text>
 
-    <MemoEditModal ref="memoEditModal" :memo="selectedMemo" />
+    <el-dialog
+      v-model="showMemoEditModal"
+      :close-on-click-modal="false"
+      :before-close="closeMemoEditModal"
+      width="50%"
+      :title="editModalTitle"
+      data-testid="memo-edit-dialog"
+      :z-index="3000"
+      :append-to-body="true"
+    >
+      <MemoEditForm v-if="selectedMemo" :memo="selectedMemo" @close="closeMemoEditModal" />
+    </el-dialog>
+
     <div @contextmenu.prevent>
       <el-table
         v-if="paginatedData"
@@ -24,7 +36,7 @@
         :default-sort="{ prop: 'total_amount_debit', order: 'descending' }"
         data-testid="memos-table"
         :row-key="(row: Memo) => row.name"
-        @row-contextmenu="openMemoEditModal"
+        @row-contextmenu="(row: Memo) => openMemoEditModal(row)"
       >
         <el-table-column
           v-for="(column, columnIndex) in memoColumns"
@@ -83,15 +95,15 @@ import { computed, ref, watch } from 'vue'
 import { useMemos } from '@api/hooks/memos/useMemos.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import MemosTablePagination from '@components/memos/MemosTablePagination.vue'
-import MemoEditModal from '@components/memos/MemoEditModal.vue'
+import MemoEditForm from '@components/memos/MemoEditForm.vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { Memo } from '@types'
 
 const router = useRouter()
 const route = useRoute()
 
-const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
-const selectedMemo = ref<Memo | undefined>(undefined)
+const showMemoEditModal = ref(false)
+const selectedMemo = ref<Memo | null>(null)
 
 const skeletonWidths = [100, 150, 200, 120, 180, 160, 140, 130]
 
@@ -149,7 +161,9 @@ const isLoadingCondition = computed(
 )
 
 const flattenedData = computed(() => {
-  return data?.value?.pages.flat() ?? []
+  const allMemos = data?.value?.pages.flat() ?? []
+  // Filter out memos that don't have a name (null, undefined, or empty string)
+  return allMemos.filter((memo: Memo) => memo.name && memo.name.trim() !== '')
 })
 
 const paginatedData = computed(() => {
@@ -186,8 +200,33 @@ const memoColumns = [
 ]
 
 const openMemoEditModal = (row: Memo) => {
-  selectedMemo.value = row
-  memoEditModal.value?.openModal()
+  console.log('🔴 openMemoEditModal called', { row })
+  selectedMemo.value = { ...row }
+  console.log('🔴 selectedMemo set to:', selectedMemo.value)
+  console.log('🔴 selectedMemo.value truthy?', !!selectedMemo.value)
+  console.log('🔴 showMemoEditModal before:', showMemoEditModal.value)
+  showMemoEditModal.value = true
+  console.log('🔴 showMemoEditModal set to:', showMemoEditModal.value)
+}
+
+const closeMemoEditModal = () => {
+  console.log('🔴 closeMemoEditModal called')
+  showMemoEditModal.value = false
+  selectedMemo.value = null
+}
+
+const editModalTitle = computed(() => {
+  return selectedMemo.value ? `Edit Memo: ${selectedMemo.value.name}` : 'Edit Memo'
+})
+
+const testOpenModal = () => {
+  console.log('🟣 TEST: testOpenModal called')
+  console.log('🟣 TEST: flattenedData:', flattenedData.value)
+  if (flattenedData.value.length > 0) {
+    openMemoEditModal(flattenedData.value[0]!)
+  } else {
+    console.log('🟣 TEST: No data available')
+  }
 }
 
 // Expose pagination controls for child components

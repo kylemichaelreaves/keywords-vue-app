@@ -173,8 +173,12 @@ export const MOCK_PRESETS = {
   } as TestMockOptions,
 
   MEMOS_TABLE: {
-    memos: true,
+    memos: false,
     memoTable: true,
+    budgetCategories: false,
+    basicTransactions: false,
+    dailyIntervals: false,
+    transactionSelects: false,
   } as TestMockOptions,
 } as const
 

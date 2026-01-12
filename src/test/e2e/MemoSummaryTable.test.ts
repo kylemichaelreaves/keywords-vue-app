@@ -26,8 +26,14 @@ test.describe('Memo Summary Table', () => {
     await mockMemoTableRoutes(page)
 
     // Override the single memo route to return memo WITH budget_category null from the start
-    await page.route('**/memos/**', (route) => {
+    await page.route('**/execute-api.*/*/memos/*', (route) => {
       const url = new URL(route.request().url())
+
+      // CRITICAL: Skip if this is a component file request
+      if (url.pathname.includes('/src/')) {
+        return route.continue()
+      }
+
       const pathSegments = url.pathname.split('/')
       const lastSegment = pathSegments[pathSegments.length - 1]
 
@@ -44,7 +50,7 @@ test.describe('Memo Summary Table', () => {
     })
 
     // mock /dev/memos/**/summary
-    await page.route('**/memos/**/summary', (route) => {
+    await page.route('**/execute-api.*/*/memos/**/summary', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -56,7 +62,7 @@ test.describe('Memo Summary Table', () => {
     })
 
     // mock /transactions?memoId=*
-    await page.route('**/transactions?memoId=*', (route) => {
+    await page.route('**/execute-api.*/*/transactions?memoId=*', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -98,8 +104,8 @@ test.describe('Memo Summary Table', () => {
   test('when the memo lacks a budget_category, the budget_category button should be visible and clickable', async ({
     page,
   }) => {
-    // Clear the existing memo route specifically
-    await page.unroute('**/memos/**')
+    // Clear the existing memo route specifically - use execute-api pattern
+    await page.unroute('**/execute-api.*/*/memos/*')
 
     // Get the current memo name for consistency
     const currentMemoText = await memoSummaryTablePage.getMemoTitle()
@@ -117,10 +123,18 @@ test.describe('Memo Summary Table', () => {
     }
 
     // Set up a more specific route interceptor that doesn't interfere with summary endpoint
-    await page.route('**/memos/**', async (route) => {
+    await page.route('**/execute-api.*/*/memos/*', async (route) => {
       const url = new URL(route.request().url())
+
+      // CRITICAL: Skip if this is a component file request
+      if (url.pathname.includes('/src/')) {
+        await route.continue()
+        return
+      }
+
       const pathSegments = url.pathname.split('/')
       const lastSegment = pathSegments[pathSegments.length - 1]
+
       // Only intercept if this is NOT a summary route
       if (lastSegment !== 'summary') {
         // Return array containing the memo object - this matches the expected API format

@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import MemoEditForm from '@components/memos/MemoEditForm.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import useMemoByName from '@api/hooks/memos/useMemoByName.ts'
@@ -44,6 +44,15 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const isVisible = ref(false)
+
+// Watch for prop changes
+watch(
+  () => props.memo,
+  (newMemo, oldMemo) => {
+    console.log('🔵 MemoEditModal: props.memo changed', { oldMemo, newMemo })
+  },
+  { immediate: true, deep: true },
+)
 
 // Use useMemoByName hook when memoName is provided
 const { data, isLoading, isError, error } = useMemoByName(computed(() => props.memoName || ''))
@@ -99,11 +108,20 @@ const modalTitle = computed(() => {
 })
 
 const handleClose = () => {
+  console.log('🔵 MemoEditModal: handleClose called')
   isVisible.value = false
 }
 
 const openModal = () => {
+  console.log('🔵 MemoEditModal: openModal called, isVisible:', isVisible.value)
+  console.log('🔵 MemoEditModal: props:', props)
+  console.log('🔵 MemoEditModal: props.memo:', props.memo)
+  console.log('🔵 MemoEditModal: props.memoName:', props.memoName)
+  console.log('🔵 MemoEditModal: displayMemo computed:', displayMemo.value)
+  console.log('🔵 MemoEditModal: displayLoading computed:', displayLoading.value)
+  console.log('🔵 MemoEditModal: displayError computed:', displayError.value)
   isVisible.value = true
+  console.log('🔵 MemoEditModal: isVisible set to true:', isVisible.value)
 }
 
 defineExpose({

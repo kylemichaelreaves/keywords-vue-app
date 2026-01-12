@@ -24,6 +24,7 @@ import { useWeeks } from '@api/hooks/timeUnits/weeks/useWeeks.ts'
 import { useTransactionsStore } from '@stores/transactions.ts'
 import SelectComponent from '@components/shared/SelectComponent.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
+import { router } from '@router'
 
 const props = defineProps({
   dataTestId: {
@@ -42,17 +43,24 @@ const weekOptions = computed(() => {
   if (!data.value) {
     return []
   }
-  return data.value.map((item) => ({
-    value: item.week_year,
-    label: item.week_year,
-  }))
+  return data.value
+    .filter((item) => {
+      // Filter out null, undefined, empty string, or whitespace-only values
+      return item.week_year != null && item.week_year.trim() !== ''
+    })
+    .map((item) => ({
+      value: item.week_year,
+      label: item.week_year,
+    }))
 })
 
 const updateSelectedWeek = (week: string) => {
   store.setSelectedWeek(week)
+  router.push(`/budget-visualizer/transactions/weeks/${week}/summary`)
 }
 
 const clearSelectedYear = () => {
   store.setSelectedWeek('')
+  router.push('/budget-visualizer/transactions')
 }
 </script>

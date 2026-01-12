@@ -6,16 +6,19 @@ export async function fetchDailyAmountDebitForInterval(
   startDate?: string | null,
 ): Promise<DailyInterval[]> {
   try {
+    const params = {
+      dailyTotals: true,
+      interval,
+      date: startDate,
+    }
+
     const response = await httpClient.get<Array<DailyInterval>>(`/transactions`, {
-      params: {
-        dailyTotals: true,
-        interval,
-        date: startDate,
-      },
+      params,
     })
+
     return response.data
   } catch (err) {
-    console.error('Error fetching daily amount debit for interval:', err)
+    console.error('[fetchDailyAmountDebitForInterval] Error:', err)
     throw err
   }
 }

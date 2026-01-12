@@ -174,6 +174,7 @@ export interface MemoFormFields {
   disabledCondition?: boolean | ComputedRef<boolean>
   options?: { value: string; label: string }[]
   dataTestId?: string
+  teleported?: boolean
 }
 
 export type MemoKeys =
@@ -287,6 +288,7 @@ export type TransactionKeys =
 
 export type TransactionFormFields = {
   component: Component | string
+  'aria-label'?: string
   label: string
   placeholder?: string
   props?: Record<string, unknown>

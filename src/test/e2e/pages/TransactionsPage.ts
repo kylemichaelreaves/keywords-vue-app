@@ -1,6 +1,10 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { clickElementTableCell, waitForElementTableReady } from '@test/e2e/helpers/waitHelpers'
+import {
+  clickElementTableCell,
+  waitForElementTableReady,
+  waitForModalReady,
+} from '@test/e2e/helpers/waitHelpers'
 
 export class TransactionsPage {
   readonly transactionsTable: Locator
@@ -36,12 +40,12 @@ export class TransactionsPage {
   readonly modalSaveButton: Locator
 
   constructor(public readonly page: Page) {
-    this.transactionsTable = this.page.getByRole('table').first()
+    this.transactionsTable = this.page.getByLabel('Transactions Table')
     this.daySelect = this.page.getByRole('combobox', { name: 'Day selector' })
     this.weekSelect = this.page.getByRole('combobox', { name: 'Week selector' })
     this.monthSelect = this.page.getByRole('combobox', { name: 'Month selector' })
     this.yearSelect = this.page.getByRole('combobox', { name: 'Year selector' })
-    this.memoSelect = this.page.getByRole('combobox', { name: 'Memo selector' })
+    this.memoSelect = this.page.getByLabel('Memo Selector')
 
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
     this.intervalForm = this.page.getByTestId('daily-interval-line-chart-form')
@@ -50,34 +54,40 @@ export class TransactionsPage {
     this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')
 
     this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
-    this.transactionEditModal = this.page.getByRole('dialog', { name: /edit transaction/i })
-    this.transactionEditForm = this.transactionEditModal.getByRole('form')
 
-    this.transactionNumberInput = this.transactionEditModal.getByRole('textbox', {
-      name: /transaction number/i,
-    })
-    this.transactionDatePicker = this.transactionEditModal.getByRole('combobox', { name: /date/i })
-    this.transactionAmountDebitInput = this.transactionEditModal.getByRole('textbox', {
-      name: /amount debit/i,
-    })
-    this.transactionAmountCreditInput = this.transactionEditModal.getByRole('textbox', {
-      name: /amount credit/i,
-    })
-    this.transactionDescriptionInput = this.transactionEditModal.getByRole('textbox', {
-      name: /description/i,
-    })
-    this.transactionMemoInput = this.transactionEditModal.getByRole('combobox', { name: /memo/i })
-    this.transactionBudgetCategoryTreeSelect = this.transactionEditModal.getByRole('combobox', {
-      name: /budget category/i,
-    })
-    this.transactionCheckNumberInput = this.transactionEditModal.getByRole('textbox', {
-      name: /check number/i,
-    })
-    this.transactionFeesInput = this.transactionEditModal.getByRole('textbox', { name: /fees/i })
-    this.transactionBalanceInput = this.transactionEditModal.getByRole('textbox', {
-      name: /balance/i,
-    })
+    // Use aria-label for modal (more reliable than role matching)
+    this.transactionEditModal = this.page.getByLabel('Transaction Edit Modal')
 
+    // Use aria-label for form within modal
+    this.transactionEditForm = this.transactionEditModal.getByLabel('Transaction Edit Form')
+
+    // Use data-testid for form fields (more reliable than role + name matching)
+    this.transactionNumberInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-transaction_number',
+    )
+    this.transactionDatePicker = this.transactionEditForm.getByLabel('Transaction Date Picker')
+    this.transactionAmountDebitInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-amount_debit',
+    )
+    this.transactionAmountCreditInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-amount_credit',
+    )
+    this.transactionDescriptionInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-description',
+    )
+    this.transactionMemoInput = this.transactionEditForm.getByTestId('transaction-edit-form-memo')
+    this.transactionBudgetCategoryTreeSelect = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-budget_category',
+    )
+    this.transactionCheckNumberInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-check_number',
+    )
+    this.transactionFeesInput = this.transactionEditForm.getByTestId('transaction-edit-form-fees')
+    this.transactionBalanceInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-balance',
+    )
+
+    // Modal buttons can use role since they're simple
     this.modalCloseButton = this.transactionEditModal.getByRole('button', { name: /close/i })
     this.modalSaveButton = this.transactionEditModal.getByRole('button', { name: /save/i })
   }
@@ -234,6 +244,10 @@ export class TransactionsPage {
 
   async expectTransactionEditModalVisible() {
     await expect(this.transactionEditModal).toBeVisible()
+  }
+
+  async waitForTransactionEditModalReady() {
+    await waitForModalReady(this.transactionEditModal, this.page)
   }
 
   async expectTransactionEditModalHidden() {

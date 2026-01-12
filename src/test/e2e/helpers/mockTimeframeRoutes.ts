@@ -8,18 +8,22 @@ import { generateMonthSummaryArray } from '@test/e2e/mocks/monthSummaryMock.ts'
 export async function mockMonthTransactionRoutes(page: Page) {
   // Mock transactions for month timeframe with date
   await Promise.all([
-    await page.route('**/transactions?limit=*&offset=0&timeFrame=month&date=*', (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(generateTransactionsArray(100)),
-      })
-    }),
+    page.route(
+      '**/execute-api.*/*/transactions?limit=*&offset=0&timeFrame=month&date=*',
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(generateTransactionsArray(100)),
+        })
+      },
+    ),
     // Mock total amount debit for month
-    await page.route(
+    page.route(
       (url) => {
         const urlObj = new URL(url)
         return (
+          urlObj.pathname.includes('/execute-api') &&
           urlObj.pathname.endsWith('/transactions') &&
           urlObj.searchParams.get('timeFrame') === 'month' &&
           urlObj.searchParams.get('totalAmountDebit') === 'true' &&
@@ -35,7 +39,7 @@ export async function mockMonthTransactionRoutes(page: Page) {
       },
     ),
     // Mock month summary
-    await page.route('**/transactions/months/*/summary', async (route) => {
+    page.route('**/execute-api.*/*/transactions/months/*/summary', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -51,18 +55,27 @@ export async function mockMonthTransactionRoutes(page: Page) {
 export async function mockWeekTransactionRoutes(page: Page) {
   // Mock transactions for week timeframe with date
   await Promise.all([
-    await page.route('**/transactions?limit=*&offset=0&timeFrame=week&date=*', (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(generateTransactionsArray(25)),
-      })
-    }),
+    page.route(
+      '**/execute-api.*/*/transactions?limit=*&offset=0&timeFrame=week&date=*',
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(generateTransactionsArray(25)),
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        })
+      },
+    ),
     // Mock total amount debit for week
-    await page.route(
+    page.route(
       (url) => {
         const urlObj = new URL(url)
         return (
+          urlObj.pathname.includes('/execute-api') &&
           urlObj.pathname.endsWith('/transactions') &&
           urlObj.searchParams.get('timeFrame') === 'week' &&
           urlObj.searchParams.get('totalAmountDebit') === 'true' &&
@@ -74,23 +87,38 @@ export async function mockWeekTransactionRoutes(page: Page) {
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify([{ total_amount_debit: -700 }]),
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
         })
       },
     ),
-    // Mock week summary
-    await page.route('**/transactions/weeks/**/summary', (route) => {
+    // Mock week summary - this is the critical endpoint for the week summary page
+    page.route('**/execute-api.*/*/transactions/weeks/*/summary', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(generateMonthSummaryArray(20)),
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
       })
     }),
     // Mock week days
-    await page.route('**/transactions/weeks/**/days', (route) => {
+    page.route('**/execute-api.*/*/transactions/weeks/*/days', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify([]),
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
       })
     }),
   ])
@@ -101,11 +129,14 @@ export async function mockWeekTransactionRoutes(page: Page) {
  */
 export async function mockDayTransactionRoutes(page: Page) {
   // Mock transactions for day timeframe with date
-  await page.route('**/transactions?limit=100&offset=0&timeFrame=day&date=*', (route) => {
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(generateTransactionsArray(5)),
-    })
-  })
+  await page.route(
+    '**/execute-api.*/*/transactions?limit=100&offset=0&timeFrame=day&date=*',
+    (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(generateTransactionsArray(5)),
+      })
+    },
+  )
 }

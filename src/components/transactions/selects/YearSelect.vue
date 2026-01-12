@@ -57,10 +57,15 @@ const yearOptions = computed(() => {
   if (!data.value) {
     return []
   }
-  return data.value.map((item) => ({
-    value: item.year,
-    label: item.year,
-  }))
+  return data.value
+    .filter((item) => {
+      // Filter out null, undefined, empty string, or whitespace-only values
+      return item.year != null && item.year.trim() !== ''
+    })
+    .map((item) => ({
+      value: item.year,
+      label: item.year,
+    }))
 })
 </script>
 

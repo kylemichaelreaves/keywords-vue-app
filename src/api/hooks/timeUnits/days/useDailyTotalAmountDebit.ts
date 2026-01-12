@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/vue-query'
 import type { UseQueryReturnType } from '@tanstack/vue-query'
+import { useQuery } from '@tanstack/vue-query'
 import { fetchDailyAmountDebitForInterval } from '@api/timeUnits/days/fetchDailyAmountDebitForInterval.ts'
 import type { SummaryTypeBase } from '@types'
 import type { ComputedRef, Ref } from 'vue'
@@ -10,23 +10,19 @@ export function useDailyTotalAmountDebit(
   startDate: Ref<string | null> | ComputedRef<string | null>,
 ): UseQueryReturnType<SummaryTypeBase[], Error> {
   return useQuery({
-    queryKey: ['daily-total-amount-debit-for-interval', interval, startDate],
-    queryFn: () => {
-      console.log('[useDailyTotalAmountDebit DEBUG] Executing queryFn with:', {
-        interval: interval.value,
-        startDate: startDate.value,
-      })
-      return fetchDailyAmountDebitForInterval(interval.value, startDate.value)
+    queryKey: computed(() => [
+      'daily-total-amount-debit-for-interval',
+      interval.value,
+      startDate.value,
+    ]),
+    queryFn: async () => {
+      return await fetchDailyAmountDebitForInterval(interval.value, startDate.value)
     },
     refetchOnWindowFocus: false,
+    staleTime: 0, // Always consider data stale to ensure fresh fetches
+    gcTime: 1000 * 60 * 5, // Cache for 5 minutes
     enabled: computed(() => {
-      const isEnabled = !!interval.value && !!startDate.value && startDate.value.trim() !== ''
-      console.log('[useDailyTotalAmountDebit DEBUG] Hook enabled check:', {
-        interval: interval.value,
-        startDate: startDate.value,
-        isEnabled,
-      })
-      return isEnabled
+      return !!interval.value && !!startDate.value && startDate.value.trim() !== ''
     }),
   })
 }

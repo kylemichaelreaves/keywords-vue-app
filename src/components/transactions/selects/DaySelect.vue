@@ -45,10 +45,15 @@ const dayOptions = computed(() => {
   if (!data.value) {
     return []
   }
-  return data.value.map((item: DayYear) => ({
-    value: item.day,
-    label: item.day,
-  }))
+  return data.value
+    .filter((item: DayYear) => {
+      // Filter out null, undefined, empty string, or whitespace-only values
+      return item.day != null && item.day.trim() !== ''
+    })
+    .map((item: DayYear) => ({
+      value: item.day,
+      label: item.day,
+    }))
 })
 
 const updateSelectedDay = (day: string) => {

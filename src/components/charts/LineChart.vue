@@ -40,7 +40,7 @@ const clearChart = () => {
 }
 
 const createChart = async () => {
-  if (!svg.value || !props.summaries.length || width.value <= 0 || props.loading) {
+  if (!svg.value || !props.summaries?.length || width.value <= 0 || props.loading) {
     return
   }
 

@@ -13,6 +13,7 @@
       v-model="model"
       class="tree-select"
       :data-testid="props.dataTestId"
+      :teleported="teleported"
     />
   </div>
 </template>
@@ -26,11 +27,13 @@ import { convertToTree } from '@api/helpers/convertToTree.ts'
 interface Props {
   placeholder?: string
   dataTestId?: string
+  teleported?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   placeholder: 'Select a budget category',
   dataTestId: 'budget-category-tree-select',
+  teleported: true,
 })
 
 const model = defineModel<string>({

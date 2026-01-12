@@ -54,6 +54,16 @@ export class MemoSummaryTablePage {
   }
 
   async getMemoTitle() {
+    // Wait for the title to be loaded (not "Loading...")
+    await this.memoTitle.waitFor({ state: 'visible' })
+    await this.page.waitForFunction(
+      (selector) => {
+        const element = document.querySelector(selector)
+        return element?.textContent?.trim() !== 'Loading...'
+      },
+      '[data-testid="memo-title"]',
+      { timeout: 10000 },
+    )
     return this.memoTitle.textContent()
   }
 

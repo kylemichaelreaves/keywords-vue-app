@@ -47,10 +47,15 @@ const monthOptions = computed(() => {
   if (!data.value) {
     return []
   }
-  return data.value.map((item: MonthYear) => ({
-    value: item.month_year,
-    label: item.month_year,
-  }))
+  return data.value
+    .filter((item: MonthYear) => {
+      // Filter out null, undefined, empty string, or whitespace-only values
+      return item.month_year != null && item.month_year.trim() !== ''
+    })
+    .map((item: MonthYear) => ({
+      value: item.month_year,
+      label: item.month_year,
+    }))
 })
 
 const updateSelectedMonth = (month: string) => {

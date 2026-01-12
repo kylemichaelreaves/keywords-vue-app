@@ -1,11 +1,18 @@
 <template>
-  <el-form :model="transaction" ref="formRef" label-width="120px" :data-testid="dataTestId">
+  <el-form
+    :model="transaction"
+    ref="formRef"
+    label-width="120px"
+    :data-testid="dataTestId"
+    aria-label="Transaction Edit Form"
+  >
     <el-form-item v-for="(field, key) in fields" :key="key" :label="field.label">
       <component
         :is="field.component"
         v-model="formValues[key]"
         :placeholder="field.placeholder"
         :data-testid="`${dataTestId}-${key}`"
+        :aria-label="field['aria-label']"
         v-bind="field.props || {}"
       />
     </el-form-item>
@@ -120,58 +127,68 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
   id: {
     component: ElInput,
     label: 'Id',
+    'aria-label': 'Transaction ID',
     placeholder: 'Transaction Id',
     props: { disabled: true },
   },
   transaction_number: {
     component: ElInput,
     label: 'Transaction Number',
+    'aria-label': 'Transaction Number',
     placeholder: 'Enter a transaction number',
     props: { disabled: true },
   },
   date: {
     component: ElDatePicker,
     label: 'Date',
+    'aria-label': 'Transaction Date Picker',
     placeholder: 'Select a date',
     props: { valueFormat: 'YYYY-MM-DD' },
   },
   amount_debit: {
     component: ElInput,
     label: 'Amount Debit',
+    'aria-label': 'Amount Debit',
     placeholder: 'Enter a debit amount',
     props: { disabled: !!transaction.amount_credit },
   },
   amount_credit: {
     component: ElInput,
     label: 'Amount Credit',
+    'aria-label': 'Amount Credit',
     placeholder: 'Enter a credit amount',
     props: { disabled: !!transaction.amount_debit },
   },
   description: {
     component: ElInput,
     label: 'Description',
+    'aria-label': 'Transaction Description',
     placeholder: 'Enter a description',
   },
   memo: {
     component: MemoSelect,
     label: 'Memo',
+    'aria-label': 'Transaction Memo',
     placeholder: 'Select a memo',
     props: { modelValue: transaction.memo },
   },
   balance: {
     component: ElInput,
     label: 'Balance',
+    'aria-label': 'Account Balance',
     placeholder: 'Enter a balance',
   },
   check_number: {
     component: ElInput,
     label: 'Check Number',
+    'aria-label': 'Check Number',
     placeholder: 'Enter a check number',
     props: { disabled: transaction.description !== 'CHECK' },
   },
   budget_category: {
     component: BudgetCategoryFormField,
     label: 'Budget Category',
+    'aria-label': 'Budget Category',
     placeholder: 'Select a budget category',
     props: {
       transactionAmount: transactionAmount.value,
@@ -180,6 +197,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
   fees: {
     component: ElInput,
     label: 'Fees',
+    'aria-label': 'Transaction Fees',
     placeholder: 'Enter fees',
   },
 }

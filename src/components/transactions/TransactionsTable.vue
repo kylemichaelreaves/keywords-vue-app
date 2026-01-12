@@ -21,8 +21,15 @@
     width="50%"
     :title="editModalTitle"
     data-testid="transaction-edit-dialog"
+    aria-label="Transaction Edit Modal"
   >
+    <template #header>
+      <span aria-label="Transaction Edit Dialog Title" data-testid="transaction-edit-dialog-title">
+        {{ editModalTitle }}
+      </span>
+    </template>
     <TransactionEditForm
+      aria-label="Transaction Edit Form"
       v-if="selectedTransaction"
       :transaction="selectedTransaction"
       @close="closeTransactionEditModal"
@@ -42,6 +49,7 @@
     <el-table
       v-else-if="paginatedData.length"
       data-testid="transactions-table"
+      aria-label="Transactions Table"
       :row-key="getRowKey"
       :data="paginatedData"
       height="auto"
@@ -117,13 +125,36 @@ const selectedWeek = computed(() => store.getSelectedWeek)
 const selectedDay = computed(() => store.getSelectedDay)
 
 const firstDay = computed(() => {
-  const days = store.getDays
-  if (days.length > 0) {
-    return days[0]?.day
+  // first, get the most recent month in the store
+  const store = useTransactionsStore()
+  const months = store.getMonths
+  console.log('[TransactionsTable DEBUG] No days found, checking months:', months)
+  if (months.length > 0) {
+    // Get the FIRST month in the array (earliest date) - e.g., "11/2025"
+    const firstMonth = months[0]?.month_year
+    console.log('[TransactionsTable DEBUG] First month from store:', firstMonth)
+
+    if (firstMonth && typeof firstMonth === 'string') {
+      // Parse month_year format "MM/YYYY" to get the first day of that month
+      const [monthStr, yearStr] = firstMonth.split('/')
+      const month = Number.parseInt(monthStr, 10)
+      const year = Number.parseInt(yearStr, 10)
+
+      // Create date for the FIRST day of that month
+      const firstDayOfMonth = new Date(year, month - 1, 1) // month is 1-based in MM/YYYY format
+      const fallback = firstDayOfMonth.toISOString().split('T')[0]
+      console.log('[TransactionsTable DEBUG] firstDay from first month in store:', fallback)
+      return fallback
+    }
   }
+
+  // Final fallback: use 30 days ago if no data in store at all
   const now = new Date()
-  const lastDayOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0)
-  return lastDayOfPreviousMonth.toISOString().split('T')[0]
+  const thirtyDaysAgo = new Date(now)
+  thirtyDaysAgo.setDate(now.getDate() - 30)
+  const fallback = thirtyDaysAgo.toISOString().split('T')[0]
+  console.log('[TransactionsTable DEBUG] firstDay ultimate fallback (30 days ago):', fallback)
+  return fallback
 })
 
 const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())
@@ -184,8 +215,10 @@ const flattenedData = computed(() => {
     return []
   }
   const flattened = data.value.pages.flat()
-  console.log('Flattened Data:', flattened)
-  return flattened
+  // Filter out transactions without transaction_number
+  return flattened.filter(
+    (transaction) => transaction.transaction_number && transaction.transaction_number.trim() !== '',
+  )
 })
 
 console.log('Flattened Transactions Data:', flattenedData.value)

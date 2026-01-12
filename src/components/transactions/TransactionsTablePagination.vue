@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div data-testid="transactions-table-pagination">
     <AlertComponent
       v-if="isError && error"
       :title="error.name"

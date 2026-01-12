@@ -12,14 +12,13 @@
       @update:interval-value="handleIntervalChange"
       v-model:interval-value="intervalValue"
     />
-    <!--
-    CRITICAL: The data-testid prop MUST be passed to LineChart for test selectors to work.
-    This creates the nested testid: "daily-interval-line-chart-line-chart" that tests depend on.
-    -->
+    <div v-if="isLoading || isFetching" style="padding: 20px; text-align: center">
+      <span>Loading chart data...</span>
+    </div>
     <LineChart
       v-if="data"
       :summaries="data"
-      :loading="isLoading || isFetching"
+      :loading="false"
       :handle-on-click-selection="handleOnDayClicked"
       :data-testid="`${props.dataTestId}-line-chart`"
     />
@@ -121,22 +120,17 @@ const handleOnDayClicked = (selection: string) => {
  */
 const shouldShowChart = computed(() => {
   // Hide chart if any specific time period is selected
-  if (selectedDay.value && selectedDay.value !== '') return false
-  if (selectedWeek.value && selectedWeek.value !== '') return false
-  if (selectedMonth.value && selectedMonth.value !== '') return false
+  if (selectedDay.value && selectedDay.value !== '') {
+    return false
+  }
+  if (selectedWeek.value && selectedWeek.value !== '') {
+    return false
+  }
+  if (selectedMonth.value && selectedMonth.value !== '') {
+    return false
+  }
 
   // Show chart when no specific selection is made (aggregate view)
   return true
 })
 </script>
-
-/** * CRITICAL FIX DOCUMENTATION - DailyIntervalLineChart Loading Issues * * This component had
-several issues that prevented it from loading in Playwright tests: * * 1. API Hook Enabled
-Condition: The useDailyTotalAmountDebit hook requires a valid * startDate to be enabled. The
-selectedValue computed property MUST always return * a valid date string, never null or empty
-string. * * 2. Chart Visibility Logic: The shouldShowChart computed property controls when the *
-chart is visible. It should show in aggregate view (no specific day/week/month * selected) and hide
-when drilling down to specific time periods. * * 3. Test Data-TestId Propagation: The LineChart
-component needs the proper data-testid * attribute passed through for test selectors to work
-correctly. * * DO NOT MODIFY the selectedValue computed property to return null/empty without *
-ensuring the API hook can still function properly in tests. */

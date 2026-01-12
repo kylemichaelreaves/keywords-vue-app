@@ -26,14 +26,20 @@ export async function setupMemoRouteInterceptor(
 ) {
   // Clear existing route handlers if requested
   if (clearExisting) {
-    await page.unroute('**/memos/*')
+    await page.unroute('**/execute-api.*/*/memos/*')
   }
 
   const mockMemo = { ...DEFAULT_MEMO, ...options }
 
-  await page.route('**/memos/*', async (route) => {
+  await page.route('**/execute-api.*/*/memos/*', async (route) => {
     const url = new URL(route.request().url())
     console.log('Intercepted memo request:', url.toString())
+
+    // CRITICAL: Skip if this is a component file request
+    if (url.pathname.includes('/src/')) {
+      await route.continue()
+      return
+    }
 
     await route.fulfill({
       status: 200,
@@ -56,12 +62,12 @@ export async function setupBudgetCategoryHierarchyInterceptor(
   // Clear existing route handlers if requested
   if (clearExisting) {
     await page.unroute(
-      `**/api/**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`,
+      `**/execute-api.*/*/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`,
     )
   }
 
   await page.route(
-    `**/api/**/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`,
+    `**/execute-api.*/*/transactions?budgetCategoryHierarchySum=true&timeFrame=${timeFrame}&date=*`,
     async (route) => {
       const url = new URL(route.request().url())
       console.log(`Intercepted budget category hierarchy request (${timeFrame}):`, url.toString())

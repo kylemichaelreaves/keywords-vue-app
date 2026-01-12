@@ -46,9 +46,9 @@ export async function mockBasicTransactionRoutes(
   const transactions = staticData || generateTransactionsArray(100)
 
   await Promise.all([
-    // CRITICAL FIX: Use more specific API patterns to avoid intercepting page navigation
+    // CRITICAL FIX: Use execute-api pattern to avoid intercepting /src requests
     // Mock transactions with year timeframe
-    page.route('**/transactions?limit=100&offset=0&timeFrame=year', (route) => {
+    page.route('**/execute-api.*/*/transactions?limit=100&offset=0&timeFrame=year', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -56,7 +56,7 @@ export async function mockBasicTransactionRoutes(
       })
     }),
     // Mock transaction count
-    page.route('**/transactions?count=true', (route) => {
+    page.route('**/execute-api.*/*/transactions?count=true', (route) => {
       const countResponse: TransactionCountResponse = { count: 200 }
       route.fulfill({
         status: 200,
@@ -64,22 +64,28 @@ export async function mockBasicTransactionRoutes(
         body: JSON.stringify(countResponse),
       })
     }),
-    // mock **/transactions?limit=100&offset=0&timeFrame=day&date=
-    page.route('**/transactions?limit=100&offset=0&timeFrame=day&date=*', (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(transactions),
-      })
-    }),
+    // mock **/execute-api.*/*/transactions?limit=100&offset=0&timeFrame=day&date=
+    page.route(
+      '**/execute-api.*/*/transactions?limit=100&offset=0&timeFrame=day&date=*',
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(transactions),
+        })
+      },
+    ),
     //   transactions?limit=100&offset=0&timeFrame=year&date=
-    page.route('**/transactions?limit=100&offset=0&timeFrame=year&date=', (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(transactions),
-      })
-    }),
+    page.route(
+      '**/execute-api.*/*/transactions?limit=100&offset=0&timeFrame=year&date=',
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(transactions),
+        })
+      },
+    ),
   ])
 }
 
@@ -95,9 +101,9 @@ export async function mockComprehensiveTransactionRoutes(
   staticTransactions: Transaction[],
   staticDailyIntervals: DailyInterval[],
 ): Promise<void> {
-  // CRITICAL FIX: Use specific API patterns to avoid intercepting SPA navigation
+  // CRITICAL FIX: Use execute-api pattern to avoid intercepting /src requests
   // Only intercept actual API calls with query parameters, not page routes
-  await page.route(`**/transactions?**`, async (route: Route) => {
+  await page.route(`**/execute-api.*/*/transactions?**`, async (route: Route) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
     const isDailyTotals = params.get('dailyTotals') === 'true'
@@ -196,8 +202,8 @@ export async function mockDailyIntervalRoutes(
 ): Promise<void> {
   const intervals = staticData || generateDailyIntervals(days)
 
-  // CRITICAL FIX: Use specific API pattern that only matches dailyTotals requests to avoid conflicts
-  await page.route('**/transactions?*dailyTotals=true*', async (route: Route) => {
+  // CRITICAL FIX: Use execute-api pattern to avoid intercepting /src requests
+  await page.route('**/execute-api.*/*/transactions?*dailyTotals=true*', async (route: Route) => {
     const url = new URL(route.request().url())
     const params = url.searchParams
 
@@ -224,7 +230,7 @@ export async function mockDailyIntervalRoutes(
  * Mock budget category routes
  */
 export async function mockBudgetCategoryRoutes(page: Page): Promise<void> {
-  await page.route('**/budget-categories?flatten=false', (route) => {
+  await page.route('**/execute-api.*/*/budget-categories?flatten=false', (route) => {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -233,7 +239,7 @@ export async function mockBudgetCategoryRoutes(page: Page): Promise<void> {
   })
 
   await page.route(
-    '**/transactions?budgetCategoryHierarchySum=true&timeFrame=month&date*',
+    '**/execute-api.*/*/transactions?budgetCategoryHierarchySum=true&timeFrame=month&date*',
     (route) => {
       route.fulfill({
         status: 200,
@@ -247,11 +253,20 @@ export async function mockBudgetCategoryRoutes(page: Page): Promise<void> {
 /**
  * Mock individual memo API calls for context menu functionality
  * FIXED: Simplified and consolidated memo route handlers to prevent conflicts
+ * CRITICAL: Must exclude /src/ paths to avoid intercepting Vue component files
  */
 export async function mockMemoRoutes(page: Page): Promise<void> {
   // Single comprehensive memo route handler to avoid conflicts
-  await page.route('**/memos/**', async (route: Route) => {
+  // Using a more specific pattern that matches execute-api URLs but not /src/ paths
+  await page.route('**/execute-api.*/*/memos/*', async (route: Route) => {
     const url = new URL(route.request().url())
+
+    // CRITICAL: Skip if this is a component file request
+    if (url.pathname.includes('/src/')) {
+      await route.continue()
+      return
+    }
+
     const pathParts = url.pathname.split('/memos/')
     const memoName = pathParts[1] ? decodeURIComponent(pathParts[1]) : 'Unknown Memo'
 

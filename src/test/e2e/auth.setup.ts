@@ -47,8 +47,8 @@ setup('authenticate', async ({ page }) => {
     await page.getByRole('textbox', { name: '* Password' }).fill(password || '')
     await page.getByRole('textbox', { name: '* Password' }).press('Enter')
 
-    // Wait briefly for login to process
-    await page.waitForTimeout(3000)
+    // Wait for login to complete by checking for navigation or auth state
+    await page.waitForLoadState('networkidle', { timeout: 10000 })
     console.log('Current URL after login attempt:', page.url())
 
     // Ensure we have auth tokens regardless of UI login success
