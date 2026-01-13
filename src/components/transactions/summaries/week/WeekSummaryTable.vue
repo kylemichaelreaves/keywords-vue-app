@@ -103,7 +103,7 @@ import BudgetCategorySummaries from '@components/transactions/summaries/BudgetCa
 import WeekSummaryHeader from './WeekSummaryHeader.vue'
 import MemoEditModal from '@components/memos/MemoEditModal.vue'
 import TableSkeleton from '@components/shared/TableSkeleton.vue'
-import {Timeframe } from '@types'
+import { Timeframe } from '@types'
 
 // Define the week summary row structure
 interface WeekSummaryRow {
