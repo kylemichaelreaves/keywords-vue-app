@@ -137,14 +137,15 @@ describe('WeekSummaryTable', () => {
 
     // Check if the correct number of columns is rendered (3 columns: memo, amount, budget_category)
     const columns = table.findAllComponents(ElTableColumn)
-    expect(columns.length).toBe(3)
+    expect(columns.length).toBe(4)
 
     // Check columns exist with proper null safety
     expect(columns.length).toBeGreaterThan(0)
-    if (columns.length >= 3) {
+    if (columns.length >= 4) {
       expect(columns[0]?.props('label')).toBe('Memo')
-      expect(columns[1]?.props('label')).toBe('Weekly Amount Debit')
-      expect(columns[2]?.props('label')).toBe('Budget Category')
+      expect(columns[1]?.props('label')).toBe('Memo Id')
+      expect(columns[2]?.props('label')).toBe('Weekly Amount Debit')
+      expect(columns[3]?.props('label')).toBe('Budget Category')
     }
 
     // Check if the component renders the mocked data
