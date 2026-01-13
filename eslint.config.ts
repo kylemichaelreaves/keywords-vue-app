@@ -22,7 +22,10 @@ export default defineConfigWithVueTs(
       '**/html/**',
       '**/*.min.js',
       '**/trace/**',
-      '**/src/stories/**'
+      '**/src/stories/**',
+      '**/*.config.d.ts',
+      '**/components.d.ts',
+      '**/auto-imports.d.ts'
     ]
   },
 

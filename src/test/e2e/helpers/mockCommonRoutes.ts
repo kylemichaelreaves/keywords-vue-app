@@ -19,6 +19,7 @@ const DEBUG = !!process.env.DEBUG_MOCKS
 // SHARED UTILITIES
 // ============================================================================
 
+// Update isExecuteApiUrl to be more permissive and log in CI:
 function isExecuteApiUrl(url: URL): boolean {
   return url.hostname.includes('execute-api')
 }
@@ -45,8 +46,9 @@ function fulfill(route: Route, data: unknown, status = 200) {
 }
 
 function log(category: string, message: string, data?: unknown) {
+  // Always log in CI for debugging
   if (isCI || DEBUG) {
-    console.log(`[MOCK:${category}] ${message}`, data ?? '')
+    console.log(`[MOCK:${category}] ${message}`, data ? JSON.stringify(data) : '')
   }
 }
 

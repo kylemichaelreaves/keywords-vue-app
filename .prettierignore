@@ -25,3 +25,5 @@ playwright-report
 # HTML output
 html
 
+# playwright config
+playwright.config.d.ts

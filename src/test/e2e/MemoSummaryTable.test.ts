@@ -15,6 +15,24 @@ test.describe('Memo Summary Table', () => {
     memosPage = new MemosTablePage(page)
     memoSummaryTablePage = new MemoSummaryTablePage(page)
 
+    // Ensure no requests go out before routes are ready
+    await page.route('**/*', (route) => route.continue()) // Catch-all first
+    await page.unrouteAll() // Clear it
+
+    // Set up request logging to debug CI
+    if (process.env.CI) {
+      page.on('request', (req) => {
+        if (req.url().includes('memos')) {
+          console.log('[CI REQUEST]', req.url())
+        }
+      })
+      page.on('response', (res) => {
+        if (res.url().includes('memos')) {
+          console.log('[CI RESPONSE]', res.status(), res.url())
+        }
+      })
+    }
+
     const memos = generateMemosArray()
     memoWithoutBudgetCategory = {
       ...memos[0],
