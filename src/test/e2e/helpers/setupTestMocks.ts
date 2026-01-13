@@ -1,219 +1,97 @@
+// setupTestMocks.ts
 import type { Page } from '@playwright/test'
 import type { Transaction, DailyInterval } from '@types'
-import { mockTransactionsTableSelects } from './mockTransactionsTableSelects'
 import {
-  mockBasicTransactionRoutes,
-  mockDailyIntervalRoutes,
-  mockBudgetCategoryRoutes,
-  mockMemoRoutes,
-  mockComprehensiveTransactionRoutes,
+  mockCommonRoutes,
+  type CommonRoutesOptions,
 } from './mockCommonRoutes'
-import {
-  mockMonthTransactionRoutes,
-  mockWeekTransactionRoutes,
-  mockDayTransactionRoutes,
-} from './mockTimeframeRoutes'
-import { mockMemoTableRoutes } from './mockMemoRoutes'
 
-export interface ComprehensiveTransactionData {
-  staticTransactions: Transaction[]
-  staticDailyIntervals: DailyInterval[]
+// ============================================================================
+// MAIN SETUP FUNCTION
+// ============================================================================
+
+export interface TestMockOptions extends CommonRoutesOptions {
+  // All options now flow through CommonRoutesOptions
 }
 
-export interface TestMockOptions {
-  basicTransactions?: boolean | Transaction[] // Can pass static data
-  comprehensiveTransactions?: ComprehensiveTransactionData // For full transaction table mocking
-  dailyIntervals?: boolean | number | DailyInterval[] // boolean, number of days, or static data
-  budgetCategories?: boolean
-  memos?: boolean
-  transactionSelects?: boolean
-  monthTransactions?: boolean
-  weekTransactions?: boolean
-  dayTransactions?: boolean
-  memoTable?: boolean
-}
-
-/**
- * Default options for common test scenarios
- */
-export const DEFAULT_MOCK_OPTIONS: TestMockOptions = {
-  basicTransactions: true,
-  dailyIntervals: true,
-  budgetCategories: true,
-  memos: true,
-  transactionSelects: true,
-  monthTransactions: false,
-  weekTransactions: false,
-  dayTransactions: false,
-  memoTable: false,
-}
-
-/**
- * Helper function to setup transaction-related mocks
- */
-async function setupTransactionMocks(page: Page, config: TestMockOptions): Promise<void> {
-  // Handle comprehensive transaction mocking (takes priority over basic)
-  if (config.comprehensiveTransactions) {
-    await mockComprehensiveTransactionRoutes(
-      page,
-      config.comprehensiveTransactions.staticTransactions,
-      config.comprehensiveTransactions.staticDailyIntervals,
-    )
-    return // Skip other transaction mocking when using comprehensive
-  }
-
-  // Handle basic transaction routes
-  if (config.basicTransactions) {
-    const staticData = Array.isArray(config.basicTransactions)
-      ? config.basicTransactions
-      : undefined
-    await mockBasicTransactionRoutes(page, staticData)
-  }
-
-  // Handle daily intervals (only when not using comprehensive mocking)
-  if (config.dailyIntervals) {
-    await setupDailyIntervalMocks(page, config.dailyIntervals)
-  }
-}
-
-/**
- * Helper function to setup daily interval mocks with different configurations
- */
-async function setupDailyIntervalMocks(
-  page: Page,
-  intervalConfig: boolean | number | DailyInterval[],
-): Promise<void> {
-  if (Array.isArray(intervalConfig)) {
-    // Static data provided
-    await mockDailyIntervalRoutes(page, 30, intervalConfig)
-  } else if (typeof intervalConfig === 'number') {
-    // Number of days provided
-    await mockDailyIntervalRoutes(page, intervalConfig)
-  } else {
-    // Boolean true, use defaults
-    await mockDailyIntervalRoutes(page)
-  }
-}
-
-/**
- * Helper function to setup timeframe-specific mocks
- */
-async function setupTimeframeMocks(page: Page, config: TestMockOptions): Promise<void> {
-  const timeframeMocks = [
-    { condition: config.monthTransactions, mockFn: mockMonthTransactionRoutes },
-    { condition: config.weekTransactions, mockFn: mockWeekTransactionRoutes },
-    { condition: config.dayTransactions, mockFn: mockDayTransactionRoutes },
-  ] as const
-
-  for (const { condition, mockFn } of timeframeMocks) {
-    if (condition) {
-      await mockFn(page)
-    }
-  }
-}
-
-/**
- * Helper function to setup feature-specific mocks
- */
-async function setupFeatureMocks(page: Page, config: TestMockOptions): Promise<void> {
-  const featureMocks = [
-    { condition: config.budgetCategories, mockFn: mockBudgetCategoryRoutes },
-    { condition: config.memos, mockFn: mockMemoRoutes },
-    { condition: config.transactionSelects, mockFn: mockTransactionsTableSelects },
-    { condition: config.memoTable, mockFn: mockMemoTableRoutes },
-  ] as const
-
-  for (const { condition, mockFn } of featureMocks) {
-    if (condition) {
-      await mockFn(page)
-    }
-  }
-}
-
-/**
- * Setup common API mocks for tests with configurable options
- * Refactored to be less complex and more maintainable
- */
 export async function setupTestMocks(page: Page, options: TestMockOptions = {}): Promise<void> {
   await page.unroute('**')
-
-  const config = { ...DEFAULT_MOCK_OPTIONS, ...options }
-
-  // Setup mocks in logical groups
-  await setupTransactionMocks(page, config)
-  await setupTimeframeMocks(page, config)
-  await setupFeatureMocks(page, config)
+  await mockCommonRoutes(page, options)
 }
 
-/**
- * Preset configurations for common test scenarios
- */
+// ============================================================================
+// PRESETS
+// ============================================================================
+
 export const MOCK_PRESETS = {
+  /** Full mocking for month summary pages */
   MONTH_SUMMARY: {
-    basicTransactions: true,
-    dailyIntervals: 30,
-    budgetCategories: true,
-    memos: true,
-    transactionSelects: true,
-    monthTransactions: true,
+    dailyIntervalDays: 30,
   } as TestMockOptions,
 
-  WEEK_SUMMARY: {
-    basicTransactions: true,
-    memos: true,
-    transactionSelects: true,
-    weekTransactions: true,
-  } as TestMockOptions,
+  /** Full mocking for week summary pages */
+  WEEK_SUMMARY: {} as TestMockOptions,
 
-  TRANSACTIONS_TABLE: {
-    basicTransactions: true,
-    dailyIntervals: true,
-    transactionSelects: true,
-    dayTransactions: true,
-  } as TestMockOptions,
+  /** Full mocking for transactions table */
+  TRANSACTIONS_TABLE: {} as TestMockOptions,
 
+  /** Memos table only (skip transactions) */
   MEMOS_TABLE: {
-    memos: false,
-    memoTable: true,
-    budgetCategories: false,
-    basicTransactions: false,
-    dailyIntervals: false,
-    transactionSelects: false,
+    skipTransactions: true,
+    skipTimeIntervals: true,
+    skipBudgetCategories: true,
+  } as TestMockOptions,
+
+  /** Minimal - only what's needed */
+  MINIMAL: {
+    skipMemos: true,
+    skipBudgetCategories: true,
   } as TestMockOptions,
 } as const
 
-/**
- * Convenience functions for common scenarios
- */
-export const setupMonthSummaryMocks = (page: Page): Promise<void> =>
+// ============================================================================
+// CONVENIENCE FUNCTIONS
+// ============================================================================
+
+export const setupMonthSummaryMocks = (page: Page) =>
   setupTestMocks(page, MOCK_PRESETS.MONTH_SUMMARY)
-export const setupWeekSummaryMocks = (page: Page): Promise<void> =>
+
+export const setupWeekSummaryMocks = (page: Page) =>
   setupTestMocks(page, MOCK_PRESETS.WEEK_SUMMARY)
-export const setupMemosTableMocks = (page: Page): Promise<void> =>
+
+export const setupMemosTableMocks = (page: Page) =>
   setupTestMocks(page, MOCK_PRESETS.MEMOS_TABLE)
 
-/**
- * Enhanced setup for TransactionsTable tests with comprehensive mocking
- * Simplified error handling and CI-specific configurations
- */
-export const setupTransactionsTableWithComprehensiveMocks = async (
+export const setupTransactionsTableMocks = (page: Page) =>
+  setupTestMocks(page, MOCK_PRESETS.TRANSACTIONS_TABLE)
+
+/** Enhanced setup with custom static data */
+export async function setupTransactionsTableWithComprehensiveMocks(
   page: Page,
   staticTransactions: Transaction[],
-  staticIntervals: DailyInterval[],
-): Promise<boolean> => {
-  const mockOptions: TestMockOptions = {
-    comprehensiveTransactions: {
-      staticTransactions,
-      staticDailyIntervals: staticIntervals,
-    },
-    transactionSelects: true,
-  }
-
+  staticIntervals: DailyInterval[]
+): Promise<boolean> {
   try {
-    await setupTestMocks(page, mockOptions)
+    await setupTestMocks(page, {
+      transactions: staticTransactions,
+      dailyIntervals: staticIntervals,
+    })
     return true
   } catch (error) {
     console.error('[SETUP ERROR] Mock setup failed:', error)
     throw error
   }
 }
+
+// ============================================================================
+// RE-EXPORTS for direct access
+// ============================================================================
+
+export {
+  mockCommonRoutes,
+  mockMemoRoutes,
+  mockTransactionRoutes,
+  mockTimeIntervalRoutes,
+  mockBudgetCategoryRoutes,
+  MEMO_PRESETS,
+} from './mockCommonRoutes'

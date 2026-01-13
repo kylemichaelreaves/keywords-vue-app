@@ -4,9 +4,9 @@ import { WeekSummaryPage } from '@test/e2e/pages/WeekSummaryPage'
 import { setupWeekSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
 import {
   MEMO_PRESETS,
-  setupBudgetCategoryHierarchyInterceptor,
-  setupMemoRouteInterceptor,
-} from '@test/e2e/helpers/memoRouteHelper'
+  mockMemoRoutes,
+  mockBudgetCategoryRoutes,
+} from '@test/e2e/helpers/mockCommonRoutes'
 import { Timeframe } from '@types'
 
 test.describe('Week Summary Table', () => {
@@ -19,8 +19,8 @@ test.describe('Week Summary Table', () => {
     weekSummaryPage = new WeekSummaryPage(page)
 
     await setupWeekSummaryMocks(page)
-    await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
-    await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: Timeframe.Week })
+    await mockMemoRoutes(page, { memos: [MEMO_PRESETS.basic] })
+    await mockBudgetCategoryRoutes(page, { timeFrame: Timeframe.Week })
 
     await transactionsPage.goto()
     selectedWeek = await transactionsPage.selectFirstWeek()
@@ -54,7 +54,7 @@ test.describe('Week Summary Table', () => {
 
   test('memo edit modal workflow: open, display content, and close', async ({ page }) => {
     // Set up the memo route interceptor for weekly preset
-    await setupMemoRouteInterceptor(page, MEMO_PRESETS.weekly, true)
+    await mockMemoRoutes(page, { memos: [MEMO_PRESETS.weekly] })
 
     await weekSummaryPage.expectMemoEditModalHidden()
 

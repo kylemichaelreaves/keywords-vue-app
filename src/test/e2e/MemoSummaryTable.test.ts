@@ -3,8 +3,8 @@ import { MemoSummaryTablePage } from '@test/e2e/pages/MemoSummaryTablePage'
 import { MemosTablePage } from '@test/e2e/pages/MemosTablePage'
 import { generateMemosArray } from '@test/e2e/mocks/memosMock.ts'
 import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
-import { mockMemoTableRoutes } from '@test/e2e/helpers/mockMemoRoutes.ts'
 import type { Memo } from '@types'
+import { mockMemoRoutes } from '@test/e2e/helpers/setupTestMocks.ts'
 
 test.describe('Memo Summary Table', () => {
   let memoSummaryTablePage: MemoSummaryTablePage
@@ -23,7 +23,7 @@ test.describe('Memo Summary Table', () => {
     } as Memo
 
     // Use the shared mock helper for most routes
-    await mockMemoTableRoutes(page)
+    await mockMemoRoutes(page)
 
     // Override the single memo route to return memo WITH budget_category null from the start
     await page.route('**/execute-api.*/*/memos/*', (route) => {

@@ -1,12 +1,7 @@
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
-import { setupMonthSummaryMocks } from '@test/e2e/helpers/setupTestMocks'
-import {
-  MEMO_PRESETS,
-  setupBudgetCategoryHierarchyInterceptor,
-  setupMemoRouteInterceptor,
-} from '@test/e2e/helpers/memoRouteHelper'
+import { mockBudgetCategoryRoutes, mockMemoRoutes, setupMonthSummaryMocks, MEMO_PRESETS } from '@test/e2e/helpers/setupTestMocks'
 import { Timeframe } from '@types'
 
 test.describe('Month Summary Page', () => {
@@ -20,8 +15,8 @@ test.describe('Month Summary Page', () => {
 
     // Setup all mocks first
     await setupMonthSummaryMocks(page)
-    await setupMemoRouteInterceptor(page, MEMO_PRESETS.basic)
-    await setupBudgetCategoryHierarchyInterceptor(page, { timeFrame: Timeframe.Month })
+    await mockMemoRoutes(page, { memos: [MEMO_PRESETS.basic] })
+    await mockBudgetCategoryRoutes(page, { timeFrame: Timeframe.Month })
 
     // Navigate and select month
     await transactionsPage.goto()
@@ -65,7 +60,7 @@ test.describe('Month Summary Page', () => {
 
   test('right clicking on a table row opens the memo edit modal', async ({ page }) => {
     // Set up the memo route interceptor with better timing and logging
-    await setupMemoRouteInterceptor(page, MEMO_PRESETS.monthly, true)
+    await mockMemoRoutes(page)
 
     await monthSummaryPage.expectMemoEditModalHidden()
 
