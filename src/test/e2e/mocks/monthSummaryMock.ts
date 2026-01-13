@@ -3,11 +3,11 @@ import { safelyGenerateRandomNumber } from '@components/transactions/helpers/saf
 /**
  * Generates an array of memo/debit amount objects for testing
  * @param {number} count - Number of objects to generate
- * @returns {Array} Array of objects with memo and total_amount_debit properties
+ * @returns {Array} Array of objects with memo, memo_id and total_amount_debit properties
  */
 export function generateMonthSummaryArray(
   count: number = 75,
-): Array<{ memo: string | undefined; total_amount_debit: number }> {
+): Array<{ memo: string | undefined; memo_id: number; total_amount_debit: number }> {
   const memos = []
 
   const memoDescriptions = [
@@ -69,6 +69,7 @@ export function generateMonthSummaryArray(
 
     memos.push({
       memo: memo,
+      memo_id: i + 1, // Generate unique memo_id based on index
       total_amount_debit: amount,
     })
   }

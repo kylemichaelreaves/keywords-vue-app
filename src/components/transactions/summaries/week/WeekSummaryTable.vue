@@ -17,7 +17,7 @@
       />
     </template>
 
-    <MemoEditModal ref="memoEditModal" :memo-name="selectedMemoName" />
+    <MemoEditModal ref="memoEditModal" :memo-id="selectedMemoId" />
 
     <el-row :gutter="5">
       <el-col :span="10">
@@ -37,7 +37,7 @@
             layout="auto"
             show-summary
             data-testid="week-summary-table"
-            @row-contextmenu="openMemoEditModal"
+            @row-contextmenu="(row: WeekSummaryRow) => openMemoEditModal(row)"
             :row-style="getRowStyle"
           >
             <el-table-column
@@ -103,11 +103,12 @@ import BudgetCategorySummaries from '@components/transactions/summaries/BudgetCa
 import WeekSummaryHeader from './WeekSummaryHeader.vue'
 import MemoEditModal from '@components/memos/MemoEditModal.vue'
 import TableSkeleton from '@components/shared/TableSkeleton.vue'
-import { Timeframe } from '@types'
+import {Timeframe } from '@types'
 
 // Define the week summary row structure
 interface WeekSummaryRow {
   memo: string
+  memo_id: number
   total_amount_debit: number
   budget_category?: string
   category_id?: number
@@ -152,7 +153,7 @@ const isLastWeek = computed(() => {
 })
 
 const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
-const selectedMemoName = ref<string>('')
+const selectedMemoId = ref<number | null>(null)
 
 const adjustSelectedWeek = (adjustment: number) => {
   const currentWeek = selectedWeek.value
@@ -187,6 +188,7 @@ const resetSelectedWeek = () => {
 
 const columns = [
   { prop: 'memo', label: 'Memo', sortable: true },
+  { prop: 'memoId', label: 'Memo Id', sortable: true },
   { prop: 'total_amount_debit', label: 'Weekly Amount Debit', sortable: true },
   { prop: 'budget_category', label: 'Budget Category', sortable: true },
 ]
@@ -199,7 +201,9 @@ watch(
 )
 
 const openMemoEditModal = (row: WeekSummaryRow) => {
-  selectedMemoName.value = row.memo
+  console.log('🟢 WeekSummaryTable: openMemoEditModal called', { row, memo_id: row.memo_id })
+  selectedMemoId.value = row.memo_id
+  console.log('🟢 WeekSummaryTable: selectedMemoId set to', selectedMemoId.value)
   memoEditModal.value?.openModal()
 }
 

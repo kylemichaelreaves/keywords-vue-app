@@ -39,6 +39,7 @@
         effect="dark"
         @click="openModal"
         data-testid="budget-category-button"
+        aria-label="Budget Category Button"
         :data-memo-id="props.memoId"
         :data-action="'assign-category'"
       >

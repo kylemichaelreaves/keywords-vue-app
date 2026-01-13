@@ -78,9 +78,16 @@ describe('WeekSummaryTable', () => {
     // Mock successful data loading
     mockUseWeekSummary.mockReturnValue({
       data: ref([
-        { memo: 'Test Memo 1', total_amount_debit: 100.5, budget_category: 'Food', category_id: 1 },
+        {
+          memo: 'Test Memo 1',
+          memo_id: 1,
+          total_amount_debit: 100.5,
+          budget_category: 'Food',
+          category_id: 1,
+        },
         {
           memo: 'Test Memo 2',
+          memo_id: 2,
           total_amount_debit: 250.75,
           budget_category: 'Transport',
           category_id: 2,

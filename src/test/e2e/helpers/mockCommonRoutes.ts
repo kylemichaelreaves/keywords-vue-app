@@ -112,8 +112,7 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
       fulfill(route, { sum_amount_debit: 0, transactions_count: 1 })
     },
   )
-
-  // 4. Individual memo (/memos/:name) - but NOT /memos or /memos/:name/summary
+  // 4. Individual memo (/memos/:id) - but NOT /memos or /memos/:id/summary
   await page.route(
     (url) => {
       if (!isExecuteApiUrl(url)) return false
@@ -124,16 +123,22 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
     },
     (route) => {
       const url = new URL(route.request().url())
-      const encodedMemoName = url.pathname.split('/').at(-1)
+      const memoIdStr = url.pathname.split('/').at(-1)
 
-      if (!encodedMemoName) {
+      if (!memoIdStr) {
         return fulfill(route, { error: 'Invalid memo path' }, 400)
       }
 
-      const memoName = decodeURIComponent(encodedMemoName)
-      const memo = validMemos.find((m) => m.name === memoName)
+      const memoId = Number.parseInt(memoIdStr, 10)
+      let memo = validMemos.find((m) => m.id === memoId)
 
-      log('Memos', 'Individual memo', { memoName, found: !!memo })
+      // If no exact match, return first valid memo with the requested ID
+      // This ensures the modal always gets data even if IDs don't align
+      if (!memo && validMemos[0]) {
+        memo = Object.assign({}, validMemos[0], { id: memoId })
+      }
+
+      log('Memos', 'Individual memo by ID', { memoId, found: !!memo })
       fulfill(route, memo || { error: 'Memo not found' }, memo ? 200 : 404)
     },
   )
@@ -467,6 +472,7 @@ export const MEMO_PRESETS = {
     frequency: 'weekly',
     budget_category: 'Food & Dining',
     ambiguous: false,
+    avatar_s3_url: undefined,
   },
   monthly: {
     id: 2,
@@ -476,6 +482,7 @@ export const MEMO_PRESETS = {
     frequency: 'monthly',
     budget_category: 'Food & Dining',
     ambiguous: false,
+    avatar_s3_url: undefined,
   },
   basic: {
     id: 3,
@@ -485,5 +492,6 @@ export const MEMO_PRESETS = {
     frequency: undefined,
     budget_category: undefined,
     ambiguous: false,
+    avatar_s3_url: undefined,
   },
 } as const

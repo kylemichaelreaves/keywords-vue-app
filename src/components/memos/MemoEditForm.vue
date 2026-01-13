@@ -123,8 +123,15 @@ const formRules: FormRules = {
 
 watch(
   () => props.memo,
-  (newMemo) => {
+  (newMemo, oldMemo) => {
+    console.log('🟢 MemoEditForm: props.memo watcher triggered', {
+      oldMemo,
+      newMemo,
+      oldId: oldMemo?.id,
+      newId: newMemo?.id,
+    })
     if (newMemo) {
+      console.log('🟢 MemoEditForm: Updating formData with new memo', newMemo)
       Object.assign(formData, {
         id: newMemo.id,
         name: newMemo.name || '',
@@ -135,6 +142,7 @@ watch(
         ambiguous: newMemo.ambiguous || false,
         avatar_s3_url: newMemo.avatar_s3_url,
       })
+      console.log('🟢 MemoEditForm: formData after update', { ...formData })
     }
   },
   {

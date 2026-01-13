@@ -14,11 +14,7 @@
           <h2 class="memo-title" data-testid="memo-title">
             {{ typedMemoData?.name || 'Loading...' }}
           </h2>
-          <MemoBudgetCategory
-            v-if="typedMemoData"
-            :memo-id="memoId"
-            data-testid="budget-category-button"
-          />
+          <MemoBudgetCategory v-if="typedMemoData" :memo-id="memoId" />
         </div>
       </template>
 

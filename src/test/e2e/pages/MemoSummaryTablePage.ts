@@ -27,10 +27,9 @@ export class MemoSummaryTablePage {
     this.transactionsAmount = page.getByTestId('sum-amount-debit')
     this.backButton = page.getByRole('button', { name: 'Go Back' })
     this.memoTitle = this.memoSummaryHeader.getByTestId('memo-title')
-    // Fix: Target the specific button within the budget category column
-    this.budgetCategoryButton = page
-      .getByTestId('budget-category-column')
-      .getByTestId('budget-category-button')
+    // Target the button by its data-testid within the budget category column
+    this.budgetCategoryButton = page.getByTestId('budget-category-button')
+
     this.budgetCategoryModal = page.getByTestId('budget-category-modal')
   }
 

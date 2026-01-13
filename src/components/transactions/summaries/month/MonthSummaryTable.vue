@@ -18,7 +18,7 @@
       />
     </template>
 
-    <MemoEditModal ref="memoEditModal" :memo-name="selectedMemoName" />
+    <MemoEditModal ref="memoEditModal" :memo-id="selectedMemoId" />
 
     <el-row data-testid="month-summary-content-row">
       <el-col :span="12" data-testid="month-summary-table-column">
@@ -173,7 +173,7 @@ const months = computed(() =>
 )
 
 const memoEditModal = ref<InstanceType<typeof MemoEditModal> | null>(null)
-const selectedMemoName = ref<string>('')
+const selectedMemoId = ref<number | null>(null)
 
 // useMonthSummary returns every memo and their total amount debit for the selected month
 const { data, isError, refetch, isFetching, isRefetching, isLoading, error } = useMonthSummary()
@@ -277,7 +277,9 @@ onBeforeUnmount(() => {
 })
 
 const openMemoEditModal = (row: MonthSummaryRow) => {
-  selectedMemoName.value = row.memo
+  console.log('🟢 MonthSummaryTable: openMemoEditModal called', { row, memo_id: row.memo_id })
+  selectedMemoId.value = row.memo_id
+  console.log('🟢 MonthSummaryTable: selectedMemoId set to', selectedMemoId.value)
   memoEditModal.value?.openModal()
 }
 
