@@ -1,20 +1,13 @@
 // setupTestMocks.ts
 import type { Page } from '@playwright/test'
 import type { Transaction, DailyInterval } from '@types'
-import {
-  mockCommonRoutes,
-  type CommonRoutesOptions,
-} from './mockCommonRoutes'
+import { mockCommonRoutes, type CommonRoutesOptions } from './mockCommonRoutes'
 
 // ============================================================================
 // MAIN SETUP FUNCTION
 // ============================================================================
 
-export interface TestMockOptions extends CommonRoutesOptions {
-  // All options now flow through CommonRoutesOptions
-}
-
-export async function setupTestMocks(page: Page, options: TestMockOptions = {}): Promise<void> {
+export async function setupTestMocks(page: Page, options: CommonRoutesOptions = {}): Promise<void> {
   await page.unroute('**')
   await mockCommonRoutes(page, options)
 }
@@ -27,26 +20,26 @@ export const MOCK_PRESETS = {
   /** Full mocking for month summary pages */
   MONTH_SUMMARY: {
     dailyIntervalDays: 30,
-  } as TestMockOptions,
+  } as CommonRoutesOptions,
 
   /** Full mocking for week summary pages */
-  WEEK_SUMMARY: {} as TestMockOptions,
+  WEEK_SUMMARY: {} as CommonRoutesOptions,
 
   /** Full mocking for transactions table */
-  TRANSACTIONS_TABLE: {} as TestMockOptions,
+  TRANSACTIONS_TABLE: {} as CommonRoutesOptions,
 
   /** Memos table only (skip transactions) */
   MEMOS_TABLE: {
     skipTransactions: true,
     skipTimeIntervals: true,
     skipBudgetCategories: true,
-  } as TestMockOptions,
+  } as CommonRoutesOptions,
 
   /** Minimal - only what's needed */
   MINIMAL: {
     skipMemos: true,
     skipBudgetCategories: true,
-  } as TestMockOptions,
+  } as CommonRoutesOptions,
 } as const
 
 // ============================================================================
@@ -56,11 +49,9 @@ export const MOCK_PRESETS = {
 export const setupMonthSummaryMocks = (page: Page) =>
   setupTestMocks(page, MOCK_PRESETS.MONTH_SUMMARY)
 
-export const setupWeekSummaryMocks = (page: Page) =>
-  setupTestMocks(page, MOCK_PRESETS.WEEK_SUMMARY)
+export const setupWeekSummaryMocks = (page: Page) => setupTestMocks(page, MOCK_PRESETS.WEEK_SUMMARY)
 
-export const setupMemosTableMocks = (page: Page) =>
-  setupTestMocks(page, MOCK_PRESETS.MEMOS_TABLE)
+export const setupMemosTableMocks = (page: Page) => setupTestMocks(page, MOCK_PRESETS.MEMOS_TABLE)
 
 export const setupTransactionsTableMocks = (page: Page) =>
   setupTestMocks(page, MOCK_PRESETS.TRANSACTIONS_TABLE)
@@ -69,7 +60,7 @@ export const setupTransactionsTableMocks = (page: Page) =>
 export async function setupTransactionsTableWithComprehensiveMocks(
   page: Page,
   staticTransactions: Transaction[],
-  staticIntervals: DailyInterval[]
+  staticIntervals: DailyInterval[],
 ): Promise<boolean> {
   try {
     await setupTestMocks(page, {

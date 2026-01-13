@@ -5,7 +5,9 @@ import { safelyGenerateRandomNumber } from '@components/transactions/helpers/saf
  * @param {number} count - Number of objects to generate
  * @returns {Array} Array of objects with memo and total_amount_debit properties
  */
-export function generateMonthSummaryArray(count: number = 75): Array<{ memo: string | undefined; total_amount_debit: number }> {
+export function generateMonthSummaryArray(
+  count: number = 75,
+): Array<{ memo: string | undefined; total_amount_debit: number }> {
   const memos = []
 
   const memoDescriptions = [

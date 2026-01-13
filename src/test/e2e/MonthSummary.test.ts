@@ -1,7 +1,12 @@
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { MonthSummaryPage } from '@test/e2e/pages/MonthSummaryPage'
 import { TransactionsPage } from '@test/e2e/pages/TransactionsPage.ts'
-import { mockBudgetCategoryRoutes, mockMemoRoutes, setupMonthSummaryMocks, MEMO_PRESETS } from '@test/e2e/helpers/setupTestMocks'
+import {
+  mockBudgetCategoryRoutes,
+  mockMemoRoutes,
+  setupMonthSummaryMocks,
+  MEMO_PRESETS,
+} from '@test/e2e/helpers/setupTestMocks'
 import { Timeframe } from '@types'
 
 test.describe('Month Summary Page', () => {

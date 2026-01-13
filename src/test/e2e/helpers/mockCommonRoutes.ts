@@ -71,7 +71,7 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
     (route) => {
       log('Memos', 'Count request')
       fulfill(route, { count: validMemos.length * 4 })
-    }
+    },
   )
 
   // 2. Memos list (with pagination, id, name filtering)
@@ -100,19 +100,17 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
       }
 
       fulfill(route, validMemos.slice(offset, offset + limit))
-    }
+    },
   )
 
   // 3. Memo summary (/memos/:name/summary)
   await page.route(
     (url) =>
-      isExecuteApiUrl(url) &&
-      url.pathname.includes('/memos/') &&
-      url.pathname.endsWith('/summary'),
+      isExecuteApiUrl(url) && url.pathname.includes('/memos/') && url.pathname.endsWith('/summary'),
     (route) => {
       log('Memos', 'Summary request')
       fulfill(route, { sum_amount_debit: 0, transactions_count: 1 })
-    }
+    },
   )
 
   // 4. Individual memo (/memos/:name) - but NOT /memos or /memos/:name/summary
@@ -137,7 +135,7 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
 
       log('Memos', 'Individual memo', { memoName, found: !!memo })
       fulfill(route, memo || { error: 'Memo not found' }, memo ? 200 : 404)
-    }
+    },
   )
 }
 
@@ -167,7 +165,7 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
     (route) => {
       log('Transactions', 'Daily totals request')
       fulfill(route, dailyIntervals)
-    }
+    },
   )
 
   // 2. Transaction count
@@ -179,7 +177,7 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
     (route) => {
       log('Transactions', 'Count request')
       fulfill(route, { count: transactions.length })
-    }
+    },
   )
 
   // 3. Transactions by memoId
@@ -193,7 +191,7 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
       const memoId = url.searchParams.get('memoId')
       log('Transactions', 'By memoId', { memoId })
       fulfill(route, generateTransactionsArray(5, `Memo ${memoId}`))
-    }
+    },
   )
 
   // 4. Budget category hierarchy sum
@@ -205,7 +203,7 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
     (route) => {
       log('Transactions', 'Budget category hierarchy sum')
       fulfill(route, generateBudgetCategoryHierarchy())
-    }
+    },
   )
 
   // 5. Total amount debit (month/week)
@@ -220,7 +218,7 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
       const amount = timeFrame === 'week' ? -700 : -5000
       log('Transactions', 'Total amount debit', { timeFrame, amount })
       fulfill(route, [{ total_amount_debit: amount }])
-    }
+    },
   )
 
   // 6. General transactions (catch-all for /transactions with query params)
@@ -253,7 +251,7 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
       }
 
       fulfill(route, transactions)
-    }
+    },
   )
 }
 
@@ -274,7 +272,7 @@ export async function mockTimeIntervalRoutes(page: Page) {
       })
       log('TimeIntervals', 'Days', { count: days.length })
       fulfill(route, days)
-    }
+    },
   )
 
   // Transaction weeks
@@ -283,7 +281,7 @@ export async function mockTimeIntervalRoutes(page: Page) {
     (route) => {
       log('TimeIntervals', 'Weeks')
       fulfill(route, generateWeeksArray())
-    }
+    },
   )
 
   // Transaction months
@@ -292,7 +290,7 @@ export async function mockTimeIntervalRoutes(page: Page) {
     (route) => {
       log('TimeIntervals', 'Months')
       fulfill(route, generateMonthsArray())
-    }
+    },
   )
 
   // Transaction years
@@ -301,7 +299,7 @@ export async function mockTimeIntervalRoutes(page: Page) {
     (route) => {
       log('TimeIntervals', 'Years')
       fulfill(route, generateYearsArray())
-    }
+    },
   )
 
   // Week summary (/transactions/weeks/:week/summary)
@@ -313,7 +311,7 @@ export async function mockTimeIntervalRoutes(page: Page) {
     (route) => {
       log('TimeIntervals', 'Week summary')
       fulfill(route, generateMonthSummaryArray(20))
-    }
+    },
   )
 
   // Week days (/transactions/weeks/:week/days)
@@ -325,7 +323,7 @@ export async function mockTimeIntervalRoutes(page: Page) {
     (route) => {
       log('TimeIntervals', 'Week days')
       fulfill(route, [])
-    }
+    },
   )
 
   // Month summary (/transactions/months/:month/summary)
@@ -337,7 +335,7 @@ export async function mockTimeIntervalRoutes(page: Page) {
     (route) => {
       log('TimeIntervals', 'Month summary')
       fulfill(route, generateMonthSummaryArray())
-    }
+    },
   )
 }
 
@@ -354,7 +352,7 @@ export interface BudgetCategoryMockOptions {
 
 export async function mockBudgetCategoryRoutes(
   page: Page,
-  options: BudgetCategoryMockOptions = {}
+  options: BudgetCategoryMockOptions = {},
 ) {
   const { includeChildren = false, maxParentCategories = 5, sourceId = 1 } = options
 
@@ -370,7 +368,7 @@ export async function mockBudgetCategoryRoutes(
     (route) => {
       log('BudgetCategories', 'List request')
       fulfill(route, budgetCategories)
-    }
+    },
   )
 
   // Budget category hierarchy sum (with timeFrame)
@@ -384,7 +382,7 @@ export async function mockBudgetCategoryRoutes(
       const requestTimeFrame = url.searchParams.get('timeFrame')
       log('BudgetCategories', 'Hierarchy sum', { timeFrame: requestTimeFrame })
       fulfill(route, budgetCategories)
-    }
+    },
   )
 }
 
@@ -447,7 +445,7 @@ export const mockDailyIntervalRoutes = (page: Page, days = 30, staticData?: Dail
 export const mockComprehensiveTransactionRoutes = (
   page: Page,
   staticTransactions: Transaction[],
-  staticDailyIntervals: DailyInterval[]
+  staticDailyIntervals: DailyInterval[],
 ) =>
   mockTransactionRoutes(page, {
     transactions: staticTransactions,
@@ -456,7 +454,6 @@ export const mockComprehensiveTransactionRoutes = (
 
 /** @deprecated Use mockTimeIntervalRoutes instead */
 export const mockTransactionsTableSelects = mockTimeIntervalRoutes
-
 
 /**
  * Predefined memo configurations for common test scenarios
