@@ -1,4 +1,7 @@
 import { expect, test } from '@test/e2e/fixtures/PageFixture'
+import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
+import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks.ts'
+import { staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/budget-visualizer')
@@ -37,7 +40,36 @@ test.describe('NavBar loads the Budget Visualizer tab', () => {
   test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({
     transactionsPage,
   }) => {
-    await transactionsPage.goto()
+    await setupTransactionsTableWithComprehensiveMocks(
+      transactionsPage.page,
+      staticTransactions.reverse(),
+      staticDailyIntervals,
+    )
+
+    // find the transaction icon
+    const transactionsIcon = transactionsPage.page
+      .getByRole('menubar')
+      .getByRole('menuitem')
+      .first()
+    // expect its visibility
+    await expect(transactionsIcon).toBeVisible()
+
+    // mock the transactions API response
+    await setupTransactionsTableWithComprehensiveMocks(
+      transactionsPage.page,
+      staticTransactions.reverse(),
+      staticDailyIntervals,
+    )
+
+    // click the menuitem icon
+    await transactionsIcon.click()
+    // wait for the DOM to load the transactions table
+    await transactionsPage.page.waitForLoadState('domcontentloaded')
+    // wait for the transactions table to be visible
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
+    // assert its visibility
+    await expect(transactionsPage.transactionsTable).toBeVisible()
+    // check that we're on the /transactions  page
+    await expect(transactionsPage.page).toHaveURL(/\/transactions$/)
   })
 })
