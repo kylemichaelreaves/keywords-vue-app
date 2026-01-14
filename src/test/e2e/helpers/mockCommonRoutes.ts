@@ -19,9 +19,20 @@ const DEBUG = !!process.env.DEBUG_MOCKS
 // SHARED UTILITIES
 // ============================================================================
 
-// Update isExecuteApiUrl to be more permissive and log in CI:
 function isExecuteApiUrl(url: URL): boolean {
-  return url.hostname.includes('execute-api')
+  // Match real API Gateway requests (local dev with real backend)
+  if (url.hostname.includes('execute-api')) {
+    return true
+  }
+
+  // Match localhost API requests (CI/preview mode where app makes relative requests)
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+    // Only intercept API paths, not static assets or page routes
+    const apiPaths = ['/memos', '/transactions', '/budget-categories']
+    return apiPaths.some((path) => url.pathname.startsWith(path))
+  }
+
+  return false
 }
 
 function corsHeaders(): Record<string, string> {
