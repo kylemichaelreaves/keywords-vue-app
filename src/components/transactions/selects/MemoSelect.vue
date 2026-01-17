@@ -53,6 +53,7 @@ const transactionsStore = useTransactionsStore()
 const emit = defineEmits(['update:modelValue'])
 
 const searchQuery = ref('')
+const pendingCallback = ref<((results: { value: string; label: string }[]) => void) | null>(null)
 
 const {
   data: memos,
@@ -75,12 +76,22 @@ const memoOptions = computed(() => {
     }))
 })
 
+// Watch for when memos data changes and call the pending callback
+watch(memoOptions, (newOptions) => {
+  if (pendingCallback.value) {
+    pendingCallback.value(newOptions)
+    pendingCallback.value = null
+  }
+})
+
 const handleSearch = (
   query: string,
   callback: (results: { value: string; label: string }[]) => void,
 ) => {
   searchQuery.value = query
-  // Vue Query will automatically refetch, we just return current results
+  // Store the callback to be called when data updates
+  pendingCallback.value = callback
+  // Also call immediately in case data is already cached
   callback(memoOptions.value)
 }
 

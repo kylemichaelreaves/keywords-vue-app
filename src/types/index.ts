@@ -165,6 +165,7 @@ export interface MemoQueryParams extends MemoFilters {
   limit?: number
   offset?: number
   count?: boolean
+  search?: boolean
 }
 
 export interface MemoFormFields {
