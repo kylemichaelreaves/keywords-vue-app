@@ -16,9 +16,9 @@ export class AutocompleteComponent {
   }
 
   get input(): Locator {
-    // Use role-based selector: el-autocomplete wraps an input element
-    // The input might be within a combobox role or directly accessible as textbox
-    return this.autocomplete.getByRole('combobox').or(this.autocomplete.getByRole('textbox'))
+    // Element Plus el-autocomplete has data-testid on its root element
+    // and contains an input element within. We use the test ID scope to find the input.
+    return this.autocomplete.locator('input')
   }
 
   get clearButton(): Locator {
