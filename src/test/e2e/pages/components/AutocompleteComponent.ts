@@ -16,9 +16,11 @@ export class AutocompleteComponent {
   }
 
   get input(): Locator {
-    // Use role-based selector scoped to the test ID if possible
+    // Use role-based selector scoped to test ID if possible, with fallback
     // Element Plus el-autocomplete has role="combobox" and contains an input
-    // Try test ID scoping first, then fall back to page-level search
+    // NOTE: AutocompleteComponent.vue doesn't set aria-label by default,
+    // and MemoSelect.vue doesn't pass one, so we can't rely on specific names.
+    // Try test ID scoping first for specificity, then fall back to page-level search.
     const scopedInput = this.page.getByTestId(this.testId).getByRole('combobox').locator('input')
     const pageInput = this.page.getByRole('combobox').locator('input').first()
     return scopedInput.or(pageInput)
