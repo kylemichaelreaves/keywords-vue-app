@@ -72,8 +72,16 @@ const {
 const memoOptions = computed(() => {
   if (!memos.value) return []
 
+  // Filter valid memos and deduplicate by name to avoid duplicate options in dropdown
+  const seenNames = new Set<string>()
   return memos.value
-    .filter((memo: Memo) => memo.name && memo.name.trim() !== '')
+    .filter((memo: Memo) => {
+      if (!memo.name || memo.name.trim() === '') return false
+      const normalizedName = memo.name.trim()
+      if (seenNames.has(normalizedName)) return false
+      seenNames.add(normalizedName)
+      return true
+    })
     .map((memo: Memo) => ({
       value: memo.name, // Use name as value so it displays correctly in input
       label: memo.name,

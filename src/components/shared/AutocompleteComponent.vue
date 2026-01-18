@@ -1,31 +1,32 @@
 <template>
-  <el-autocomplete
-    ref="autocompleteRef"
-    v-model="selectedValue"
-    :fetch-suggestions="handleFetchSuggestions"
-    :placeholder="props.placeholder"
-    @select="(item: Record<string, unknown>) => handleSelect(item)"
-    @change="(value: string | number) => handleChange(value)"
-    @clear="handleClear"
-    :disabled="props.disabled"
-    :aria-label="props.ariaLabel"
-    clearable
-    clear-icon="Close"
-    :loading="props.loading"
-    :loading-text="props.loadingText"
-    :data-testid="props.dataTestId"
-    value-key="label"
-    :trigger-on-focus="true"
-    :debounce="450"
-    :highlight-first-item="true"
-    style="width: 100%"
-  >
-    <template #default="{ item }">
-      <div class="autocomplete-item">
-        <span class="label">{{ (item as Option).label }}</span>
-      </div>
-    </template>
-  </el-autocomplete>
+  <div :data-testid="props.dataTestId" class="autocomplete-wrapper">
+    <el-autocomplete
+      ref="autocompleteRef"
+      v-model="selectedValue"
+      :fetch-suggestions="handleFetchSuggestions"
+      :placeholder="props.placeholder"
+      @select="(item: Record<string, unknown>) => handleSelect(item)"
+      @change="(value: string | number) => handleChange(value)"
+      @clear="handleClear"
+      :disabled="props.disabled"
+      :aria-label="props.ariaLabel"
+      clearable
+      clear-icon="Close"
+      :loading="props.loading"
+      :loading-text="props.loadingText"
+      value-key="label"
+      :trigger-on-focus="true"
+      :debounce="450"
+      :highlight-first-item="true"
+      style="width: 100%"
+    >
+      <template #default="{ item }">
+        <div class="autocomplete-item">
+          <span class="label">{{ (item as Option).label }}</span>
+        </div>
+      </template>
+    </el-autocomplete>
+  </div>
 </template>
 
 <script setup lang="ts">
