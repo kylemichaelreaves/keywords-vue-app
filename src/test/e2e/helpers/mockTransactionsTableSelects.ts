@@ -6,10 +6,32 @@ import { generateYearsArray } from '@test/e2e/mocks/yearsMock.ts'
 import type { Page } from '@playwright/test'
 
 export async function mockTransactionsTableSelects(page: Page) {
-  await Promise.all([
-    // CRITICAL FIX: Use more specific API patterns to avoid intercepting page navigation
-    // AND ensure they work in both local and CI environments
-    await page.route(`**/memos?limit=100&offset=0`, route => {
+  // Mock filtered memo search requests (for remote filtering scenarios)
+  await page.route('**/memos?**', async route => {
+    const url = new URL(route.request().url())
+    const searchName = url.searchParams.get('name') || url.searchParams.get('memoName')
+    
+    // If there's a search parameter, filter the memos
+    if (searchName) {
+      console.log('[MOCK] Filtering memos by name:', searchName)
+      
+      const allMemos = generateMemosArray()
+      const filteredMemos = allMemos.filter(memo => 
+        memo.name.toLowerCase().includes(searchName.toLowerCase())
+      )
+      
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(filteredMemos),
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
+      })
+    } else {
+      // Handle base memos endpoint without search parameters
       console.log('[MOCK] Returning memos data for select dropdown')
       route.fulfill({
         status: 200,
@@ -21,7 +43,10 @@ export async function mockTransactionsTableSelects(page: Page) {
           'Access-Control-Allow-Headers': 'Content-Type, Authorization'
         }
       })
-    }),
+    }
+  })
+
+  await Promise.all([
 
     // CRITICAL FIX: Return multiple days to ensure chart can render properly
     // The DailyIntervalLineChart needs multiple data points to create a line chart
