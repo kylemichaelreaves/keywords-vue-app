@@ -11,7 +11,7 @@ export class HomePage {
 
   constructor(page: Page) {
     this.page = page
-    this.navbar = page.locator('[data-test-id="navbar"]')
+    this.navbar = page.getByTestId('navbar')
     this.themeToggle = this.navbar.getByTestId('theme-toggle')
     this.htmlElement = page.locator('html')
     this.heading = page.getByRole('heading')
@@ -47,6 +47,9 @@ export class HomePage {
   }
 
   async toggleTheme() {
+    // expect the theme toggle to be visible
+    await expect(this.themeToggle).toBeVisible()
+    // interact with the theme toggle
     await this.themeToggle.click()
   }
 
@@ -90,9 +93,15 @@ export class HomePage {
   async expectHomePageContent() {
     await expect(this.heading).toContainText('Home')
     await expect(this.body).toContainText('In this demonstration of immense innovation and skill…')
-    await expect(this.body).toContainText('I will be sketching out extremely sophisticated and mesmerizing UIs for my Lambdas and what they return.')
-    await expect(this.body).toContainText('BudgetVisualizer will only work for me, since it is pulling records from a database behind a VPC')
-    await expect(this.body).toContainText('AddressGeocoder won\'t work either; I doubt I set it up to take public requests')
+    await expect(this.body).toContainText(
+      'I will be sketching out extremely sophisticated and mesmerizing UIs for my Lambdas and what they return.',
+    )
+    await expect(this.body).toContainText(
+      'BudgetVisualizer will only work for me, since it is pulling records from a database behind a VPC',
+    )
+    await expect(this.body).toContainText(
+      "AddressGeocoder won't work either; I doubt I set it up to take public requests",
+    )
     await expect(this.body).toContainText('Keywords I never started…I moved onto other things')
   }
 }

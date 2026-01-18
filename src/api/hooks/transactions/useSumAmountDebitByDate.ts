@@ -4,7 +4,7 @@ import { computed, type MaybeRefOrGetter, toValue } from 'vue'
 
 export default function useSumAmountDebitByDate(
   timeFrame: MaybeRefOrGetter<string>,
-  date: MaybeRefOrGetter<string>
+  date: MaybeRefOrGetter<string>,
 ): UseQueryReturnType<Array<{ total_amount_debit: number }>, Error> {
   const timeFrameValue = computed(() => toValue(timeFrame))
   const dateValue = computed(() => toValue(date))
@@ -13,6 +13,6 @@ export default function useSumAmountDebitByDate(
     queryKey: ['sum-amount-debit-by-date', timeFrameValue, dateValue],
     queryFn: () => fetchSumAmountDebitByDate(timeFrameValue.value, dateValue.value),
     refetchOnWindowFocus: false,
-    enabled: computed(() => !!dateValue.value && dateValue.value.trim() !== '')
+    enabled: computed(() => !!dateValue.value && dateValue.value.trim() !== ''),
   })
 }

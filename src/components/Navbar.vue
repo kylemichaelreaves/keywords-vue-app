@@ -1,45 +1,55 @@
 <template>
   <!--  TODO add log-in, user, log-out functionality and corresponding style to keep the div on the rightside of the window-->
-  <div class='navbar-container' data-test-id="navbar">
+  <div
+    class="navbar-container"
+    data-test-id="navbar"
+    aria-label="Navigation Bar"
+    data-testid="navbar"
+  >
     <el-tabs :active-index="activeTab" @tab-click="handleClick">
-      <el-tab-pane v-for="(route, index) in routes" :key="index" :label="String(index)" :name="index">
+      <el-tab-pane
+        v-for="(route, index) in routes"
+        :key="index"
+        :label="String(index)"
+        :name="index"
+      >
         <template v-slot:label>
-        <span class="custom-tabs-label">
-          <el-icon style="vertical-align: middle" size="1.5em">
-            <component :is="routeIcon(route).value" />
-          </el-icon>
-          <span>{{ String(route.name) }}</span>
-        </span>
+          <span class="custom-tabs-label">
+            <el-icon style="vertical-align: middle" size="1.5em">
+              <component :is="routeIcon(route).value" />
+            </el-icon>
+            <span>{{ String(route.name) }}</span>
+          </span>
         </template>
       </el-tab-pane>
     </el-tabs>
 
     <!-- Theme Toggle -->
     <div class="navbar-actions">
-      <ThemeToggle />
+      <ThemeToggle aria-label="Theme toggle" />
     </div>
 
     <!-- Login/Logout Tab Pane -->
     <el-tabs>
       <el-tab-pane class="login-control" label="login-control" name="login-control">
         <template v-slot:label>
-                <span @click.stop="handleLoginLogout">
-                  <!--  TODO instead of el-icon, use el-avatar with an icon -->
-                  <el-icon style="vertical-align: middle" size="1.5em">
-                    <component :is="authStore.isUserAuthenticated ? 'UserFilled' : 'User'" />
-                  </el-icon>
-                  <span>{{ authStore.isUserAuthenticated ? authStore.user.username : 'Log In' }}</span>
-                  <el-tag
-                    v-if="authStore.isUserAuthenticated && authStore.user.role === 'admin'"
-                    class="flex-grow"
-                    type="danger"
-                    size="small"
-                    :round="true"
-                    effect="dark"
-                  >
-                    {{ authStore.user.role }}
-                  </el-tag>
-                </span>
+          <span @click.stop="handleLoginLogout">
+            <!--  TODO instead of el-icon, use el-avatar with an icon -->
+            <el-icon style="vertical-align: middle" size="1.5em">
+              <component :is="authStore.isUserAuthenticated ? 'UserFilled' : 'User'" />
+            </el-icon>
+            <span>{{ authStore.isUserAuthenticated ? authStore.user.username : 'Log In' }}</span>
+            <el-tag
+              v-if="authStore.isUserAuthenticated && authStore.user.role === 'admin'"
+              class="flex-grow"
+              type="danger"
+              size="small"
+              :round="true"
+              effect="dark"
+            >
+              {{ authStore.user.role }}
+            </el-tag>
+          </span>
         </template>
       </el-tab-pane>
     </el-tabs>
@@ -59,7 +69,7 @@ const router = useRouter()
 const route = useRoute()
 
 const excludedRoutes = ['not-found', 'login', 'register']
-const routes = router.options.routes.filter(r => !excludedRoutes.includes(r.name as string))
+const routes = router.options.routes.filter((r) => !excludedRoutes.includes(r.name as string))
 
 const activeTab = ref(0)
 
@@ -70,33 +80,33 @@ routes.forEach((r, index) => {
 })
 
 router.afterEach((to) => {
-  const tabIndex = routes.findIndex(route => route.path === to.path)
+  const tabIndex = routes.findIndex((route) => route.path === to.path)
   if (tabIndex !== -1 && activeTab.value !== tabIndex) {
     activeTab.value = tabIndex
   }
 })
 
-
-const routeIcon = (route: RouteRecordRaw) => computed(() => {
-  switch (route.name) {
-    case 'home':
-      return 'HomeFilled'
-    case 'address-geocoder':
-      return 'LocationFilled'
-    case 'keywords':
-      return 'Key'
-    case 'budget-visualizer':
-      return 'TrendCharts'
-    default:
-      return 'InformationFilled'
-  }
-})
+const routeIcon = (route: RouteRecordRaw) =>
+  computed(() => {
+    switch (route.name) {
+      case 'home':
+        return 'HomeFilled'
+      case 'address-geocoder':
+        return 'LocationFilled'
+      case 'keywords':
+        return 'Key'
+      case 'budget-visualizer':
+        return 'TrendCharts'
+      default:
+        return 'InformationFilled'
+    }
+  })
 
 async function handleClick(tab: TabsPaneContext) {
   const tabIndex = Number(tab.index)
   if (!isNaN(tabIndex)) {
     try {
-      await router.push({ path: routes[tabIndex].path })
+      await router.push({ path: routes[tabIndex]?.path })
       if (activeTab.value !== tabIndex) {
         activeTab.value = tabIndex
       }
@@ -116,10 +126,7 @@ async function handleLoginLogout() {
     await router.push({ path: '/login' })
   }
 }
-
-
 </script>
-
 
 <style scoped>
 .navbar-container {
@@ -128,7 +135,7 @@ async function handleLoginLogout() {
   justify-content: space-between;
   align-items: center;
   background-color: var(--app-card-bg);
-  border-bottom: 7px solid #409EFF;
+  border-bottom: 7px solid #409eff;
   transition: background-color 0.3s ease;
 }
 
@@ -150,8 +157,9 @@ async function handleLoginLogout() {
   flex-grow: 1;
 }
 
-.login-icon, .logout-icon {
-  color: #409EFF; /* Element UI primary color for consistency */
+.login-icon,
+.logout-icon {
+  color: #409eff; /* Element UI primary color for consistency */
 }
 
 .custom-tabs-label {

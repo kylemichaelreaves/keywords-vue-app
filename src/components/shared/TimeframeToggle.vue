@@ -1,43 +1,37 @@
 <template>
-    <div class="time-selector">
-        <el-check-tag
-                v-for="option in options"
-                :key="option.value"
-                v-model="selectedOption"
-                :label="option.value"
-                @change="handleChange($event)"
-        >
-            {{ option.label }}
-        </el-check-tag>
-    </div>
+  <div class="time-selector">
+    <el-check-tag
+      v-for="option in options"
+      :key="option.value"
+      :checked="modelValue === option.value"
+      @change="(checked) => handleChange(option.value, checked)"
+    >
+      {{ option.label }}
+    </el-check-tag>
+  </div>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from "vue";
-import {ElCheckTag} from "element-plus";
+<script setup lang="ts">
+import { ElCheckTag } from 'element-plus'
 
-export default defineComponent({
-    name: "TimeframeToggle",
-    components: {
-      ElCheckTag
-    },
-    setup() {
-        const options = [
-            { label: "Weekly", value: "weekly" },
-            { label: "Monthly", value: "monthly" },
-            { label: "Yearly", value: "yearly" },
-        ];
+const modelValue = defineModel<string>({ default: 'monthly' })
 
-        const selectedOption = ref(options[1].value);
+const options = [
+  { label: 'Weekly', value: 'weekly' },
+  { label: 'Monthly', value: 'monthly' },
+  { label: 'Yearly', value: 'yearly' },
+]
 
-        const handleChange = (newValue: string) => {
-            selectedOption.value = newValue;
-        };
-
-        return {selectedOption, handleChange, options};
-    }
-})
+const handleChange = (value: string, checked: boolean) => {
+  if (checked) {
+    modelValue.value = value
+  }
+}
 </script>
 
 <style scoped>
+.time-selector {
+  display: flex;
+  gap: 8px;
+}
 </style>

@@ -22,6 +22,7 @@
         :go-to-previous="goToPrevious"
         :reset="reset"
         :data-testid="`${timeFrame.toLowerCase()}-summary-navigation-button-group`"
+        aria-label="Navigation Button Group"
       />
     </div>
   </div>
@@ -69,24 +70,24 @@ defineProps<Props>()
 }
 
 /* Month-specific alignment */
-.header-container[data-testid="month-summary-header"] .header-left {
+.header-container[data-testid='month-summary-header'] .header-left {
   align-items: center;
   gap: 2.5rem;
 }
 
-.header-container[data-testid="month-summary-header"] .title-section {
+.header-container[data-testid='month-summary-header'] .title-section {
   flex-direction: row;
   align-items: center;
   gap: 2.5rem;
 }
 
 /* Week-specific alignment */
-.header-container[data-testid="week-summary-header"] .header-left {
+.header-container[data-testid='week-summary-header'] .header-left {
   align-items: center;
   flex-direction: row;
   gap: 2.5rem;
 }
-.header-container[data-testid="week-summary-header"] .title-section {
+.header-container[data-testid='week-summary-header'] .title-section {
   flex-direction: column;
   gap: 0.005rem;
 }

@@ -5,35 +5,18 @@
   </el-table>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue';
-import type {PropType} from 'vue';
-import {ElTable, ElTableColumn} from 'element-plus';
-
+<script setup lang="ts">
+import { computed } from 'vue'
+import { ElTable, ElTableColumn } from 'element-plus'
 
 interface Coordinates {
-  latitude: number;
-  longitude: number;
+  latitude: number
+  longitude: number
 }
 
-export default defineComponent({
-  name: 'CoordinatesTable',
-  components: {
-    ElTable,
-    ElTableColumn,
-  },
-  props: {
-    coordinates: {
-      type: Object as PropType<Coordinates>,
-      required: true,
-    },
-  },
-  setup(props: { coordinates: Coordinates }) {
-    const tableData = [props.coordinates];
-    return {tableData};
-  },
-});
-</script>
+const props = defineProps<{
+  coordinates: Coordinates
+}>()
 
-<style scoped>
-</style>
+const tableData = computed(() => [props.coordinates])
+</script>

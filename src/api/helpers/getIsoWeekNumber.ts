@@ -1,4 +1,4 @@
-import {DateTime} from "luxon";
+import { DateTime } from 'luxon'
 /**
  * Gets the ISO week number for a given date.
  *
@@ -7,8 +7,8 @@ import {DateTime} from "luxon";
  */
 // used by BudgetCategoryHistoricalLineChart
 export function getIsoWeekNumber(date: Date): number {
-    // Convert the JavaScript Date object to a Luxon DateTime object
-    const dt = DateTime.fromJSDate(date);
-    // Get the ISO week number
-    return dt.weekNumber;
+  // Convert the JavaScript Date object to a Luxon DateTime object
+  const dt = DateTime.fromJSDate(date)
+  // Get the ISO week number
+  return dt.weekNumber
 }

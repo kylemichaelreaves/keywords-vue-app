@@ -2,8 +2,8 @@
 import { expect, type Page } from '@playwright/test'
 
 export interface SelectOption {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 /**
@@ -97,25 +97,28 @@ export class SelectComponent {
   async isDropdownOpen() {
     // Check if any options are visible
     const options = this.page.locator('[data-testid^="option-"]')
-    return await options.first().isVisible().catch(() => false)
+    return await options
+      .first()
+      .isVisible()
+      .catch(() => false)
   }
 
   async getSelectedValue() {
     const input = this.dropdownTrigger
     return await input.inputValue().catch(async () => {
       // Fallback to text content if not an input
-      return await this.select.textContent() ?? ''
+      return (await this.select.textContent()) ?? ''
     })
   }
 
   async getSelectedLabel() {
-    const selectedText = await this.select.textContent() ?? ''
+    const selectedText = (await this.select.textContent()) ?? ''
     // Remove clear button text if present
     return selectedText.replace('×', '').trim()
   }
 
   async getPlaceholder() {
-    return await this.dropdownTrigger.getAttribute('placeholder') ?? ''
+    return (await this.dropdownTrigger.getAttribute('placeholder')) ?? ''
   }
 
   async hasOption(value: string) {
@@ -149,9 +152,9 @@ export class SelectComponent {
 
     for (const element of optionElements) {
       if (await element.isVisible()) {
-        const testId = await element.getAttribute('data-testid') ?? ''
+        const testId = (await element.getAttribute('data-testid')) ?? ''
         const value = testId.replace('option-', '')
-        const label = await element.textContent() ?? ''
+        const label = (await element.textContent()) ?? ''
         options.push({ value, label })
       }
     }
@@ -253,7 +256,6 @@ export class SelectComponent {
     expect(selectedLabel).toBe(placeholder)
   }
 
-
   async selectAndVerify(value: string, expectedLabel: string) {
     await this.selectOption(value)
     await this.expectToHaveSelectedLabel(expectedLabel)
@@ -269,5 +271,4 @@ export class SelectComponent {
     await this.typeToFilter(filterText)
     await this.selectOption(value)
   }
-
 }

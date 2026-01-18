@@ -7,7 +7,7 @@
       type="info"
       show-icon
       center
-      style="margin-top: 20px;"
+      style="margin-top: 20px"
     />
     <el-alert
       v-if="isError"
@@ -16,15 +16,10 @@
       type="error"
       show-icon
       center
-      style="margin-top: 20px;"
+      style="margin-top: 20px"
     />
     <el-form :model="user" :rules="rules" ref="formRef" label-width="100px">
-      <el-form-item
-        v-for="(field, key) in formFields"
-        :key="key"
-        :label="field.label"
-        :prop="key"
-      >
+      <el-form-item v-for="(field, key) in formFields" :key="key" :label="field.label" :prop="key">
         <component
           :is="field.component"
           v-model="user[key]"
@@ -43,12 +38,7 @@
         >
           Register
         </el-button>
-        <el-button
-          v-if="isResetButtonVisible"
-          @click="resetForm"
-        >
-          Reset
-        </el-button>
+        <el-button v-if="isResetButtonVisible" @click="resetForm"> Reset </el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -63,6 +53,14 @@ import { useMutation } from '@tanstack/vue-query'
 import { createUser } from '@api/users/createUser.ts'
 import type { RegisterFormFields, RegisterFormKeys, User } from '@types'
 
+// Define a more specific error type for API responses
+interface ApiError extends Error {
+  response?: {
+    data?: {
+      message?: string
+    }
+  }
+}
 
 const router = useRouter()
 
@@ -74,7 +72,7 @@ const user: User = reactive({
   username: '',
   email: '',
   password: '',
-  confirmPassword: ''
+  confirmPassword: '',
 })
 
 const formRef = ref<FormInstance>()
@@ -82,16 +80,7 @@ const message = ref<string | null>(null)
 
 const isFormValid = ref(false)
 
-function onFieldValidate() {
-  // After each field is validated, re-check the entire form’s validity
-  if (!formRef.value) return
-
-  formRef.value.validate((valid: boolean) => {
-    isFormValid.value = valid
-  })
-}
-
-const { mutate, isPending, isError, error } = useMutation({
+const { mutate, isPending, isError, error } = useMutation<void, ApiError, { user: User }>({
   mutationKey: ['createUser'],
   mutationFn: async ({ user }: { user: User }) => {
     await createUser(user)
@@ -102,7 +91,7 @@ const { mutate, isPending, isError, error } = useMutation({
   },
   onError: (error) => {
     message.value = `Error: ${error.message}`
-  }
+  },
 })
 
 const isResetButtonVisible = computed(() => !!user)
@@ -113,44 +102,47 @@ const formFields: Record<RegisterFormKeys, RegisterFormFields> = {
     type: 'text',
     placeholder: 'Enter username',
     component: 'el-input',
-    labelPosition: 'top'
+    labelPosition: 'top',
   },
   email: {
     label: 'Email',
     type: 'text',
     placeholder: 'Enter email',
-    component: 'el-input'
+    component: 'el-input',
   },
   firstName: {
     label: 'First Name',
     type: 'text',
     placeholder: 'Enter first name',
-    component: 'el-input'
+    component: 'el-input',
   },
   lastName: {
     label: 'Last Name',
     type: 'text',
     placeholder: 'Enter last name',
-    component: 'el-input'
+    component: 'el-input',
   },
   password: {
     label: 'Password',
     type: 'password',
     placeholder: 'Enter password',
     component: 'el-input',
-    showPassword: true
+    showPassword: true,
   },
   confirmPassword: {
     label: 'Confirm Password',
     type: 'password',
     placeholder: 'Confirm password',
     component: 'el-input',
-    showPassword: true
-  }
+    showPassword: true,
+  },
 }
 
-
-const validateConfirmPassword = (rule, value, callback) => {
+const validateConfirmPassword = (
+  _rule: unknown,
+  value: string,
+  callback: (error?: Error) => void,
+) => {
   if (value !== user.password) {
     callback(new Error('Passwords do not match'))
   } else {
@@ -158,7 +150,7 @@ const validateConfirmPassword = (rule, value, callback) => {
   }
 }
 
-const validateUsername = (rule: any, value: string, callback: (error?: Error) => void) => {
+const validateUsername = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
   const minLength = 6
   const maxLength = 20
 
@@ -178,32 +170,31 @@ const validateUsername = (rule: any, value: string, callback: (error?: Error) =>
     return callback(new Error('Username must contain at least one uppercase letter'))
   }
 
-  if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+  if (!/^\w+$/.test(value)) {
     return callback(new Error('Username can only contain letters, numbers, and underscores'))
   }
 
   callback()
 }
 
-
 const rules = reactive<FormRules<typeof user>>({
   username: [
     { required: true, message: 'Please input a username', trigger: 'blur' },
     { min: 3, message: 'Username must be at least 3 characters', trigger: 'blur' },
-    { validator: validateUsername, trigger: 'blur' }
+    { validator: validateUsername, trigger: 'blur' },
   ],
   email: [
     { required: true, message: 'Please input an email', trigger: 'blur' },
-    { type: 'email', message: 'Please input a valid email', trigger: 'blur' }
+    { type: 'email', message: 'Please input a valid email', trigger: 'blur' },
   ],
   password: [
     { required: true, message: 'Please input a password', trigger: 'blur' },
-    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
+    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' },
   ],
   confirmPassword: [
     { required: true, message: 'Please confirm your password', trigger: 'blur' },
-    { validator: validateConfirmPassword, trigger: 'blur' }
-  ]
+    { validator: validateConfirmPassword, trigger: 'blur' },
+  ],
 })
 
 const submitForm = () => {
@@ -227,7 +218,6 @@ const resetForm = () => {
   }
 }
 </script>
-
 
 <style scoped>
 .register-el-card {

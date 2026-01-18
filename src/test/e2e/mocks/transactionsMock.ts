@@ -1,7 +1,6 @@
 import type { Transaction } from '@types'
 import { faker } from '@faker-js/faker'
 
-
 // Function to generate a single transaction
 function generateTransaction(memo?: string, date?: string): Transaction {
   const isDebit = faker.datatype.boolean()
@@ -17,7 +16,9 @@ function generateTransaction(memo?: string, date?: string): Transaction {
     amount_debit: isDebit ? amount : '0.00',
     amount_credit: isDebit ? '0.00' : amount,
     balance: faker.finance.amount({ min: 0, max: 25000, dec: 2 }),
-    check_number: faker.datatype.boolean() ? faker.number.int({ min: 1001, max: 9999 }).toString() : undefined,
+    check_number: faker.datatype.boolean()
+      ? faker.number.int({ min: 1001, max: 9999 }).toString()
+      : undefined,
     fees: faker.datatype.boolean() ? faker.finance.amount({ min: 0, max: 50, dec: 2 }) : undefined,
     budget_category: faker.helpers.arrayElement([
       'Food & Dining',
@@ -29,16 +30,19 @@ function generateTransaction(memo?: string, date?: string): Transaction {
       'Health & Fitness',
       'Income',
       'Transfer',
-      'Business Services'
-    ])
+      'Business Services',
+    ]),
   }
 }
 
 // Generate an array of transactions
-export function generateTransactionsArray(count: number, memo?: string, date?: string): Transaction[] {
+export function generateTransactionsArray(
+  count: number,
+  memo?: string,
+  date?: string,
+): Transaction[] {
   return Array.from({ length: count }, () => generateTransaction(memo, date))
 }
-
 
 export const staticTransactions: Transaction[] = [
   {
@@ -53,7 +57,7 @@ export const staticTransactions: Transaction[] = [
     balance: '8500.00',
     check_number: '1001',
     fees: '2.50',
-    budget_category: 'Food & Dining'
+    budget_category: 'Food & Dining',
   },
   {
     id: 2,
@@ -67,7 +71,7 @@ export const staticTransactions: Transaction[] = [
     balance: '8300.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Shopping'
+    budget_category: 'Shopping',
   },
   {
     id: 3,
@@ -81,7 +85,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11300.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Income'
+    budget_category: 'Income',
   },
   {
     id: 4,
@@ -95,7 +99,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11180.00',
     check_number: '1002',
     fees: '1.50',
-    budget_category: 'Bills & Utilities'
+    budget_category: 'Bills & Utilities',
   },
   {
     id: 5,
@@ -109,7 +113,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11100.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Food & Dining'
+    budget_category: 'Food & Dining',
   },
   {
     id: 6,
@@ -123,7 +127,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11050.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Auto & Transport'
+    budget_category: 'Auto & Transport',
   },
   {
     id: 7,
@@ -137,7 +141,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11020.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Entertainment'
+    budget_category: 'Entertainment',
   },
   {
     id: 8,
@@ -151,7 +155,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11005.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Shopping'
+    budget_category: 'Shopping',
   },
   {
     id: 9,
@@ -165,7 +169,7 @@ export const staticTransactions: Transaction[] = [
     balance: '10965.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Health & Fitness'
+    budget_category: 'Health & Fitness',
   },
   {
     id: 10,
@@ -179,7 +183,7 @@ export const staticTransactions: Transaction[] = [
     balance: '10465.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Transfer'
+    budget_category: 'Transfer',
   },
   {
     id: 11,
@@ -193,7 +197,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11465.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Business Services'
+    budget_category: 'Business Services',
   },
   {
     id: 12,
@@ -207,7 +211,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11450.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Entertainment'
+    budget_category: 'Entertainment',
   },
   {
     id: 13,
@@ -221,7 +225,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11445.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Food & Dining'
+    budget_category: 'Food & Dining',
   },
   {
     id: 14,
@@ -235,7 +239,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11385.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Shopping'
+    budget_category: 'Shopping',
   },
   {
     id: 15,
@@ -249,7 +253,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11310.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Food & Dining'
+    budget_category: 'Food & Dining',
   },
   {
     id: 16,
@@ -263,7 +267,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11290.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Auto & Transport'
+    budget_category: 'Auto & Transport',
   },
   {
     id: 17,
@@ -277,7 +281,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11280.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Entertainment'
+    budget_category: 'Entertainment',
   },
   {
     id: 18,
@@ -291,7 +295,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11080.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Health & Fitness'
+    budget_category: 'Health & Fitness',
   },
   {
     id: 19,
@@ -305,7 +309,7 @@ export const staticTransactions: Transaction[] = [
     balance: '10780.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Transfer'
+    budget_category: 'Transfer',
   },
   {
     id: 20,
@@ -319,7 +323,7 @@ export const staticTransactions: Transaction[] = [
     balance: '12280.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Business Services'
+    budget_category: 'Business Services',
   },
   {
     id: 21,
@@ -333,7 +337,7 @@ export const staticTransactions: Transaction[] = [
     balance: '12080.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Education'
+    budget_category: 'Education',
   },
   {
     id: 22,
@@ -347,7 +351,7 @@ export const staticTransactions: Transaction[] = [
     balance: '12000.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Pets'
+    budget_category: 'Pets',
   },
   {
     id: 23,
@@ -361,7 +365,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11950.00',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Charity'
+    budget_category: 'Charity',
   },
   {
     id: 24,
@@ -375,7 +379,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11945.50',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Food & Dining'
+    budget_category: 'Food & Dining',
   },
   {
     id: 25,
@@ -389,7 +393,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11785.50',
     check_number: '1003',
     fees: '2.75',
-    budget_category: 'Food & Dining'
+    budget_category: 'Food & Dining',
   },
   {
     id: 26,
@@ -403,7 +407,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11695.50',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Shopping'
+    budget_category: 'Shopping',
   },
   {
     id: 27,
@@ -417,7 +421,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11575.50',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Food & Dining'
+    budget_category: 'Food & Dining',
   },
   {
     id: 28,
@@ -431,7 +435,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11550.50',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Auto & Transport'
+    budget_category: 'Auto & Transport',
   },
   {
     id: 29,
@@ -445,7 +449,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11515.50',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Entertainment'
+    budget_category: 'Entertainment',
   },
   {
     id: 30,
@@ -459,7 +463,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11470.50',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Health & Fitness'
+    budget_category: 'Health & Fitness',
   },
   {
     id: 31,
@@ -473,7 +477,7 @@ export const staticTransactions: Transaction[] = [
     balance: '11270.50',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Transfer'
+    budget_category: 'Transfer',
   },
   {
     id: 32,
@@ -487,8 +491,6 @@ export const staticTransactions: Transaction[] = [
     balance: '12070.50',
     check_number: undefined,
     fees: undefined,
-    budget_category: 'Business Services'
-  }
-
-
+    budget_category: 'Business Services',
+  },
 ]

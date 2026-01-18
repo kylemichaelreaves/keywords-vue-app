@@ -29,7 +29,7 @@ export function generateWeeksArray(startYear = 2021, endYear = DateTime.now().ye
       const weekYear = currentDate.weekYear
 
       weeks.push({
-        week_year: `${weekNum}-${weekYear}`
+        week_year: `${weekNum}-${weekYear}`,
       })
 
       // Move to next week

@@ -1,34 +1,63 @@
-import type { Frequency } from '@types'
+import type { Frequency, Memo } from '@types'
 
 /**
  * Generates an array of mock Memo objects for testing
  * @param {number} count - Number of memos to generate
- * @returns {Array} Array of Memo objects
+ * @returns {Array<Memo>} Array of Memo objects
  */
-export function generateMemosArray(count = 100) {
-  const memos = []
+export function generateMemosArray(count = 100): Memo[] {
+  const memos: Memo[] = []
 
   // Sample data for realistic memos
   const memoNames = [
-    'Rent Payment', 'Groceries', 'Internet Bill', 'Phone Bill', 'Car Insurance',
-    'Gym Membership', 'Netflix Subscription', 'Coffee Shop', 'Gas Station',
-    'Electric Bill', 'Water Bill', 'Restaurant Dinner', 'Amazon Purchase',
-    'Target Shopping', 'Pharmacy', 'Doctor Visit', 'Car Maintenance',
-    'Hair Salon', 'Movie Theater', 'Book Store', 'Clothing Store',
-    'Home Depot', 'Bank Transfer', 'Credit Card Payment', 'Student Loan'
+    'Rent Payment',
+    'Groceries',
+    'Internet Bill',
+    'Phone Bill',
+    'Car Insurance',
+    'Gym Membership',
+    'Netflix Subscription',
+    'Coffee Shop',
+    'Gas Station',
+    'Electric Bill',
+    'Water Bill',
+    'Restaurant Dinner',
+    'Amazon Purchase',
+    'Target Shopping',
+    'Pharmacy',
+    'Doctor Visit',
+    'Car Maintenance',
+    'Hair Salon',
+    'Movie Theater',
+    'Book Store',
+    'Clothing Store',
+    'Home Depot',
+    'Bank Transfer',
+    'Credit Card Payment',
+    'Student Loan',
   ]
 
   const budgetCategories = [
-    'Housing', 'Food', 'Transportation', 'Utilities', 'Healthcare',
-    'Entertainment', 'Shopping', 'Personal Care', 'Education', 'Insurance',
-    'Savings', 'Debt Payment', 'Miscellaneous'
+    'Housing',
+    'Food',
+    'Transportation',
+    'Utilities',
+    'Healthcare',
+    'Entertainment',
+    'Shopping',
+    'Personal Care',
+    'Education',
+    'Insurance',
+    'Savings',
+    'Debt Payment',
+    'Miscellaneous',
   ]
 
   // Cryptographically secure random number generator to satisfy SonarQube security requirements
   function secureRandom(): number {
     const array = new Uint32Array(1)
     crypto.getRandomValues(array)
-    return array[0] / (0xffffffff + 1)
+    return array[0]! / (0xffffffff + 1)
   }
 
   // Secure random integer between 0 and max (exclusive)
@@ -43,7 +72,7 @@ export function generateMemosArray(count = 100) {
 
   for (let i = 0; i < count; i++) {
     // Randomly select memo name (with some duplicates allowed for realism)
-    const name = memoNames[secureRandomInt(memoNames.length)]
+    const name = memoNames[secureRandomInt(memoNames.length)]!
 
     // Generate realistic boolean distributions using secure random
     const recurring = secureRandomBoolean(0.4) // 40% chance of being recurring
@@ -54,11 +83,18 @@ export function generateMemosArray(count = 100) {
     let frequency: Frequency
     if (recurring) {
       const recurringFreqs: Frequency[] = ['daily', 'weekly', 'monthly', 'yearly']
-      frequency = recurringFreqs[secureRandomInt(recurringFreqs.length)]
+      frequency = recurringFreqs[secureRandomInt(recurringFreqs.length)]!
     } else {
       // For non-recurring items, use a weighted selection
-      const frequencyOptions: Frequency[] = ['weekly', 'weekly', 'monthly', 'monthly', 'monthly', 'yearly']
-      frequency = frequencyOptions[secureRandomInt(frequencyOptions.length)]
+      const frequencyOptions: Frequency[] = [
+        'weekly',
+        'weekly',
+        'monthly',
+        'monthly',
+        'monthly',
+        'yearly',
+      ]
+      frequency = frequencyOptions[secureRandomInt(frequencyOptions.length)]!
     }
 
     memos.push({
@@ -67,8 +103,8 @@ export function generateMemosArray(count = 100) {
       recurring: recurring,
       necessary: necessary,
       frequency: frequency,
-      budget_category: budgetCategories[secureRandomInt(budgetCategories.length)],
-      ambiguous: ambiguous
+      budget_category: budgetCategories[secureRandomInt(budgetCategories.length)]!,
+      ambiguous: ambiguous,
     })
   }
 

@@ -92,9 +92,11 @@ export abstract class BaseSummaryPage {
 
   async expectTableHasData() {
     const table = this.getSummaryTable()
+    const rows = table.getByRole('row')
+    const cells = rows.getByRole('cell')
 
     // More specific content checks
-    await expect(table.getByRole('cell').first()).not.toBeEmpty()
+    await expect(cells.first()).not.toBeEmpty()
 
     return true
   }

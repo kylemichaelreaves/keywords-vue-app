@@ -6,27 +6,26 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import {useRouter} from "vue-router";
+import { defineComponent } from 'vue'
+import { useRouter } from 'vue-router'
 // TODO add a back button
 export default defineComponent({
   name: 'NotFound',
   components: {},
   setup() {
-    const router = useRouter();
+    const router = useRouter()
 
     const goBack = () => {
-      router.back();
+      router.back()
     }
 
-    return {goBack}
-  }
+    return { goBack }
+  },
 })
-
 </script>
 
 <style scoped>
-  h1 {
-    color: red;
-  }
+h1 {
+  color: red;
+}
 </style>

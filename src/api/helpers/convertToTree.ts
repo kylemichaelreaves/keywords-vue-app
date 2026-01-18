@@ -18,15 +18,17 @@ export function convertToTree(categories: Categories, parentPath: string = ''): 
     const subcategories = categories[categoryName]
 
     // If there are subcategories, recursively process them
-    const children = Object.keys(subcategories).length > 0
-      ? convertToTree(subcategories, currentPath)
-      : undefined
+    // Add proper null/undefined checks before calling Object.keys and recursive function
+    const children =
+      subcategories && typeof subcategories === 'object' && Object.keys(subcategories).length > 0
+        ? convertToTree(subcategories, currentPath)
+        : undefined
 
     // Return a CategoryNode
     return {
       value: currentPath, // Use the full path as the value
       label: categoryName, // Just the category name as the label
-      ...(children && { children })
+      ...(children && { children }),
     }
   })
 }

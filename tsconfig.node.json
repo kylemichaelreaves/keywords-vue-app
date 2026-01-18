@@ -4,17 +4,18 @@
     "vite.config.*",
     "vitest.config.*",
     "playwright.config.*",
-    "eslint.config.*"
+    "eslint.config.*",
+    ".storybook/**/*"
   ],
   "compilerOptions": {
     "composite": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "types": [
       "node",
       "jsdom",
       "vitest/globals",
-      "vite/client",
+      "vite/client"
     ]
   }
 }
