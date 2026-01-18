@@ -108,17 +108,16 @@ test.describe('MemoSelect Search Functionality', () => {
     // Verify selection
     await expect(memoSelect).toContainText('Coffee Shop')
     
-    // Now clear the selection using Escape key or by clicking the clear icon
-    // Try to find and click the clear icon (it appears on hover)
-    // Look for the suffix icon which contains the clear button
-    const clearIcon = memoSelect.locator('.el-select__suffix .el-icon')
-    
-    // Click on the select to make sure clear icon is accessible
+    // Now clear the selection - hover to make the clear icon appear
+    // Element Plus shows clear icon on hover when there's a selection
     await memoSelect.hover()
     await page.waitForTimeout(300)
     
-    // Click the clear icon - it should be visible now
-    await clearIcon.click({ force: true })
+    // Find and click the clear icon within the select suffix area
+    // Note: Element Plus uses internal CSS classes that may change in future versions
+    // This clicks on the icon in the suffix area which becomes the clear button when hovered
+    const clearIcon = memoSelect.locator('.el-select__suffix .el-icon')
+    await clearIcon.click()
     
     // Verify the selection is cleared - should show placeholder
     await page.waitForTimeout(500)

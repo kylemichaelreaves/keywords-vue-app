@@ -7,7 +7,7 @@ import type { Page } from '@playwright/test'
 
 export async function mockTransactionsTableSelects(page: Page) {
   // Mock filtered memo search requests (for remote filtering scenarios)
-  await page.route('**/memos?**', async route => {
+  await page.route('**/memos?*', async route => {
     const url = new URL(route.request().url())
     const searchName = url.searchParams.get('name') || url.searchParams.get('memoName')
     
