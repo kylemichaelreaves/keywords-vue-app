@@ -179,7 +179,9 @@ describe('MemoSelect', () => {
       // Only the second callback should be called with new results
       expect(firstCallback).toHaveBeenCalledTimes(1) // Only initial call
       expect(secondCallback).toHaveBeenCalledTimes(2) // Initial + update
-      expect(secondCallback).toHaveBeenLastCalledWith([{ value: 'Updated', label: 'Updated', id: 2 }])
+      expect(secondCallback).toHaveBeenLastCalledWith([
+        { value: 'Updated', label: 'Updated', id: 2 },
+      ])
     })
 
     test('should filter out memos with empty names', async () => {
