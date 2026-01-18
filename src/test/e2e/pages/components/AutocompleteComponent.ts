@@ -16,11 +16,12 @@ export class AutocompleteComponent {
   }
 
   get input(): Locator {
-    // Use role-based selector with ARIA attributes for better targeting
+    // Use role-based selector scoped to the test ID if possible
     // Element Plus el-autocomplete has role="combobox" and contains an input
-    // We use placeholder or aria attributes to identify the correct input
-    // The .first() is a fallback if multiple comboboxes exist
-    return this.page.getByRole('combobox').locator('input').first()
+    // Try test ID scoping first, then fall back to page-level search
+    const scopedInput = this.page.getByTestId(this.testId).getByRole('combobox').locator('input')
+    const pageInput = this.page.getByRole('combobox').locator('input').first()
+    return scopedInput.or(pageInput)
   }
 
   get clearButton(): Locator {
