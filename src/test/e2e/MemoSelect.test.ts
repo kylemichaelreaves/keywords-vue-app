@@ -8,7 +8,11 @@ const isCI = !!process.env.CI
 test.describe('MemoSelect Search Functionality', () => {
   test.beforeEach(async ({ page }) => {
     // Setup comprehensive mocks before navigation (same as TransactionsTable test)
-    await setupTransactionsTableWithComprehensiveMocks(page, staticTransactions.reverse(), staticDailyIntervals)
+    await setupTransactionsTableWithComprehensiveMocks(
+      page,
+      staticTransactions.reverse(),
+      staticDailyIntervals,
+    )
 
     // Navigate to the transactions page which has the MemoSelect component
     await page.goto('/budget-visualizer/transactions')
@@ -19,12 +23,12 @@ test.describe('MemoSelect Search Functionality', () => {
 
     // Wait for the transactions table selects container to be visible
     await page.waitForSelector('[data-testid="transactions-table-selects"]', {
-      timeout: isCI ? 30000 : 15000
+      timeout: isCI ? 30000 : 15000,
     })
 
     // Wait for the memo select to be visible
     await page.waitForSelector('[data-testid="transactions-table-memo-select"]', {
-      timeout: isCI ? 30000 : 15000
+      timeout: isCI ? 30000 : 15000,
     })
   })
 
@@ -68,11 +72,12 @@ test.describe('MemoSelect Search Functionality', () => {
     await selectInput.type('Coffee Shop')
 
     // Wait for the option to be available before pressing Enter
-    await expect(page.getByRole('option', { name: 'Coffee Shop' }).first()).toBeVisible({ timeout: 5000 })
+    await expect(page.getByRole('option', { name: 'Coffee Shop' }).first()).toBeVisible({
+      timeout: 5000,
+    })
 
     // Press Enter to select the first filtered option
     await selectInput.press('Enter')
-
 
     // Verify selection - the select should now show "Coffee Shop"
     await expect(memoSelect).toContainText('Coffee Shop')
@@ -91,7 +96,9 @@ test.describe('MemoSelect Search Functionality', () => {
     await selectInput.type('Coffee Shop')
 
     // Wait for the option to be available before pressing Enter
-    await expect(page.getByRole('option', { name: 'Coffee Shop' }).first()).toBeVisible({ timeout: 5000 })
+    await expect(page.getByRole('option', { name: 'Coffee Shop' }).first()).toBeVisible({
+      timeout: 5000,
+    })
 
     // Press Enter to select the first filtered option
     await selectInput.press('Enter')
