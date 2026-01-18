@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test'
 import { staticTransactions } from '@test/e2e/mocks/transactionsMock'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock'
 import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
+import type { Page, Locator } from '@playwright/test'
 
 const isCI = !!process.env.CI
 
@@ -32,25 +33,51 @@ test.describe('MemoSelect Search Functionality', () => {
     })
   })
 
-  test('should update dropdown options when user types a search query', async ({ page }) => {
-    // Wait for memo select to be ready
+  // Helper function to get memo select and ensure it's visible
+  async function getMemoSelect(page: Page): Promise<Locator> {
     const memoSelect = page.getByTestId('transactions-table-memo-select')
     await expect(memoSelect).toBeVisible({ timeout: 5000 })
+    return memoSelect
+  }
 
-    // Click the select to open it
+  // Helper function to open select and get input
+  async function openSelectAndGetInput(memoSelect: Locator): Promise<Locator> {
     await memoSelect.click()
-
-    // Get the input within the select (Element Plus creates an input for filtering)
     const selectInput = memoSelect.locator('input')
     await expect(selectInput).toBeVisible()
+    return selectInput
+  }
 
-    // Type "Coffee" to filter - use type() instead of fill() for proper filtering
-    // Element Plus needs keypress events to trigger filtering
-    await selectInput.type('Coffee')
+  // Helper function to search and wait for options
+  async function searchMemo(page: Page, selectInput: Locator, searchText: string): Promise<void> {
+    await selectInput.fill(searchText)
 
-    // Wait for filtered options to appear by checking for the option
-    const coffeeShopOption = page.getByRole('option', { name: 'Coffee Shop' }).first()
-    await expect(coffeeShopOption).toBeVisible({ timeout: 5000 })
+    // Wait for first matching option to appear
+    const firstOption = page.getByRole('option', { name: searchText }).first()
+    await expect(firstOption).toBeVisible({ timeout: 5000 })
+  }
+
+  // Helper function to select a memo by searching and pressing Enter
+  async function selectMemoBySearch(
+    page: Page,
+    memoSelect: Locator,
+    searchText: string,
+  ): Promise<void> {
+    const selectInput = await openSelectAndGetInput(memoSelect)
+    await selectInput.type(searchText)
+
+    await expect(page.getByRole('option', { name: searchText }).first()).toBeVisible({
+      timeout: 5000,
+    })
+
+    await selectInput.press('Enter')
+  }
+
+  test('should update dropdown options when user types a search query', async ({ page }) => {
+    const memoSelect = await getMemoSelect(page)
+    const selectInput = await openSelectAndGetInput(memoSelect)
+
+    await searchMemo(page, selectInput, 'Coffee')
 
     // Verify we have Coffee-related options
     const coffeeOptions = page.getByRole('option', { name: /Coffee/i })
@@ -59,60 +86,27 @@ test.describe('MemoSelect Search Functionality', () => {
   })
 
   test('should select a memo from search results', async ({ page }) => {
-    // Wait for memo select to be ready
-    const memoSelect = page.getByTestId('transactions-table-memo-select')
-    await expect(memoSelect).toBeVisible({ timeout: 5000 })
+    const memoSelect = await getMemoSelect(page)
 
-    // Click to open the select
-    await memoSelect.click()
-
-    // Type "Coffee" to filter - use type() for proper keypress events
-    const selectInput = memoSelect.locator('input')
-    await expect(selectInput).toBeVisible()
-    await selectInput.type('Coffee Shop')
-
-    // Wait for the option to be available before pressing Enter
-    await expect(page.getByRole('option', { name: 'Coffee Shop' }).first()).toBeVisible({
-      timeout: 5000,
-    })
-
-    // Press Enter to select the first filtered option
-    await selectInput.press('Enter')
+    await selectMemoBySearch(page, memoSelect, 'Coffee Shop')
 
     // Verify selection - the select should now show "Coffee Shop"
     await expect(memoSelect).toContainText('Coffee Shop')
   })
 
   test('should clear selection when clear button is clicked', async ({ page }) => {
-    // Wait for memo select to be ready
-    const memoSelect = page.getByTestId('transactions-table-memo-select')
-    await expect(memoSelect).toBeVisible({ timeout: 5000 })
+    const memoSelect = await getMemoSelect(page)
 
     // First, select a memo
-    await memoSelect.click()
-
-    const selectInput = memoSelect.locator('input')
-    await expect(selectInput).toBeVisible()
-    await selectInput.type('Coffee Shop')
-
-    // Wait for the option to be available before pressing Enter
-    await expect(page.getByRole('option', { name: 'Coffee Shop' }).first()).toBeVisible({
-      timeout: 5000,
-    })
-
-    // Press Enter to select the first filtered option
-    await selectInput.press('Enter')
+    await selectMemoBySearch(page, memoSelect, 'Coffee Shop')
 
     // Verify selection
     await expect(memoSelect).toContainText('Coffee Shop')
 
     // Now clear the selection - hover to make the clear icon appear
-    // Element Plus shows clear icon on hover when there's a selection
     await memoSelect.hover()
 
-    // Find and click the clear icon within the select suffix area
-    // Note: Element Plus uses internal CSS classes that may change in future versions
-    // This clicks on the icon in the suffix area which becomes the clear button when hovered
+    // Find and click the clear icon
     const clearIcon = memoSelect.locator('.el-select__suffix .el-icon')
     await expect(clearIcon).toBeVisible({ timeout: 2000 })
     await clearIcon.click()
