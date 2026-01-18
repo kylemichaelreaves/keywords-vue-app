@@ -28,16 +28,20 @@ export function useDarkMode() {
     isDark.value = dark
   }
 
-  const theme = computed(() => isDark.value ? 'dark' : 'light')
+  const theme = computed(() => (isDark.value ? 'dark' : 'light'))
 
   // Watch for changes and update localStorage + document class
-  watch(isDark, (newValue) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('theme', newValue ? 'dark' : 'light')
-      document.documentElement.classList.toggle('dark', newValue)
-      document.documentElement.setAttribute('data-theme', newValue ? 'dark' : 'light')
-    }
-  }, { immediate: true })
+  watch(
+    isDark,
+    (newValue) => {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('theme', newValue ? 'dark' : 'light')
+        document.documentElement.classList.toggle('dark', newValue)
+        document.documentElement.setAttribute('data-theme', newValue ? 'dark' : 'light')
+      }
+    },
+    { immediate: true },
+  )
 
   // Listen to system theme changes
   if (typeof window !== 'undefined') {
@@ -54,6 +58,6 @@ export function useDarkMode() {
     isDark,
     theme,
     toggleDarkMode,
-    setDarkMode
+    setDarkMode,
   }
 }

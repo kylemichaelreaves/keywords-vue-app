@@ -1,0 +1,29 @@
+# Auto-generated files
+components.d.ts
+auto-imports.d.ts
+
+# Build outputs
+dist-ssr
+*.local
+
+# Dependencies
+node_modules
+
+# Generated files
+.nyc_output
+
+# Storybook
+storybook-static
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Test results
+test-results
+playwright-report
+
+# HTML output
+html
+
+# playwright config
+playwright.config.d.ts

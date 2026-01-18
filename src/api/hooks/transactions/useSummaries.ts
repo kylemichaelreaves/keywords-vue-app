@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import { fetchSummaries } from '@api/transactions/fetchSummaries'
 import type { Summaries } from '@types'
-import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
+import { getTimeframeTypeAndValue } from '@components/transactions/helpers/getTimeframeTypeAndValue.ts'
 import { computed } from 'vue'
 import { useTransactionsStore } from '@stores/transactions'
 
@@ -9,7 +9,6 @@ import { useTransactionsStore } from '@stores/transactions'
 // like monthly or weekly, and returns:
 // the total amount debit, total amount credit, and their difference for each interval
 export default function useSummaries() {
-
   const { timeFrame, selectedValue } = getTimeframeTypeAndValue()
   const store = useTransactionsStore()
 
@@ -26,12 +25,11 @@ export default function useSummaries() {
     }
   })
 
-
   return useQuery({
     queryKey: ['summaries', timeFrame, selectedValue] as const,
     queryFn: async (): Promise<Summaries[]> => {
       if (cachedSummaries.value && cachedSummaries.value.length > 0) {
-        return Promise.resolve(cachedSummaries.value)
+        return cachedSummaries.value
       } else {
         const summaries = await fetchSummaries(timeFrame)
 
@@ -54,6 +52,6 @@ export default function useSummaries() {
       }
     },
     refetchOnWindowFocus: false,
-    enabled: !!selectedValue
+    enabled: !!selectedValue,
   })
 }

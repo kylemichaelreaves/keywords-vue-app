@@ -1,37 +1,29 @@
 <template>
-    <el-card v-if="addresses.length > 0" v-for="item in addresses" :key="item.id">
-        <template #header>
-            <div class="card-header">{{ item.name }}</div>
-        </template>
-        <p>{{ item.description }}</p>
+  <template v-if="props.addresses.length > 0">
+    <el-card v-for="(item, index) in props.addresses" :key="item.id || index">
+      <template #header>
+        <div class="card-header">{{ item.name }}</div>
+      </template>
+      <p>{{ item.description }}</p>
     </el-card>
-    <el-alert v-else type="error" title="Error: {{error}}"></el-alert>
+  </template>
+  <el-alert v-else type="error" :title="`Error: ${props.error}`"></el-alert>
 </template>
 
-<script lang="ts">
-import {defineComponent} from "vue";
+<script setup lang="ts">
+interface AddressItem {
+  id: string | number
+  name: string
+  description: string
+}
 
-export default defineComponent({
-    name: 'AddressList',
-    props: {
-        error: {
-            type: String,
-            default: '',
-            required: false,
-        },
-        addresses: {
-            type: Array,
-            default: () => [],
-            required: true,
-            items: {
-                type: Object
-            }
-        }
-    },
-    setup(props) {
-        const {addresses} = props;
-        return {addresses};
-    }
-});
+interface Props {
+  error?: string
+  addresses: AddressItem[]
+}
 
+const props = withDefaults(defineProps<Props>(), {
+  error: '',
+  addresses: () => [],
+})
 </script>

@@ -1,12 +1,27 @@
 {
   "extends": "./tsconfig.app.json",
-  "exclude": [],
+  "include": [
+    "src/**/*",
+    "src/**/*.vue",
+    "vitest.shims.d.ts",
+    "vitest-globals.d.ts",
+    "vitest.intellij.d.ts",
+    "env.d.ts",
+    "vitest.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
     "composite": true,
-    "lib": [],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": [
       "node",
-      "jsdom"
+      "jsdom",
+      "vite/client",
+      "vitest/globals",
+      "@testing-library/jest-dom"
     ]
   }
 }
+

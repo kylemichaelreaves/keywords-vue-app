@@ -2,10 +2,8 @@ import { expect, test } from '@test/e2e/fixtures/PageFixture'
 import { MemoSummaryTablePage } from '@test/e2e/pages/MemoSummaryTablePage'
 import { MemosTablePage } from '@test/e2e/pages/MemosTablePage'
 import { generateMemosArray } from '@test/e2e/mocks/memosMock.ts'
-import { generateTransactionsArray } from '@test/e2e/mocks/transactionsMock.ts'
-import { mockMemoTableRoutes } from '@test/e2e/helpers/mockMemoRoutes.ts'
 import type { Memo } from '@types'
-
+import { mockMemoRoutes, mockTransactionRoutes } from '@test/e2e/helpers/setupTestMocks.ts'
 
 test.describe('Memo Summary Table', () => {
   let memoSummaryTablePage: MemoSummaryTablePage
@@ -17,59 +15,35 @@ test.describe('Memo Summary Table', () => {
     memosPage = new MemosTablePage(page)
     memoSummaryTablePage = new MemoSummaryTablePage(page)
 
+    // Ensure no requests go out before routes are ready
+    await page.route('**/*', (route) => route.continue()) // Catch-all first
+    await page.unrouteAll() // Clear it
+
+    // Set up request logging to debug CI
+    if (process.env.CI) {
+      page.on('request', (req) => {
+        if (req.url().includes('memos')) {
+          console.log('[CI REQUEST]', req.url())
+        }
+      })
+      page.on('response', (res) => {
+        if (res.url().includes('memos')) {
+          console.log('[CI RESPONSE]', res.status(), res.url())
+        }
+      })
+    }
+
     const memos = generateMemosArray()
     memoWithoutBudgetCategory = {
       ...memos[0],
-      budget_category: null
+      budget_category: null,
     } as Memo
 
-    // Use the shared mock helper for most routes
-    await mockMemoTableRoutes(page)
-
-    // Override the single memo route to return memo WITH budget_category null from the start
-    await page.route('**/memos/**', route => {
-      const url = new URL(route.request().url())
-      const pathSegments = url.pathname.split('/')
-      const lastSegment = pathSegments[pathSegments.length - 1]
-
-      // Skip if this is a summary route (should be handled by mockMemoTableRoutes)
-      if (lastSegment === 'summary') {
-        return route.continue()
-      }
-
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([memoWithoutBudgetCategory]) // Return array containing the memo object
-      })
-    })
-
-    // mock /dev/memos/**/summary
-    await page.route('**/memos/**/summary', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            'total_amount_debit': 3000,
-            'transactions_count': 15
-          }
-        ])
-      })
-    })
-
-    // mock /transactions?memo=*
-    await page.route('**/transactions?memo=*', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(generateTransactionsArray(5, memos[0].name))
-      })
-    })
-
+    // Use consolidated mock with custom memos
+    await mockMemoRoutes(page, { memos: [memoWithoutBudgetCategory, ...memos.slice(1)] })
+    await mockTransactionRoutes(page) // This handles /transactions?memoId=*
 
     await memosPage.goTo()
-
 
     firstMemoName = await memosPage.getFirstMemoName()
 
@@ -86,7 +60,6 @@ test.describe('Memo Summary Table', () => {
     })
   })
 
-
   test('should display the memo title', async () => {
     const title = await memoSummaryTablePage.getMemoTitle()
     expect(title).toBe(firstMemoName)
@@ -101,56 +74,34 @@ test.describe('Memo Summary Table', () => {
     await expect(memoSummaryTablePage.page).toHaveURL(/\/budget-visualizer\/memos/)
   })
 
-  test('when the memo lacks a budget_category, the budget category button should be visible and clickable', async ({ page }) => {
-    // Clear the existing memo route specifically
-    await page.unroute('**/memos/**')
+  test('when the memo lacks a budget_category, the budget_category button should be visible and clickable', async ({
+    page,
+  }) => {
+    // Unroute ALL routes and set up fresh mocks
+    await page.unrouteAll()
 
-    // Get the current memo name for consistency
-    const currentMemoText = await memoSummaryTablePage.getMemoTitle()
+    const memos = generateMemosArray()
 
-    // Create a memo without budget category using the CURRENT memo name
+    // Create memo without budget category
     const memoWithoutBudgetCategory = {
-      id: 1,
-      name: currentMemoText || 'Test Memo',
-      recurring: false,
-      necessary: false,
-      frequency: null,
-      budget_category: null, // This is the key - no budget category
-      ambiguous: false,
-      avatar_s3_url: null
-    }
+      ...memos[0],
+      id: 20, // Match the ID from the URL
+      budget_category: null,
+    } as Memo
 
-    // Set up a more specific route interceptor that doesn't interfere with summary endpoint
-    await page.route('**/memos/**', async route => {
-      const url = new URL(route.request().url())
-      const pathSegments = url.pathname.split('/')
-      const lastSegment = pathSegments[pathSegments.length - 1]
-      // Only intercept if this is NOT a summary route
-      if (lastSegment !== 'summary') {
-        // Return array containing the memo object - this matches the expected API format
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([memoWithoutBudgetCategory]) // Array containing the memo object
-        })
-      } else {
-        // Let summary routes pass through to the original mock
-        await route.continue()
-      }
-    })
+    // Re-register all routes with the modified memo
+    await mockMemoRoutes(page, { memos: [memoWithoutBudgetCategory, ...memos.slice(1)] })
+    await mockTransactionRoutes(page)
 
-    // Navigate to the same page fresh (instead of reload)
+    // Navigate fresh
     const currentUrl = page.url()
     await page.goto(currentUrl)
 
-    // Wait for the page to be ready
     await page.waitForLoadState('networkidle')
 
-    // Wait for the button to be visible - this is the main test
+    // Now the button should be visible
     await expect(memoSummaryTablePage.budgetCategoryButton).toBeVisible({ timeout: 15000 })
-    // Now test clicking the button to open the modal
     await memoSummaryTablePage.budgetCategoryButton.click()
-    // Check if modal opens
     await expect(memoSummaryTablePage.budgetCategoryModal).toBeVisible({ timeout: 5000 })
   })
 })

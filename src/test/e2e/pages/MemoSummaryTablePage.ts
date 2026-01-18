@@ -27,26 +27,24 @@ export class MemoSummaryTablePage {
     this.transactionsAmount = page.getByTestId('sum-amount-debit')
     this.backButton = page.getByRole('button', { name: 'Go Back' })
     this.memoTitle = this.memoSummaryHeader.getByTestId('memo-title')
-    // Fix: Target the specific button within the budget category column
-    this.budgetCategoryButton = page.getByTestId('budget-category-column').getByTestId('budget-category-button')
-    this.budgetCategoryModal = page.getByTestId('budget-category-modal')
+    // Target the button by its data-testid within the budget category column
+    this.budgetCategoryButton = page.getByTestId('budget-category-button')
 
+    this.budgetCategoryModal = page.getByTestId('budget-category-modal')
   }
 
   async goToMemos() {
     await this.page.goto('budget-visualizer/memos')
   }
 
-
   async goTo(memoId: string) {
     await this.page.goto(`budget-visualizer/memos/${memoId}`)
   }
 
-
   async expectError(message?: string) {
     expect(this.errorAlert.isVisible())
     if (message) {
-    expect(this.errorAlert).toHaveAttribute('title', message)
+      expect(this.errorAlert).toHaveAttribute('title', message)
     }
   }
 
@@ -55,13 +53,23 @@ export class MemoSummaryTablePage {
   }
 
   async getMemoTitle() {
+    // Wait for the title to be loaded (not "Loading...")
+    await this.memoTitle.waitFor({ state: 'visible' })
+    await this.page.waitForFunction(
+      (selector) => {
+        const element = document.querySelector(selector)
+        return element?.textContent?.trim() !== 'Loading...'
+      },
+      '[data-testid="memo-title"]',
+      { timeout: 10000 },
+    )
     return this.memoTitle.textContent()
   }
 
   async getStats() {
     return {
       transactionsCount: await this.transactionsCount.textContent(),
-      transactionsAmount: await this.transactionsAmount.textContent()
+      transactionsAmount: await this.transactionsAmount.textContent(),
     }
   }
 
@@ -80,6 +88,4 @@ export class MemoSummaryTablePage {
   async clickBackButton() {
     await this.backButton.click()
   }
-
-
 }

@@ -20,33 +20,31 @@
 </template>
 
 <script setup lang="ts">
-import type {PropType} from "vue";
+import type { PropType } from 'vue'
+
+type AlertType = 'success' | 'warning' | 'info' | 'error'
 
 const props = defineProps({
   type: {
-    type: String,
-    required: true
+    type: String as PropType<AlertType>,
+    required: true,
   },
   message: {
     type: String,
-    required: true
+    required: true,
   },
   title: {
     type: String,
-    required: true
+    required: true,
   },
   close: {
     type: Function as PropType<() => void>,
-    required: false
+    required: false,
   },
   dataTestId: {
     type: String,
     default: 'alert',
-    required: false
-  }
+    required: false,
+  },
 })
-
 </script>
-
-<style scoped>
-</style>

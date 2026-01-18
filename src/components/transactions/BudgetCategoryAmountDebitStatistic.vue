@@ -1,12 +1,17 @@
 <template>
   <div>
-    <AlertComponent title="error.name" message="error.message" type="error" v-if="isError && error" />
+    <AlertComponent
+      title="error.name"
+      message="error.message"
+      type="error"
+      v-if="isError && error"
+    />
 
     <!-- Show skeleton when loading -->
     <el-skeleton v-if="isLoading || isFetching || isRefetching" animated>
       <template #template>
-        <el-skeleton-item variant="h3" style="width: 60%; margin-bottom: 8px;" />
-        <el-skeleton-item variant="text" style="width: 40%;" />
+        <el-skeleton-item variant="h3" style="width: 60%; margin-bottom: 8px" />
+        <el-skeleton-item variant="text" style="width: 40%" />
       </template>
     </el-skeleton>
 
@@ -22,8 +27,8 @@
 </template>
 
 <script setup lang="ts">
-import { useBudgetCategoryAmountDebit } from '@api/hooks/transactions/useBudgetCategoryAmountDebit.ts'
-import { getTimeframeTypeAndValue } from '@components/transactions/getTimeframeTypeAndValue.ts'
+import { useBudgetCategoryAmountDebit } from '@api/hooks/budgetCategories/useBudgetCategoryAmountDebit.ts'
+import { getTimeframeTypeAndValue } from '@components/transactions/helpers/getTimeframeTypeAndValue.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import StatisticComponent from '@components/shared/StatisticComponent.vue'
 import { ElSkeleton, ElSkeletonItem } from 'element-plus'
@@ -32,22 +37,21 @@ import { computed } from 'vue'
 const props = defineProps({
   budgetCategoryName: {
     type: String,
-    required: true
+    required: true,
   },
   dataTestId: {
     type: String,
-    default: 'budget-category-amount-debit-statistic'
-  }
+    default: 'budget-category-amount-debit-statistic',
+  },
 })
 
 const { timeFrame, selectedValue } = getTimeframeTypeAndValue()
 
-
-const { data, isLoading, isFetching, isRefetching, refetch, isError, error } = useBudgetCategoryAmountDebit(
+const { data, isLoading, isFetching, isRefetching, isError, error } = useBudgetCategoryAmountDebit(
   props.budgetCategoryName,
   timeFrame,
   selectedValue?.value ? selectedValue.value : '',
-  true
+  true,
 )
 
 // Make totalAmountDebit reactive using computed
@@ -65,5 +69,4 @@ const totalAmountDebit = computed(() => {
   }
   return 0
 })
-
 </script>

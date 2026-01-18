@@ -3,154 +3,279 @@
     :model="transaction"
     ref="formRef"
     label-width="120px"
-    :data-testid="props.dataTestId"
+    :data-testid="dataTestId"
+    aria-label="Transaction Edit Form"
   >
     <el-form-item v-for="(field, key) in fields" :key="key" :label="field.label">
       <component
         :is="field.component"
-        v-model="transaction[key]"
+        v-model="formValues[key]"
         :placeholder="field.placeholder"
         :data-testid="`${dataTestId}-${key}`"
+        :aria-label="field['aria-label']"
         v-bind="field.props || {}"
-      >
-      </component>
+      />
     </el-form-item>
-    <el-button
-      type="primary"
-      @click="saveTransaction"
-      :data-testid="`${dataTestId}-save-button`"
-    >
-      Save
-    </el-button>
+
+    <el-button type="primary" @click="saveTransaction"> Save </el-button>
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { type PropType, reactive, ref, watch } from 'vue'
-import type { Transaction, TransactionFormFields, TransactionKeys } from '@types'
+import { type PropType, reactive, ref, watch, computed } from 'vue'
+import type {
+  Transaction,
+  TransactionFormFields,
+  PendingTransaction,
+  BudgetCategoryState,
+  SplitBudgetCategory,
+  TransactionKeys,
+} from '@types'
 import mutateTransaction from '@api/hooks/transactions/mutateTransaction'
-import { type ElForm, ElMessage } from 'element-plus'
-import BudgetCategoryTreeSelect from '@components/transactions/BudgetCategoriesTreeSelect.vue'
-import MemoSelect from '@components/transactions/MemoSelect.vue'
+import mutatePendingTransaction from '@api/hooks/transactions/mutatePendingTransaction'
+import { type ElForm, ElMessage, ElInput, ElDatePicker } from 'element-plus'
+import MemoSelect from '@components/transactions/selects/MemoSelect.vue'
+import BudgetCategoryFormField from '@components/transactions/BudgetCategoryFormField.vue'
 
 const props = defineProps({
   transaction: {
     type: Object as PropType<Transaction>,
-    required: true
+    required: true,
   },
   dataTestId: {
     type: String,
-    default: 'transaction-edit-form'
-  }
+    default: 'transaction-edit-form',
+  },
+  isPending: {
+    type: Boolean,
+    default: false,
+  },
+  pendingTransactionId: {
+    type: Number,
+    default: undefined,
+  },
 })
 
-const transaction = reactive({ ...props.transaction })
+const emit = defineEmits<{
+  close: []
+}>()
 
 const formRef = ref<InstanceType<typeof ElForm> | null>(null)
+const transaction = reactive<Transaction>(props.transaction as Transaction)
 
-const fields: Record<TransactionKeys, TransactionFormFields> = ({
+// Budget category state - single source of truth
+const budgetCategoryState = ref<BudgetCategoryState>(
+  initializeBudgetCategoryState(props.transaction!),
+)
+
+// Computed transaction amount
+const transactionAmount = computed(() =>
+  Number.parseFloat(transaction.amount_debit || transaction.amount_credit || '0'),
+)
+
+// Initialize budget category state from transaction
+function initializeBudgetCategoryState(txn: Transaction): BudgetCategoryState {
+  if (txn.is_split && Array.isArray(txn.budget_category)) {
+    return {
+      mode: 'split',
+      splits: txn.budget_category.map((split, index) => ({
+        id: `split_${index}_${Date.now()}`,
+        budget_category_id: split.budget_category_id,
+        amount_debit: split.amount_debit,
+      })),
+    }
+  }
+
+  return {
+    mode: 'single',
+    categoryId: typeof txn.budget_category === 'string' ? txn.budget_category : null,
+  }
+}
+
+// Reactive computed that creates proper getter/setters for each field
+const formValues = computed(() => {
+  const values: Record<string, unknown> = {}
+
+  // Create getter/setter for each field
+  const keys = Object.keys(fields) as TransactionKeys[]
+
+  keys.forEach((key) => {
+    Object.defineProperty(values, key, {
+      get() {
+        if (key === 'budget_category') {
+          return budgetCategoryState.value
+        }
+        return transaction[key]
+      },
+      set(value) {
+        if (key === 'budget_category') {
+          budgetCategoryState.value = value as BudgetCategoryState
+        } else {
+          // Type-safe assignment for transaction properties
+          ;(transaction as Record<string, unknown>)[key] = value
+        }
+      },
+      enumerable: true,
+      configurable: true,
+    })
+  })
+
+  return values
+})
+
+const fields: Record<TransactionKeys, TransactionFormFields> = {
+  id: {
+    component: ElInput,
+    label: 'Id',
+    'aria-label': 'Transaction ID',
+    placeholder: 'Transaction Id',
+    props: { disabled: true },
+  },
   transaction_number: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Transaction Number',
+    'aria-label': 'Transaction Number',
     placeholder: 'Enter a transaction number',
-    props: {
-      disabled: true
-    },
-    dataTestId: `${props.dataTestId}-transaction_number-input`
+    props: { disabled: true },
   },
   date: {
-    component: 'el-date-picker',
+    component: ElDatePicker,
     label: 'Date',
+    'aria-label': 'Transaction Date Picker',
     placeholder: 'Select a date',
-    props: {
-      valueFormat: 'YYYY-MM-DD'
-    },
-    dataTestId: `${props.dataTestId}-date-picker`
+    props: { valueFormat: 'YYYY-MM-DD' },
   },
   amount_debit: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Amount Debit',
+    'aria-label': 'Amount Debit',
     placeholder: 'Enter a debit amount',
-    props: {
-      disabled: !!transaction.amount_credit
-    },
-    dataTestId: `${props.dataTestId}-amount_debit-input`
+    props: { disabled: !!transaction.amount_credit },
   },
   amount_credit: {
-    component: 'el-input',
-    label: 'Amount Credit ',
+    component: ElInput,
+    label: 'Amount Credit',
+    'aria-label': 'Amount Credit',
     placeholder: 'Enter a credit amount',
-    props: {
-      disabled: !!transaction.amount_debit
-    },
-    dataTestId: `${props.dataTestId}-amount_credit-input`
+    props: { disabled: !!transaction.amount_debit },
   },
   description: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Description',
+    'aria-label': 'Transaction Description',
     placeholder: 'Enter a description',
-    dataTestId: `${props.dataTestId}-description-input`
   },
   memo: {
     component: MemoSelect,
     label: 'Memo',
+    'aria-label': 'Transaction Memo',
     placeholder: 'Select a memo',
-    props: {
-      modelValue: transaction.memo
-    },
-    dataTestId: `${props.dataTestId}-memo-select`
+    props: { modelValue: transaction.memo },
   },
   balance: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Balance',
+    'aria-label': 'Account Balance',
     placeholder: 'Enter a balance',
-    dataTestId: `${props.dataTestId}-balance-input`,
   },
   check_number: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Check Number',
+    'aria-label': 'Check Number',
     placeholder: 'Enter a check number',
-    dataTestId: `${props.dataTestId}-check-number-input`,
-    props: {
-      disabled: transaction.description !== 'CHECK'
-    },
+    props: { disabled: transaction.description !== 'CHECK' },
   },
   budget_category: {
-    component: BudgetCategoryTreeSelect,
+    component: BudgetCategoryFormField,
     label: 'Budget Category',
+    'aria-label': 'Budget Category',
     placeholder: 'Select a budget category',
-    dataTestId: `${props.dataTestId}-budget_category-tree-select`,
+    props: {
+      transactionAmount: transactionAmount.value,
+    },
   },
   fees: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Fees',
+    'aria-label': 'Transaction Fees',
     placeholder: 'Enter fees',
-    dataTestId: `${props.dataTestId}-fees-input`
-  }
-})
-
-const { mutate } = mutateTransaction()
-
-watch(() => props.transaction, (newTransaction) => {
-  Object.assign(transaction, newTransaction)
-}, {
-  deep: true,
-  immediate: true
-})
-
-const saveTransaction = () => {
-  mutate({
-      transaction: transaction
-    },
-    {
-      onSuccess: () => {
-        ElMessage.success('Transaction saved')
-      },
-      onError: (error) => {
-        ElMessage.error(error.message)
-      }
-    })
+  },
 }
 
-</script>
+const { mutate: mutateRegularTransaction } = mutateTransaction()
+const { mutate: mutatePending } = mutatePendingTransaction()
 
+// Helper functions to extract values from discriminated union
+function getBudgetCategory(state: BudgetCategoryState): string | SplitBudgetCategory[] | undefined {
+  if (state.mode === 'single') {
+    return state.categoryId ?? undefined
+  }
+  return state.splits
+}
+
+// Watch for external transaction changes
+watch(
+  () => props.transaction,
+  (newTransaction) => {
+    Object.assign(transaction, newTransaction)
+    budgetCategoryState.value = initializeBudgetCategoryState(newTransaction!)
+  },
+  { deep: true },
+)
+
+// Save transaction
+const saveTransaction = () => {
+  const state = budgetCategoryState.value
+  const budgetCategory = getBudgetCategory(state)
+
+  const transactionData: Transaction = {
+    ...transaction,
+    budget_category: budgetCategory,
+    is_split: state.mode === 'split',
+  }
+
+  if (props.isPending && props.pendingTransactionId) {
+    const assignedCategory = getBudgetCategory(state)
+
+    const pendingTransactionData: PendingTransaction = {
+      id: props.pendingTransactionId,
+      created_at: '',
+      transaction_data: transactionData as unknown as Transaction,
+      amount_debit: transaction.amount_debit || '0.00',
+      transaction_date: transaction.date,
+      memo_name: transaction.memo,
+      assigned_category: assignedCategory,
+      status: 'reviewed',
+    }
+
+    mutatePending(
+      {
+        pendingTransactionId: props.pendingTransactionId,
+        pendingTransaction: pendingTransactionData,
+      },
+      {
+        onSuccess: () => {
+          ElMessage.success('Pending transaction saved')
+          emit('close')
+        },
+        onError: (error) => {
+          ElMessage.error(error.message)
+        },
+      },
+    )
+  } else {
+    mutateRegularTransaction(
+      { transaction: transactionData },
+      {
+        onSuccess: () => {
+          ElMessage.success('Transaction saved')
+          emit('close')
+        },
+        onError: (error) => {
+          ElMessage.error(error.message)
+        },
+      },
+    )
+  }
+}
+</script>

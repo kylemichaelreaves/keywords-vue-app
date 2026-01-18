@@ -1,6 +1,6 @@
 <template>
   <div :class="sizeClass">
-    <el-statistic :value="value" :title="title" />
+    <el-statistic :value="numericValue" :title="title" />
     <div v-if="previousValue !== undefined && difference" class="footer">
       <span v-if="difference > 0" class="increase">Increase</span>
       <span v-else-if="difference < 0" class="decrease">Decrease</span>
@@ -16,31 +16,35 @@ import { computed } from 'vue'
 const props = defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   value: {
     type: [Number, String],
-    required: true
+    required: true,
   },
   previousValue: {
     type: [Number, String],
-    required: false
+    required: false,
   },
   size: {
     type: String,
     default: 'default',
     required: false,
-    validator: (value: string) => ['small', 'default', 'large'].includes(value)
+    validator: (value: string) => ['small', 'default', 'large'].includes(value),
   },
   dataTestId: {
     type: String,
     default: '',
-    required: false
+    required: false,
   },
 })
 
 const sizeClass = computed(() => {
   return `statistic-${props.size}`
+})
+
+const numericValue = computed(() => {
+  return Number(props.value)
 })
 
 const difference = computed(() => {

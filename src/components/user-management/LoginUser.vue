@@ -6,16 +6,12 @@
     type="error"
     show-icon
     center
-    style="margin-top: 20px;"
+    style="margin-top: 20px"
     size="large"
   />
   <div class="container">
     <el-card class="login-el-card">
-      <el-form
-        :model="user"
-        :rules="rules"
-        label-width="120px"
-      >
+      <el-form :model="user" :rules="rules" label-width="120px">
         <el-form-item
           v-for="(field, key) in loginFormFields"
           :key="key"
@@ -31,7 +27,6 @@
             @keyup.enter="submitForm"
           />
         </el-form-item>
-
       </el-form>
       <div class="button-container">
         <el-button
@@ -49,16 +44,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
-import type { LoginFormFields, loginFormKeys } from '@types'
+import { computed, ref, onMounted, type Component } from 'vue'
+import type { loginFormKeys } from '@types'
 import { useMutation } from '@tanstack/vue-query'
 import { useAuthStore } from '@stores/auth.ts'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElInput } from 'element-plus'
+
+interface LoginFormField {
+  component: Component
+  label: string
+  placeholder: string
+  type: string
+  showPassword?: boolean
+}
 
 const user = ref({
   username: '',
-  password: ''
+  password: '',
 })
 
 const authStore = useAuthStore()
@@ -70,12 +73,20 @@ const isDisabledCondition = computed(() => {
 })
 
 const errorDescription = computed(() => {
-  return isError.value ? error?.response?.data?.message || 'An error occurred' : ''
+  if (!isError.value || !error.value) return ''
+
+  // Handle different error types
+  if (error.value && typeof error.value === 'object' && 'response' in error.value) {
+    const axiosError = error.value as Error & { response?: { data?: { message?: string } } }
+    return axiosError.response?.data?.message || axiosError.message || 'An error occurred'
+  }
+
+  return error.value instanceof Error ? error.value.message : 'An error occurred'
 })
 
 const { mutate, isPending, isError, error } = useMutation({
   mutationKey: ['login'],
-  mutationFn: async ({ username, password }: { username: string, password: string }) => {
+  mutationFn: async ({ username, password }: { username: string; password: string }) => {
     return await authStore.login(username, password)
   },
   onSuccess: (data) => {
@@ -93,39 +104,32 @@ const { mutate, isPending, isError, error } = useMutation({
   onError: (error) => {
     ElMessage.error('Login failed! Please try again!')
     console.error('Login failed', error)
-  }
+  },
 })
-
 
 const submitForm = () => {
   mutate({ username: user.value.username, password: user.value.password })
 }
 
-
-const loginFormFields: Record<loginFormKeys, LoginFormFields> = {
+const loginFormFields: Record<loginFormKeys, LoginFormField> = {
   username: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Username',
     placeholder: 'Enter username',
-    type: 'text'
+    type: 'text',
   },
   password: {
-    component: 'el-input',
+    component: ElInput,
     label: 'Password',
     placeholder: 'Enter password',
     type: 'password',
-    showPassword: true
-  }
+    showPassword: true,
+  },
 }
 
-
 const rules = {
-  username: [
-    { required: true, message: 'Please enter username', trigger: 'blur' }
-  ],
-  password: [
-    { required: true, message: 'Please enter password', trigger: 'blur' }
-  ]
+  username: [{ required: true, message: 'Please enter username', trigger: 'blur' }],
+  password: [{ required: true, message: 'Please enter password', trigger: 'blur' }],
 }
 
 onMounted(() => {
@@ -148,12 +152,8 @@ onMounted(() => {
   if (isUserInStore && isUserAuthenticated) {
     router.push('/budget-visualizer/transactions')
   }
-
 })
-
-
 </script>
-
 
 <style scoped>
 .login-el-card {
@@ -162,7 +162,7 @@ onMounted(() => {
   justify-content: left;
   display: flex;
   flex-direction: column;
-  filter: drop-shadow(0 0 5px #409EFF);
+  filter: drop-shadow(0 0 5px #409eff);
 }
 
 .container {
@@ -173,7 +173,7 @@ onMounted(() => {
 }
 
 .button {
-  background-color: #409EFF;
+  background-color: #409eff;
   color: white;
   border: none;
   padding: 14px 45px;

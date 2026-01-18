@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime } from 'luxon'
 
 /**
  * Parses a date string in the format WW-YYYY (ISO week number and year) and returns a Date object.
@@ -9,23 +9,36 @@ import { DateTime } from 'luxon';
 
 // used by the DailyIntervalLineChart
 export function parseDateIWIYYY(input: string): Date | null {
-    // regex to match the format WW-YYYY
-    const regex = /^(\d{2})-(\d{4})$/;
-    const match = RegExp(regex).exec(input);
+  // regex to match the format WW-YYYY
+  const regex = /^(\d{2})-(\d{4})$/
+  const match = RegExp(regex).exec(input)
 
-    if (!match) {
-        return null;
-    }
+  if (!match) {
+    return null
+  }
 
-    const weekNumber = parseInt(match[1], 10);
-    const weekYear = parseInt(match[2], 10);
+  // Ensure match groups exist before parsing
+  const weekStr = match[1]
+  const yearStr = match[2]
 
-    const dt = DateTime.fromObject({ weekYear, weekNumber }, { zone: 'UTC' });
+  if (!weekStr || !yearStr) {
+    return null
+  }
 
-    if (!dt.isValid) {
-        console.error(dt.invalidReason);
-        return null;
-    }
+  const weekNumber = parseInt(weekStr, 10)
+  const weekYear = parseInt(yearStr, 10)
 
-    return dt.toJSDate();
+  // Validate that parsing was successful and values are valid
+  if (isNaN(weekNumber) || isNaN(weekYear) || weekNumber < 1 || weekNumber > 53) {
+    return null
+  }
+
+  const dt = DateTime.fromObject({ weekYear, weekNumber }, { zone: 'UTC' })
+
+  if (!dt.isValid) {
+    console.error(dt.invalidReason)
+    return null
+  }
+
+  return dt.toJSDate()
 }

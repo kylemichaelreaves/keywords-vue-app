@@ -29,7 +29,7 @@ dist-ssr
 # don't commit the .nvmrc file
 .nvmrc
 
-html/assets
+html/
 /test-results/
 /playwright-report/
 /blob-report/
@@ -44,3 +44,19 @@ src/keywords-vue-app/playwright/.auth/
 
 /src/test/e2e/playwright/.auth/
 /src/test/e2e/playwright/.auth/storageState.json
+
+*storybook.log
+storybook-static
+
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Compiled config files
+*.config.js
+*.config.d.ts
+!vitest.config.ts
+!vite.config.ts
+!playwright.config.ts
+!eslint.config.ts
+!vitest.config.storybook.ts

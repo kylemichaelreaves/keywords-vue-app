@@ -23,7 +23,7 @@ export function generateDaysArray(startYear = 2021, endYear = DateTime.now().yea
     const year = currentDate.year
 
     days.push({
-      day: `${dayNum}-${monthNum}-${year}`
+      day: `${dayNum}-${monthNum}-${year}`,
     })
 
     // Move to next day

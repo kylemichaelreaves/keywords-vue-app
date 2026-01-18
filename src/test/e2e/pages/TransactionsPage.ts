@@ -1,6 +1,10 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { clickElementTableCell, waitForElementTableReady } from '@test/e2e/helpers/waitHelpers'
+import {
+  clickElementTableCell,
+  waitForElementTableReady,
+  waitForModalReady,
+} from '@test/e2e/helpers/waitHelpers'
 
 export class TransactionsPage {
   readonly transactionsTable: Locator
@@ -36,12 +40,12 @@ export class TransactionsPage {
   readonly modalSaveButton: Locator
 
   constructor(public readonly page: Page) {
-    this.transactionsTable = this.page.getByTestId('transactions-table')
-    this.daySelect = this.page.getByTestId('transactions-table-day-select')
-    this.weekSelect = this.page.getByTestId('transactions-table-week-select')
-    this.monthSelect = this.page.getByTestId('transactions-table-month-select')
-    this.yearSelect = this.page.getByTestId('transactions-table-year-select')
-    this.memoSelect = this.page.getByTestId('transactions-table-memo-select')
+    this.transactionsTable = this.page.getByLabel('Transactions Table')
+    this.daySelect = this.page.getByRole('combobox', { name: 'Day selector' })
+    this.weekSelect = this.page.getByRole('combobox', { name: 'Week selector' })
+    this.monthSelect = this.page.getByRole('combobox', { name: 'Month selector' })
+    this.yearSelect = this.page.getByRole('combobox', { name: 'Year selector' })
+    this.memoSelect = this.page.getByLabel('Memo Selector')
 
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
     this.intervalForm = this.page.getByTestId('daily-interval-line-chart-form')
@@ -50,20 +54,40 @@ export class TransactionsPage {
     this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')
 
     this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
-    this.transactionEditModal = this.page.getByRole('dialog', { name: /edit transaction/i })
-    this.transactionEditForm = this.transactionEditModal.getByRole('form')
 
-    this.transactionNumberInput = this.transactionEditModal.getByRole('textbox', { name: /transaction number/i })
-    this.transactionDatePicker = this.transactionEditModal.getByRole('combobox', { name: /date/i })
-    this.transactionAmountDebitInput = this.transactionEditModal.getByRole('textbox', { name: /amount debit/i })
-    this.transactionAmountCreditInput = this.transactionEditModal.getByRole('textbox', { name: /amount credit/i })
-    this.transactionDescriptionInput = this.transactionEditModal.getByRole('textbox', { name: /description/i })
-    this.transactionMemoInput = this.transactionEditModal.getByRole('combobox', { name: /memo/i })
-    this.transactionBudgetCategoryTreeSelect = this.transactionEditModal.getByRole('combobox', { name: /budget category/i })
-    this.transactionCheckNumberInput = this.transactionEditModal.getByRole('textbox', { name: /check number/i })
-    this.transactionFeesInput = this.transactionEditModal.getByRole('textbox', { name: /fees/i })
-    this.transactionBalanceInput = this.transactionEditModal.getByRole('textbox', { name: /balance/i })
+    // Use aria-label for modal (more reliable than role matching)
+    this.transactionEditModal = this.page.getByLabel('Transaction Edit Modal')
 
+    // Use aria-label for form within modal
+    this.transactionEditForm = this.transactionEditModal.getByLabel('Transaction Edit Form')
+
+    // Use data-testid for form fields (more reliable than role + name matching)
+    this.transactionNumberInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-transaction_number',
+    )
+    this.transactionDatePicker = this.transactionEditForm.getByLabel('Transaction Date Picker')
+    this.transactionAmountDebitInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-amount_debit',
+    )
+    this.transactionAmountCreditInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-amount_credit',
+    )
+    this.transactionDescriptionInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-description',
+    )
+    this.transactionMemoInput = this.transactionEditForm.getByTestId('transaction-edit-form-memo')
+    this.transactionBudgetCategoryTreeSelect = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-budget_category',
+    )
+    this.transactionCheckNumberInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-check_number',
+    )
+    this.transactionFeesInput = this.transactionEditForm.getByTestId('transaction-edit-form-fees')
+    this.transactionBalanceInput = this.transactionEditForm.getByTestId(
+      'transaction-edit-form-balance',
+    )
+
+    // Modal buttons can use role since they're simple
     this.modalCloseButton = this.transactionEditModal.getByRole('button', { name: /close/i })
     this.modalSaveButton = this.transactionEditModal.getByRole('button', { name: /save/i })
   }
@@ -79,7 +103,7 @@ export class TransactionsPage {
   async selectFirstMonth(): Promise<string> {
     await this.monthSelect.click()
     await this.page.getByRole('option').first().waitFor({ state: 'visible' })
-    const firstMonth = await this.page.getByRole('option').first().textContent() ?? ''
+    const firstMonth = (await this.page.getByRole('option').first().textContent()) ?? ''
     const firstOption = this.page.getByRole('option', { name: firstMonth }).first()
     await firstOption.click()
     return firstMonth
@@ -88,7 +112,7 @@ export class TransactionsPage {
   async selectFirstWeek(): Promise<string> {
     await this.weekSelect.click()
     await this.page.getByRole('option').first().waitFor({ state: 'visible' })
-    const firstWeekText = await this.page.getByRole('option').first().textContent() ?? ''
+    const firstWeekText = (await this.page.getByRole('option').first().textContent()) ?? ''
     const firstOption = this.page.getByRole('option', { name: firstWeekText }).first()
     await firstOption.click()
     return firstWeekText
@@ -99,11 +123,17 @@ export class TransactionsPage {
   }
 
   async clickIncreaseInterval() {
-    await this.page.locator('button').filter({ hasText: /^Increase Interval$/ }).click()
+    await this.page
+      .locator('button')
+      .filter({ hasText: /^Increase Interval$/ })
+      .click()
   }
 
   async clickDecreaseInterval() {
-    await this.page.locator('button').filter({ hasText: /^Decrease Interval$/ }).click()
+    await this.page
+      .locator('button')
+      .filter({ hasText: /^Decrease Interval$/ })
+      .click()
   }
 
   // Method to wait for transactions table to be fully ready
@@ -112,11 +142,13 @@ export class TransactionsPage {
   }
 
   // Improved table cell clicking with proper Element UI loading handling
-  async clickOnTableCell(options: {
-    rowIndex?: number
-    cellIndex?: number
-    clickOptions?: { button?: 'left' | 'right' | 'middle' }
-  } = {}) {
+  async clickOnTableCell(
+    options: {
+      rowIndex?: number
+      cellIndex?: number
+      clickOptions?: { button?: 'left' | 'right' | 'middle' }
+    } = {},
+  ) {
     const { rowIndex = 1, cellIndex = 1, clickOptions = {} } = options
 
     await clickElementTableCell(
@@ -124,7 +156,7 @@ export class TransactionsPage {
       this.page,
       rowIndex,
       cellIndex,
-      clickOptions
+      clickOptions,
     )
   }
 
@@ -146,7 +178,7 @@ export class TransactionsPage {
   async getMonthSelectValue(): Promise<string> {
     // Try to get the input value first (most reliable)
     const input = this.monthSelect.locator('input')
-    if (await input.count() > 0) {
+    if ((await input.count()) > 0) {
       const value = await input.inputValue()
       if (value) return value
     }
@@ -163,19 +195,15 @@ export class TransactionsPage {
     return trimmedText
   }
 
-
   // getWeekSelectValue method to get the value of the week select
   async getWeekSelectValue(): Promise<string> {
     return this.getSelectValue(this.weekSelect, 'select a week')
   }
 
-  private async getSelectValue(
-    selector: Locator,
-    expectedPlaceholder?: string
-  ): Promise<string> {
+  private async getSelectValue(selector: Locator, expectedPlaceholder?: string): Promise<string> {
     // Try to get the input value first (most reliable)
     const input = selector.locator('input')
-    if (await input.count() > 0) {
+    if ((await input.count()) > 0) {
       const value = await input.inputValue()
       if (value) return value
     }
@@ -185,13 +213,13 @@ export class TransactionsPage {
     const trimmedText = selectText?.trim() ?? ''
 
     // If it shows placeholder text, consider it empty
-    const isPlaceholder = trimmedText === '' ||
+    const isPlaceholder =
+      trimmedText === '' ||
       trimmedText.includes('select') ||
       (expectedPlaceholder && trimmedText === expectedPlaceholder)
 
     return isPlaceholder ? '' : trimmedText
   }
-
 
   async rightClickOnFirstTransaction() {
     await this.clickOnTableCell({ rowIndex: 1, cellIndex: 1, clickOptions: { button: 'right' } })
@@ -216,6 +244,10 @@ export class TransactionsPage {
 
   async expectTransactionEditModalVisible() {
     await expect(this.transactionEditModal).toBeVisible()
+  }
+
+  async waitForTransactionEditModalReady() {
+    await waitForModalReady(this.transactionEditModal, this.page)
   }
 
   async expectTransactionEditModalHidden() {

@@ -1,21 +1,16 @@
-import { httpClient } from "@api/httpClient";
-import type { Transaction } from "@types";
+import { httpClient } from '@api/httpClient'
+import type { Transaction } from '@types'
 
-export async function updateTransaction(
-  transaction: Transaction
-): Promise<Transaction> {
+export async function updateTransaction(transaction: Transaction): Promise<Transaction> {
   if (!transaction.id) {
-    throw new Error("Transaction ID is required for updates");
+    throw new Error('Transaction ID is required for updates')
   }
 
   try {
-    const response = await httpClient.patch(
-      `/transactions/${transaction.id}`,
-      transaction
-    );
-    return response.data;
+    const response = await httpClient.patch(`/transactions/${transaction.id}`, transaction)
+    return response.data
   } catch (error) {
-    console.error('Error updating transaction:', error);
-    throw error;
+    console.error('Error updating transaction:', error)
+    throw error
   }
 }

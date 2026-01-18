@@ -4,11 +4,10 @@ import { useTippy } from 'vue-tippy'
 import 'tippy.js/animations/scale.css'
 import 'tippy.js/themes/translucent.css'
 
-
 export const createLineChart = (
   el: unknown,
   summaries: (SummaryTypeBase | DailyInterval)[],
-  onDateSelected: (date: string) => void
+  onDateSelected: (date: string) => void,
 ) => {
   const svgElement = el as SVGSVGElement
 
@@ -28,27 +27,15 @@ export const createLineChart = (
     }
 
     if (item.day_number) {
-      return new Date(
-        Number(item.year),
-        Number(item.month_number) - 1,
-        Number(item.day_number)
-      )
+      return new Date(Number(item.year), Number(item.month_number) - 1, Number(item.day_number))
     }
 
     if (item.week_number) {
-      return new Date(
-        Number(item.year),
-        0,
-        1 + (Number(item.week_number) - 1) * 7
-      )
+      return new Date(Number(item.year), 0, 1 + (Number(item.week_number) - 1) * 7)
     }
 
     // Default: first day of the month
-    return new Date(
-      Number(item.year),
-      Number(item.month_number) - 1,
-      1
-    )
+    return new Date(Number(item.year), Number(item.month_number) - 1, 1)
   }
 
   const chartData = summaries.flat().map((item: SummaryTypeBase | DailyInterval) => {
@@ -57,14 +44,13 @@ export const createLineChart = (
 
     return {
       date: date,
-      total_debit: total_debit
+      total_debit: total_debit,
     }
   })
 
   const margin = { top: 5, right: 32, bottom: 80, left: 32 }
   const width = parentWidth - margin.left - margin.right
   const height = 150
-
 
   const x = d3
     .scaleUtc()
@@ -82,10 +68,11 @@ export const createLineChart = (
 
   const formatDate = d3.utcFormat('%Y-%m-%d')
 
-  const xAxis: d3.Axis<Date | number | { valueOf(): number }> = d3.axisBottom(x).tickFormat((domainValue) => {
-    return formatDate(domainValue as Date)
-  })
-
+  const xAxis: d3.Axis<Date | number | { valueOf(): number }> = d3
+    .axisBottom(x)
+    .tickFormat((domainValue) => {
+      return formatDate(domainValue as Date)
+    })
 
   const yAxis = d3.axisLeft(y)
 
@@ -107,7 +94,6 @@ export const createLineChart = (
     .attr('dy', '.55em')
     .attr('transform', 'rotate(-90)')
 
-
   svg
     .append<SVGPathElement>('path')
     .datum(chartData)
@@ -116,12 +102,10 @@ export const createLineChart = (
     .attr('stroke-width', 2)
     .attr('d', line as unknown as string)
 
-  svg
-    .append('g')
-    .attr('class', 'y-axis')
-    .call(yAxis)
+  svg.append('g').attr('class', 'y-axis').call(yAxis)
 
-  svg.selectAll('.dot')
+  svg
+    .selectAll('.dot')
     .data(chartData)
     .enter()
     .append('circle')
@@ -136,7 +120,7 @@ export const createLineChart = (
       const dateString = d3.utcFormat('%Y-%m-%d')(clickedDate)
       onDateSelected(dateString)
     })
-    .each(function(d) {
+    .each(function (d) {
       useTippy(this, {
         content: `${d3.utcFormat('%Y-%m-%d')(d.date)}<br>$${d?.total_debit?.toFixed(2)}`,
         allowHTML: true,
@@ -147,7 +131,7 @@ export const createLineChart = (
           // place above all elements
           instance.popper.style.zIndex = '10000'
           instance.popper.setAttribute('data-testid', 'line-chart-tooltip')
-        }
+        },
       })
     })
 }

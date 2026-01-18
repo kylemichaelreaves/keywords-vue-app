@@ -5,40 +5,39 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref} from 'vue';
-import type {PropType} from 'vue';
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
+import { defineComponent, onMounted, ref } from 'vue'
+import type { PropType } from 'vue'
+import katex from 'katex'
+import 'katex/dist/katex.min.css'
 
 export default defineComponent({
   name: 'EquationRenderer',
   props: {
     equation: {
       type: String as PropType<string>,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props) {
-    const equationRef = ref<HTMLDivElement | null>(null);
+    const equationRef = ref<HTMLDivElement | null>(null)
 
     const renderEquation = () => {
       if (equationRef.value) {
         katex.render(props.equation, equationRef.value, {
-          throwOnError: false
-        });
+          throwOnError: false,
+        })
       }
-    };
+    }
 
     onMounted(() => {
-      renderEquation();
-    });
+      renderEquation()
+    })
 
     return {
-      equationRef
-    };
-  }
-});
+      equationRef,
+    }
+  },
+})
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
