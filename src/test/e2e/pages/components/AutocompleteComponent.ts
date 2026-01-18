@@ -12,38 +12,36 @@ export class AutocompleteComponent {
 
   // Locator methods
   get autocomplete(): Locator {
+    // The data-testid is on the wrapper div around el-autocomplete
     return this.page.getByTestId(this.testId)
   }
 
   get input(): Locator {
-    return this.page.getByRole('combobox').getByRole('textbox', { name: 'Memo' })
+    // Element Plus el-autocomplete: The textbox uses placeholder as accessible name
+    // Use the placeholder text "Select a memo" to locate it within the autocomplete wrapper
+    return this.autocomplete.getByRole('textbox', { name: 'Select a memo' })
   }
 
   get clearButton(): Locator {
-    return this.page
-      .getByRole('combobox')
-      .getByRole('img')
-      .or(this.page.locator('.el-icon.el-input__icon > svg'))
+    // The clear button is an img (close icon) that appears on hover inside the autocomplete
+    return this.autocomplete.getByRole('img')
   }
 
   get dropdown(): Locator {
-    return this.page.getByRole('listbox')
+    // Target the listbox inside the autocomplete component's combobox
+    // Element Plus renders the dropdown inside the combobox when expanded
+    return this.autocomplete.getByRole('combobox').getByRole('listbox')
   }
 
   get loadingIndicator(): Locator {
-    return this.page
-      .getByRole('listbox')
-      .getByRole('img')
-      .or(this.page.locator('.el-icon.is-loading > svg'))
+    // Loading indicator is inside the dropdown popper - use aria role
+    return this.page.getByRole('listbox').locator('[class*="is-loading"]')
   }
 
   getSuggestion(text: string): Locator {
-    // First try exact match for better specificity
-    const exactMatch = this.dropdown.getByRole('option', { name: text, exact: true })
-    // Fallback to partial match if exact doesn't work
-    const partialMatch = this.dropdown.getByRole('option', { name: new RegExp(text, 'i') })
-
-    return exactMatch.or(partialMatch)
+    // Use partial match with regex to find options containing the text
+    // This handles cases like searching for "Coffee" matching "Coffee Shop"
+    return this.page.getByRole('option', { name: new RegExp(text, 'i') })
   }
 
   // Action methods
@@ -83,13 +81,19 @@ export class AutocompleteComponent {
   }
 
   async selectSuggestion(text: string): Promise<void> {
-    // await this.waitForSuggestions()
-    await this.getSuggestion(text).click()
+    // Use exact match for selection to click the specific option
+    await this.page.getByRole('option', { name: text, exact: true }).click()
   }
 
   // Wait methods
   async waitForSuggestions(options?: { timeout?: number }): Promise<void> {
-    await this.dropdown.waitFor({ state: 'visible', timeout: options?.timeout || 5000 })
+    // Wait for at least one option to be visible in the dropdown
+    // This is more reliable than waiting for the listbox container since Element Plus
+    // may have multiple listbox elements in the DOM
+    await this.page
+      .getByRole('option')
+      .first()
+      .waitFor({ state: 'visible', timeout: options?.timeout || 5000 })
   }
 
   async waitForLoading(options?: { timeout?: number }): Promise<void> {
@@ -143,11 +147,11 @@ export class AutocompleteComponent {
   async getSuggestionCount(): Promise<number> {
     // await this.waitForSuggestions()
     // Use role-based locator for list items
-    const options = this.dropdown.getByRole('option')
+    const options = this.page.getByRole('option')
     const count = await options.count()
     // Fallback to li elements if no options found
     if (count === 0) {
-      return await this.dropdown.locator('li').count()
+      return await this.page.locator('li').count()
     }
     return count
   }

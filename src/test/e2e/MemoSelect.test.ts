@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { staticTransactions } from '@test/e2e/mocks/transactionsMock'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock'
 import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
-import type { Page, Locator } from '@playwright/test'
+import { AutocompleteComponent } from '@test/e2e/pages/components/AutocompleteComponent'
 
 const isCI = !!process.env.CI
 
@@ -22,96 +22,95 @@ test.describe('MemoSelect Search Functionality', () => {
     await page.waitForLoadState('domcontentloaded')
     await page.waitForLoadState('networkidle', { timeout: 10000 })
 
-    // Wait for the transactions table selects container to be visible
-    await page.waitForSelector('[data-testid="transactions-table-selects"]', {
-      timeout: isCI ? 30000 : 15000,
-    })
-
     // Wait for the memo select to be visible
-    await page.waitForSelector('[data-testid="transactions-table-memo-select"]', {
+    await page.getByTestId('transactions-table-memo-select').waitFor({
+      state: 'visible',
       timeout: isCI ? 30000 : 15000,
     })
   })
 
-  // Helper function to get memo select and ensure it's visible
-  async function getMemoSelect(page: Page): Promise<Locator> {
-    const memoSelect = page.getByTestId('transactions-table-memo-select')
-    await expect(memoSelect).toBeVisible({ timeout: 5000 })
-    return memoSelect
-  }
+  test('should display dropdown options when focused', async ({ page }) => {
+    const memoSelect = new AutocompleteComponent(page, 'transactions-table-memo-select')
 
-  // Helper function to open select and get input
-  async function openSelectAndGetInput(memoSelect: Locator): Promise<Locator> {
+    // Click to focus
     await memoSelect.click()
-    const selectInput = memoSelect.locator('input')
-    await expect(selectInput).toBeVisible()
-    return selectInput
-  }
 
-  // Helper function to search and wait for options
-  async function searchMemo(page: Page, selectInput: Locator, searchText: string): Promise<void> {
-    await selectInput.fill(searchText)
+    // Wait for suggestions to appear (dropdown opens and options are visible)
+    await memoSelect.waitForSuggestions()
 
-    // Wait for first matching option to appear
-    const firstOption = page.getByRole('option', { name: searchText }).first()
-    await expect(firstOption).toBeVisible({ timeout: 5000 })
-  }
+    // Verify we have some suggestions
+    const suggestionCount = await memoSelect.getSuggestionCount()
+    expect(suggestionCount).toBeGreaterThan(0)
+  })
 
-  // Helper function to select a memo by searching and pressing Enter
-  async function selectMemoBySearch(
-    page: Page,
-    memoSelect: Locator,
-    searchText: string,
-  ): Promise<void> {
-    const selectInput = await openSelectAndGetInput(memoSelect)
-    await selectInput.type(searchText)
+  test('pressing escape should close the dropdown', async ({ page }) => {
+    const memoSelect = new AutocompleteComponent(page, 'transactions-table-memo-select')
 
-    await expect(page.getByRole('option', { name: searchText }).first()).toBeVisible({
-      timeout: 5000,
-    })
+    // Click to focus
+    await memoSelect.click()
 
-    await selectInput.press('Enter')
-  }
+    // Wait for suggestions to appear
+    await memoSelect.waitForSuggestions()
+
+    // Press Escape to close the dropdown
+    await page.keyboard.press('Escape')
+
+    // Wait for the dropdown to become hidden using Playwright's auto-retry assertion
+    // This is more reliable than checking visibility immediately
+    await expect(memoSelect.dropdown).not.toBeVisible({ timeout: 5000 })
+  })
 
   test('should update dropdown options when user types a search query', async ({ page }) => {
-    const memoSelect = await getMemoSelect(page)
-    const selectInput = await openSelectAndGetInput(memoSelect)
+    const memoSelect = new AutocompleteComponent(page, 'transactions-table-memo-select')
 
-    await searchMemo(page, selectInput, 'Coffee')
+    // Click to focus
+    await memoSelect.click()
+
+    // Wait for dropdown to open first
+    await memoSelect.waitForSuggestions()
+
+    // Type search text
+    await memoSelect.fill('Coffee')
+
+    // Wait for filtered suggestions to appear
+    await memoSelect.waitForSuggestions()
 
     // Verify we have Coffee-related options
-    const coffeeOptions = page.getByRole('option', { name: /Coffee/i })
-    const count = await coffeeOptions.count()
-    expect(count).toBeGreaterThan(0)
+    const suggestionCount = await memoSelect.getSuggestionCount()
+    expect(suggestionCount).toBeGreaterThan(0)
+
+    // Verify a Coffee option exists
+    await memoSelect.expectToHaveSuggestion('Coffee')
   })
 
   test('should select a memo from search results', async ({ page }) => {
-    const memoSelect = await getMemoSelect(page)
+    const memoSelect = new AutocompleteComponent(page, 'transactions-table-memo-select')
 
-    await selectMemoBySearch(page, memoSelect, 'Coffee Shop')
+    // Click to focus and type search text
+    await memoSelect.click()
 
-    // Verify selection - the select should now show "Coffee Shop"
-    await expect(memoSelect).toContainText('Coffee Shop')
+    // Wait for suggestions and select
+    await memoSelect.selectSuggestion('Coffee Shop')
+
+    // Verify selection - the input should now show "Coffee Shop"
+    await memoSelect.expectValue('Coffee Shop')
   })
 
   test('should clear selection when clear button is clicked', async ({ page }) => {
-    const memoSelect = await getMemoSelect(page)
+    const memoSelect = new AutocompleteComponent(page, 'transactions-table-memo-select')
 
     // First, select a memo
-    await selectMemoBySearch(page, memoSelect, 'Coffee Shop')
+    await memoSelect.click()
+
+    await memoSelect.selectSuggestion('Coffee Shop')
 
     // Verify selection
-    await expect(memoSelect).toContainText('Coffee Shop')
+    await memoSelect.expectValue('Coffee Shop')
 
-    // Now clear the selection - hover to make the clear icon appear
-    await memoSelect.hover()
+    // Clear the selection using the page object method
+    await memoSelect.clickClearButton()
 
-    // Find and click the clear icon
-    const clearIcon = memoSelect.locator('.el-select__suffix .el-icon')
-    await expect(clearIcon).toBeVisible({ timeout: 2000 })
-    await clearIcon.click()
-
-    // Verify the selection is cleared - should show placeholder
-    await expect(memoSelect).toContainText('Select a memo')
+    // Verify the selection is cleared
+    await memoSelect.expectToBeEmpty()
   })
 })
