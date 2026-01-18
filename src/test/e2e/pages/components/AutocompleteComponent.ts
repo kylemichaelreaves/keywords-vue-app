@@ -16,7 +16,9 @@ export class AutocompleteComponent {
   }
 
   get input(): Locator {
-    return this.page.getByRole('combobox').getByRole('textbox', { name: 'Memo' })
+    // Use role-based selector scoped to the autocomplete component
+    // el-autocomplete renders as a combobox containing a textbox
+    return this.autocomplete.getByRole('textbox')
   }
 
   get clearButton(): Locator {
