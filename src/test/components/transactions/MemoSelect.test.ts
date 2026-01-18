@@ -30,6 +30,17 @@ vi.mock('@api/hooks/memos/useMemoSearch.ts', () => ({
   }),
 }))
 
+// Mock Vue Router
+vi.mock('vue-router', () => ({
+  useRoute: () => ({
+    query: {},
+  }),
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+  }),
+}))
+
 describe('MemoSelect', () => {
   let wrapper: VueWrapper
 
@@ -91,8 +102,8 @@ describe('MemoSelect', () => {
 
       // Should be called immediately with current options
       expect(callback).toHaveBeenCalledWith([
-        { value: '1', label: 'Groceries' },
-        { value: '2', label: 'Gas' },
+        { value: 'Groceries', label: 'Groceries', id: 1 },
+        { value: 'Gas', label: 'Gas', id: 2 },
       ])
     })
 
@@ -119,8 +130,8 @@ describe('MemoSelect', () => {
       // Should be called immediately with current (old) options
       expect(callback).toHaveBeenCalledTimes(1)
       expect(callback).toHaveBeenLastCalledWith([
-        { value: '1', label: 'Groceries' },
-        { value: '2', label: 'Gas' },
+        { value: 'Groceries', label: 'Groceries', id: 1 },
+        { value: 'Gas', label: 'Gas', id: 2 },
       ])
 
       // Simulate the query returning new results
@@ -134,8 +145,8 @@ describe('MemoSelect', () => {
       // Callback should be called again with new options
       expect(callback).toHaveBeenCalledTimes(2)
       expect(callback).toHaveBeenLastCalledWith([
-        { value: '3', label: 'Coffee Shop' },
-        { value: '4', label: 'Coffee Beans' },
+        { value: 'Coffee Shop', label: 'Coffee Shop', id: 3 },
+        { value: 'Coffee Beans', label: 'Coffee Beans', id: 4 },
       ])
     })
 
@@ -168,7 +179,7 @@ describe('MemoSelect', () => {
       // Only the second callback should be called with new results
       expect(firstCallback).toHaveBeenCalledTimes(1) // Only initial call
       expect(secondCallback).toHaveBeenCalledTimes(2) // Initial + update
-      expect(secondCallback).toHaveBeenLastCalledWith([{ value: '2', label: 'Updated' }])
+      expect(secondCallback).toHaveBeenLastCalledWith([{ value: 'Updated', label: 'Updated', id: 2 }])
     })
 
     test('should filter out memos with empty names', async () => {
@@ -190,8 +201,8 @@ describe('MemoSelect', () => {
       handleSearch('test', callback)
 
       expect(callback).toHaveBeenCalledWith([
-        { value: '1', label: 'Valid Memo' },
-        { value: '4', label: 'Another Valid' },
+        { value: 'Valid Memo', label: 'Valid Memo', id: 1 },
+        { value: 'Another Valid', label: 'Another Valid', id: 4 },
       ])
     })
 

@@ -102,13 +102,11 @@ const handleSearch = (
 ) => {
   // Update search query, which triggers the fetch
   searchQuery.value = query
+  // Store the callback to be called when data arrives
+  pendingCallback.value = callback
   // If data is already loaded and not currently loading, call callback immediately
-  if (!isLoading.value && memoOptions.value.length > 0) {
+  if (!isLoading.value) {
     callback(memoOptions.value)
-  } else {
-    // Otherwise, store the callback to be called when data arrives
-    // This ensures we get the latest data for this search query
-    pendingCallback.value = callback
   }
 }
 

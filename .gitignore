@@ -29,7 +29,7 @@ dist-ssr
 # don't commit the .nvmrc file
 .nvmrc
 
-html/assets
+html/
 /test-results/
 /playwright-report/
 /blob-report/
