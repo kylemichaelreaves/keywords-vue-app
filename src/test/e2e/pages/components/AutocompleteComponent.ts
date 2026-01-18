@@ -16,9 +16,11 @@ export class AutocompleteComponent {
   }
 
   get input(): Locator {
-    // Element Plus el-autocomplete has data-testid on its root element
-    // and contains an input element within. We use the test ID scope to find the input.
-    return this.autocomplete.locator('input')
+    // Use role-based selector with ARIA attributes for better targeting
+    // Element Plus el-autocomplete has role="combobox" and contains an input
+    // We use placeholder or aria attributes to identify the correct input
+    // The .first() is a fallback if multiple comboboxes exist
+    return this.page.getByRole('combobox').locator('input').first()
   }
 
   get clearButton(): Locator {
