@@ -123,6 +123,7 @@ const store = useTransactionsStore()
 const selectedMonth = computed(() => store.getSelectedMonth)
 const selectedWeek = computed(() => store.getSelectedWeek)
 const selectedDay = computed(() => store.getSelectedDay)
+const selectedMemo = computed(() => store.getSelectedMemo)
 
 const firstDay = computed(() => {
   // first, get the most recent month in the store
@@ -251,10 +252,18 @@ watch(currentPage, () => {
 })
 
 // this block allows the DailyIntervalLineChart to set the selectedDay and trigger a refetch
+// also watch selectedMemo to refetch when a memo is selected
 watch(
-  [selectedValue],
-  () => {
+  [selectedValue, selectedMemo],
+  ([newSelectedValue, newSelectedMemo]) => {
+    console.log(
+      '[TransactionsTable] Watcher fired - selectedValue:',
+      newSelectedValue,
+      'selectedMemo:',
+      newSelectedMemo,
+    )
     store.clearTransactionsByOffset()
+    console.log('[TransactionsTable] Cache cleared, calling refetch...')
     refetch()
   },
   { immediate: false },

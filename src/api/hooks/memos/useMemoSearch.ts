@@ -28,7 +28,7 @@ export function useMemoSearch(params: UseMemoSearchParams) {
       return await fetchMemos({
         name: searchQuery.value,
         limit: params.limit || 50,
-        search: true
+        search: true,
       })
     },
     enabled: enabled.value,

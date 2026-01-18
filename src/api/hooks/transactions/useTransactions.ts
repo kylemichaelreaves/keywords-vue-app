@@ -16,19 +16,42 @@ export default function useTransactions() {
   })
   const limit = computed(() => store.getTransactionsTableLimit)
 
+  console.log('[useTransactions] Hook initialized with selectedMemo:', selectedMemo.value)
+
   return useInfiniteQuery<Array<Transaction>>({
     initialPageParam: 0,
-    queryKey: ['transactions', limit, selectedMemo, dateType, selectedValue],
+    // Pass computed refs directly - Vue Query will unwrap and track them automatically
+    queryKey: ['transactions', limit, selectedMemo, dateType, selectedValue] as const,
     queryFn: async ({ pageParam = 0 }) => {
+      console.log(
+        '[useTransactions] queryFn called with pageParam:',
+        pageParam,
+        'selectedMemo:',
+        selectedMemo.value,
+      )
       const cachedTransactions = store.getTransactionsByOffset(Number(pageParam))
       if (cachedTransactions && cachedTransactions.length > 0) {
         return cachedTransactions
       } else {
+        const memoValue = selectedMemo.value
+        // Determine if we have a memo ID (numeric) or memo name (string)
+        const isMemoId = memoValue && !Number.isNaN(Number(memoValue))
+
+        console.log('[useTransactions] memoValue:', memoValue, 'isMemoId:', isMemoId)
+
+        // Build memo parameter based on type
+        const memoParam = memoValue
+          ? isMemoId
+            ? { memoId: Number(memoValue) }
+            : { memo: memoValue }
+          : {}
+
+        console.log('[useTransactions] memoParam:', memoParam)
+
         const transactions = await fetchTransactions({
           limit: limit.value,
           offset: Number(pageParam),
-          // Use memoId if a memo is selected (non-zero), otherwise undefined to fetch all
-          memoId: selectedMemo.value || undefined,
+          ...memoParam,
           timeFrame: dateType.value,
           date: selectedValue.value,
         })

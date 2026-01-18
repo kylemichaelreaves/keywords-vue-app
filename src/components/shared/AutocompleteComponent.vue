@@ -1,5 +1,6 @@
 <template>
   <el-autocomplete
+    ref="autocompleteRef"
     v-model="selectedValue"
     :fetch-suggestions="handleFetchSuggestions"
     :placeholder="props.placeholder"
@@ -9,12 +10,13 @@
     :disabled="props.disabled"
     :aria-label="props.ariaLabel"
     clearable
+    clear-icon="Close"
     :loading="props.loading"
     :loading-text="props.loadingText"
     :data-testid="props.dataTestId"
     value-key="label"
     :trigger-on-focus="true"
-    :debounce="300"
+    :debounce="450"
     :highlight-first-item="true"
     style="width: 100%"
   >
@@ -28,6 +30,7 @@
 
 <script setup lang="ts">
 import { ElAutocomplete } from 'element-plus'
+import { ref } from 'vue'
 import type { PropType } from 'vue'
 
 interface Option {
@@ -39,6 +42,8 @@ interface Option {
 const selectedValue = defineModel<string>({
   default: '',
 })
+
+const autocompleteRef = ref<InstanceType<typeof ElAutocomplete> | null>(null)
 
 const props = defineProps({
   options: {
@@ -87,13 +92,13 @@ const handleFetchSuggestions = (
   queryString: string,
   callback: (suggestions: Option[]) => void,
 ): void => {
-  // If onSearch prop is provided, use server-side search
+  // If onSearch prop is provided, ALWAYS use server-side search
   if (props.onSearch) {
     props.onSearch(queryString, callback)
     return
   }
 
-  // Otherwise, fall back to client-side filtering
+  // Client-side filtering fallback (only when onSearch is NOT provided)
   if (!queryString || queryString.length === 0) {
     const limitedResults = props.options?.slice(0, 50)
     callback(limitedResults || [])
@@ -106,28 +111,26 @@ const handleFetchSuggestions = (
     return
   }
 
-  const results = props.options?.filter((option) =>
-    option.label.toLowerCase().includes(queryString.toLowerCase()),
-  )
+  const results: Option[] =
+    props.options?.filter((option) =>
+      option.label.toLowerCase().includes(queryString.toLowerCase()),
+    ) || []
 
   const limitedResults = results.slice(0, 50)
   callback(limitedResults)
 }
 
 const handleSelect = (item: Record<string, unknown>): void => {
-  if (item && typeof item.value === 'string' && typeof item.label === 'string') {
-    selectedValue.value = item.value // Direct assignment!
+  // When value-key="label", Element Plus will use the label for display
+  // We should set the model to the label so it displays correctly
+  if (item && typeof item.label === 'string') {
+    selectedValue.value = item.label
   }
 }
 
 const handleChange = (value: string | number): void => {
-  const stringValue = String(value)
-  const existingOption = props.options?.find((option) => option.label === stringValue)
-  if (existingOption) {
-    selectedValue.value = existingOption.value // Direct assignment!
-  } else {
-    selectedValue.value = stringValue // Direct assignment!
-  }
+  // When the user types or changes the input, just update with the string value
+  selectedValue.value = String(value)
 }
 
 const handleClear = (): void => {

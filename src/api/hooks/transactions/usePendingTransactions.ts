@@ -12,16 +12,28 @@ export default function usePendingTransactions() {
 
   return useInfiniteQuery<Array<PendingTransaction>>({
     initialPageParam: 0,
-    queryKey: ['pending-transactions', limit, selectedMemo, selectedStatus],
+    // Pass computed refs directly - Vue Query will unwrap and track them automatically
+    queryKey: ['pending-transactions', limit, selectedMemo, selectedStatus] as const,
     queryFn: async ({ pageParam = 0 }) => {
       const cachedTransactions = store.getPendingTransactionsByOffset(Number(pageParam))
       if (cachedTransactions && cachedTransactions.length > 0) {
         return cachedTransactions
       } else {
+        const memoValue = selectedMemo.value
+        // Determine if we have a memo ID (numeric) or memo name (string)
+        const isMemoId = memoValue && !Number.isNaN(Number(memoValue))
+
+        // Build memo parameter based on type
+        const memoParam = memoValue
+          ? isMemoId
+            ? { memoId: Number(memoValue) }
+            : { memo: memoValue }
+          : {}
+
         const transactions = await fetchPendingTransactions({
           limit: limit.value,
           offset: Number(pageParam),
-          memo: selectedMemo.value ? String(selectedMemo.value) : undefined,
+          ...memoParam,
           status: selectedStatus.value || undefined,
         })
         store.setPendingTransactionsByOffset(

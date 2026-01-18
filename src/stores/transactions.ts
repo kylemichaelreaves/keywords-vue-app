@@ -17,7 +17,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const selectedDay = ref('')
   const selectedMonth = ref('')
   const selectedYear = ref('')
-  const selectedMemoId = ref<Memo['id']>(0)
+  const selectedMemo = ref<string>('')
   const selectedWeek = ref('')
   const selectedType = ref('Amount Debit')
   const selectedBudgetCategory = ref<string | null>('')
@@ -55,7 +55,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
   // Getters
   const getSelectedDay = computed(() => selectedDay.value)
   const getSelectedMonth = computed(() => selectedMonth.value)
-  const getSelectedMemo = computed(() => selectedMemoId.value)
+  const getSelectedMemo = computed(() => selectedMemo.value)
   const getSelectedWeek = computed(() => selectedWeek.value)
   const getSelectedYear = computed(() => selectedYear.value)
   const getSelectedType = computed(() => selectedType.value)
@@ -105,7 +105,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
   }
 
   function setSelectedMemo(memo: string) {
-    selectedMemoId.value = Number(memo)
+    selectedMemo.value = memo
   }
 
   function setSelectedWeek(week: string) {
@@ -260,7 +260,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
     selectedDay,
     selectedMonth,
     selectedYear,
-    selectedMemoId,
+    selectedMemo,
     selectedWeek,
     selectedType,
     selectedBudgetCategory,

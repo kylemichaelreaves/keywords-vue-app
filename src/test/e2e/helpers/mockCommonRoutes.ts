@@ -87,7 +87,7 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
     },
   )
 
-  // 2. Memos list (with pagination, id, name filtering)
+  // 2. Memos list (with pagination, id, name filtering, search)
   await page.route(
     (url) =>
       isExecuteApiUrl(url) &&
@@ -99,8 +99,9 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
       const offset = Number.parseInt(url.searchParams.get('offset') || '0', 10)
       const idParam = url.searchParams.get('id')
       const nameParam = url.searchParams.get('name')
+      const searchParam = url.searchParams.get('search')
 
-      log('Memos', 'List request', { limit, offset, idParam, nameParam })
+      log('Memos', 'List request', { limit, offset, idParam, nameParam, searchParam })
 
       if (idParam) {
         const memo = validMemos.find((m) => m.id === Number.parseInt(idParam, 10))
@@ -108,6 +109,14 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
       }
 
       if (nameParam) {
+        // If search param is true, do partial matching
+        if (searchParam === 'true') {
+          const searchResults = validMemos.filter((m) =>
+            m.name?.toLowerCase().includes(nameParam.toLowerCase()),
+          )
+          return fulfill(route, searchResults.slice(0, limit))
+        }
+        // Otherwise, do exact matching
         const memo = validMemos.find((m) => m.name === nameParam)
         return fulfill(route, memo ? [memo] : [])
       }
@@ -507,4 +516,84 @@ export const MEMO_PRESETS = {
     ambiguous: false,
     avatar_s3_url: undefined,
   },
+} as const
+
+/**
+ * Predefined memo sets for search/autocomplete testing
+ */
+export const MEMO_SEARCH_DATASETS = {
+  // Dataset with Coffee-related memos
+  coffee: [
+    {
+      id: 101,
+      name: 'Coffee Shop',
+      budget_category: 'Food & Dining',
+      recurring: false,
+      necessary: false,
+      frequency: null,
+      ambiguous: false,
+    },
+    {
+      id: 102,
+      name: 'Coffee Beans',
+      budget_category: 'Groceries',
+      recurring: false,
+      necessary: false,
+      frequency: null,
+      ambiguous: false,
+    },
+  ],
+  // Dataset with Gas-related memos
+  gas: [
+    {
+      id: 201,
+      name: 'Gas Station',
+      budget_category: 'Transportation',
+      recurring: false,
+      necessary: false,
+      frequency: null,
+      ambiguous: false,
+    },
+    {
+      id: 202,
+      name: 'Gas Utility',
+      budget_category: 'Bills',
+      recurring: false,
+      necessary: false,
+      frequency: null,
+      ambiguous: false,
+    },
+  ],
+  // Default dataset for general searches
+  default: [
+    {
+      id: 1,
+      name: 'Groceries',
+      budget_category: 'Food',
+      recurring: false,
+      necessary: false,
+      frequency: null,
+      ambiguous: false,
+    },
+    {
+      id: 2,
+      name: 'Gas',
+      budget_category: 'Transportation',
+      recurring: false,
+      necessary: false,
+      frequency: null,
+      ambiguous: false,
+    },
+    {
+      id: 3,
+      name: 'Coffee',
+      budget_category: 'Food',
+      recurring: false,
+      necessary: false,
+      frequency: null,
+      ambiguous: false,
+    },
+  ],
+  // Empty dataset for no-results tests
+  empty: [],
 } as const
