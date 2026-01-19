@@ -58,6 +58,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const searchQuery = ref('')
 const pendingCallback = ref<((results: { value: string; label: string }[]) => void) | null>(null)
+const isInitializing = ref(true) // Flag to prevent race conditions during URL initialization
 
 const {
   data: memos,
@@ -108,6 +109,13 @@ const handleSearch = (
   query: string,
   callback: (results: { value: string; label: string }[]) => void,
 ) => {
+  // If we're still initializing from URL, don't trigger a new search yet
+  // Just return empty results and let the URL initialization complete
+  if (isInitializing.value) {
+    callback([])
+    return
+  }
+
   // Update search query, which triggers the fetch
   searchQuery.value = query
   // Store the callback to be called when new data arrives
@@ -133,6 +141,12 @@ const clearSelectedMemo = () => {
 // model value is the memo name as a string, or empty string for no selection
 watch(model, (newValue) => {
   transactionsStore.setSelectedMemo(newValue || '')
+
+  // Skip URL updates during initialization to prevent race conditions
+  if (isInitializing.value) {
+    return
+  }
+
   // Update URL with memo ID (not name) for brevity
   const query = { ...route.query }
   if (newValue) {
@@ -149,18 +163,29 @@ watch(model, (newValue) => {
 // Initialize from URL on mount - fetch memo by ID if present
 onMounted(async () => {
   const memoFromUrl = route.query.memo
-  if (!memoFromUrl) return
+  if (!memoFromUrl) {
+    // No memo in URL, initialization complete
+    isInitializing.value = false
+    return
+  }
 
   // Parse memo ID from URL - handle string or array
   const memoIdStr = Array.isArray(memoFromUrl) ? memoFromUrl[0] : memoFromUrl
-  if (!memoIdStr) return
+  if (!memoIdStr) {
+    isInitializing.value = false
+    return
+  }
 
   const memoId = Number.parseInt(memoIdStr, 10)
-  if (Number.isNaN(memoId)) return
+  if (Number.isNaN(memoId)) {
+    isInitializing.value = false
+    return
+  }
 
   // Skip if model already has a value (to avoid overwriting user selection)
   if (model.value) {
     console.log('[MemoSelect] Model already has value, skipping URL initialization:', model.value)
+    isInitializing.value = false
     return
   }
 
@@ -171,7 +196,7 @@ onMounted(async () => {
     console.log('[MemoSelect] Memo fetched:', memosData)
 
     if (memosData && memosData.length > 0) {
-      const memo = memosData[0]
+      const memo = memosData.find((m: Memo) => m.id === memoId) // proactive filtering
       if (memo && memo.name) {
         model.value = memo.name
         transactionsStore.setSelectedMemo(memo.name)
@@ -180,6 +205,9 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('[MemoSelect] Error fetching memo by ID from URL:', error)
+  } finally {
+    // Always set initialization complete, even if there was an error
+    isInitializing.value = false
   }
 })
 </script>

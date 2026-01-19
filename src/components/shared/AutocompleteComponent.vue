@@ -14,10 +14,10 @@
       clear-icon="Close"
       :loading="props.loading"
       :loading-text="props.loadingText"
-      value-key="label"
       :trigger-on-focus="true"
       :debounce="450"
       :highlight-first-item="true"
+      value-key="value"
       style="width: 100%"
     >
       <template #default="{ item }">
@@ -122,10 +122,10 @@ const handleFetchSuggestions = (
 }
 
 const handleSelect = (item: Record<string, unknown>): void => {
-  // When value-key="label", Element Plus will use the label for display
-  // We should set the model to the label so it displays correctly
-  if (item && typeof item.label === 'string') {
-    selectedValue.value = item.label
+  // With value-key="value", Element Plus will automatically use item.value for the model
+  // We just need to ensure it's set correctly
+  if (item && typeof item.value === 'string') {
+    selectedValue.value = item.value
   }
 }
 
