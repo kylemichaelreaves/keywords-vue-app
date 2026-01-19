@@ -73,10 +73,7 @@ describe('MemoSelect', () => {
 
       mount(MemoSelect, {
         global: {
-          plugins: [
-            createTestingPinia({ stubActions: false }),
-            router,
-          ],
+          plugins: [createTestingPinia({ stubActions: false }), router],
         },
       })
 
@@ -87,9 +84,7 @@ describe('MemoSelect', () => {
 
     test('handles API response with only the requested memo', async () => {
       const targetMemoId = 42
-      const mockMemos: Memo[] = [
-        createMemo(targetMemoId, 'Single Memo'),
-      ]
+      const mockMemos: Memo[] = [createMemo(targetMemoId, 'Single Memo')]
 
       vi.mocked(fetchMemos).mockResolvedValueOnce(mockMemos)
 
@@ -97,10 +92,7 @@ describe('MemoSelect', () => {
 
       mount(MemoSelect, {
         global: {
-          plugins: [
-            createTestingPinia({ stubActions: false }),
-            router,
-          ],
+          plugins: [createTestingPinia({ stubActions: false }), router],
         },
       })
 
@@ -120,10 +112,7 @@ describe('MemoSelect', () => {
       // Should not throw
       const wrapper = mount(MemoSelect, {
         global: {
-          plugins: [
-            createTestingPinia({ stubActions: false }),
-            router,
-          ],
+          plugins: [createTestingPinia({ stubActions: false }), router],
         },
       })
 
@@ -147,10 +136,7 @@ describe('MemoSelect', () => {
 
       const wrapper = mount(MemoSelect, {
         global: {
-          plugins: [
-            createTestingPinia({ stubActions: false }),
-            router,
-          ],
+          plugins: [createTestingPinia({ stubActions: false }), router],
         },
       })
 
@@ -175,10 +161,7 @@ describe('MemoSelect', () => {
 
       const wrapper = mount(MemoSelect, {
         global: {
-          plugins: [
-            createTestingPinia({ stubActions: false }),
-            router,
-          ],
+          plugins: [createTestingPinia({ stubActions: false }), router],
         },
       })
 
@@ -196,10 +179,7 @@ describe('MemoSelect', () => {
 
       mount(MemoSelect, {
         global: {
-          plugins: [
-            createTestingPinia({ stubActions: false }),
-            router,
-          ],
+          plugins: [createTestingPinia({ stubActions: false }), router],
         },
       })
 
@@ -214,10 +194,7 @@ describe('MemoSelect', () => {
 
       mount(MemoSelect, {
         global: {
-          plugins: [
-            createTestingPinia({ stubActions: false }),
-            router,
-          ],
+          plugins: [createTestingPinia({ stubActions: false }), router],
         },
       })
 
