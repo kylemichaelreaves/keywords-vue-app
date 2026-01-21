@@ -161,12 +161,6 @@ export async function waitForTableContent(
   } = {},
 ) {
   const { timeout = 30000 } = options
-  const isCI = !!process.env.CI
-
-  if (isCI) {
-    console.log('[CI WAIT] Starting table content wait with timeout:', timeout)
-  }
-
   // CRITICAL FIX: Simple visibility check first
   await table.waitFor({ state: 'visible', timeout })
 
@@ -179,37 +173,29 @@ export async function waitForTableContent(
     () => {
       const tableElement = document.querySelector('[data-testid="transactions-table"]')
       if (!tableElement) {
-        console.log('[CI DEBUG] Table element not found')
         return false
       }
 
       const rows = tableElement.querySelectorAll('tr')
       // Check if we have at least 2 rows (header + 1 data row)
       if (rows.length < 2) {
-        console.log('[CI DEBUG] Insufficient rows:', rows.length)
         return false
       }
 
       // Check if the second row (first data row) has cells with content
       const firstDataRow = rows[1]
       if (!firstDataRow) {
-        console.log('[CI DEBUG] First data row not found')
         return false
       }
 
       const cells = firstDataRow.querySelectorAll('td')
-      const hasContent =
+      return (
         cells.length > 0 &&
         Array.from(cells).some((cell) => {
           const text = cell.textContent?.trim()
           return text !== '' && text !== 'Loading...' && text !== '--'
         })
-
-      if (!hasContent) {
-        console.log('[CI DEBUG] No content in cells yet')
-      }
-
-      return hasContent
+      )
     },
     { timeout },
   )
@@ -218,8 +204,4 @@ export async function waitForTableContent(
   const firstDataCell = table.getByRole('row').nth(1).getByRole('cell').first()
   await expect(firstDataCell).toBeVisible({ timeout: 5000 })
   await expect(firstDataCell).not.toBeEmpty({ timeout: 5000 })
-
-  if (isCI) {
-    console.log('[CI WAIT] Table content wait complete')
-  }
 }

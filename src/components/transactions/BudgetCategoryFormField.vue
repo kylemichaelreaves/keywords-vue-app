@@ -28,6 +28,7 @@
       :model-value="isSplit"
       @update:model-value="toggleMode"
       :data-testid="`${dataTestId}-split-checkbox`"
+      aria-label="Split Budget Category Checkbox"
     >
       Split into multiple categories
     </el-checkbox>
@@ -38,6 +39,7 @@
       :transaction-amount="transactionAmount"
       @submit="updateSplits"
       @cancel="handleDrawerCancel"
+      aria-label="Split Budget Category Drawer"
     />
   </div>
 </template>
@@ -87,12 +89,10 @@ const validationError = computed(() => {
   return null
 })
 
-// Toggle between single and split mode
 function toggleMode(value: boolean | string | number) {
   const enableSplit = Boolean(value)
 
   if (enableSplit) {
-    // Initialize with current category if one is selected
     const initialSplits: SplitBudgetCategory[] = []
 
     if (categoryId.value) {
@@ -110,13 +110,10 @@ function toggleMode(value: boolean | string | number) {
 
     emit('update:modelValue', splitState)
 
-    // Auto-open drawer for first-time setup
-    if (initialSplits.length === 0) {
-      // Use nextTick to ensure state is updated before opening drawer
-      nextTick(() => {
-        splitDrawerVisible.value = true
-      })
-    }
+    // Always open drawer when enabling split mode
+    nextTick(() => {
+      splitDrawerVisible.value = true
+    })
   } else {
     const singleState: BudgetCategoryState = {
       mode: 'single',

@@ -32,12 +32,19 @@ export class TransactionsPage {
   readonly transactionDescriptionInput: Locator
   readonly transactionMemoInput: Locator
   readonly transactionBudgetCategoryTreeSelect: Locator
+  readonly transactionSplitBudgetCategoryCheckBox: Locator
   readonly transactionCheckNumberInput: Locator
   readonly transactionFeesInput: Locator
   readonly transactionBalanceInput: Locator
 
   readonly modalCloseButton: Locator
   readonly modalSaveButton: Locator
+
+  readonly splitBudgetCategoryDrawer: Locator
+  readonly splitBudgetCategorySaveButton: Locator
+  readonly splitBudgetCategoryCancelButton: Locator
+  readonly splitBudgetCategoryAddSplitButton: Locator
+  readonly splitBudgetCategoryRows: Locator
 
   constructor(public readonly page: Page) {
     this.transactionsTable = this.page.getByLabel('Transactions Table')
@@ -79,6 +86,11 @@ export class TransactionsPage {
     this.transactionBudgetCategoryTreeSelect = this.transactionEditForm.getByTestId(
       'transaction-edit-form-budget_category',
     )
+
+    this.transactionSplitBudgetCategoryCheckBox = this.transactionEditForm.getByLabel(
+      'Split Budget Category Checkbox',
+    )
+
     this.transactionCheckNumberInput = this.transactionEditForm.getByTestId(
       'transaction-edit-form-check_number',
     )
@@ -90,6 +102,20 @@ export class TransactionsPage {
     // Modal buttons can use role since they're simple
     this.modalCloseButton = this.transactionEditModal.getByRole('button', { name: /close/i })
     this.modalSaveButton = this.transactionEditModal.getByRole('button', { name: /save/i })
+
+    this.splitBudgetCategoryDrawer = this.page.getByLabel('Split Budget Category Drawer')
+    this.splitBudgetCategorySaveButton = this.splitBudgetCategoryDrawer.getByRole('button', {
+      name: /save/i,
+    })
+    this.splitBudgetCategoryCancelButton = this.splitBudgetCategoryDrawer.getByRole('button', {
+      name: /cancel/i,
+    })
+    this.splitBudgetCategoryAddSplitButton = this.splitBudgetCategoryDrawer.getByRole('button', {
+      name: /add split/i,
+    })
+
+    this.splitBudgetCategoryRows = this.splitBudgetCategoryDrawer.getByTestId('split-row')
+
   }
 
   async goto() {
@@ -237,6 +263,7 @@ export class TransactionsPage {
     await expect(this.transactionDescriptionInput).toBeVisible()
     await expect(this.transactionMemoInput).toBeVisible()
     await expect(this.transactionBudgetCategoryTreeSelect).toBeVisible()
+    await expect(this.transactionSplitBudgetCategoryCheckBox).toBeVisible()
     await expect(this.transactionCheckNumberInput).toBeVisible()
     await expect(this.transactionFeesInput).toBeVisible()
     await expect(this.transactionBalanceInput).toBeVisible()
