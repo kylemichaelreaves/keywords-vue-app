@@ -115,7 +115,6 @@ export class TransactionsPage {
     })
 
     this.splitBudgetCategoryRows = this.splitBudgetCategoryDrawer.getByTestId('split-row')
-
   }
 
   async goto() {
