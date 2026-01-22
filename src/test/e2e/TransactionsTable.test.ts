@@ -6,6 +6,7 @@ import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
 import { waitForTableContent } from '@test/e2e/helpers/waitHelpers'
 import { setupApiRequestLogging, setupAwsApiRequestLogging } from '@test/e2e/helpers/requestLogger'
+import type { Page } from '@playwright/test'
 
 const isCI = !!process.env.CI
 
@@ -15,7 +16,6 @@ test.describe('Transactions Table', () => {
   test.beforeEach(async ({ page }) => {
     // CI FIX: Enhanced logging and setup for CI environment
     if (isCI) {
-      console.log('[CI TEST] Starting TransactionsTable test setup')
       setupAwsApiRequestLogging(page)
     }
 
@@ -90,7 +90,6 @@ test.describe('Transactions Table', () => {
 
     // Get the transaction number before right-clicking
     const firstTransactionNumber = await transactionsPage.getCellTextContent(1, 1)
-    console.log('[TEST DEBUG] Transaction number from table:', firstTransactionNumber)
 
     // Right click to open modal
     await transactionsPage.clickOnTableCell({
@@ -117,9 +116,6 @@ test.describe('Transactions Table', () => {
 
     const modalTitle = await modalTitleElement.textContent()
     const expectedTitle = 'Edit Transaction: ' + firstTransactionNumber
-
-    console.log('[TEST DEBUG] Modal title:', modalTitle)
-    console.log('[TEST DEBUG] Expected title:', expectedTitle)
 
     expect(modalTitle).toBe(expectedTitle)
 
@@ -156,7 +152,6 @@ test.describe('Transactions Table', () => {
     const allPoints = transactionsPage.intervalLineChart.getByTestId(/chart-dot-\d+/)
     const pointCount = await allPoints.count()
     expect(pointCount).toBeGreaterThan(0)
-    console.log('[TEST DEBUG] Chart has', pointCount, 'data points')
 
     // Wait for chart to be stable by checking the tooltip is ready to show
     // This ensures D3/SVG rendering is complete without arbitrary timeouts
@@ -182,8 +177,6 @@ test.describe('Transactions Table', () => {
     expect(firstPointDate).toBeDefined()
     expect(firstPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
 
-    console.log('[TEST DEBUG] Chart point date from tooltip:', firstPointDate)
-
     // Ensure tooltip is still visible before clicking (prevents Firefox race condition)
     await expect(toolTip).toBeVisible({ timeout: 2000 })
 
@@ -199,7 +192,6 @@ test.describe('Transactions Table', () => {
     // Note: The table date cell may be formatted differently than the tooltip
     // The important thing is that the table now shows transactions for a specific day
     const dateText = await transactionsPage.getCellTextContent(1, 2)
-    console.log('[TEST DEBUG] Table date cell:', dateText)
 
     // Verify the date is in a valid format (table may format differently than tooltip)
     expect(dateText).toMatch(/\d{4}-\d{2}-\d{2}/)
@@ -232,6 +224,61 @@ test.describe('Transactions Table', () => {
     // Chart should now be hidden (user is in detail view)
     await expect(transactionsPage.intervalLineChart).not.toBeVisible({
       timeout: isCI ? 20000 : 10000,
+    })
+  })
+
+  test.describe('SplitBudgetCategoryDrawer', () => {
+    async function openSplitDrawer(page: Page, rowIndex: number) {
+      const dataCell = transactionsPage.transactionsTable
+        .getByRole('row')
+        .nth(rowIndex)
+        .getByRole('cell')
+        .first()
+
+      await expect(dataCell).not.toBeEmpty({ timeout: 30000 })
+
+      await transactionsPage.clickOnTableCell({
+        rowIndex,
+        cellIndex: 1,
+        clickOptions: { button: 'right' },
+      })
+
+      const editTransactionModal = transactionsPage.transactionEditModal
+      await expect(editTransactionModal).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+
+      const checkbox = transactionsPage.transactionSplitBudgetCategoryCheckBox
+      await expect(checkbox).toBeVisible({ timeout: isCI ? 10000 : 5000 })
+      await expect(checkbox).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
+      await checkbox.click()
+
+      await expect(transactionsPage.splitBudgetCategoryDrawer).toBeVisible({
+        timeout: isCI ? 20000 : 10000,
+      })
+    }
+
+    test('clicking on the checkbox opens the SplitBudgetCategoryDrawer', async ({ page }) => {
+      await openSplitDrawer(page, 1)
+    })
+
+    test('the Save button is initially disabled and the Add Split button enabled', async ({
+      page,
+    }) => {
+      await openSplitDrawer(page, 2)
+
+      const saveButton = transactionsPage.splitBudgetCategorySaveButton
+      await expect(saveButton).toBeDisabled({ timeout: isCI ? 10000 : 5000 })
+    })
+
+    test('clicking the Add Split button adds a new split entry row', async ({ page }) => {
+      await openSplitDrawer(page, 3)
+
+      const addSplitButton = transactionsPage.splitBudgetCategoryAddSplitButton
+      await expect(addSplitButton).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
+      await addSplitButton.click()
+
+      const splitRows = transactionsPage.splitBudgetCategoryRows
+      const rowCount = await splitRows.count()
+      expect(rowCount).toBeGreaterThan(1)
     })
   })
 })

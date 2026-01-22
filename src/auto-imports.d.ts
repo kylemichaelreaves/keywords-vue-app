@@ -6,6 +6,7 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const ElCheckbox: typeof import('element-plus/es').ElCheckbox
   const ElInput: typeof import('element-plus/es').ElInput
   const ElSelect: typeof import('element-plus/es').ElSelect
 }

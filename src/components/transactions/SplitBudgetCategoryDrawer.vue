@@ -31,7 +31,12 @@
 
       <el-form ref="formRef" :model="{ splits: localSplits }" class="splits-form">
         <div class="splits-list">
-          <div v-for="(split, index) in localSplits" :key="split.id" class="split-row">
+          <div
+            v-for="(split, index) in localSplits"
+            :key="split.id"
+            class="split-row"
+            data-testid="split-row"
+          >
             <el-form-item
               :prop="`splits.${index}.budget_category_id`"
               :rules="getCategoryRules(index)"
