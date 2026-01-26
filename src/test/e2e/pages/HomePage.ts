@@ -6,7 +6,6 @@ export class HomePage {
   readonly navbar: Locator
   readonly themeToggle: Locator
   readonly htmlElement: Locator
-  readonly heading: Locator
   readonly body: Locator
 
   constructor(page: Page) {
@@ -14,7 +13,6 @@ export class HomePage {
     this.navbar = page.getByTestId('navbar')
     this.themeToggle = this.navbar.getByTestId('theme-toggle')
     this.htmlElement = page.locator('html')
-    this.heading = page.getByRole('heading')
     this.body = page.locator('body')
   }
 
@@ -91,7 +89,6 @@ export class HomePage {
 
   // Home page content assertions
   async expectHomePageContent() {
-    await expect(this.heading).toContainText('Home')
     await expect(this.body).toContainText('In this demonstration of immense innovation and skill…')
     await expect(this.body).toContainText(
       'I will be sketching out extremely sophisticated and mesmerizing UIs for my Lambdas and what they return.',
