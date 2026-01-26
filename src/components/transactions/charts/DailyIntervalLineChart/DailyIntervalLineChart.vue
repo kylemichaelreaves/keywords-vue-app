@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import IntervalForm from '@components/transactions/charts/DailyIntervalLineChart/IntervalForm.vue'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useDailyTotalAmountDebit } from '@api/hooks/timeUnits/days/useDailyTotalAmountDebit.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import LineChart from '@components/charts/LineChart.vue'
@@ -35,6 +35,8 @@ import { useTransactionsStore } from '@stores/transactions.ts'
 import { parseDateMMYYYY } from '@api/helpers/parseDateMMYYYY.ts'
 import { parseDateIWIYYY } from '@api/helpers/parseDateIWIYYY.ts'
 import { DateTime } from 'luxon'
+import { useRoute } from 'vue-router'
+import { router } from '@router'
 
 const props = defineProps({
   dataTestId: {
@@ -56,6 +58,7 @@ const errorAlertDataTestId = computed(() => {
 })
 
 const store = useTransactionsStore()
+const route = useRoute()
 
 const intervalValue = ref('1 month')
 
@@ -106,7 +109,24 @@ const { data, error, isError, isLoading, isFetching } = useDailyTotalAmountDebit
 
 const handleOnDayClicked = (selection: string) => {
   store.setSelectedDay(selection)
+
+  // Update URL with selected day
+  const query = { ...route.query }
+  if (selection) {
+    query.day = selection
+  } else {
+    delete query.day
+  }
+  router.replace({ query })
 }
+
+// Initialize from URL query parameter on mount
+onMounted(() => {
+  const dayFromUrl = route.query.day
+  if (dayFromUrl && typeof dayFromUrl === 'string') {
+    store.setSelectedDay(dayFromUrl)
+  }
+})
 
 /**
  * CRITICAL: shouldShowChart visibility logic

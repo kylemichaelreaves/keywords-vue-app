@@ -2,26 +2,33 @@ import { useInfiniteQuery } from '@tanstack/vue-query'
 import { computed } from 'vue'
 import { useTransactionsStore } from '@stores/transactions'
 import { fetchTransactions } from '@api/transactions/fetchTransactions'
-import { getTimeframeTypeAndValue } from '@components/transactions/helpers/getTimeframeTypeAndValue.ts'
+import { useTimeframeTypeAndValue } from '@api/hooks/timeUnits/useTimeframeTypeAndValue.ts'
+
 import type { Transaction } from '@types'
 
 export default function useTransactions() {
   const store = useTransactionsStore()
   const selectedMemo = computed(() => store.getSelectedMemo)
-  const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())
-  const dateType = computed(() => dateTypeAndValue.value.timeFrame)
-  const selectedValue = computed(() => {
-    const value = dateTypeAndValue.value.selectedValue
-    return value ? value.value : undefined
-  })
+
+  // Now these are reactive computed refs
+  const { timeFrame: dateType, selectedValue } = useTimeframeTypeAndValue()
+
   const limit = computed(() => store.getTransactionsTableLimit)
+
+  // Computed queryKey ensures proper reactivity tracking
+  const queryKey = computed(() => [
+    'transactions',
+    limit.value,
+    selectedMemo.value,
+    dateType.value,
+    selectedValue.value,
+  ] as const)
 
   console.log('[useTransactions] Hook initialized with selectedMemo:', selectedMemo.value)
 
   return useInfiniteQuery<Array<Transaction>>({
     initialPageParam: 0,
-    // Pass computed refs directly - Vue Query will unwrap and track them automatically
-    queryKey: ['transactions', limit, selectedMemo, dateType, selectedValue] as const,
+    queryKey,
     queryFn: async ({ pageParam = 0 }) => {
       console.log(
         '[useTransactions] queryFn called with pageParam:',
@@ -34,17 +41,18 @@ export default function useTransactions() {
         return cachedTransactions
       } else {
         const memoValue = selectedMemo.value
-        // Determine if we have a memo ID (numeric) or memo name (string)
         const isMemoId = memoValue && !Number.isNaN(Number(memoValue))
 
         console.log('[useTransactions] memoValue:', memoValue, 'isMemoId:', isMemoId)
 
-        // Build memo parameter based on type
-        const memoParam = memoValue
-          ? isMemoId
-            ? { memoId: Number(memoValue) }
-            : { memo: memoValue }
-          : {}
+        let memoParam: { memoId?: number; memo?: string } = {}
+        if (memoValue) {
+          if (isMemoId) {
+            memoParam = { memoId: Number(memoValue) }
+          } else {
+            memoParam = { memo: memoValue }
+          }
+        }
 
         console.log('[useTransactions] memoParam:', memoParam)
 

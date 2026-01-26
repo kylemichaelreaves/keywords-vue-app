@@ -56,3 +56,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 app.mount('#app')
+
+// Expose pinia to window for Playwright testing
+if (import.meta.env.MODE === 'development' || import.meta.env.MODE === 'test') {
+  ;(globalThis as any).__PINIA__ = pinia
+}

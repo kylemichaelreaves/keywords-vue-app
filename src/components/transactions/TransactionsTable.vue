@@ -254,11 +254,15 @@ watch(currentPage, () => {
 // this block allows the DailyIntervalLineChart to set the selectedDay and trigger a refetch
 // also watch selectedMemo to refetch when a memo is selected
 watch(
-  [selectedValue, selectedMemo],
-  ([newSelectedValue, newSelectedMemo]) => {
+  [selectedDay, selectedWeek, selectedMonth, selectedMemo],
+  ([newSelectedDay, newSelectedWeek, newSelectedMonth, newSelectedMemo]) => {
     console.log(
-      '[TransactionsTable] Watcher fired - selectedValue:',
-      newSelectedValue,
+      '[TransactionsTable] Watcher fired - selectedDay:',
+      newSelectedDay,
+      'selectedWeek:',
+      newSelectedWeek,
+      'selectedMonth:',
+      newSelectedMonth,
       'selectedMemo:',
       newSelectedMemo,
     )

@@ -258,4 +258,80 @@ export class TransactionsPage {
     await this.modalCloseButton.click()
     await this.expectTransactionEditModalHidden()
   }
+
+  async selectDay(day: string) {
+    await this.daySelect.click()
+    const dayOption = this.page.getByRole('option', { name: day }).first()
+    await dayOption.click()
+  }
+
+  /**
+   * Get the Pinia store state from the browser context
+   * This allows tests to access Vue app state directly
+   */
+  async getStoreState() {
+    return await this.page.evaluate(() => {
+      // Access the Pinia instance from window (exposed in main.ts for testing)
+      const pinia = (window as any).__PINIA__
+      if (!pinia) {
+        throw new Error('Pinia not found on window. Make sure __PINIA__ is exposed in main.ts')
+      }
+
+      // Access the transactions store
+      const transactionsStore = pinia._s.get('transactions')
+      if (!transactionsStore) {
+        throw new Error('Transactions store not found')
+      }
+
+      // Return the store state
+      return {
+        days: transactionsStore.days,
+        weeks: transactionsStore.weeks,
+        months: transactionsStore.months,
+        years: transactionsStore.years,
+        memos: transactionsStore.memos,
+        selectedDay: transactionsStore.selectedDay,
+        selectedWeek: transactionsStore.selectedWeek,
+        selectedMonth: transactionsStore.selectedMonth,
+        selectedYear: transactionsStore.selectedYear,
+        selectedMemo: transactionsStore.selectedMemo,
+      }
+    })
+  }
+
+  /**
+   * Get just the days array from the Pinia store
+   */
+  async getDaysFromStore() {
+    const state = await this.getStoreState()
+    return state.days
+  }
+
+  /**
+   * Get the date associated with a specific chart point
+   * This extracts the date from the chart's data structure
+   */
+  async getChartPointDate(pointIndex: number = 0): Promise<string> {
+    return await this.page.evaluate((index) => {
+      // Access the chart data from the D3 visualization
+      const chartDot = document.querySelector(`[data-testid="chart-dot-${index}"]`) as any
+      if (!chartDot) {
+        throw new Error(`Chart dot ${index} not found`)
+      }
+
+      // D3 stores the data on the element's __data__ property
+      const d3Data = chartDot.__data__
+      if (!d3Data || !d3Data.date) {
+        throw new Error(`No date data found for chart dot ${index}`)
+      }
+
+      // Format the date as YYYY-MM-DD to match what the click handler uses
+      const date = new Date(d3Data.date)
+      const year = date.getUTCFullYear()
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+      const day = String(date.getUTCDate()).padStart(2, '0')
+
+      return `${year}-${month}-${day}`
+    }, pointIndex)
+  }
 }

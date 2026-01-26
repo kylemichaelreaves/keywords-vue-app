@@ -2,12 +2,6 @@
   <el-card class="dark">
     <template #header>
       <div class="card-header">
-        <h1>
-          <el-icon style="vertical-align: middle">
-            <TrendCharts />
-          </el-icon>
-          Budget Visualizer
-        </h1>
         <el-button type="primary" @click="showTransactionForm = true"
           >Add New Transaction</el-button
         >
@@ -92,8 +86,8 @@ const menuItems = [
 
 .card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-end;
+  align-items: end;
 }
 
 .main-container {

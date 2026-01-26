@@ -101,10 +101,10 @@ watch(
 watch(
   () => props.loading,
   (isLoading) => {
-    if (!isLoading) {
-      createChart()
-    } else {
+    if (isLoading) {
       clearChart()
+    } else {
+      createChart()
     }
   },
 )
