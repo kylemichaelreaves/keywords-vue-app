@@ -16,13 +16,16 @@ export default function useTransactions() {
   const limit = computed(() => store.getTransactionsTableLimit)
 
   // Computed queryKey ensures proper reactivity tracking
-  const queryKey = computed(() => [
-    'transactions',
-    limit.value,
-    selectedMemo.value,
-    dateType.value,
-    selectedValue.value,
-  ] as const)
+  const queryKey = computed(
+    () =>
+      [
+        'transactions',
+        limit.value,
+        selectedMemo.value,
+        dateType.value,
+        selectedValue.value,
+      ] as const,
+  )
 
   console.log('[useTransactions] Hook initialized with selectedMemo:', selectedMemo.value)
 

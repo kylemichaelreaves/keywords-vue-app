@@ -32,8 +32,8 @@ import { useRoute, useRouter } from 'vue-router'
 const props = defineProps({
   dataTestId: {
     type: String,
-    default: 'transactions-table-day-select',
-  },
+    default: 'transactions-table-day-select'
+  }
 })
 
 const router = useRouter()
@@ -53,7 +53,7 @@ const dayOptions = computed(() => {
     })
     .map((item: DayYear) => ({
       value: item.day,
-      label: item.day,
+      label: item.day
     }))
 })
 
@@ -64,18 +64,18 @@ const updateSelectedDay = (day: string) => {
     path: route.path,
     query: {
       ...route.query,
-      day: day,
-    },
+      day: day
+    }
   })
 }
 
 const clearSelectedDay = () => {
   store.setSelectedDay('')
   // Destructure the query params from the URL, for precise excision
-  const { day, ...remainingQuery } = route.query
+  const { ...remainingQuery } = route.query
   router.push({
     path: '/budget-visualizer/transactions',
-    query: remainingQuery,
+    query: remainingQuery
   })
 }
 </script>

@@ -35,7 +35,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { TrendCharts } from '@element-plus/icons-vue'
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 import { ElDialog } from 'element-plus'
 import { useRoute } from 'vue-router'

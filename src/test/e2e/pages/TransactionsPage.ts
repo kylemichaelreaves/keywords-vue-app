@@ -297,10 +297,33 @@ export class TransactionsPage {
    */
   async getStoreState() {
     return await this.page.evaluate(() => {
-      // Access the Pinia instance from window (exposed in main.ts for testing)
-      const pinia = (window as any).__PINIA__
+      // Define the Pinia type structure
+      interface PiniaInstance {
+        _s: Map<
+          string,
+          {
+            days: Array<{ day: string }>
+            weeks: unknown[]
+            months: unknown[]
+            years: unknown[]
+            memos: unknown[]
+            selectedDay: string
+            selectedWeek: string
+            selectedMonth: string
+            selectedYear: string
+            selectedMemo: string
+          }
+        >
+      }
+
+      interface GlobalWithPinia {
+        __PINIA__?: PiniaInstance
+      }
+
+      // Access the Pinia instance from globalThis (exposed in main.ts for testing)
+      const pinia = (globalThis as GlobalWithPinia).__PINIA__
       if (!pinia) {
-        throw new Error('Pinia not found on window. Make sure __PINIA__ is exposed in main.ts')
+        throw new Error('Pinia not found on globalThis. Make sure __PINIA__ is exposed in main.ts')
       }
 
       // Access the transactions store
@@ -339,15 +362,25 @@ export class TransactionsPage {
    */
   async getChartPointDate(pointIndex: number = 0): Promise<string> {
     return await this.page.evaluate((index) => {
+      // Define the D3 data structure type
+      interface D3ElementWithData extends Element {
+        __data__?: {
+          date: Date | string
+          total_debit?: number
+        }
+      }
+
       // Access the chart data from the D3 visualization
-      const chartDot = document.querySelector(`[data-testid="chart-dot-${index}"]`) as any
+      const chartDot = document.querySelector(
+        `[data-testid="chart-dot-${index}"]`,
+      ) as D3ElementWithData
       if (!chartDot) {
         throw new Error(`Chart dot ${index} not found`)
       }
 
       // D3 stores the data on the element's __data__ property
       const d3Data = chartDot.__data__
-      if (!d3Data || !d3Data.date) {
+      if (!d3Data?.date) {
         throw new Error(`No date data found for chart dot ${index}`)
       }
 

@@ -114,7 +114,6 @@ import TransactionsTableSelects from '@components/transactions/selects/Transacti
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import DailyIntervalLineChart from '@components/transactions/charts/DailyIntervalLineChart/DailyIntervalLineChart.vue'
 import TransactionTablePagination from '@components/transactions/TransactionsTablePagination.vue'
-import { getTimeframeTypeAndValue } from '@components/transactions/helpers/getTimeframeTypeAndValue.ts'
 import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
 import TableSkeleton from '@components/shared/TableSkeleton.vue'
 
@@ -161,8 +160,6 @@ const firstDay = computed(() => {
   return fallback
 })
 
-const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())
-const selectedValue = computed(() => dateTypeAndValue.value.selectedValue)
 
 const showTransactionEditModal = ref(false)
 const selectedTransaction = ref<Transaction | null>(null)

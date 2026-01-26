@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { VueQueryPlugin } from '@tanstack/vue-query'
-import { createPinia } from 'pinia'
+import { createPinia, type Pinia } from 'pinia'
 import './style.css'
 import App from './App.vue'
 import 'element-plus/dist/index.css'
@@ -11,6 +11,11 @@ import { useAuthStore } from '@stores/auth.ts'
 import { useThemeStore } from '@stores/theme.ts'
 import { router } from '@router'
 import { queryClient } from '@api/queryClient.ts'
+
+// Extend globalThis interface for Playwright testing
+interface GlobalWithPinia {
+  __PINIA__?: Pinia
+}
 
 const app = createApp(App)
 
@@ -59,5 +64,5 @@ app.mount('#app')
 
 // Expose pinia to window for Playwright testing
 if (import.meta.env.MODE === 'development' || import.meta.env.MODE === 'test') {
-  ;(globalThis as any).__PINIA__ = pinia
+  ;(globalThis as GlobalWithPinia).__PINIA__ = pinia
 }
