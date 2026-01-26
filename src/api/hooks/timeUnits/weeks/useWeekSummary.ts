@@ -9,9 +9,9 @@ export default function useWeekSummary(): UseQueryReturnType<WeekSummary[], Erro
   const store = useTransactionsStore()
   const week = computed(() => store.getSelectedWeek)
   return useQuery<WeekSummary[]>({
-    queryKey: ['week-summary', week.value],
+    queryKey: computed(() => ['week-summary', week.value]),
     queryFn: () => fetchWeekSummary(week.value),
-    enabled: Boolean(!!week.value && week.value.trim() !== ''),
+    enabled: computed(() => Boolean(!!week.value && week.value.trim() !== '')),
     refetchOnWindowFocus: false,
   })
 }

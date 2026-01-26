@@ -8,14 +8,14 @@ export function useDaySummariesForSelectedWeek() {
   const store = useTransactionsStore()
   const week = computed(() => store.getSelectedWeek)
   return useQuery({
-    queryKey: ['day-summaries-for-selected-week', week.value],
+    queryKey: computed(() => ['day-summaries-for-selected-week', week.value]),
     queryFn: async () => {
       // get the days of the week
       const daysOfWeek = await fetchDaysOfWeek(week.value)
       // Wait for all the daySummaries to be fetched, then return them
       return Promise.all(daysOfWeek.map((day: string) => fetchDaySummary(day)))
     },
-    enabled: Boolean(week.value),
+    enabled: computed(() => Boolean(week.value)),
     refetchOnWindowFocus: false,
   })
 }
