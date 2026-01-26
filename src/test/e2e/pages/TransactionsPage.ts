@@ -5,6 +5,7 @@ import {
   waitForElementTableReady,
   waitForModalReady,
 } from '@test/e2e/helpers/waitHelpers'
+import type { DayYear } from '@types'
 
 export class TransactionsPage {
   readonly transactionsTable: Locator
@@ -285,7 +286,7 @@ export class TransactionsPage {
     await this.expectTransactionEditModalHidden()
   }
 
-  async selectDay(day: string) {
+  async selectDay(day: DayYear['day']) {
     await this.daySelect.click()
     const dayOption = this.page.getByRole('option', { name: day }).first()
     await dayOption.click()

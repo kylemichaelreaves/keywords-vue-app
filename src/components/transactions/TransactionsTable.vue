@@ -160,7 +160,6 @@ const firstDay = computed(() => {
   return fallback
 })
 
-
 const showTransactionEditModal = ref(false)
 const selectedTransaction = ref<Transaction | null>(null)
 
