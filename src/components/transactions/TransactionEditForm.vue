@@ -97,7 +97,7 @@ const formValues = computed(() => {
   const values: Record<string, unknown> = {}
 
   // Create getter/setter for each field
-  const keys = Object.keys(fields) as TransactionKeys[]
+  const keys = Object.keys(fields.value) as TransactionKeys[]
 
   keys.forEach((key) => {
     Object.defineProperty(values, key, {
@@ -123,7 +123,7 @@ const formValues = computed(() => {
   return values
 })
 
-const fields: Record<TransactionKeys, TransactionFormFields> = {
+const fields = computed<Record<TransactionKeys, TransactionFormFields>>(() => ({
   id: {
     component: ElInput,
     label: 'Id',
@@ -200,7 +200,7 @@ const fields: Record<TransactionKeys, TransactionFormFields> = {
     'aria-label': 'Transaction Fees',
     placeholder: 'Enter fees',
   },
-}
+}))
 
 const { mutate: mutateRegularTransaction } = mutateTransaction()
 const { mutate: mutatePending } = mutatePendingTransaction()

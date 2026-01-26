@@ -6,6 +6,7 @@ import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
 import { waitForTableContent } from '@test/e2e/helpers/waitHelpers'
 import { setupApiRequestLogging, setupAwsApiRequestLogging } from '@test/e2e/helpers/requestLogger'
+import type { Page } from '@playwright/test'
 
 const isCI = !!process.env.CI
 
@@ -89,7 +90,6 @@ test.describe('Transactions Table', () => {
 
     // Get the transaction number before right-clicking
     const firstTransactionNumber = await transactionsPage.getCellTextContent(1, 1)
-    console.log('[TEST DEBUG] Transaction number from table:', firstTransactionNumber)
 
     // Right click to open modal
     await transactionsPage.clickOnTableCell({
@@ -227,6 +227,7 @@ test.describe('Transactions Table', () => {
     })
   })
 
+
   test('selecting a day from the DailyIntervalLineChart, the date of the node is reflected in the URL params', async ({
     page,
   }) => {
@@ -286,5 +287,60 @@ test.describe('Transactions Table', () => {
     const url = page.url()
 
     expect(url).toContain(`day=${encodeURIComponent(firstDay)}`)
+
+  test.describe('SplitBudgetCategoryDrawer', () => {
+    async function openSplitDrawer(page: Page, rowIndex: number) {
+      const dataCell = transactionsPage.transactionsTable
+        .getByRole('row')
+        .nth(rowIndex)
+        .getByRole('cell')
+        .first()
+
+      await expect(dataCell).not.toBeEmpty({ timeout: 30000 })
+
+      await transactionsPage.clickOnTableCell({
+        rowIndex,
+        cellIndex: 1,
+        clickOptions: { button: 'right' },
+      })
+
+      const editTransactionModal = transactionsPage.transactionEditModal
+      await expect(editTransactionModal).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+
+      const checkbox = transactionsPage.transactionSplitBudgetCategoryCheckBox
+      await expect(checkbox).toBeVisible({ timeout: isCI ? 10000 : 5000 })
+      await expect(checkbox).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
+      await checkbox.click()
+
+      await expect(transactionsPage.splitBudgetCategoryDrawer).toBeVisible({
+        timeout: isCI ? 20000 : 10000,
+      })
+    }
+
+    test('clicking on the checkbox opens the SplitBudgetCategoryDrawer', async ({ page }) => {
+      await openSplitDrawer(page, 1)
+    })
+
+    test('the Save button is initially disabled and the Add Split button enabled', async ({
+      page,
+    }) => {
+      await openSplitDrawer(page, 2)
+
+      const saveButton = transactionsPage.splitBudgetCategorySaveButton
+      await expect(saveButton).toBeDisabled({ timeout: isCI ? 10000 : 5000 })
+    })
+
+    test('clicking the Add Split button adds a new split entry row', async ({ page }) => {
+      await openSplitDrawer(page, 3)
+
+      const addSplitButton = transactionsPage.splitBudgetCategoryAddSplitButton
+      await expect(addSplitButton).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
+      await addSplitButton.click()
+
+      const splitRows = transactionsPage.splitBudgetCategoryRows
+      const rowCount = await splitRows.count()
+      expect(rowCount).toBeGreaterThan(1)
+    })
+
   })
 })
