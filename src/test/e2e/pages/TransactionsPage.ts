@@ -5,6 +5,7 @@ import {
   waitForElementTableReady,
   waitForModalReady,
 } from '@test/e2e/helpers/waitHelpers'
+import type { DayYear } from '@types'
 
 export class TransactionsPage {
   readonly transactionsTable: Locator
@@ -283,5 +284,114 @@ export class TransactionsPage {
   async closeTransactionEditModal() {
     await this.modalCloseButton.click()
     await this.expectTransactionEditModalHidden()
+  }
+
+  async selectDay(day: DayYear['day']) {
+    await this.daySelect.click()
+    const dayOption = this.page.getByRole('option', { name: day }).first()
+    await dayOption.click()
+  }
+
+  /**
+   * Get the Pinia store state from the browser context
+   * This allows tests to access Vue app state directly
+   */
+  async getStoreState() {
+    return await this.page.evaluate(() => {
+      // Define the Pinia type structure
+      interface PiniaInstance {
+        _s: Map<
+          string,
+          {
+            days: Array<{ day: string }>
+            weeks: unknown[]
+            months: unknown[]
+            years: unknown[]
+            memos: unknown[]
+            selectedDay: string
+            selectedWeek: string
+            selectedMonth: string
+            selectedYear: string
+            selectedMemo: string
+          }
+        >
+      }
+
+      interface GlobalWithPinia {
+        __PINIA__?: PiniaInstance
+      }
+
+      // Access the Pinia instance from globalThis (exposed in main.ts for testing)
+      const pinia = (globalThis as GlobalWithPinia).__PINIA__
+      if (!pinia) {
+        throw new Error('Pinia not found on globalThis. Make sure __PINIA__ is exposed in main.ts')
+      }
+
+      // Access the transactions store
+      const transactionsStore = pinia._s.get('transactions')
+      if (!transactionsStore) {
+        throw new Error('Transactions store not found')
+      }
+
+      // Return the store state
+      return {
+        days: transactionsStore.days,
+        weeks: transactionsStore.weeks,
+        months: transactionsStore.months,
+        years: transactionsStore.years,
+        memos: transactionsStore.memos,
+        selectedDay: transactionsStore.selectedDay,
+        selectedWeek: transactionsStore.selectedWeek,
+        selectedMonth: transactionsStore.selectedMonth,
+        selectedYear: transactionsStore.selectedYear,
+        selectedMemo: transactionsStore.selectedMemo,
+      }
+    })
+  }
+
+  /**
+   * Get just the days array from the Pinia store
+   */
+  async getDaysFromStore() {
+    const state = await this.getStoreState()
+    return state.days
+  }
+
+  /**
+   * Get the date associated with a specific chart point
+   * This extracts the date from the chart's data structure
+   */
+  async getChartPointDate(pointIndex: number = 0): Promise<string> {
+    return await this.page.evaluate((index) => {
+      // Define the D3 data structure type
+      interface D3ElementWithData extends Element {
+        __data__?: {
+          date: Date | string
+          total_debit?: number
+        }
+      }
+
+      // Access the chart data from the D3 visualization
+      const chartDot = document.querySelector(
+        `[data-testid="chart-dot-${index}"]`,
+      ) as D3ElementWithData
+      if (!chartDot) {
+        throw new Error(`Chart dot ${index} not found`)
+      }
+
+      // D3 stores the data on the element's __data__ property
+      const d3Data = chartDot.__data__
+      if (!d3Data?.date) {
+        throw new Error(`No date data found for chart dot ${index}`)
+      }
+
+      // Format the date as YYYY-MM-DD to match what the click handler uses
+      const date = new Date(d3Data.date)
+      const year = date.getUTCFullYear()
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+      const day = String(date.getUTCDate()).padStart(2, '0')
+
+      return `${year}-${month}-${day}`
+    }, pointIndex)
   }
 }

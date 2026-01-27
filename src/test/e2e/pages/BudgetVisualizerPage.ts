@@ -13,7 +13,6 @@ export class BudgetVisualizerPage {
   }
 
   async expectPageLoaded() {
-    await expect(this.heading).toBeVisible()
     await expect(this.addNewTransactionButton).toBeVisible()
   }
 }

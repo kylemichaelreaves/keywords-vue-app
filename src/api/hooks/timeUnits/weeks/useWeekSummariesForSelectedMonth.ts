@@ -13,13 +13,13 @@ export default function useWeekSummariesForSelectedMonth(): UseQueryReturnType<
   const store = useTransactionsStore()
   const month = computed(() => store.getSelectedMonth)
   return useQuery<Array<WeekSummary>>({
-    queryKey: ['weekSummariesForSelectedMonth', month.value],
+    queryKey: computed(() => ['weekSummariesForSelectedMonth', month.value]),
     queryFn: async () => {
       const weeksOfMonth = await fetchWeeksOfMonth(month.value)
       store.setWeeksForSelectedMonth(weeksOfMonth)
       return Promise.all(weeksOfMonth.map((week: string) => fetchWeekSummary(week)))
     },
-    enabled: !!month.value,
+    enabled: computed(() => !!month.value),
     refetchOnWindowFocus: false,
   })
 }

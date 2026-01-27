@@ -27,7 +27,7 @@ import { useTransactionsStore } from '@stores/transactions.ts'
 import type { DayYear } from '@types'
 import SelectComponent from '@components/shared/SelectComponent.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
-import { router } from '@router'
+import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
   dataTestId: {
@@ -36,6 +36,8 @@ const props = defineProps({
   },
 })
 
+const router = useRouter()
+const route = useRoute()
 const store = useTransactionsStore()
 const selectedDay = computed(() => store.getSelectedDay)
 
@@ -47,8 +49,7 @@ const dayOptions = computed(() => {
   }
   return data.value
     .filter((item: DayYear) => {
-      // Filter out null, undefined, empty string, or whitespace-only values
-      return item.day != null && item.day.trim() !== ''
+      return item.day != null && item.day.trim() !== '' // Filter out null, undefined, empty string, or whitespace-only values
     })
     .map((item: DayYear) => ({
       value: item.day,
@@ -58,10 +59,23 @@ const dayOptions = computed(() => {
 
 const updateSelectedDay = (day: string) => {
   store.setSelectedDay(day)
+  // Update URL query params with the selected day
+  router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      day: day,
+    },
+  })
 }
 
 const clearSelectedDay = () => {
   store.setSelectedDay('')
-  router.push('/budget-visualizer/transactions')
+  // Destructure the query params from the URL, for precise excision
+  const { ...remainingQuery } = route.query
+  router.push({
+    path: '/budget-visualizer/transactions',
+    query: remainingQuery,
+  })
 }
 </script>

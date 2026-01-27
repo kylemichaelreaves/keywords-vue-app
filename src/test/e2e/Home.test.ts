@@ -12,7 +12,7 @@ test('has title', async ({ page }) => {
   await page.goto('/')
 
   // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle('Vite + Vue + TS')
+  await expect(page).toHaveTitle('Budget Visualizer')
 })
 
 test('can go to the budget-visualizer tab', async ({ page }) => {

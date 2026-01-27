@@ -114,7 +114,6 @@ import TransactionsTableSelects from '@components/transactions/selects/Transacti
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import DailyIntervalLineChart from '@components/transactions/charts/DailyIntervalLineChart/DailyIntervalLineChart.vue'
 import TransactionTablePagination from '@components/transactions/TransactionsTablePagination.vue'
-import { getTimeframeTypeAndValue } from '@components/transactions/helpers/getTimeframeTypeAndValue.ts'
 import TransactionEditForm from '@components/transactions/TransactionEditForm.vue'
 import TableSkeleton from '@components/shared/TableSkeleton.vue'
 
@@ -160,9 +159,6 @@ const firstDay = computed(() => {
   console.log('[TransactionsTable DEBUG] firstDay ultimate fallback (30 days ago):', fallback)
   return fallback
 })
-
-const dateTypeAndValue = computed(() => getTimeframeTypeAndValue())
-const selectedValue = computed(() => dateTypeAndValue.value.selectedValue)
 
 const showTransactionEditModal = ref(false)
 const selectedTransaction = ref<Transaction | null>(null)
@@ -254,11 +250,15 @@ watch(currentPage, () => {
 // this block allows the DailyIntervalLineChart to set the selectedDay and trigger a refetch
 // also watch selectedMemo to refetch when a memo is selected
 watch(
-  [selectedValue, selectedMemo],
-  ([newSelectedValue, newSelectedMemo]) => {
+  [selectedDay, selectedWeek, selectedMonth, selectedMemo],
+  ([newSelectedDay, newSelectedWeek, newSelectedMonth, newSelectedMemo]) => {
     console.log(
-      '[TransactionsTable] Watcher fired - selectedValue:',
-      newSelectedValue,
+      '[TransactionsTable] Watcher fired - selectedDay:',
+      newSelectedDay,
+      'selectedWeek:',
+      newSelectedWeek,
+      'selectedMonth:',
+      newSelectedMonth,
       'selectedMemo:',
       newSelectedMemo,
     )

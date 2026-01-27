@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { VueQueryPlugin } from '@tanstack/vue-query'
-import { createPinia } from 'pinia'
+import { createPinia, type Pinia } from 'pinia'
 import './style.css'
 import App from './App.vue'
 import 'element-plus/dist/index.css'
@@ -11,6 +11,11 @@ import { useAuthStore } from '@stores/auth.ts'
 import { useThemeStore } from '@stores/theme.ts'
 import { router } from '@router'
 import { queryClient } from '@api/queryClient.ts'
+
+// Extend globalThis interface for Playwright testing
+interface GlobalWithPinia {
+  __PINIA__?: Pinia
+}
 
 const app = createApp(App)
 
@@ -56,3 +61,11 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 app.mount('#app')
+
+// Expose pinia to globalThis for Playwright testing
+// Expose in all environments except when explicitly disabled
+// This enables E2E testing in preview builds while still allowing
+// production builds to disable it if needed
+if (import.meta.env.VITE_DISABLE_PINIA_TESTING !== 'true') {
+  ;(globalThis as GlobalWithPinia).__PINIA__ = pinia
+}

@@ -227,6 +227,69 @@ test.describe('Transactions Table', () => {
     })
   })
 
+  test('selecting a day from the DailyIntervalLineChart, the date of the node is reflected in the URL params', async ({
+    page,
+  }) => {
+    // Log only API requests for this test
+    setupApiRequestLogging(page)
+
+    // Get the first point in the chart
+    const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
+    await expect(firstPoint).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+
+    // Get the date from the chart point's data BEFORE clicking
+    const chartPointDate = await transactionsPage.getChartPointDate(0)
+
+    expect(chartPointDate).toBeDefined()
+    expect(chartPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+
+    // Click on the first point in the chart
+    await firstPoint.click({ force: isCI })
+
+    // Wait for UI to update with new data
+    await waitForTableContent(transactionsPage.transactionsTable, page, {
+      timeout: isCI ? 90000 : 60000,
+    })
+
+    // Verify the URL now contains the selected day as a query parameter
+    const url = page.url()
+
+    // The chart point date should match the URL parameter
+    expect(url).toContain(`day=${encodeURIComponent(chartPointDate)}`)
+
+    // Verify the date was also set in the Pinia store
+    const storeState = await transactionsPage.getStoreState()
+    expect(storeState.selectedDay).toBe(chartPointDate)
+  })
+
+  test('selecting a day in the DaySelect is reflected in the URLs params', async ({ page }) => {
+    // Log only API requests for this test
+    setupApiRequestLogging(page)
+
+    // Get the first day from the Pinia store
+    const days = await transactionsPage.getDaysFromStore()
+
+    expect(days.length).toBeGreaterThan(0)
+    const firstDay = days[0]?.day
+
+    // Ensure firstDay is defined before using it
+    expect(firstDay).toBeDefined()
+    expect(firstDay).not.toBe('')
+
+    // User selects the first day from the DaySelect
+    await transactionsPage.selectDay(firstDay!)
+
+    // Wait for UI to update with new data
+    await waitForTableContent(transactionsPage.transactionsTable, page, {
+      timeout: isCI ? 90000 : 60000,
+    })
+
+    // Verify the URL now contains the selected day as a query parameter
+    const url = page.url()
+
+    expect(url).toContain(`day=${encodeURIComponent(firstDay!)}`)
+  })
+
   test.describe('SplitBudgetCategoryDrawer', () => {
     async function openSplitDrawer(page: Page, rowIndex: number) {
       const dataCell = transactionsPage.transactionsTable
