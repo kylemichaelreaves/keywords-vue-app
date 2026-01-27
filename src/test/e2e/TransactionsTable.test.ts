@@ -239,7 +239,6 @@ test.describe('Transactions Table', () => {
 
     // Get the date from the chart point's data BEFORE clicking
     const chartPointDate = await transactionsPage.getChartPointDate(0)
-    console.log('[TEST DEBUG] Chart point date:', chartPointDate)
 
     expect(chartPointDate).toBeDefined()
     expect(chartPointDate).toMatch(/^\d{4}-\d{2}-\d{2}$/)
@@ -254,7 +253,6 @@ test.describe('Transactions Table', () => {
 
     // Verify the URL now contains the selected day as a query parameter
     const url = page.url()
-    console.log('[TEST DEBUG] URL after clicking chart point:', url)
 
     // The chart point date should match the URL parameter
     expect(url).toContain(`day=${encodeURIComponent(chartPointDate)}`)
@@ -290,8 +288,9 @@ test.describe('Transactions Table', () => {
     const url = page.url()
 
     expect(url).toContain(`day=${encodeURIComponent(firstDay!)}`)
+  })
 
-    test.describe('SplitBudgetCategoryDrawer', () => {
+  test.describe('SplitBudgetCategoryDrawer', () => {
       async function openSplitDrawer(page: Page, rowIndex: number) {
         const dataCell = transactionsPage.transactionsTable
           .getByRole('row')
@@ -345,5 +344,4 @@ test.describe('Transactions Table', () => {
         expect(rowCount).toBeGreaterThan(1)
       })
     })
-  })
 })
