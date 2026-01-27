@@ -291,57 +291,57 @@ test.describe('Transactions Table', () => {
   })
 
   test.describe('SplitBudgetCategoryDrawer', () => {
-      async function openSplitDrawer(page: Page, rowIndex: number) {
-        const dataCell = transactionsPage.transactionsTable
-          .getByRole('row')
-          .nth(rowIndex)
-          .getByRole('cell')
-          .first()
+    async function openSplitDrawer(page: Page, rowIndex: number) {
+      const dataCell = transactionsPage.transactionsTable
+        .getByRole('row')
+        .nth(rowIndex)
+        .getByRole('cell')
+        .first()
 
-        await expect(dataCell).not.toBeEmpty({ timeout: 30000 })
+      await expect(dataCell).not.toBeEmpty({ timeout: 30000 })
 
-        await transactionsPage.clickOnTableCell({
-          rowIndex,
-          cellIndex: 1,
-          clickOptions: { button: 'right' },
-        })
-
-        const editTransactionModal = transactionsPage.transactionEditModal
-        await expect(editTransactionModal).toBeVisible({ timeout: isCI ? 30000 : 15000 })
-
-        const checkbox = transactionsPage.transactionSplitBudgetCategoryCheckBox
-        await expect(checkbox).toBeVisible({ timeout: isCI ? 10000 : 5000 })
-        await expect(checkbox).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
-        await checkbox.click()
-
-        await expect(transactionsPage.splitBudgetCategoryDrawer).toBeVisible({
-          timeout: isCI ? 20000 : 10000,
-        })
-      }
-
-      test('clicking on the checkbox opens the SplitBudgetCategoryDrawer', async ({ page }) => {
-        await openSplitDrawer(page, 1)
+      await transactionsPage.clickOnTableCell({
+        rowIndex,
+        cellIndex: 1,
+        clickOptions: { button: 'right' },
       })
 
-      test('the Save button is initially disabled and the Add Split button enabled', async ({
-        page,
-      }) => {
-        await openSplitDrawer(page, 2)
+      const editTransactionModal = transactionsPage.transactionEditModal
+      await expect(editTransactionModal).toBeVisible({ timeout: isCI ? 30000 : 15000 })
 
-        const saveButton = transactionsPage.splitBudgetCategorySaveButton
-        await expect(saveButton).toBeDisabled({ timeout: isCI ? 10000 : 5000 })
+      const checkbox = transactionsPage.transactionSplitBudgetCategoryCheckBox
+      await expect(checkbox).toBeVisible({ timeout: isCI ? 10000 : 5000 })
+      await expect(checkbox).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
+      await checkbox.click()
+
+      await expect(transactionsPage.splitBudgetCategoryDrawer).toBeVisible({
+        timeout: isCI ? 20000 : 10000,
       })
+    }
 
-      test('clicking the Add Split button adds a new split entry row', async ({ page }) => {
-        await openSplitDrawer(page, 3)
-
-        const addSplitButton = transactionsPage.splitBudgetCategoryAddSplitButton
-        await expect(addSplitButton).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
-        await addSplitButton.click()
-
-        const splitRows = transactionsPage.splitBudgetCategoryRows
-        const rowCount = await splitRows.count()
-        expect(rowCount).toBeGreaterThan(1)
-      })
+    test('clicking on the checkbox opens the SplitBudgetCategoryDrawer', async ({ page }) => {
+      await openSplitDrawer(page, 1)
     })
+
+    test('the Save button is initially disabled and the Add Split button enabled', async ({
+      page,
+    }) => {
+      await openSplitDrawer(page, 2)
+
+      const saveButton = transactionsPage.splitBudgetCategorySaveButton
+      await expect(saveButton).toBeDisabled({ timeout: isCI ? 10000 : 5000 })
+    })
+
+    test('clicking the Add Split button adds a new split entry row', async ({ page }) => {
+      await openSplitDrawer(page, 3)
+
+      const addSplitButton = transactionsPage.splitBudgetCategoryAddSplitButton
+      await expect(addSplitButton).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
+      await addSplitButton.click()
+
+      const splitRows = transactionsPage.splitBudgetCategoryRows
+      const rowCount = await splitRows.count()
+      expect(rowCount).toBeGreaterThan(1)
+    })
+  })
 })
