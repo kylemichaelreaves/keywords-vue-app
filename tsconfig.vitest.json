@@ -7,7 +7,8 @@
     "vitest-globals.d.ts",
     "vitest.intellij.d.ts",
     "env.d.ts",
-    "vitest.d.ts"
+    "vitest.d.ts",
+    "constants.node.ts"
   ],
   "exclude": [
     "node_modules"

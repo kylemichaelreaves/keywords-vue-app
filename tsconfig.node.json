@@ -5,7 +5,8 @@
     "vitest.config.*",
     "playwright.config.*",
     "eslint.config.*",
-    ".storybook/**/*"
+    ".storybook/**/*",
+    "constants.node.ts"
   ],
   "compilerOptions": {
     "composite": true,

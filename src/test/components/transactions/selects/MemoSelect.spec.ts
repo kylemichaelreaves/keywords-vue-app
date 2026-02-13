@@ -35,7 +35,7 @@ const createMemo = (id: number, name: string): Memo => ({
 // Helper to create a router with a specific query
 const createMockRouter = async (query: Record<string, string> = {}) => {
   const router = createRouter({
-    history: createMemoryHistory(),
+    history: createMemoryHistory('/'),
     routes: [{ path: '/', component: { template: '<div />' } }],
   })
   await router.push({ path: '/', query })
