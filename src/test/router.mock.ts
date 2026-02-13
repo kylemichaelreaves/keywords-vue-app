@@ -2,6 +2,6 @@
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 export const mockRouter = createRouter({
-  history: createMemoryHistory(),
+  history: createMemoryHistory('/'),
   routes: [],
 })

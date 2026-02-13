@@ -4,7 +4,8 @@
     "src/**/*",
     "src/**/*.vue",
     "env.d.ts",
-    "vite-env.d.ts"
+    "vite-env.d.ts",
+    "constants.node.ts"
   ],
   "exclude": [
     "src/**/__tests__/*",

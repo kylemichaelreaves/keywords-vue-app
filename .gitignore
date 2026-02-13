@@ -60,3 +60,8 @@ storybook-static
 !playwright.config.ts
 !eslint.config.ts
 !vitest.config.storybook.ts
+
+# Compiled constants files
+constants.node.js
+constants.node.d.ts
+
