@@ -5,7 +5,6 @@ import { transactionsMock } from '@mocks/transaction'
 console.error = vi.fn()
 
 describe('fetchTransactions', () => {
-
   afterAll(() => {
     vi.resetAllMocks()
   })

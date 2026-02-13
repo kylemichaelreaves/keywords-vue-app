@@ -58,7 +58,6 @@ const handlers: HttpHandler[] = [
     return new HttpResponse(JSON.stringify(memoSummaryMock), { status: 200 })
   }),
 
-
   http.get('*', () => {
     return new HttpResponse('Unhandled request', { status: 500 })
   }),
