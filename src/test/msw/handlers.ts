@@ -20,6 +20,15 @@ const handlers: HttpHandler[] = [
     return new HttpResponse(JSON.stringify(transactionsMock[0]), { status: 200 })
   }),
 
+  // More specific transaction routes must come before the general /transactions route
+  http.get('*/transactions/months/:monthId/summary', () => {
+    return new HttpResponse(JSON.stringify(monthSummaryMock), { status: 200 })
+  }),
+
+  http.get('*/transactions/weeks/:weekId/summary', () => {
+    return new HttpResponse(JSON.stringify(weekSummaryMock), { status: 200 })
+  }),
+
   http.get('*/transactions/months', () => {
     return new HttpResponse(JSON.stringify(monthsMock), { status: 200 })
   }),
@@ -32,25 +41,23 @@ const handlers: HttpHandler[] = [
     return new HttpResponse(JSON.stringify(weeksMock), { status: 200 })
   }),
 
-  http.get('*/memos', () => {
-    return new HttpResponse(JSON.stringify(memosMock), { status: 200 })
-  }),
-
   http.post('*/transactions/update-memo', () => {
     return new HttpResponse(JSON.stringify(memosMock[0]), { status: 200 })
+  }),
+
+  // General /transactions route - must come after specific transaction routes
+  http.get('*/transactions', () => {
+    return new HttpResponse(JSON.stringify(transactionsMock), { status: 200 })
+  }),
+
+  http.get('*/memos', () => {
+    return new HttpResponse(JSON.stringify(memosMock), { status: 200 })
   }),
 
   http.get('*/memos/:memoId/summary', () => {
     return new HttpResponse(JSON.stringify(memoSummaryMock), { status: 200 })
   }),
 
-  http.get('*/transactions/months/:monthId/summary', () => {
-    return new HttpResponse(JSON.stringify(monthSummaryMock), { status: 200 })
-  }),
-
-  http.get('*/transactions/weeks/:weekId/summary', () => {
-    return new HttpResponse(JSON.stringify(weekSummaryMock), { status: 200 })
-  }),
 
   http.get('*', () => {
     return new HttpResponse('Unhandled request', { status: 500 })
