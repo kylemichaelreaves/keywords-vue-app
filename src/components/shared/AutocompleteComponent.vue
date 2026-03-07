@@ -11,7 +11,7 @@
       :disabled="props.disabled"
       :aria-label="props.ariaLabel"
       clearable
-      clear-icon="Close"
+      :clear-icon="Close"
       :loading="props.loading"
       :loading-text="props.loadingText"
       :trigger-on-focus="true"
@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { ElAutocomplete } from 'element-plus'
+import { Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import type { PropType } from 'vue'
 
