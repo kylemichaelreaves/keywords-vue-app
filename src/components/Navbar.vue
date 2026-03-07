@@ -36,7 +36,7 @@
           <span @click.stop="handleLoginLogout">
             <!--  TODO instead of el-icon, use el-avatar with an icon -->
             <el-icon style="vertical-align: middle" size="1.5em">
-              <component :is="authStore.isUserAuthenticated ? 'UserFilled' : 'User'" />
+              <component :is="authStore.isUserAuthenticated ? UserFilled : User" />
             </el-icon>
             <span>{{ authStore.isUserAuthenticated ? authStore.user.username : 'Log In' }}</span>
             <el-tag
@@ -61,6 +61,15 @@ import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { TabsPaneContext, ElTabs, ElTabPane } from 'element-plus'
+import {
+  HomeFilled,
+  LocationFilled,
+  Key,
+  TrendCharts,
+  InfoFilled,
+  UserFilled,
+  User,
+} from '@element-plus/icons-vue'
 import { useAuthStore } from '@stores/auth'
 import ThemeToggle from '@components/ThemeToggle.vue'
 
@@ -90,15 +99,15 @@ const routeIcon = (route: RouteRecordRaw) =>
   computed(() => {
     switch (route.name) {
       case 'home':
-        return 'HomeFilled'
+        return HomeFilled
       case 'address-geocoder':
-        return 'LocationFilled'
+        return LocationFilled
       case 'keywords':
-        return 'Key'
+        return Key
       case 'budget-visualizer':
-        return 'TrendCharts'
+        return TrendCharts
       default:
-        return 'InformationFilled'
+        return InfoFilled
     }
   })
 
