@@ -3,8 +3,6 @@ import { VueQueryPlugin } from '@tanstack/vue-query'
 import { createPinia, type Pinia } from 'pinia'
 import './style.css'
 import App from './App.vue'
-import 'element-plus/dist/index.css'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import VueTippy from 'vue-tippy'
 import { useAuthStore } from '@stores/auth.ts'
@@ -55,10 +53,6 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
-
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
-}
 
 app.mount('#app')
 

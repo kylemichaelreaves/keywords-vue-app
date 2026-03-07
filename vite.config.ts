@@ -21,7 +21,7 @@ export default defineConfig(async () => {
     }),
     AutoImport({
       resolvers: [
-        ElementPlusResolver(),
+        ElementPlusResolver({ importStyle: 'css' }),
         // Auto import icons
         IconsResolver({
           prefix: 'Icon',
@@ -31,7 +31,7 @@ export default defineConfig(async () => {
     }),
     Components({
       resolvers: [
-        ElementPlusResolver(),
+        ElementPlusResolver({ importStyle: 'css' }),
         // Auto register icon components
         IconsResolver({
           enabledCollections: ['ep'], // Element Plus icons
