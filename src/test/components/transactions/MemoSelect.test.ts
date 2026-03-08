@@ -76,7 +76,9 @@ describe('MemoSelect', () => {
   test('clearable should be true on autocomplete', async () => {
     const autocomplete = wrapper.findComponent({ name: 'ElAutocomplete' })
     expect(autocomplete.exists()).toBe(true)
-    expect(autocomplete.vm.clearable).toBe(true)
+    // clearable is a static boolean attribute on <el-autocomplete> in AutocompleteComponent,
+    // which is passed through as an HTML boolean attr (empty string) on the stubbed component
+    expect('clearable' in autocomplete.vm.$attrs).toBe(true)
   })
 
   describe('Search functionality', () => {

@@ -20,9 +20,9 @@
       value-key="value"
       style="width: 100%"
     >
-      <template #default="{ item }">
-        <div class="autocomplete-item">
-          <span class="label">{{ (item as Option).label }}</span>
+      <template #default="slotProps">
+        <div v-if="slotProps?.item" class="autocomplete-item">
+          <span class="label">{{ (slotProps.item as Option).label }}</span>
         </div>
       </template>
     </el-autocomplete>
