@@ -342,7 +342,12 @@ test.describe('Transactions Table', () => {
         transactionsPage.splitBudgetCategoryDrawer.getByTestId('split-amount-0')
       await expect(firstSplitAmount).toBeVisible({ timeout: isCI ? 10000 : 5000 })
       const amountInput = firstSplitAmount.getByRole('spinbutton')
-      await amountInput.fill('1')
+      // Triple-click to select all, then type replacement value and blur to trigger
+      // the change event on Element Plus ElInputNumber
+      await amountInput.click({ clickCount: 3 })
+      await amountInput.press('Backspace')
+      await amountInput.type('1')
+      await amountInput.press('Tab')
 
       const addSplitButton = transactionsPage.splitBudgetCategoryAddSplitButton
       await expect(addSplitButton).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
