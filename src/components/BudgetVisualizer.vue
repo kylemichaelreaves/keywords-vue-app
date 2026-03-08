@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
-import { ElDialog } from 'element-plus'
+import { Money, OfficeBuilding, Files, Calendar } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
 import TransactionCreateForm from '@components/transactions/TransactionCreateForm.vue'
 
@@ -49,31 +49,30 @@ const menuItems = [
     index: '1',
     name: 'transactions',
     path: '/budget-visualizer/transactions',
-    icon: 'Money',
+    icon: Money,
     title: 'Transactions',
   },
   {
     index: '2',
     name: 'memos',
     path: '/budget-visualizer/memos',
-    icon: 'OfficeBuilding',
+    icon: OfficeBuilding,
     title: 'Memos',
   },
   {
     index: '3',
     name: 'budget-categories',
     path: '/budget-visualizer/budget-categories',
-    icon: 'Files',
+    icon: Files,
     title: 'Budget Categories',
   },
   {
     index: '4',
     name: 'loan-calculator',
     path: '/budget-visualizer/loan-calculator',
-    icon: 'Calendar',
+    icon: Calendar,
     title: 'Loan Calculator',
   },
-  // {index: "5", name: "chart-sandbox", icon: "TrendCharts", title: "Chart Sandbox"},
 ]
 </script>
 

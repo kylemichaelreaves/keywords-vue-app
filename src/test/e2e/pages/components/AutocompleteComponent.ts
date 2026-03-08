@@ -16,6 +16,10 @@ export class AutocompleteComponent {
     return this.page.getByTestId(this.testId)
   }
 
+  get autocompleteOptions(): Locator {
+    return this.page.getByRole('option').first()
+  }
+
   get input(): Locator {
     // Element Plus el-autocomplete: The textbox uses placeholder as accessible name
     // Use the placeholder text "Select a memo" to locate it within the autocomplete wrapper
@@ -28,8 +32,10 @@ export class AutocompleteComponent {
   }
 
   get dropdown(): Locator {
-    // Target the listbox inside the autocomplete component's combobox
-    // Element Plus renders the dropdown inside the combobox when expanded
+    // Element Plus renders two elements with role="listbox":
+    //   1) <div role="listbox"> — the popper/tooltip wrapper (teleported to body)
+    //   2) <ul role="listbox"> — the actual suggestion list inside the combobox
+    // Scope through the combobox within our autocomplete to target only the inner <ul>
     return this.autocomplete.getByRole('combobox').getByRole('listbox')
   }
 
@@ -96,25 +102,15 @@ export class AutocompleteComponent {
       .waitFor({ state: 'visible', timeout: options?.timeout || 5000 })
   }
 
-  async waitForLoading(options?: { timeout?: number }): Promise<void> {
-    await this.loadingIndicator.waitFor({ state: 'visible', timeout: options?.timeout || 5000 })
-  }
-
   async waitForLoadingToFinish(options?: { timeout?: number }): Promise<void> {
     await this.loadingIndicator.waitFor({ state: 'hidden', timeout: options?.timeout || 5000 })
-  }
-
-  async waitForSuggestionsToAppear(options?: { timeout?: number }): Promise<void> {
-    // Simple wait for dropdown to appear, doesn't wait for loading or debounce
-    // Use this when you just need the dropdown visible without waiting for data updates
-    await this.dropdown.waitFor({ state: 'visible', timeout: options?.timeout || 5000 })
   }
 
   async waitForSuggestionsToUpdate(options?: { timeout?: number }): Promise<void> {
     // Wait for the debounce period (300ms from AutocompleteComponent)
     await this.page.waitForLoadState('networkidle')
     // Wait for dropdown to be visible, but allow it to stay open during loading
-    await this.dropdown.waitFor({ state: 'visible', timeout: options?.timeout || 5000 })
+    await this.autocompleteOptions.waitFor({ state: 'visible', timeout: options?.timeout || 5000 })
 
     // Optional: Wait for loading to finish if loading indicator is present
     // This ensures we see fresh results but keeps dropdown open
@@ -125,25 +121,9 @@ export class AutocompleteComponent {
   }
 
   // Query methods
-  async inputValue(): Promise<string> {
-    return await this.input.inputValue()
-  }
-
-  async isDropdownVisible(): Promise<boolean> {
-    return await this.dropdown.isVisible().catch(() => false)
-  }
-
   async isLoading(): Promise<boolean> {
     return await this.loadingIndicator.isVisible().catch(() => false)
   }
-
-  async hasSuggestion(text: string): Promise<boolean> {
-    // await this.waitForSuggestions()
-    return await this.getSuggestion(text)
-      .isVisible()
-      .catch(() => false)
-  }
-
   async getSuggestionCount(): Promise<number> {
     // await this.waitForSuggestions()
     // Use role-based locator for list items
@@ -155,49 +135,16 @@ export class AutocompleteComponent {
     }
     return count
   }
-
-  async getAllSuggestions(): Promise<string[]> {
-    // await this.waitForSuggestions()
-    // Use role-based locator for options
-    const options = this.dropdown.getByRole('option')
-    const count = await options.count()
-
-    if (count > 0) {
-      return await options.allTextContents()
-    }
-
-    // Fallback to li elements
-    return await this.dropdown.locator('li').allTextContents()
-  }
-
   // Assertion helpers
-  async expectToBeVisible(): Promise<void> {
-    await expect(this.autocomplete).toBeVisible()
-  }
-
   async expectToHaveSuggestion(text: string): Promise<void> {
     // await this.waitForSuggestions()
     await expect(this.getSuggestion(text)).toBeVisible()
   }
-
-  async expectNotToHaveSuggestion(text: string): Promise<void> {
-    // await this.waitForSuggestions()
-    await expect(this.getSuggestion(text)).not.toBeVisible()
-  }
-
   async expectValue(value: string): Promise<void> {
     await expect(this.input).toHaveValue(value)
   }
 
   async expectToBeEmpty(): Promise<void> {
     await expect(this.input).toHaveValue('')
-  }
-
-  async expectLoading(): Promise<void> {
-    await expect(this.loadingIndicator).toBeVisible()
-  }
-
-  async expectNotLoading(): Promise<void> {
-    await expect(this.loadingIndicator).not.toBeVisible()
   }
 }

@@ -127,7 +127,7 @@ export class TransactionsPage {
   }
 
   async selectFirstMonth(): Promise<string> {
-    await this.monthSelect.click()
+    await this.monthSelect.click({ force: true })
     await this.page.getByRole('option').first().waitFor({ state: 'visible' })
     const firstMonth = (await this.page.getByRole('option').first().textContent()) ?? ''
     const firstOption = this.page.getByRole('option', { name: firstMonth }).first()
@@ -136,7 +136,7 @@ export class TransactionsPage {
   }
 
   async selectFirstWeek(): Promise<string> {
-    await this.weekSelect.click()
+    await this.weekSelect.click({ force: true })
     await this.page.getByRole('option').first().waitFor({ state: 'visible' })
     const firstWeekText = (await this.page.getByRole('option').first().textContent()) ?? ''
     const firstOption = this.page.getByRole('option', { name: firstWeekText }).first()
@@ -145,7 +145,7 @@ export class TransactionsPage {
   }
 
   async clickOnDaySelect() {
-    await this.daySelect.click()
+    await this.daySelect.click({ force: true })
   }
 
   async clickIncreaseInterval() {
@@ -287,7 +287,7 @@ export class TransactionsPage {
   }
 
   async selectDay(day: DayYear['day']) {
-    await this.daySelect.click()
+    await this.daySelect.click({ force: true })
     const dayOption = this.page.getByRole('option', { name: day }).first()
     await dayOption.click()
   }

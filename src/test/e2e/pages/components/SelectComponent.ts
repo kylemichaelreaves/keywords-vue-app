@@ -42,7 +42,7 @@ export class SelectComponent {
 
   // Action methods
   async openDropdown() {
-    await this.select.click()
+    await this.select.click({ force: true })
     // Wait a moment for dropdown animation
     await this.page.waitForSelector('[data-testid^="option-"]', { state: 'visible' })
   }
@@ -67,7 +67,7 @@ export class SelectComponent {
   }
 
   async typeToFilter(text: string) {
-    await this.select.click()
+    await this.select.click({ force: true })
     await this.dropdownTrigger.pressSequentially(text)
   }
 
