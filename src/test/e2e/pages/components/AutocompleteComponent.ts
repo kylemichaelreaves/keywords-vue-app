@@ -17,7 +17,7 @@ export class AutocompleteComponent {
   }
 
   get autocompleteOptions(): Locator {
-    return this.page.getByRole('option')
+    return this.page.getByRole('option').first()
   }
 
   get input(): Locator {
