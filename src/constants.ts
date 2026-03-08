@@ -23,20 +23,21 @@ const initBaseApiUrl = async (): Promise<string> => {
     return baseApiUrl
   }
 
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 1500)
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 1500)
 
+  try {
     await fetch(LAMBDA_DEV_URL, {
       method: 'HEAD',
       signal: controller.signal,
     })
 
-    clearTimeout(timeoutId)
     console.log('[constants] Local dev server is reachable, using:', LAMBDA_DEV_URL)
   } catch {
     baseApiUrl = API_GATEWAY_URL
     console.log('[constants] Local dev server not reachable, falling back to:', API_GATEWAY_URL)
+  } finally {
+    clearTimeout(timeoutId)
   }
 
   return baseApiUrl
