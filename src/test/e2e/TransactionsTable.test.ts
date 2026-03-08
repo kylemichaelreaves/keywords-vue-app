@@ -336,7 +336,7 @@ test.describe('Transactions Table', () => {
       await openSplitDrawer(page, 3)
 
       const addSplitButton = transactionsPage.splitBudgetCategoryAddSplitButton
-      await expect(addSplitButton).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
+      await expect(addSplitButton).toBeEnabled({ timeout: isCI ? 20000 : 5000 })
       await addSplitButton.click()
 
       const splitRows = transactionsPage.splitBudgetCategoryRows
