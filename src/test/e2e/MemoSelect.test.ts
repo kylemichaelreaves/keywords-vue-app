@@ -88,12 +88,14 @@ test.describe('MemoSelect Search Functionality', () => {
 
     // Click to focus and type search text
     await memoSelect.click()
+    await memoSelect.fill('Electric')
+    await memoSelect.waitForSuggestionsToUpdate()
 
     // Wait for suggestions and select
-    await memoSelect.selectSuggestion('Coffee Shop')
+    await memoSelect.selectSuggestion('Electric Bill')
 
-    // Verify selection - the input should now show "Coffee Shop"
-    await memoSelect.expectValue('Coffee Shop')
+    // Verify selection
+    await memoSelect.expectValue('Electric Bill')
   })
 
   test('should clear selection when clear button is clicked', async ({ page }) => {
@@ -101,11 +103,13 @@ test.describe('MemoSelect Search Functionality', () => {
 
     // First, select a memo
     await memoSelect.click()
+    await memoSelect.fill('Electric')
+    await memoSelect.waitForSuggestionsToUpdate()
 
-    await memoSelect.selectSuggestion('Coffee Shop')
+    await memoSelect.selectSuggestion('Electric Bill')
 
     // Verify selection
-    await memoSelect.expectValue('Coffee Shop')
+    await memoSelect.expectValue('Electric Bill')
 
     // Clear the selection using the page object method
     await memoSelect.clickClearButton()
