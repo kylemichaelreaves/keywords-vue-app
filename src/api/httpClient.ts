@@ -1,14 +1,23 @@
 import axios from 'axios'
-import { BASE_API_URL } from '@constants'
+import { getBaseApiUrl, initBaseApiUrl } from '@constants'
 
 export const httpClient = axios.create({
-  baseURL: BASE_API_URL,
+  baseURL: getBaseApiUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
 })
 
-httpClient.interceptors.request.use((config) => {
+// In DEV mode, resolve the base URL (checking if local server is running)
+// and update the httpClient before the first real request goes out.
+const baseUrlReady: Promise<void> = initBaseApiUrl().then((resolvedUrl) => {
+  httpClient.defaults.baseURL = resolvedUrl
+})
+
+httpClient.interceptors.request.use(async (config) => {
+  // Ensure the base URL has been resolved before any request fires
+  await baseUrlReady
+
   const token = localStorage.getItem('token')
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`
