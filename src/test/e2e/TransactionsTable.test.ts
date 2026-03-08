@@ -335,8 +335,18 @@ test.describe('Transactions Table', () => {
     test('clicking the Add Split button adds a new split entry row', async ({ page }) => {
       await openSplitDrawer(page, 3)
 
+      // When a transaction already has a budget category, the initial split takes the
+      // full transaction amount, which disables the Add Split button. Reduce the first
+      // split's amount so there's remaining balance to allocate to a new split.
+      const firstSplitAmount = transactionsPage.splitBudgetCategoryDrawer.getByTestId(
+        'split-amount-0',
+      )
+      await expect(firstSplitAmount).toBeVisible({ timeout: isCI ? 10000 : 5000 })
+      const amountInput = firstSplitAmount.getByRole('spinbutton')
+      await amountInput.fill('1')
+
       const addSplitButton = transactionsPage.splitBudgetCategoryAddSplitButton
-      await expect(addSplitButton).toBeEnabled({ timeout: isCI ? 20000 : 5000 })
+      await expect(addSplitButton).toBeEnabled({ timeout: isCI ? 10000 : 5000 })
       await addSplitButton.click()
 
       const splitRows = transactionsPage.splitBudgetCategoryRows
