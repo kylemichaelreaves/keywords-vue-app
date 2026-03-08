@@ -36,7 +36,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
-import { ElDialog } from 'element-plus'
 import { Money, OfficeBuilding, Files, Calendar } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
 import TransactionCreateForm from '@components/transactions/TransactionCreateForm.vue'
@@ -74,7 +73,6 @@ const menuItems = [
     icon: Calendar,
     title: 'Loan Calculator',
   },
-  // {index: "5", name: "chart-sandbox", icon: "TrendCharts", title: "Chart Sandbox"},
 ]
 </script>
 

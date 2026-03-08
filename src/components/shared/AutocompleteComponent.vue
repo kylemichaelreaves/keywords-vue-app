@@ -30,7 +30,6 @@
 </template>
 
 <script setup lang="ts">
-import { ElAutocomplete } from 'element-plus'
 import { Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import type { PropType } from 'vue'
@@ -45,7 +44,7 @@ const selectedValue = defineModel<string>({
   default: '',
 })
 
-const autocompleteRef = ref<InstanceType<typeof ElAutocomplete> | null>(null)
+const autocompleteRef = ref<InstanceType<typeof import('element-plus')['ElAutocomplete']> | null>(null)
 
 const props = defineProps({
   options: {
