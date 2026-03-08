@@ -44,7 +44,9 @@ const selectedValue = defineModel<string>({
   default: '',
 })
 
-const autocompleteRef = ref<InstanceType<typeof import('element-plus')['ElAutocomplete']> | null>(null)
+const autocompleteRef = ref<InstanceType<(typeof import('element-plus'))['ElAutocomplete']> | null>(
+  null,
+)
 
 const props = defineProps({
   options: {
