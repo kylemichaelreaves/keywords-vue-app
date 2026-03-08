@@ -338,9 +338,8 @@ test.describe('Transactions Table', () => {
       // When a transaction already has a budget category, the initial split takes the
       // full transaction amount, which disables the Add Split button. Reduce the first
       // split's amount so there's remaining balance to allocate to a new split.
-      const firstSplitAmount = transactionsPage.splitBudgetCategoryDrawer.getByTestId(
-        'split-amount-0',
-      )
+      const firstSplitAmount =
+        transactionsPage.splitBudgetCategoryDrawer.getByTestId('split-amount-0')
       await expect(firstSplitAmount).toBeVisible({ timeout: isCI ? 10000 : 5000 })
       const amountInput = firstSplitAmount.getByRole('spinbutton')
       await amountInput.fill('1')
