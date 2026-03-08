@@ -76,8 +76,8 @@ describe('MemoSelect', () => {
   test('clearable should be true on autocomplete', async () => {
     const autocomplete = wrapper.findComponent({ name: 'ElAutocomplete' })
     expect(autocomplete.exists()).toBe(true)
-    // ElAutocomplete is rendered (not stubbed), so clearable is a recognized prop, not an attr
-    expect(autocomplete.props('clearable')).toBe(true)
+    // ElAutocomplete is rendered (not stubbed), so verify clearable via the component instance
+    expect(autocomplete.vm.$props.clearable).toBe(true)
   })
 
   describe('Search functionality', () => {
