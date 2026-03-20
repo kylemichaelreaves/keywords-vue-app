@@ -133,23 +133,22 @@ const rules = {
 }
 
 onMounted(() => {
-  const isUserAuthenticated = authStore.getIsUserAuthenticated
-  const isUserInStore = authStore.getUser
-
   const localUser = localStorage.getItem('user')
   const localToken = localStorage.getItem('token')
 
-  console.log('Local user:', localUser)
-  console.log('Local token:', localToken)
+  if (import.meta.env.DEV) {
+    console.log('Local user:', localUser)
+    console.log('Local token:', localToken)
+  }
 
   if (localUser && localToken && localUser !== 'undefined' && localToken !== 'undefined') {
-    const user = JSON.parse(localUser)
-    authStore.setUser(user)
+    const parsed = JSON.parse(localUser)
+    authStore.setUser(parsed)
     authStore.setToken(localToken)
     authStore.setIsUserAuthenticated(true)
   }
 
-  if (isUserInStore && isUserAuthenticated) {
+  if (authStore.getIsUserAuthenticated && authStore.getUser.username) {
     router.push('/budget-visualizer/transactions')
   }
 })

@@ -54,7 +54,10 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       localStorage.removeItem('user')
       localStorage.removeItem('token')
+      this.setToken('')
+      this.setIsUserAuthenticated(false)
       this.setUser({
+        id: 0,
         firstName: '',
         lastName: '',
         username: '',
