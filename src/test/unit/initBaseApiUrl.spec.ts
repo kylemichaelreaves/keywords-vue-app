@@ -2,7 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('initBaseApiUrl', () => {
   beforeEach(() => {
-    vi.stubEnv('VITE_APIGATEWAY_URL', 'https://gw.example.execute-api.us-east-1.amazonaws.com/Stage')
+    vi.stubEnv(
+      'VITE_APIGATEWAY_URL',
+      'https://gw.example.execute-api.us-east-1.amazonaws.com/Stage',
+    )
   })
 
   afterEach(() => {

@@ -3,7 +3,10 @@
  */
 import net from 'node:net'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { checkTcpPortOpen, logLocalPostgresTunnelStatus } from '../../../scripts/checkLocalPostgresTunnel'
+import {
+  checkTcpPortOpen,
+  logLocalPostgresTunnelStatus,
+} from '../../../scripts/checkLocalPostgresTunnel'
 
 describe('checkLocalPostgresTunnel', () => {
   const savedEnv = { ...process.env }

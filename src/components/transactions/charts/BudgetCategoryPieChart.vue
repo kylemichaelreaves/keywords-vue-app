@@ -132,7 +132,8 @@ const pieData = computed(() => {
   }
 
   // Let's examine the first few items to understand the data structure
-  devConsole('log', 
+  devConsole(
+    'log',
     'PieChart: Sample data items:',
     props.data.slice(0, 3).map((item) => ({
       category_id: item.category_id,

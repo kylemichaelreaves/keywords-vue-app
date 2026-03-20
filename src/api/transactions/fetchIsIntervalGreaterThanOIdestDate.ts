@@ -14,7 +14,8 @@ export async function fetchIsIntervalGreaterThanOldestDate(
     })
     return res.data
   } catch (err) {
-    devConsole('error', 
+    devConsole(
+      'error',
       'Error fetching is interval greater than oldest date:',
       { interval, dailyTotals },
       err,

@@ -204,8 +204,13 @@ const openTransactionEditModal = (row: PendingTransaction) => {
   originalPendingTransaction.value = { ...row }
   selectedTransaction.value = transactionFromData
 
-  devConsole('log', 'Setting originalPendingTransaction.value.id:', originalPendingTransaction.value.id)
-  devConsole('log', 
+  devConsole(
+    'log',
+    'Setting originalPendingTransaction.value.id:',
+    originalPendingTransaction.value.id,
+  )
+  devConsole(
+    'log',
     'Will pass isPending=true and pendingTransactionId:',
     originalPendingTransaction.value.id,
   )

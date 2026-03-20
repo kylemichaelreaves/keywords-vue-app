@@ -42,10 +42,18 @@ const initBaseApiUrl = async (): Promise<string> => {
       throw new Error(`Local API proxy upstream unavailable (${response.status})`)
     }
 
-    devConsole('info', '[constants] Local dev server is reachable via proxy, using:', LAMBDA_DEV_PROXY)
+    devConsole(
+      'info',
+      '[constants] Local dev server is reachable via proxy, using:',
+      LAMBDA_DEV_PROXY,
+    )
   } catch {
     baseApiUrl = API_GATEWAY_URL
-    devConsole('info', '[constants] Local dev server not reachable, falling back to:', API_GATEWAY_URL)
+    devConsole(
+      'info',
+      '[constants] Local dev server not reachable, falling back to:',
+      API_GATEWAY_URL,
+    )
   } finally {
     clearTimeout(timeoutId)
   }

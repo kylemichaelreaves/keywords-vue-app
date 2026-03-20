@@ -186,7 +186,11 @@ onMounted(async () => {
 
   // Skip if model already has a value (to avoid overwriting user selection)
   if (model.value) {
-    devConsole('log', '[MemoSelect] Model already has value, skipping URL initialization:', model.value)
+    devConsole(
+      'log',
+      '[MemoSelect] Model already has value, skipping URL initialization:',
+      model.value,
+    )
     isInitializing.value = false
     return
   }

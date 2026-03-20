@@ -34,7 +34,8 @@ export default function useTransactions() {
     initialPageParam: 0,
     queryKey,
     queryFn: async ({ pageParam = 0 }) => {
-      devConsole('log', 
+      devConsole(
+        'log',
         '[useTransactions] queryFn called with pageParam:',
         pageParam,
         'selectedMemo:',

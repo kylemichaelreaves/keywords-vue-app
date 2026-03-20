@@ -3,7 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 describe('devConsole', () => {
   beforeEach(() => {
     for (const method of ['log', 'info', 'warn', 'error'] as const) {
-      vi.spyOn(console, method).mockClear().mockImplementation(() => {})
+      vi.spyOn(console, method)
+        .mockClear()
+        .mockImplementation(() => {})
     }
   })
 
@@ -27,17 +29,15 @@ describe('devConsole', () => {
     expect(console[method]).toHaveBeenCalledWith('msg', 42)
   })
 
-  it.each([
-    ['log'] as const,
-    ['info'] as const,
-    ['warn'] as const,
-    ['error'] as const,
-  ])('does not call console when DEV is false (%s)', async (level) => {
-    vi.stubEnv('DEV', false)
-    const { devConsole } = await import('@utils/devConsole')
+  it.each([['log'] as const, ['info'] as const, ['warn'] as const, ['error'] as const])(
+    'does not call console when DEV is false (%s)',
+    async (level) => {
+      vi.stubEnv('DEV', false)
+      const { devConsole } = await import('@utils/devConsole')
 
-    devConsole(level, 'should-not-appear')
+      devConsole(level, 'should-not-appear')
 
-    expect(console[level]).not.toHaveBeenCalled()
-  })
+      expect(console[level]).not.toHaveBeenCalled()
+    },
+  )
 })

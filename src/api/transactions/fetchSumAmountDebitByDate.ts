@@ -16,7 +16,8 @@ export async function fetchSumAmountDebitByDate(
     })
     return res.data
   } catch (err) {
-    devConsole('error', 
+    devConsole(
+      'error',
       'Error fetching sum amount debit by date:',
       { timeFrame, date, totalAmountDebit },
       err,

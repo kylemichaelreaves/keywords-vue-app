@@ -254,7 +254,8 @@ watch(currentPage, () => {
 watch(
   [selectedDay, selectedWeek, selectedMonth, selectedMemo],
   ([newSelectedDay, newSelectedWeek, newSelectedMonth, newSelectedMemo]) => {
-    devConsole('log', 
+    devConsole(
+      'log',
       '[TransactionsTable] Watcher fired - selectedDay:',
       newSelectedDay,
       'selectedWeek:',
