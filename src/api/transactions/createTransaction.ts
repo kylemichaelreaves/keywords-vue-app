@@ -1,5 +1,6 @@
 import { httpClient } from '@api/httpClient'
 import type { Transaction } from '@types'
+import { devConsole } from '@utils/devConsole'
 
 export async function createTransaction(
   transaction: Transaction & { id?: string | number },
@@ -8,7 +9,7 @@ export async function createTransaction(
     const response = await httpClient.post('/transactions', transaction)
     return response.data
   } catch (error) {
-    console.error('Error creating transaction:', error)
+    devConsole('error', 'Error creating transaction:', error)
     throw error
   }
 }

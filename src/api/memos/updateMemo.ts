@@ -1,5 +1,6 @@
 import type { Memo } from '@types'
 import { httpClient } from '@api/httpClient.ts'
+import { devConsole } from '@utils/devConsole'
 
 export async function updateMemo(memo: Partial<Memo> & { id: number }): Promise<Memo> {
   if (!memo.id) {
@@ -27,7 +28,7 @@ export async function updateMemo(memo: Partial<Memo> & { id: number }): Promise<
 
     throw new Error('Invalid response format from server')
   } catch (error) {
-    console.error('Error updating memo:', error)
+    devConsole('error', 'Error updating memo:', error)
     throw error
   }
 }

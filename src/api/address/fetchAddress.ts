@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { isValidURL } from '@api/helpers/isValidURL'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchAddress(id: string, fetchURL?: string) {
   if (!fetchURL) {
@@ -18,6 +19,6 @@ export async function fetchAddress(id: string, fetchURL?: string) {
     .get(`/address-geocoder/${id}`)
     .then((res) => res.data)
     .catch((err: Error) => {
-      console.error('err:', err)
+      devConsole('error', 'err:', err)
     })
 }

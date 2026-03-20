@@ -89,6 +89,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { ElSkeleton, ElSkeletonItem, ElSpace, ElText, ElSwitch } from 'element-plus'
 import * as d3 from 'd3'
@@ -118,19 +120,19 @@ const chartDimensions = ref({
 
 // Create pie chart data (show only parent categories since they already include child totals)
 const pieData = computed(() => {
-  console.log('PieChart: Computing pieData', {
+  devConsole('log', 'PieChart: Computing pieData', {
     propsData: props.data,
     propsDataLength: props.data?.length || 0,
     isLoading: props.isLoading,
   })
 
   if (!props.data?.length) {
-    console.log('PieChart: No data in props, returning empty array')
+    devConsole('log', 'PieChart: No data in props, returning empty array')
     return []
   }
 
   // Let's examine the first few items to understand the data structure
-  console.log(
+  devConsole('log', 
     'PieChart: Sample data items:',
     props.data.slice(0, 3).map((item) => ({
       category_id: item.category_id,
@@ -148,7 +150,7 @@ const pieData = computed(() => {
     (cat) => cat.parent_id === null && Math.abs(cat.total_amount_debit) > 0,
   )
 
-  console.log('PieChart: Parent categories for pie chart', {
+  devConsole('log', 'PieChart: Parent categories for pie chart', {
     originalLength: props.data.length,
     parentCount: parentCategories.length,
     parentData: parentCategories.map((p) => ({
@@ -416,7 +418,7 @@ const drawChart = async () => {
 watch(
   () => props.data,
   async (newData, oldData) => {
-    console.log('PieChart: Data prop changed', {
+    devConsole('log', 'PieChart: Data prop changed', {
       newDataLength: newData?.length || 0,
       oldDataLength: oldData?.length || 0,
       hasNewData: !!newData?.length,
@@ -435,7 +437,7 @@ watch(
 watch(
   () => props.isLoading,
   async (isLoading) => {
-    console.log('PieChart: Loading state changed', { isLoading })
+    devConsole('log', 'PieChart: Loading state changed', { isLoading })
 
     if (!isLoading && props.data && props.data.length > 0) {
       await nextTick()
@@ -454,7 +456,7 @@ watch(
 )
 
 onMounted(async () => {
-  console.log('PieChart: Component mounted', {
+  devConsole('log', 'PieChart: Component mounted', {
     hasData: !!props.data?.length,
     isLoading: props.isLoading,
   })

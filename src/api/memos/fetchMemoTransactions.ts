@@ -1,5 +1,6 @@
 import type { Memo, Transaction } from '@types'
 import { httpClient } from '@api/httpClient.ts'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchMemoTransactions(memoId: Memo['id']): Promise<Transaction[]> {
   try {
@@ -10,7 +11,7 @@ export async function fetchMemoTransactions(memoId: Memo['id']): Promise<Transac
     })
     return res.data
   } catch (err) {
-    console.error('Error fetching memo transactions:', { memoId }, err)
+    devConsole('error', 'Error fetching memo transactions:', { memoId }, err)
     throw err
   }
 }

@@ -34,7 +34,8 @@
       "@stores/*": ["src/stores/*"],
       "@constants": ["src/constants.ts"],
       "@main": ["src/main.ts"],
-      "@router": ["src/router/index.ts"]
+      "@router": ["src/router/index.ts"],
+      "@utils/*": ["src/utils/*"]
     }
   }
 }

@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon'
+import { devConsole } from '@utils/devConsole'
 
 /**
  * Parses a date string in the format WW-YYYY (ISO week number and year) and returns a Date object.
@@ -36,7 +37,7 @@ export function parseDateIWIYYY(input: string): Date | null {
   const dt = DateTime.fromObject({ weekYear, weekNumber }, { zone: 'UTC' })
 
   if (!dt.isValid) {
-    console.error(dt.invalidReason)
+    devConsole('error', dt.invalidReason)
     return null
   }
 

@@ -1,4 +1,5 @@
 import { httpClient } from '@api/httpClient.ts'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchWeeksOfMonth(monthString: string) {
   try {
@@ -9,7 +10,7 @@ export async function fetchWeeksOfMonth(monthString: string) {
     })
     return res.data
   } catch (err) {
-    console.error('Error fetching weeks of month:', { monthString }, err)
+    devConsole('error', 'Error fetching weeks of month:', { monthString }, err)
     throw err
   }
 }

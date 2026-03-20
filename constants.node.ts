@@ -12,5 +12,6 @@ export const ROUTE_ALIASES: string[] = [
   'test',
   'types',
   'router',
+  'utils',
 ]
 

@@ -44,6 +44,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, ref, onMounted, type Component } from 'vue'
 import type { loginFormKeys } from '@types'
 import { useMutation } from '@tanstack/vue-query'
@@ -90,7 +92,7 @@ const { mutate, isPending, isError, error } = useMutation({
     return await authStore.login(username, password)
   },
   onSuccess: (data) => {
-    console.log('Login successful', data)
+    devConsole('log', 'Login successful', data)
     ElMessage.success(`${data.message}! Wilkommen! Bienvenue! Welcome!`)
     const user = data.user
     const token = data.token
@@ -103,7 +105,7 @@ const { mutate, isPending, isError, error } = useMutation({
   },
   onError: (error) => {
     ElMessage.error('Login failed! Please try again!')
-    console.error('Login failed', error)
+    devConsole('error', 'Login failed', error)
   },
 })
 
@@ -137,8 +139,8 @@ onMounted(() => {
   const localToken = localStorage.getItem('token')
 
   if (import.meta.env.DEV) {
-    console.log('Local user:', localUser)
-    console.log('Local token:', localToken)
+    devConsole('log', 'Local user:', localUser)
+    devConsole('log', 'Local token:', localToken)
   }
 
   if (localUser && localToken && localUser !== 'undefined' && localToken !== 'undefined') {

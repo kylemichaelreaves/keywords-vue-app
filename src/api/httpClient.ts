@@ -1,17 +1,6 @@
 import axios from 'axios'
 import { getBaseApiUrl, initBaseApiUrl } from '@constants'
-
-const devLog = (...args: unknown[]) => {
-  if (import.meta.env.DEV) {
-    console.log(...args)
-  }
-}
-
-const devError = (...args: unknown[]) => {
-  if (import.meta.env.DEV) {
-    console.error(...args)
-  }
-}
+import { devConsole } from '@utils/devConsole'
 
 export const httpClient = axios.create({
   baseURL: getBaseApiUrl(),
@@ -35,8 +24,8 @@ httpClient.interceptors.request.use(async (config) => {
     config.headers['Authorization'] = `Bearer ${token}`
   }
 
-  devLog('[httpClient] Request URL:', config.url)
-  devLog('[httpClient] Query Params:', config.params)
+  devConsole('log', '[httpClient] Request URL:', config.url)
+  devConsole('log', '[httpClient] Query Params:', config.params)
 
   return config
 })
@@ -44,18 +33,20 @@ httpClient.interceptors.request.use(async (config) => {
 // Add response interceptor to log the actual request URL
 httpClient.interceptors.response.use(
   (response) => {
-    devLog(
+    devConsole(
+      'log',
       '[httpClient] Response from:',
       response.config.url,
       'with params:',
       response.config.params,
     )
-    devLog('[httpClient] Full request URL:', response.request.responseURL)
+    devConsole('log', '[httpClient] Full request URL:', response.request.responseURL)
     return response
   },
   (error) => {
     if (error.config) {
-      devError(
+      devConsole(
+        'error',
         '[httpClient] Error request URL:',
         error.config.url,
         'with params:',

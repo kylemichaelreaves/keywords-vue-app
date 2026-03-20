@@ -1,5 +1,6 @@
 import type { WeekSummary } from '@types'
 import { httpClient } from '@api/httpClient.ts'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchWeekSummary(week: string): Promise<Array<WeekSummary>> {
   try {
@@ -15,10 +16,10 @@ export async function fetchWeekSummary(week: string): Promise<Array<WeekSummary>
       return response.data
     }
 
-    console.error('Unexpected response structure:', response.data)
+    devConsole('error', 'Unexpected response structure:', response.data)
     throw new Error('Invalid response format from week summary API')
   } catch (err) {
-    console.error('Error fetching week summary:', err)
+    devConsole('error', 'Error fetching week summary:', err)
     throw err
   }
 }

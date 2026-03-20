@@ -1,5 +1,6 @@
 import type { Summaries } from '@types'
 import { httpClient } from '@api/httpClient'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchSummaries(
   timeFrame: string,
@@ -16,7 +17,7 @@ export async function fetchSummaries(
     })
     return res.data
   } catch (err) {
-    console.error('Error fetching summaries:', { timeFrame, summary, summaryType }, err)
+    devConsole('error', 'Error fetching summaries:', { timeFrame, summary, summaryType }, err)
     throw err
   }
 }

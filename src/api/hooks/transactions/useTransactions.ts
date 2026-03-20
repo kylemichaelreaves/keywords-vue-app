@@ -5,6 +5,7 @@ import { fetchTransactions } from '@api/transactions/fetchTransactions'
 import { useTimeframeTypeAndValue } from '@api/hooks/timeUnits/useTimeframeTypeAndValue.ts'
 
 import type { Transaction } from '@types'
+import { devConsole } from '@utils/devConsole'
 
 export default function useTransactions() {
   const store = useTransactionsStore()
@@ -27,13 +28,13 @@ export default function useTransactions() {
       ] as const,
   )
 
-  console.log('[useTransactions] Hook initialized with selectedMemo:', selectedMemo.value)
+  devConsole('log', '[useTransactions] Hook initialized with selectedMemo:', selectedMemo.value)
 
   return useInfiniteQuery<Array<Transaction>>({
     initialPageParam: 0,
     queryKey,
     queryFn: async ({ pageParam = 0 }) => {
-      console.log(
+      devConsole('log', 
         '[useTransactions] queryFn called with pageParam:',
         pageParam,
         'selectedMemo:',
@@ -46,7 +47,7 @@ export default function useTransactions() {
         const memoValue = selectedMemo.value
         const isMemoId = memoValue && !Number.isNaN(Number(memoValue))
 
-        console.log('[useTransactions] memoValue:', memoValue, 'isMemoId:', isMemoId)
+        devConsole('log', '[useTransactions] memoValue:', memoValue, 'isMemoId:', isMemoId)
 
         let memoParam: { memoId?: number; memo?: string } = {}
         if (memoValue) {
@@ -57,7 +58,7 @@ export default function useTransactions() {
           }
         }
 
-        console.log('[useTransactions] memoParam:', memoParam)
+        devConsole('log', '[useTransactions] memoParam:', memoParam)
 
         const transactions = await fetchTransactions({
           limit: limit.value,

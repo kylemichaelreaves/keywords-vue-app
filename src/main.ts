@@ -10,6 +10,7 @@ import { useAuthStore } from '@stores/auth.ts'
 import { useThemeStore } from '@stores/theme.ts'
 import { router } from '@router'
 import { queryClient } from '@api/queryClient.ts'
+import { devConsole } from '@utils/devConsole'
 
 // Extend globalThis interface for Playwright testing
 interface GlobalWithPinia {
@@ -32,7 +33,7 @@ if (user && token && user !== 'undefined') {
     authStore.setToken(token)
     authStore.setIsUserAuthenticated(true)
   } catch (error) {
-    console.error('Failed to parse user data:', error)
+    devConsole('error', 'Failed to parse user data:', error)
     localStorage.removeItem('user')
     localStorage.removeItem('token')
   }

@@ -91,6 +91,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, ref, watch } from 'vue'
 import { useMemos } from '@api/hooks/memos/useMemos.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
@@ -200,17 +202,17 @@ const memoColumns = [
 ]
 
 const openMemoEditModal = (row: Memo) => {
-  console.log('🔴 openMemoEditModal called', { row })
+  devConsole('log', '🔴 openMemoEditModal called', { row })
   selectedMemo.value = { ...row }
-  console.log('🔴 selectedMemo set to:', selectedMemo.value)
-  console.log('🔴 selectedMemo.value truthy?', !!selectedMemo.value)
-  console.log('🔴 showMemoEditModal before:', showMemoEditModal.value)
+  devConsole('log', '🔴 selectedMemo set to:', selectedMemo.value)
+  devConsole('log', '🔴 selectedMemo.value truthy?', !!selectedMemo.value)
+  devConsole('log', '🔴 showMemoEditModal before:', showMemoEditModal.value)
   showMemoEditModal.value = true
-  console.log('🔴 showMemoEditModal set to:', showMemoEditModal.value)
+  devConsole('log', '🔴 showMemoEditModal set to:', showMemoEditModal.value)
 }
 
 const closeMemoEditModal = () => {
-  console.log('🔴 closeMemoEditModal called')
+  devConsole('log', '🔴 closeMemoEditModal called')
   showMemoEditModal.value = false
   selectedMemo.value = null
 }

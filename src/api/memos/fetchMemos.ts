@@ -1,5 +1,6 @@
 import type { Memo, MemoQueryParams } from '@types'
 import { httpClient } from '@api/httpClient.ts'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchMemos(queryParams: MemoQueryParams): Promise<Array<Memo>> {
   try {
@@ -8,7 +9,7 @@ export async function fetchMemos(queryParams: MemoQueryParams): Promise<Array<Me
     })
     return res.data
   } catch (err) {
-    console.error('Error fetching memos:', { queryParams }, err)
+    devConsole('error', 'Error fetching memos:', { queryParams }, err)
     throw err
   }
 }

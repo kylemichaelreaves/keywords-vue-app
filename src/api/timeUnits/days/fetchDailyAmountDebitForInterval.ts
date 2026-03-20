@@ -1,5 +1,6 @@
 import { httpClient } from '@api/httpClient.ts'
 import type { DailyInterval } from '@types'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchDailyAmountDebitForInterval(
   interval?: string,
@@ -18,7 +19,7 @@ export async function fetchDailyAmountDebitForInterval(
 
     return response.data
   } catch (err) {
-    console.error('[fetchDailyAmountDebitForInterval] Error:', err)
+    devConsole('error', '[fetchDailyAmountDebitForInterval] Error:', err)
     throw err
   }
 }

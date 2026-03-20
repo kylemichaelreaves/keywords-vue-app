@@ -103,6 +103,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, ref, watch } from 'vue'
 import type { Transaction } from '@types'
 import { formatDate } from '@api/helpers/formatDate'
@@ -128,11 +130,11 @@ const firstDay = computed(() => {
   // first, get the most recent month in the store
   const store = useTransactionsStore()
   const months = store.getMonths
-  console.log('[TransactionsTable DEBUG] No days found, checking months:', months)
+  devConsole('log', '[TransactionsTable DEBUG] No days found, checking months:', months)
   if (months.length > 0) {
     // Get the FIRST month in the array (earliest date) - e.g., "11/2025"
     const firstMonth = months[0]?.month_year
-    console.log('[TransactionsTable DEBUG] First month from store:', firstMonth)
+    devConsole('log', '[TransactionsTable DEBUG] First month from store:', firstMonth)
 
     if (firstMonth && typeof firstMonth === 'string') {
       // Parse month_year format "MM/YYYY" to get the first day of that month
@@ -145,7 +147,7 @@ const firstDay = computed(() => {
         // Create date for the FIRST day of that month
         const firstDayOfMonth = new Date(year, month - 1, 1) // month is 1-based in MM/YYYY format
         const fallback = firstDayOfMonth.toISOString().split('T')[0]
-        console.log('[TransactionsTable DEBUG] firstDay from first month in store:', fallback)
+        devConsole('log', '[TransactionsTable DEBUG] firstDay from first month in store:', fallback)
         return fallback
       }
     }
@@ -156,7 +158,7 @@ const firstDay = computed(() => {
   const thirtyDaysAgo = new Date(now)
   thirtyDaysAgo.setDate(now.getDate() - 30)
   const fallback = thirtyDaysAgo.toISOString().split('T')[0]
-  console.log('[TransactionsTable DEBUG] firstDay ultimate fallback (30 days ago):', fallback)
+  devConsole('log', '[TransactionsTable DEBUG] firstDay ultimate fallback (30 days ago):', fallback)
   return fallback
 })
 
@@ -185,7 +187,7 @@ const isPaginationDisabled = computed(
 )
 
 const LIMIT = computed(() => store.getTransactionsTableLimit)
-console.log('TransactionsTable LIMIT:', LIMIT.value)
+devConsole('log', 'TransactionsTable LIMIT:', LIMIT.value)
 
 const {
   data,
@@ -221,7 +223,7 @@ const flattenedData = computed(() => {
   )
 })
 
-console.log('Flattened Transactions Data:', flattenedData.value)
+devConsole('log', 'Flattened Transactions Data:', flattenedData.value)
 
 const currentPage = computed({
   get: () => Math.floor(store.transactionsTableOffset / store.transactionsTableLimit) + 1,
@@ -252,7 +254,7 @@ watch(currentPage, () => {
 watch(
   [selectedDay, selectedWeek, selectedMonth, selectedMemo],
   ([newSelectedDay, newSelectedWeek, newSelectedMonth, newSelectedMemo]) => {
-    console.log(
+    devConsole('log', 
       '[TransactionsTable] Watcher fired - selectedDay:',
       newSelectedDay,
       'selectedWeek:',
@@ -263,7 +265,7 @@ watch(
       newSelectedMemo,
     )
     store.clearTransactionsByOffset()
-    console.log('[TransactionsTable] Cache cleared, calling refetch...')
+    devConsole('log', '[TransactionsTable] Cache cleared, calling refetch...')
     refetch()
   },
   { immediate: false },

@@ -17,7 +17,8 @@ const ALIASES: string[] = [
   'stores',
   'test',
   'types',
-  'router'
+  'router',
+  'utils',
 ]
 
 const sharedConfig = {

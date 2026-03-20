@@ -45,6 +45,7 @@
 </template>
 
 <script lang="ts" setup>
+import { devConsole } from '@utils/devConsole'
 import { ref, reactive, computed } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
@@ -199,7 +200,7 @@ const rules = reactive<FormRules<typeof user>>({
 
 const submitForm = () => {
   if (!formRef.value) {
-    console.error('formRef is null')
+    devConsole('error', 'formRef is null')
     return
   }
 

@@ -24,6 +24,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, onUpdated, reactive, ref } from 'vue'
 import type { LoanFormType } from '@types'
 import LoanFormField from '@components/loan/LoanFormField.vue'
@@ -132,7 +134,7 @@ const calculateLoanEstimate = () => {
   const startDate = new Date(loanForm.startDate)
   startDate.setMonth(startDate.getMonth() + numberOfPayments)
   loanEstimate.payoffDate = startDate.getTime()
-  console.log('calculateLoanEstimate = () => loanEstimate:', loanEstimate)
+  devConsole('log', 'calculateLoanEstimate = () => loanEstimate:', loanEstimate)
 }
 
 const resetForm = () => {
@@ -149,8 +151,8 @@ const resetForm = () => {
 }
 
 onUpdated(() => {
-  console.log('loanForm', loanForm)
-  console.log('loanEstimate', loanEstimate)
-  console.log('isLoanEstimateCalculated', isLoanEstimateCalculated.value)
+  devConsole('log', 'loanForm', loanForm)
+  devConsole('log', 'loanEstimate', loanEstimate)
+  devConsole('log', 'isLoanEstimateCalculated', isLoanEstimateCalculated.value)
 })
 </script>

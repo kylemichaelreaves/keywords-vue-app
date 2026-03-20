@@ -1,4 +1,5 @@
 import { httpClient } from '@api/httpClient.ts'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchMemosCount(
   timeFrame?: string,
@@ -19,7 +20,7 @@ export async function fetchMemosCount(
     })
     return res.data
   } catch (err) {
-    console.error('Error fetching memos count:', { timeFrame, date, distinct }, err)
+    devConsole('error', 'Error fetching memos count:', { timeFrame, date, distinct }, err)
     throw err
   }
 }

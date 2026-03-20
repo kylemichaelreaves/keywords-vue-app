@@ -1,5 +1,6 @@
 import { httpClient } from '@api/httpClient'
 import type { Transaction } from '@types'
+import { devConsole } from '@utils/devConsole'
 
 export async function updateTransaction(transaction: Transaction): Promise<Transaction> {
   if (!transaction.id) {
@@ -10,7 +11,7 @@ export async function updateTransaction(transaction: Transaction): Promise<Trans
     const response = await httpClient.patch(`/transactions/${transaction.id}`, transaction)
     return response.data
   } catch (error) {
-    console.error('Error updating transaction:', error)
+    devConsole('error', 'Error updating transaction:', error)
     throw error
   }
 }

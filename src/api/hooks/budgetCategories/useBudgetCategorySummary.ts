@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { fetchTransactions } from '@api/transactions/fetchTransactions.ts'
 import type { Timeframe } from '@types'
 import { computed, type MaybeRefOrGetter, toValue } from 'vue'
+import { devConsole } from '@utils/devConsole'
 
 export const useBudgetCategorySummary = (
   timeFrame: MaybeRefOrGetter<Timeframe>,
@@ -17,7 +18,7 @@ export const useBudgetCategorySummary = (
       const currentTimeFrame = reactiveTimeFrame.value
       const currentDate = reactiveDate.value
 
-      console.log('useBudgetCategorySummary: Fetching data', {
+      devConsole('log', 'useBudgetCategorySummary: Fetching data', {
         timeFrame: currentTimeFrame,
         date: currentDate,
       })
@@ -32,7 +33,7 @@ export const useBudgetCategorySummary = (
     enabled: computed(() => {
       const hasTimeFrame = !!reactiveTimeFrame.value
       const hasDate = !!reactiveDate.value
-      console.log('useBudgetCategorySummary: Query enabled check', {
+      devConsole('log', 'useBudgetCategorySummary: Query enabled check', {
         hasTimeFrame,
         hasDate,
         timeFrame: reactiveTimeFrame.value,

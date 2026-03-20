@@ -1,5 +1,6 @@
 import { httpClient } from '@api/httpClient.ts'
 import type { Timeframe } from '@types'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchBudgetCategories(
   flatten: boolean,
@@ -16,7 +17,7 @@ export async function fetchBudgetCategories(
     })
     return res.data
   } catch (err) {
-    console.error('Error fetching budget categories:', { flatten, timeFrame, date }, err)
+    devConsole('error', 'Error fetching budget categories:', { flatten, timeFrame, date }, err)
     throw err // Re-throw so @tanstack/vue-query can handle the error state
   }
 }

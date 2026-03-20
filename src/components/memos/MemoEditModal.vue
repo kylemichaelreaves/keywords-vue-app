@@ -27,6 +27,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, ref, watch } from 'vue'
 import MemoEditForm from '@components/memos/MemoEditForm.vue'
 import AlertComponent from '@components/shared/AlertComponent.vue'
@@ -72,7 +74,7 @@ const {
 watch(
   () => props.memo,
   (newMemo, oldMemo) => {
-    console.log('🔵 MemoEditModal: props.memo changed', { oldMemo, newMemo })
+    devConsole('log', '🔵 MemoEditModal: props.memo changed', { oldMemo, newMemo })
   },
   { immediate: true, deep: true },
 )
@@ -80,7 +82,7 @@ watch(
 watch(
   () => props.memoId,
   (newId, oldId) => {
-    console.log('🔵 MemoEditModal: props.memoId changed', { oldId, newId })
+    devConsole('log', '🔵 MemoEditModal: props.memoId changed', { oldId, newId })
   },
   { immediate: true },
 )
@@ -88,7 +90,7 @@ watch(
 watch(
   () => dataById.value,
   (newData) => {
-    console.log('🔵 MemoEditModal: dataById changed', newData)
+    devConsole('log', '🔵 MemoEditModal: dataById changed', newData)
   },
   { immediate: true },
 )
@@ -96,7 +98,7 @@ watch(
 watch(
   () => isLoadingById.value,
   (loading) => {
-    console.log('🔵 MemoEditModal: isLoadingById changed', loading)
+    devConsole('log', '🔵 MemoEditModal: isLoadingById changed', loading)
   },
   { immediate: true },
 )
@@ -108,7 +110,7 @@ const legacyError = ref<Error | null>(null)
 
 // Computed properties to determine what to display
 const displayMemo = computed(() => {
-  console.log('🔵 displayMemo computed called', {
+  devConsole('log', '🔵 displayMemo computed called', {
     hasMemo: props.memo !== undefined,
     memoId: props.memoId,
     dataById: dataById.value,
@@ -176,19 +178,19 @@ const modalTitle = computed(() => {
 })
 
 const handleClose = () => {
-  console.log('🔵 MemoEditModal: handleClose called')
+  devConsole('log', '🔵 MemoEditModal: handleClose called')
   isVisible.value = false
 }
 
 const openModal = () => {
-  console.log('🔵 MemoEditModal: openModal called')
-  console.log('🔵 MemoEditModal: isVisible before:', isVisible.value)
-  console.log('🔵 MemoEditModal: props:', {
+  devConsole('log', '🔵 MemoEditModal: openModal called')
+  devConsole('log', '🔵 MemoEditModal: isVisible before:', isVisible.value)
+  devConsole('log', '🔵 MemoEditModal: props:', {
     memo: props.memo,
     memoId: props.memoId,
     memoName: props.memoName,
   })
-  console.log('🔵 MemoEditModal: hook states:', {
+  devConsole('log', '🔵 MemoEditModal: hook states:', {
     dataById: dataById.value,
     isLoadingById: isLoadingById.value,
     isErrorById: isErrorById.value,
@@ -196,7 +198,7 @@ const openModal = () => {
     isLoadingByName: isLoadingByName.value,
     isErrorByName: isErrorByName.value,
   })
-  console.log('🔵 MemoEditModal: computed values:', {
+  devConsole('log', '🔵 MemoEditModal: computed values:', {
     displayMemo: displayMemo.value,
     displayLoading: displayLoading.value,
     displayError: displayError.value,
@@ -205,12 +207,12 @@ const openModal = () => {
 
   // Force refetch to ensure we have the latest data
   if (props.memoId && refetchById) {
-    console.log('🔵 MemoEditModal: Triggering refetch for memoId:', props.memoId)
+    devConsole('log', '🔵 MemoEditModal: Triggering refetch for memoId:', props.memoId)
     refetchById()
   }
 
   isVisible.value = true
-  console.log('🔵 MemoEditModal: isVisible after:', isVisible.value)
+  devConsole('log', '🔵 MemoEditModal: isVisible after:', isVisible.value)
 }
 
 defineExpose({
