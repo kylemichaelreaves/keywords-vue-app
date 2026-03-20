@@ -11,6 +11,7 @@ import { generateYearsArray } from '@test/e2e/mocks/yearsMock.ts'
 import { generateDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategoriesSummaryMock.ts'
 import { generateMonthSummaryArray } from '@test/e2e/mocks/monthSummaryMock.ts'
+import { isExecuteApiUrl } from '@test/e2e/helpers/e2eApiUrl.ts'
 
 const isCI = !!process.env.CI
 const DEBUG = !!process.env.DEBUG_MOCKS
@@ -18,22 +19,6 @@ const DEBUG = !!process.env.DEBUG_MOCKS
 // ============================================================================
 // SHARED UTILITIES
 // ============================================================================
-
-function isExecuteApiUrl(url: URL): boolean {
-  // Match real API Gateway requests (local dev with real backend)
-  if (url.hostname.includes('execute-api')) {
-    return true
-  }
-
-  // Match localhost API requests (CI/preview mode where app makes relative requests)
-  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
-    // Only intercept API paths, not static assets or page routes
-    const apiPaths = ['/memos', '/transactions', '/budget-categories']
-    return apiPaths.some((path) => url.pathname.startsWith(path))
-  }
-
-  return false
-}
 
 function corsHeaders(): Record<string, string> {
   const headers: Record<string, string> = {

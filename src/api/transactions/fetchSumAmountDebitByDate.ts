@@ -1,4 +1,5 @@
 import { httpClient } from '@api/httpClient'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchSumAmountDebitByDate(
   timeFrame: string,
@@ -15,7 +16,8 @@ export async function fetchSumAmountDebitByDate(
     })
     return res.data
   } catch (err) {
-    console.error(
+    devConsole(
+      'error',
       'Error fetching sum amount debit by date:',
       { timeFrame, date, totalAmountDebit },
       err,

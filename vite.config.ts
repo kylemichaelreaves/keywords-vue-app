@@ -9,9 +9,21 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import { ROUTE_ALIASES } from './constants.node'
+import { logLocalPostgresTunnelStatus } from './scripts/checkLocalPostgresTunnel'
 
 const isStorybookProcess =
   process.env.npm_lifecycle_event === 'storybook' || process.env.SB_MODE === 'development'
+
+/** Dev-only: TCP check for SSM-tunneled Postgres (see scripts/checkLocalPostgresTunnel.ts). */
+function localPostgresTunnelCheckPlugin(): PluginOption {
+  return {
+    name: 'local-postgres-tunnel-check',
+    apply: 'serve',
+    async configureServer() {
+      await logLocalPostgresTunnelStatus()
+    },
+  }
+}
 
 export default defineConfig(async () => {
   const plugins: PluginOption[] = [
@@ -48,12 +60,19 @@ export default defineConfig(async () => {
   if (!isStorybookProcess) {
     const vueDevTools = (await import('vite-plugin-vue-devtools')).default
     plugins.push(vueDevTools())
+    plugins.push(localPostgresTunnelCheckPlugin())
   }
 
   return {
     server: {
       host: 'localhost',
       port: 5173,
+      proxy: {
+        '/api': {
+          target: 'http://127.0.0.1:3000',
+          changeOrigin: true,
+        },
+      },
     },
     root: fileURLToPath(new URL('./', import.meta.url)),
     plugins,

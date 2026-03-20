@@ -116,6 +116,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, ref, watch, toValue } from 'vue'
 import type { PendingTransaction, Transaction } from '@types'
 import { formatDate } from '@api/helpers/formatDate'
@@ -165,8 +167,8 @@ const unwrappedPendingTransactionId = computed(() => {
 
 const openTransactionEditModal = (row: PendingTransaction) => {
   // Debug: Log the row data to see what we're receiving
-  console.log('PendingTransaction row data:', row)
-  console.log('transaction_data:', row.transaction_data)
+  devConsole('log', 'PendingTransaction row data:', row)
+  devConsole('log', 'transaction_data:', row.transaction_data)
 
   // Parse transaction_data if it's a string
   let transactionData: Transaction | null = null
@@ -174,13 +176,13 @@ const openTransactionEditModal = (row: PendingTransaction) => {
     try {
       transactionData = JSON.parse(row.transaction_data)
     } catch (error) {
-      console.error('Failed to parse transaction_data:', error)
+      devConsole('error', 'Failed to parse transaction_data:', error)
     }
   } else {
     transactionData = row.transaction_data
   }
 
-  console.log('Parsed transaction_data:', transactionData)
+  devConsole('log', 'Parsed transaction_data:', transactionData)
 
   // Extract the transaction data from the JSONB field and merge with pending transaction info
   const transactionFromData: Transaction = {
@@ -197,13 +199,18 @@ const openTransactionEditModal = (row: PendingTransaction) => {
     budget_category: row.assigned_category || transactionData?.budget_category || '',
   }
 
-  console.log('Constructed transaction for form:', transactionFromData)
+  devConsole('log', 'Constructed transaction for form:', transactionFromData)
 
   originalPendingTransaction.value = { ...row }
   selectedTransaction.value = transactionFromData
 
-  console.log('Setting originalPendingTransaction.value.id:', originalPendingTransaction.value.id)
-  console.log(
+  devConsole(
+    'log',
+    'Setting originalPendingTransaction.value.id:',
+    originalPendingTransaction.value.id,
+  )
+  devConsole(
+    'log',
     'Will pass isPending=true and pendingTransactionId:',
     originalPendingTransaction.value.id,
   )

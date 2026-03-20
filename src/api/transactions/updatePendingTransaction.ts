@@ -1,5 +1,6 @@
 import { httpClient } from '@api/httpClient'
 import type { PendingTransaction } from '@types'
+import { devConsole } from '@utils/devConsole'
 
 export async function updatePendingTransaction(
   pendingTransactionId: number,
@@ -7,7 +8,7 @@ export async function updatePendingTransaction(
 ): Promise<void> {
   try {
     if (typeof pendingTransaction.transaction_data === 'string') {
-      console.log('[updatePendingTransaction] API call with:', {
+      devConsole('log', '[updatePendingTransaction] API call with:', {
         pendingTransactionId,
         pendingTransaction,
         budget_category: JSON.parse(pendingTransaction.transaction_data).budget_category,
@@ -19,9 +20,9 @@ export async function updatePendingTransaction(
       pendingTransaction,
     })
 
-    console.log('[updatePendingTransaction] API response:', response.data)
+    devConsole('log', '[updatePendingTransaction] API response:', response.data)
   } catch (error) {
-    console.error('[updatePendingTransaction] Error updating pending transaction:', error)
+    devConsole('error', '[updatePendingTransaction] Error updating pending transaction:', error)
     throw error
   }
 }

@@ -57,6 +57,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
@@ -120,10 +122,10 @@ async function handleClick(tab: TabsPaneContext) {
         activeTab.value = tabIndex
       }
     } catch (error) {
-      console.error('Failed to navigate to route:', error)
+      devConsole('error', 'Failed to navigate to route:', error)
     }
   } else {
-    console.error('Invalid tab index:', tab.index)
+    devConsole('error', 'Invalid tab index:', tab.index)
   }
 }
 

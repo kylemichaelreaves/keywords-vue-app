@@ -4,6 +4,7 @@ import { fetchMemo } from '@api/memos/fetchMemo.ts'
 import { fetchMemos } from '@api/memos/fetchMemos.ts'
 import type { Memo } from '@types'
 import { computed, type Ref } from 'vue'
+import { devConsole } from '@utils/devConsole'
 
 interface UseMemoByIdParams {
   memoId?: Ref<number | null> | number | null
@@ -22,23 +23,23 @@ export function useMemoById(params: UseMemoByIdParams) {
   return useQuery<Memo | null>({
     queryKey: computed(() => ['memo', { id: memoId.value, name: memoName.value }]),
     queryFn: async () => {
-      console.log('🟣 useMemoById: queryFn called', {
+      devConsole('log', '🟣 useMemoById: queryFn called', {
         memoId: memoId.value,
         memoName: memoName.value,
       })
       if (memoId.value) {
         // Use fetchMemo for direct ID lookup
         const result = await fetchMemo(memoId.value)
-        console.log('🟣 useMemoById: fetchMemo by ID returned', result)
+        devConsole('log', '🟣 useMemoById: fetchMemo by ID returned', result)
         return result || null
       }
       if (memoName.value) {
         // Use fetchMemos for name-based search
         const results = await fetchMemos({ name: memoName.value, limit: 1 })
-        console.log('🟣 useMemoById: fetchMemos by name returned', results)
+        devConsole('log', '🟣 useMemoById: fetchMemos by name returned', results)
         return results[0] || null
       }
-      console.log('🟣 useMemoById: no memoId or memoName, returning null')
+      devConsole('log', '🟣 useMemoById: no memoId or memoName, returning null')
       return null
     },
     enabled: computed(() => !!(memoId.value || memoName.value)),

@@ -108,7 +108,7 @@ export async function rightClickElementTableRow(table: Locator, page: Page, rowI
   await expect(tableRow.getByRole('cell').first()).not.toBeEmpty()
 
   // Right click with force option for CI stability
-  await tableRow.click({ button: 'right', force: !!process.env.isCI })
+  await tableRow.click({ button: 'right', force: !!process.env.CI })
 }
 
 /**

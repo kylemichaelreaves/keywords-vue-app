@@ -47,6 +47,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, onMounted, type PropType, reactive, ref, watch } from 'vue'
 import {
   ElInput,
@@ -74,10 +76,10 @@ const props = defineProps({
   },
 })
 
-console.log('🟢 MemoEditForm script setup - props.memo:', props.memo)
+devConsole('log', '🟢 MemoEditForm script setup - props.memo:', props.memo)
 
 onMounted(() => {
-  console.log('🟢 MemoEditForm mounted with memo:', props.memo)
+  devConsole('log', '🟢 MemoEditForm mounted with memo:', props.memo)
 })
 
 const emit = defineEmits(['close', 'updated'])
@@ -124,14 +126,14 @@ const formRules: FormRules = {
 watch(
   () => props.memo,
   (newMemo, oldMemo) => {
-    console.log('🟢 MemoEditForm: props.memo watcher triggered', {
+    devConsole('log', '🟢 MemoEditForm: props.memo watcher triggered', {
       oldMemo,
       newMemo,
       oldId: oldMemo?.id,
       newId: newMemo?.id,
     })
     if (newMemo) {
-      console.log('🟢 MemoEditForm: Updating formData with new memo', newMemo)
+      devConsole('log', '🟢 MemoEditForm: Updating formData with new memo', newMemo)
       Object.assign(formData, {
         id: newMemo.id,
         name: newMemo.name || '',
@@ -142,7 +144,7 @@ watch(
         ambiguous: newMemo.ambiguous || false,
         avatar_s3_url: newMemo.avatar_s3_url,
       })
-      console.log('🟢 MemoEditForm: formData after update', { ...formData })
+      devConsole('log', '🟢 MemoEditForm: formData after update', { ...formData })
     }
   },
   {

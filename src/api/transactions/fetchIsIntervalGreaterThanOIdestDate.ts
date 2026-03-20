@@ -1,4 +1,5 @@
 import { httpClient } from '@api/httpClient'
+import { devConsole } from '@utils/devConsole'
 
 export async function fetchIsIntervalGreaterThanOldestDate(
   interval: string,
@@ -13,7 +14,8 @@ export async function fetchIsIntervalGreaterThanOldestDate(
     })
     return res.data
   } catch (err) {
-    console.error(
+    devConsole(
+      'error',
       'Error fetching is interval greater than oldest date:',
       { interval, dailyTotals },
       err,

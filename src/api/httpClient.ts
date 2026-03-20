@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getBaseApiUrl, initBaseApiUrl } from '@constants'
+import { devConsole } from '@utils/devConsole'
 
 export const httpClient = axios.create({
   baseURL: getBaseApiUrl(),
@@ -23,9 +24,8 @@ httpClient.interceptors.request.use(async (config) => {
     config.headers['Authorization'] = `Bearer ${token}`
   }
 
-  // Log the full URL with query params for debugging
-  console.log('[httpClient] Request URL:', config.url)
-  console.log('[httpClient] Query Params:', config.params)
+  devConsole('log', '[httpClient] Request URL:', config.url)
+  devConsole('log', '[httpClient] Query Params:', config.params)
 
   return config
 })
@@ -33,18 +33,20 @@ httpClient.interceptors.request.use(async (config) => {
 // Add response interceptor to log the actual request URL
 httpClient.interceptors.response.use(
   (response) => {
-    console.log(
+    devConsole(
+      'log',
       '[httpClient] Response from:',
       response.config.url,
       'with params:',
       response.config.params,
     )
-    console.log('[httpClient] Full request URL:', response.request.responseURL)
+    devConsole('log', '[httpClient] Full request URL:', response.request.responseURL)
     return response
   },
   (error) => {
     if (error.config) {
-      console.error(
+      devConsole(
+        'error',
         '[httpClient] Error request URL:',
         error.config.url,
         'with params:',

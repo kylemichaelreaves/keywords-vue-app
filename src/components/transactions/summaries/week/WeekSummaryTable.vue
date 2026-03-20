@@ -90,6 +90,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { ElCard, ElTable, ElTableColumn } from 'element-plus'
 import * as d3 from 'd3'
@@ -201,9 +203,9 @@ watch(
 )
 
 const openMemoEditModal = (row: WeekSummaryRow) => {
-  console.log('🟢 WeekSummaryTable: openMemoEditModal called', { row, memo_id: row.memo_id })
+  devConsole('log', '🟢 WeekSummaryTable: openMemoEditModal called', { row, memo_id: row.memo_id })
   selectedMemoId.value = row.memo_id
-  console.log('🟢 WeekSummaryTable: selectedMemoId set to', selectedMemoId.value)
+  devConsole('log', '🟢 WeekSummaryTable: selectedMemoId set to', selectedMemoId.value)
   memoEditModal.value?.openModal()
 }
 

@@ -132,6 +132,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import {
   ElCard,
@@ -277,9 +279,9 @@ onBeforeUnmount(() => {
 })
 
 const openMemoEditModal = (row: MonthSummaryRow) => {
-  console.log('🟢 MonthSummaryTable: openMemoEditModal called', { row, memo_id: row.memo_id })
+  devConsole('log', '🟢 MonthSummaryTable: openMemoEditModal called', { row, memo_id: row.memo_id })
   selectedMemoId.value = row.memo_id
-  console.log('🟢 MonthSummaryTable: selectedMemoId set to', selectedMemoId.value)
+  devConsole('log', '🟢 MonthSummaryTable: selectedMemoId set to', selectedMemoId.value)
   memoEditModal.value?.openModal()
 }
 

@@ -16,6 +16,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { ElButton, ElDialog, ElMessage } from 'element-plus'
 import { computed, type PropType } from 'vue'
 import { useQueryClient } from '@tanstack/vue-query'
@@ -67,19 +69,19 @@ const saveCategory = () => {
   const memo = memoObject.value
 
   if (!memo) {
-    console.error('Memo object is null/undefined')
+    devConsole('error', 'Memo object is null/undefined')
     ElMessage.error('Memo data not available.')
     return
   }
 
   if (!memo.id || typeof memo.id !== 'number') {
-    console.error('Invalid memo ID:', memo.id, typeof memo.id)
+    devConsole('error', 'Invalid memo ID:', memo.id, typeof memo.id)
     ElMessage.error('Invalid memo ID.')
     return
   }
 
   if (!memo.name) {
-    console.error('Missing memo name:', memo.name)
+    devConsole('error', 'Missing memo name:', memo.name)
     ElMessage.error('Missing memo name.')
     return
   }
@@ -107,12 +109,12 @@ const saveCategory = () => {
       refetch()
     },
     onError: (error) => {
-      console.error('Mutation error:', error)
+      devConsole('error', 'Mutation error:', error)
       ElMessage.error(`An error occurred while assigning the budget category: ${error.message}`)
     },
   })
 
-  console.log('Mutate function called')
+  devConsole('log', 'Mutate function called')
 }
 
 const closeModal = () => {

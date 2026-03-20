@@ -1,4 +1,5 @@
 import { fetchPendingTransactions } from '@api/transactions/fetchPendingTransactions'
+import { devConsole } from '@utils/devConsole'
 
 export async function checkForPendingTransactions(): Promise<boolean> {
   try {
@@ -10,7 +11,7 @@ export async function checkForPendingTransactions(): Promise<boolean> {
 
     return pendingTransactions && pendingTransactions.length > 0
   } catch (error) {
-    console.error('Error checking for pending transactions:', error)
+    devConsole('error', 'Error checking for pending transactions:', error)
     // If there's an error, don't block navigation
     return false
   }

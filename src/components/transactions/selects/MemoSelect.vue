@@ -23,6 +23,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMemoSearch } from '@api/hooks/memos/useMemoSearch.ts'
@@ -184,27 +186,31 @@ onMounted(async () => {
 
   // Skip if model already has a value (to avoid overwriting user selection)
   if (model.value) {
-    console.log('[MemoSelect] Model already has value, skipping URL initialization:', model.value)
+    devConsole(
+      'log',
+      '[MemoSelect] Model already has value, skipping URL initialization:',
+      model.value,
+    )
     isInitializing.value = false
     return
   }
 
   try {
-    console.log('[MemoSelect] Fetching memo by ID from URL:', memoId)
+    devConsole('log', '[MemoSelect] Fetching memo by ID from URL:', memoId)
     // Fetch memo by ID using fetchMemos
     const memosData = await fetchMemos({ id: memoId })
-    console.log('[MemoSelect] Memo fetched:', memosData)
+    devConsole('log', '[MemoSelect] Memo fetched:', memosData)
 
     if (memosData && memosData.length > 0) {
       const memo = memosData.find((m: Memo) => m.id === memoId) // proactive filtering
       if (memo && memo.name) {
         model.value = memo.name
         transactionsStore.setSelectedMemo(memo.name)
-        console.log('[MemoSelect] Model and store updated with memo name:', memo.name)
+        devConsole('log', '[MemoSelect] Model and store updated with memo name:', memo.name)
       }
     }
   } catch (error) {
-    console.error('[MemoSelect] Error fetching memo by ID from URL:', error)
+    devConsole('error', '[MemoSelect] Error fetching memo by ID from URL:', error)
   } finally {
     // Always set initialization complete, even if there was an error
     isInitializing.value = false

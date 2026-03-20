@@ -3,6 +3,8 @@
 </template>
 
 <script setup lang="ts">
+import { devConsole } from '@utils/devConsole'
+
 import { nextTick, onBeforeUnmount, onMounted, type PropType, ref, watch } from 'vue'
 import type { SummaryTypeBase } from '@types'
 import { createLineChart } from './createLineChart'
@@ -49,7 +51,7 @@ const createChart = async () => {
     await nextTick()
     createLineChart(svg.value, props.summaries, props.handleOnClickSelection)
   } catch (error) {
-    console.error('Error creating line chart:', error)
+    devConsole('error', 'Error creating line chart:', error)
   }
 }
 
@@ -78,7 +80,7 @@ onMounted(async () => {
 
   const parentElement = svg.value.parentElement
   if (!parentElement) {
-    console.warn('LineChart: No parent element found')
+    devConsole('warn', 'LineChart: No parent element found')
     return
   }
 

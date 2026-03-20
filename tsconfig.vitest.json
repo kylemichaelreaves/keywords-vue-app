@@ -3,6 +3,7 @@
   "include": [
     "src/**/*",
     "src/**/*.vue",
+    "scripts/**/*.ts",
     "vitest.shims.d.ts",
     "vitest-globals.d.ts",
     "vitest.intellij.d.ts",

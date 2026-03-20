@@ -102,6 +102,8 @@ export default defineConfig({
     // Add environment variables for server
     env: {
       NODE_ENV: isCI ? 'production' : 'development',
+      // E2E mocks APIs; no Postgres tunnel required on the machine running Vite
+      SKIP_POSTGRES_CHECK: 'true',
     }
   }
 })
