@@ -68,6 +68,12 @@ storybook-static
 constants.node.js
 constants.node.d.ts
 
+# Compiled scripts (tsc may emit next to .ts)
+scripts/*.js
+scripts/*.d.ts
+
+debug-before-wait.png
+
 # Compiled output of env.d.ts
 vite-env.d.ts
 

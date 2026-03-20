@@ -30,6 +30,15 @@ const sharedConfig = {
   }
 }
 
+function suppressNoisyTestConsole(log: string): boolean {
+  if (log.includes('[constants]')) return false
+  if (log.includes('[MemoSelect]')) return false
+  if (log.includes('compiler-sfc')) return false
+  if (log.includes('[httpClient]')) return false
+  if (log.includes('[Vue warn]')) return false
+  return true
+}
+
 export default defineConfig({
   test: {
     reporters: ['default', 'html'],
@@ -37,6 +46,10 @@ export default defineConfig({
       deps: {
         inline: ['element-plus']
       }
+    },
+    // Must be on the root `test` object when using `projects` (not inside each project).
+    onConsoleLog(log: string) {
+      return suppressNoisyTestConsole(log)
     },
     projects: [
       {
@@ -51,7 +64,7 @@ export default defineConfig({
           include: ['src/test/**/*.{test,spec}.{ts,tsx,jsx,js}'],
           typecheck: {
             checker: 'vue-tsc'
-          }
+          },
         }
       }
     ]

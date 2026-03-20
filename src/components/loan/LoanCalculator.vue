@@ -69,7 +69,7 @@ const initialLoanFormState: LoanFormType = {
   startDate: new Date(),
 }
 
-const loanForm: LoanFormType = reactive({ ...initialLoanFormState })
+let loanForm: LoanFormType = reactive({ ...initialLoanFormState })
 
 const isFormInItsInitialState = computed(() => {
   return (
