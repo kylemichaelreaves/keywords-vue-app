@@ -11,6 +11,9 @@ import { useThemeStore } from '@stores/theme.ts'
 import { router } from '@router'
 import { queryClient } from '@api/queryClient.ts'
 import { devConsole } from '@utils/devConsole'
+import { setUnauthorizedHandler } from '@api/httpClient.ts'
+import { safeRedirectPath } from '@utils/safeRedirectPath'
+import { ElMessage } from 'element-plus'
 
 // Extend globalThis interface for Playwright testing
 interface GlobalWithPinia {
@@ -43,14 +46,29 @@ if (user && token && user !== 'undefined') {
 const themeStore = useThemeStore()
 themeStore.initializeTheme()
 
+// Wire up global 401 handler (logout → clear cache → redirect to login).
+// Registered here to avoid circular imports in httpClient.
+setUnauthorizedHandler(() => {
+  const authStore = useAuthStore()
+  authStore.logout()
+  queryClient.clear()
+
+  const currentRoute = router.currentRoute.value
+  if (currentRoute.name !== 'login') {
+    const redirect = safeRedirectPath(currentRoute.fullPath)
+    router.push({ name: 'login', ...(redirect ? { query: { redirect } } : {}) })
+    ElMessage.warning('Your session has expired. Please log in again.')
+  }
+})
+
 app.use(router).use(VueQueryPlugin, { queryClient }).use(VueTippy)
 
-// NAV GUARD!!! only authenticated users can access auth routes
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   const isAuthenticated = authStore.getIsUserAuthenticated
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: 'login' })
+    const redirect = safeRedirectPath(to.fullPath)
+    next({ name: 'login', ...(redirect ? { query: { redirect } } : {}) })
   } else {
     next()
   }

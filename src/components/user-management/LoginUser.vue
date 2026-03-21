@@ -50,8 +50,12 @@ import { computed, ref, onMounted, type Component } from 'vue'
 import type { loginFormKeys } from '@types'
 import { useMutation } from '@tanstack/vue-query'
 import { useAuthStore } from '@stores/auth.ts'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElInput } from 'element-plus'
+import { safeRedirectPath } from '@utils/safeRedirectPath'
+import { extractApiErrorMessage } from '@api/extractApiErrorMessage'
+
+const DEFAULT_AUTHENTICATED_ROUTE = '/budget-visualizer/transactions'
 
 interface LoginFormField {
   component: Component
@@ -68,6 +72,11 @@ const user = ref({
 
 const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute()
+
+const redirectTarget = computed(
+  () => safeRedirectPath(route.query.redirect) ?? DEFAULT_AUTHENTICATED_ROUTE,
+)
 
 // the button should be disabled when isPending OR if both fields don't have values
 const isDisabledCondition = computed(() => {
@@ -76,14 +85,7 @@ const isDisabledCondition = computed(() => {
 
 const errorDescription = computed(() => {
   if (!isError.value || !error.value) return ''
-
-  // Handle different error types
-  if (error.value && typeof error.value === 'object' && 'response' in error.value) {
-    const axiosError = error.value as Error & { response?: { data?: { message?: string } } }
-    return axiosError.response?.data?.message || axiosError.message || 'An error occurred'
-  }
-
-  return error.value instanceof Error ? error.value.message : 'An error occurred'
+  return extractApiErrorMessage(error.value)
 })
 
 const { mutate, isPending, isError, error } = useMutation({
@@ -101,7 +103,7 @@ const { mutate, isPending, isError, error } = useMutation({
     authStore.setIsUserAuthenticated(true)
     localStorage.setItem('user', JSON.stringify(user))
     localStorage.setItem('token', token)
-    router.push('/budget-visualizer/transactions')
+    router.push(redirectTarget.value)
   },
   onError: (error) => {
     ElMessage.error('Login failed! Please try again!')
@@ -151,7 +153,7 @@ onMounted(() => {
   }
 
   if (authStore.getIsUserAuthenticated && authStore.getUser.username) {
-    router.push('/budget-visualizer/transactions')
+    router.push(redirectTarget.value)
   }
 })
 </script>

@@ -2,6 +2,15 @@ import axios from 'axios'
 import { getBaseApiUrl, initBaseApiUrl } from '@constants'
 import { devConsole } from '@utils/devConsole'
 
+// Callback-based handler so main.ts can wire in auth store + router
+// without creating circular imports (auth store → httpClient).
+let onUnauthorized: (() => void) | null = null
+let handlingUnauthorized = false
+
+export function setUnauthorizedHandler(handler: () => void) {
+  onUnauthorized = handler
+}
+
 export const httpClient = axios.create({
   baseURL: getBaseApiUrl(),
   headers: {
@@ -53,6 +62,22 @@ httpClient.interceptors.response.use(
         error.config.params,
       )
     }
+
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      onUnauthorized &&
+      !handlingUnauthorized
+    ) {
+      handlingUnauthorized = true
+      onUnauthorized()
+      // Re-arm after the current microtask so concurrent 401s from the same
+      // batch are still collapsed, but future 401s (after re-auth) work again.
+      queueMicrotask(() => {
+        handlingUnauthorized = false
+      })
+    }
+
     return Promise.reject(error)
   },
 )
