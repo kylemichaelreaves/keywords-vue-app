@@ -2,6 +2,14 @@ import axios from 'axios'
 import { getBaseApiUrl, initBaseApiUrl } from '@constants'
 import { devConsole } from '@utils/devConsole'
 
+// Callback-based handler so main.ts can wire in auth store + router
+// without creating circular imports (auth store → httpClient).
+let onUnauthorized: (() => void) | null = null
+
+export function setUnauthorizedHandler(handler: () => void) {
+  onUnauthorized = handler
+}
+
 export const httpClient = axios.create({
   baseURL: getBaseApiUrl(),
   headers: {
@@ -53,6 +61,11 @@ httpClient.interceptors.response.use(
         error.config.params,
       )
     }
+
+    if (axios.isAxiosError(error) && error.response?.status === 401 && onUnauthorized) {
+      onUnauthorized()
+    }
+
     return Promise.reject(error)
   },
 )
