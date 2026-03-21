@@ -7,11 +7,13 @@ const MAX_PATH_LENGTH = 2048
  * Returns `undefined` when the value is missing, empty, or unsafe.
  */
 export function safeRedirectPath(value: unknown): string | undefined {
-  if (typeof value !== 'string' || value.length === 0 || value.length > MAX_PATH_LENGTH) {
-    return undefined
-  }
+  if (typeof value !== 'string') return undefined
 
   const trimmed = value.trim()
+
+  if (trimmed.length === 0 || trimmed.length > MAX_PATH_LENGTH) {
+    return undefined
+  }
 
   if (!trimmed.startsWith('/') || trimmed.startsWith('//')) {
     return undefined

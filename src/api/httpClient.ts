@@ -9,7 +9,6 @@ let handlingUnauthorized = false
 
 export function setUnauthorizedHandler(handler: () => void) {
   onUnauthorized = handler
-  handlingUnauthorized = false
 }
 
 export const httpClient = axios.create({
@@ -72,6 +71,11 @@ httpClient.interceptors.response.use(
     ) {
       handlingUnauthorized = true
       onUnauthorized()
+      // Re-arm after the current microtask so concurrent 401s from the same
+      // batch are still collapsed, but future 401s (after re-auth) work again.
+      queueMicrotask(() => {
+        handlingUnauthorized = false
+      })
     }
 
     return Promise.reject(error)
