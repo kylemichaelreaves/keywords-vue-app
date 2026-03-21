@@ -14,9 +14,9 @@ describe('safeRedirectPath', () => {
   it.each([
     ['protocol-relative', '//evil.com/steal'],
     ['absolute url', 'https://evil.com'],
-    ['javascript protocol', 'javascript:alert(1)'],
-    ['JAVASCRIPT mixed case', 'JavaScript:alert(1)'],
-    ['data uri', 'data:text/html,<script>alert(1)</script>'],
+    ['no leading slash: javascript: protocol', 'javascript:alert(1)'],
+    ['no leading slash: JavaScript: mixed case', 'JavaScript:alert(1)'],
+    ['no leading slash: data: uri', 'data:text/html,<script>alert(1)</script>'],
     ['empty string', ''],
     ['relative path', 'relative/path'],
   ])('returns undefined for unsafe input: %s', (_label, input) => {
