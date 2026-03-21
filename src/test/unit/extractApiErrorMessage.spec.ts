@@ -40,9 +40,7 @@ describe('extractApiErrorMessage', () => {
   })
 
   it('handles a TypeError', () => {
-    expect(extractApiErrorMessage(new TypeError('x is not a function'))).toBe(
-      'x is not a function',
-    )
+    expect(extractApiErrorMessage(new TypeError('x is not a function'))).toBe('x is not a function')
   })
 
   it.each([

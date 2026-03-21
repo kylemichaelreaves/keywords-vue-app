@@ -74,8 +74,8 @@ const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 
-const redirectTarget = computed(() =>
-  safeRedirectPath(route.query.redirect) ?? DEFAULT_AUTHENTICATED_ROUTE,
+const redirectTarget = computed(
+  () => safeRedirectPath(route.query.redirect) ?? DEFAULT_AUTHENTICATED_ROUTE,
 )
 
 // the button should be disabled when isPending OR if both fields don't have values
