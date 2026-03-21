@@ -64,7 +64,12 @@ httpClient.interceptors.response.use(
       )
     }
 
-    if (axios.isAxiosError(error) && error.response?.status === 401 && onUnauthorized && !handlingUnauthorized) {
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      onUnauthorized &&
+      !handlingUnauthorized
+    ) {
       handlingUnauthorized = true
       onUnauthorized()
     }
