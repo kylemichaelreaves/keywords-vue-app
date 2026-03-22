@@ -4,10 +4,11 @@ const LAMBDA_DEV_URL: string = 'http://127.0.0.1:3000'
 const LAMBDA_DEV_PROXY = '/api'
 const API_GATEWAY_URL = import.meta.env.VITE_APIGATEWAY_URL
 
-// In DEV mode, start with the Vite proxy path (/api → 127.0.0.1:3000) so all
-// requests stay same-origin and avoid CORS. Fall back to the API Gateway URL
-// if the local server isn't running. In production, always use API_GATEWAY_URL.
-let baseApiUrl = import.meta.env.DEV ? LAMBDA_DEV_PROXY : API_GATEWAY_URL
+// /api is the canonical route prefix. In DEV mode, the Vite proxy forwards
+// /api → 127.0.0.1:3000/api (same-origin, no CORS). In production, append
+// /api to the API Gateway URL so httpClient paths (/transactions, /memos, etc.)
+// resolve to /api/transactions, /api/memos, etc.
+let baseApiUrl = import.meta.env.DEV ? LAMBDA_DEV_PROXY : `${API_GATEWAY_URL}/api`
 
 /**
  * Returns the current base API URL.
@@ -31,7 +32,7 @@ const initBaseApiUrl = async (): Promise<string> => {
 
   try {
     // Ping through the Vite proxy (same-origin, no CORS issues).
-    // The proxy rewrites /api/* → /* on the SAM local server.
+    // The proxy forwards /api/* → 127.0.0.1:3000/api/* (no rewrite).
     // fetch() only rejects on network errors to Vite; a dead upstream still returns
     // a response (typically 502), so we must treat proxy/upstream failures as unreachable.
     const response = await fetch(LAMBDA_DEV_PROXY, {
@@ -48,11 +49,11 @@ const initBaseApiUrl = async (): Promise<string> => {
       LAMBDA_DEV_PROXY,
     )
   } catch {
-    baseApiUrl = API_GATEWAY_URL
+    baseApiUrl = `${API_GATEWAY_URL}/api`
     devConsole(
       'info',
       '[constants] Local dev server not reachable, falling back to:',
-      API_GATEWAY_URL,
+      `${API_GATEWAY_URL}/api`,
     )
   } finally {
     clearTimeout(timeoutId)
