@@ -2,7 +2,7 @@ import { devConsole } from '@utils/devConsole'
 
 const LAMBDA_DEV_URL: string = 'http://127.0.0.1:3000'
 const LAMBDA_DEV_PROXY = '/api'
-const API_GATEWAY_URL = import.meta.env.VITE_APIGATEWAY_URL
+const API_GATEWAY_URL = import.meta.env.VITE_APIGATEWAY_URL ?? ''
 
 // /api is the canonical route prefix. In DEV mode, the Vite proxy forwards
 // /api → 127.0.0.1:3000/api (same-origin, no CORS). In production, append
