@@ -39,7 +39,7 @@ test.describe('NavBar loads the Budget Visualizer tab', () => {
   }) => {
     await setupTransactionsTableWithComprehensiveMocks(
       transactionsPage.page,
-      staticTransactions.reverse(),
+      [...staticTransactions].reverse(),
       staticDailyIntervals,
     )
 
@@ -54,7 +54,7 @@ test.describe('NavBar loads the Budget Visualizer tab', () => {
     // mock the transactions API response
     await setupTransactionsTableWithComprehensiveMocks(
       transactionsPage.page,
-      staticTransactions.reverse(),
+      [...staticTransactions].reverse(),
       staticDailyIntervals,
     )
 

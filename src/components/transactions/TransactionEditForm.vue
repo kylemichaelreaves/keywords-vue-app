@@ -69,9 +69,11 @@ const budgetCategoryState = ref<BudgetCategoryState>(
 )
 
 // Computed transaction amount
-const transactionAmount = computed(() =>
-  Number.parseFloat(transaction.amount_debit || transaction.amount_credit || '0'),
-)
+const transactionAmount = computed(() => {
+  const debit = Number.parseFloat(transaction.amount_debit || '0')
+  if (debit !== 0) return debit
+  return Number.parseFloat(transaction.amount_credit || '0')
+})
 
 // Initialize budget category state from transaction
 function initializeBudgetCategoryState(txn: Transaction): BudgetCategoryState {

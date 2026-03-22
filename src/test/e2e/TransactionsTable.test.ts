@@ -24,7 +24,7 @@ test.describe('Transactions Table', () => {
     // CRITICAL FIX: Set up API mocks FIRST before any navigation
     await setupTransactionsTableWithComprehensiveMocks(
       page,
-      staticTransactions.reverse(),
+      [...staticTransactions].reverse(),
       staticDailyIntervals,
     )
 
@@ -33,7 +33,6 @@ test.describe('Transactions Table', () => {
 
     // CRITICAL: Wait for Vue app to be mounted and DOM to be ready
     await page.waitForLoadState('domcontentloaded')
-    await page.waitForLoadState('networkidle', { timeout: 10000 })
 
     // Ensure the Vue app is actually rendered (not showing JSON)
     await page.waitForSelector('[data-testid="transactions-table-selects"]', { timeout: 15000 })
