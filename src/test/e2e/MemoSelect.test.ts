@@ -11,7 +11,7 @@ test.describe('MemoSelect Search Functionality', () => {
     // Setup comprehensive mocks before navigation (same as TransactionsTable test)
     await setupTransactionsTableWithComprehensiveMocks(
       page,
-      staticTransactions.reverse(),
+      [...staticTransactions].reverse(),
       staticDailyIntervals,
     )
 
@@ -20,7 +20,6 @@ test.describe('MemoSelect Search Functionality', () => {
 
     // Wait for page to be ready
     await page.waitForLoadState('domcontentloaded')
-    await page.waitForLoadState('networkidle', { timeout: 10000 })
 
     // Wait for the memo select to be visible
     await page.getByTestId('transactions-table-memo-select').waitFor({

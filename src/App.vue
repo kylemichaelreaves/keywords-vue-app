@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div class="app-root">
     <Navbar />
     <Breadcrumbs />
     <router-view :key="route.path" />
@@ -15,7 +15,7 @@ const route = useRoute()
 </script>
 
 <style scoped>
-#app {
+.app-root {
   width: 100vw;
 }
 </style>

@@ -27,7 +27,27 @@ describe('initBaseApiUrl', () => {
     const { initBaseApiUrl, getBaseApiUrl } = await import('@constants')
     await initBaseApiUrl()
 
-    expect(getBaseApiUrl()).toBe('https://gw.example.execute-api.us-east-1.amazonaws.com/Stage')
+    expect(getBaseApiUrl()).toBe('https://gw.example.execute-api.us-east-1.amazonaws.com/Stage/api')
+  })
+
+  it('defaults baseApiUrl to /api when VITE_APIGATEWAY_URL is unset (production)', async () => {
+    vi.stubEnv('VITE_APIGATEWAY_URL', undefined as unknown as string)
+    vi.stubEnv('DEV', false)
+
+    const { getBaseApiUrl } = await import('@constants')
+
+    expect(getBaseApiUrl()).toBe('/api')
+  })
+
+  it('defaults fallback to /api when VITE_APIGATEWAY_URL is unset (dev, proxy down)', async () => {
+    vi.stubEnv('VITE_APIGATEWAY_URL', undefined as unknown as string)
+    vi.stubEnv('DEV', true)
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('connection refused')))
+
+    const { initBaseApiUrl, getBaseApiUrl } = await import('@constants')
+    await initBaseApiUrl()
+
+    expect(getBaseApiUrl()).toBe('/api')
   })
 
   it('keeps /api when proxy HEAD succeeds', async () => {

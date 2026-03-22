@@ -33,7 +33,7 @@ export default defineConfig(async () => {
     }),
     AutoImport({
       resolvers: [
-        ElementPlusResolver({ importStyle: 'css' }),
+        ElementPlusResolver({ importStyle: false }),
         // Auto import icons
         IconsResolver({
           prefix: 'Icon',
@@ -43,7 +43,7 @@ export default defineConfig(async () => {
     }),
     Components({
       resolvers: [
-        ElementPlusResolver({ importStyle: 'css' }),
+        ElementPlusResolver({ importStyle: false }),
         // Auto register icon components
         IconsResolver({
           enabledCollections: ['ep'], // Element Plus icons
@@ -81,6 +81,9 @@ export default defineConfig(async () => {
         find: `@${alias}`,
         replacement: path.resolve(__dirname, `src/${alias}`),
       })),
+    },
+    optimizeDeps: {
+      include: ['element-plus/es'],
     },
   }
 })
