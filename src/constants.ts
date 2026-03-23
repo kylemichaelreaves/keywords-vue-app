@@ -1,14 +1,14 @@
 import { devConsole } from '@utils/devConsole'
 
 const LAMBDA_DEV_URL: string = 'http://127.0.0.1:3000'
-const LAMBDA_DEV_PROXY = '/api'
+const LAMBDA_DEV_PROXY = '/api/v1'
 const API_GATEWAY_URL = import.meta.env.VITE_APIGATEWAY_URL ?? ''
 
-// /api is the canonical route prefix. In DEV mode, the Vite proxy forwards
+// /api/v1 is the canonical route prefix. In DEV mode, the Vite proxy forwards
 // /api → 127.0.0.1:3000/api (same-origin, no CORS). In production, append
-// /api to the API Gateway URL so httpClient paths (/transactions, /memos, etc.)
-// resolve to /api/transactions, /api/memos, etc.
-let baseApiUrl = import.meta.env.DEV ? LAMBDA_DEV_PROXY : `${API_GATEWAY_URL}/api`
+// /api/v1 to the API Gateway URL so httpClient paths (/transactions, /memos, etc.)
+// resolve to /api/v1/transactions, /api/v1/memos, etc.
+let baseApiUrl = import.meta.env.DEV ? LAMBDA_DEV_PROXY : `${API_GATEWAY_URL}/api/v1`
 
 /**
  * Returns the current base API URL.
@@ -49,11 +49,11 @@ const initBaseApiUrl = async (): Promise<string> => {
       LAMBDA_DEV_PROXY,
     )
   } catch {
-    baseApiUrl = `${API_GATEWAY_URL}/api`
+    baseApiUrl = `${API_GATEWAY_URL}/api/v1`
     devConsole(
       'info',
       '[constants] Local dev server not reachable, falling back to:',
-      `${API_GATEWAY_URL}/api`,
+      `${API_GATEWAY_URL}/api/v1`,
     )
   } finally {
     clearTimeout(timeoutId)
