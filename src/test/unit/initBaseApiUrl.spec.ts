@@ -27,7 +27,9 @@ describe('initBaseApiUrl', () => {
     const { initBaseApiUrl, getBaseApiUrl } = await import('@constants')
     await initBaseApiUrl()
 
-    expect(getBaseApiUrl()).toBe('https://gw.example.execute-api.us-east-1.amazonaws.com/Stage/api/v1')
+    expect(getBaseApiUrl()).toBe(
+      'https://gw.example.execute-api.us-east-1.amazonaws.com/Stage/api/v1',
+    )
   })
 
   it('defaults baseApiUrl to /api/v1 when VITE_APIGATEWAY_URL is unset (production)', async () => {
