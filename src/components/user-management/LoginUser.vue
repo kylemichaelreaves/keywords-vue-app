@@ -11,7 +11,7 @@
   />
   <div class="container">
     <el-card class="login-el-card">
-      <el-form :model="user" :rules="rules" label-width="120px">
+      <el-form ref="formRef" :model="user" :rules="rules" label-width="120px">
         <el-form-item
           v-for="(field, key) in loginFormFields"
           :key="key"
@@ -65,6 +65,7 @@ interface LoginFormField {
   showPassword?: boolean
 }
 
+const formRef = ref<InstanceType<typeof import('element-plus').ElForm> | null>(null)
 const user = ref({
   email: '',
   password: '',
@@ -111,8 +112,13 @@ const { mutate, isPending, isError, error } = useMutation({
   },
 })
 
-const submitForm = () => {
-  mutate({ email: user.value.email, password: user.value.password })
+const submitForm = async () => {
+  if (!formRef.value) return
+  await formRef.value.validate((valid) => {
+    if (valid) {
+      mutate({ email: user.value.email, password: user.value.password })
+    }
+  })
 }
 
 const loginFormFields: Record<loginFormKeys, LoginFormField> = {
