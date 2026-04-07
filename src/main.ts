@@ -7,6 +7,7 @@ import App from './App.vue'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import VueTippy from 'vue-tippy'
 import { useAuthStore } from '@stores/auth.ts'
+import { useTransactionsStore } from '@stores/transactions.ts'
 import { useThemeStore } from '@stores/theme.ts'
 import { router } from '@router'
 import { queryClient } from '@api/queryClient.ts'
@@ -50,7 +51,9 @@ themeStore.initializeTheme()
 // Registered here to avoid circular imports in httpClient.
 setUnauthorizedHandler(() => {
   const authStore = useAuthStore()
+  const transactionsStore = useTransactionsStore()
   authStore.logout()
+  transactionsStore.resetStore()
   queryClient.clear()
 
   const currentRoute = router.currentRoute.value

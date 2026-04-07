@@ -9,7 +9,6 @@ import type {
   DayYear,
   Year,
   Transaction,
-  PendingTransaction,
 } from '@types'
 
 export const useTransactionsStore = defineStore('transactions', () => {
@@ -46,10 +45,8 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const transactionsTableLimit = ref(100)
   const transactionsTableOffset = ref(0)
   const transactions = ref<Array<Transaction>>([])
-  const transactionsByOffset = ref<Record<number, Array<Transaction>>>({})
   const transactionsCount = ref(0)
   const memosCount = ref(0)
-  const pendingTransactionsByOffset = ref<Record<number, Array<PendingTransaction>>>({})
   const pendingTransactionsCount = ref(0)
 
   // Getters
@@ -84,15 +81,8 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const getTransactionsTableOffset = computed(() => transactionsTableOffset.value)
   const getDaysForSelectedWeek = computed(() => daysForSelectedWeek.value)
   const getTransactions = computed(() => transactions.value)
-  const getTransactionsByOffset = (offset: number) => transactionsByOffset.value[offset] || []
-  const getAllTransactions = computed(() => Object.values(transactionsByOffset.value).flat())
   const getTransactionsCount = computed(() => transactionsCount.value)
   const getMemosCount = computed(() => memosCount.value)
-  const getPendingTransactionsByOffset = (offset: number) =>
-    pendingTransactionsByOffset.value[offset] || []
-  const getAllPendingTransactions = computed(() =>
-    Object.values(pendingTransactionsByOffset.value).flat(),
-  )
   const getPendingTransactionsCount = computed(() => pendingTransactionsCount.value)
 
   // Actions
@@ -220,14 +210,6 @@ export const useTransactionsStore = defineStore('transactions', () => {
     transactions.value = transactionsArray
   }
 
-  function setTransactionsByOffset(offset: number, transactionsArray: Array<Transaction>) {
-    transactionsByOffset.value[offset] = transactionsArray
-  }
-
-  function clearTransactionsByOffset() {
-    transactionsByOffset.value = {}
-  }
-
   function setTransactionsCount(count: number) {
     transactionsCount.value = count
   }
@@ -240,19 +222,46 @@ export const useTransactionsStore = defineStore('transactions', () => {
     memosCount.value = count
   }
 
-  function setPendingTransactionsByOffset(
-    offset: number,
-    transactionsArray: Array<PendingTransaction>,
-  ) {
-    pendingTransactionsByOffset.value[offset] = transactionsArray
-  }
-
-  function clearPendingTransactionsByOffset() {
-    pendingTransactionsByOffset.value = {}
-  }
-
   function setPendingTransactionsCount(count: number) {
     pendingTransactionsCount.value = count
+  }
+
+  function resetStore() {
+    selectedDay.value = ''
+    selectedMonth.value = ''
+    selectedYear.value = ''
+    selectedMemo.value = ''
+    selectedWeek.value = ''
+    selectedType.value = 'Amount Debit'
+    selectedBudgetCategory.value = ''
+    selectedDescription.value = ''
+    selectedStatus.value = 'pending'
+    days.value = []
+    daysForSelectedWeek.value = []
+    weeksForSelectedMonth.value = []
+    weeks.value = []
+    months.value = []
+    memos.value = []
+    years.value = []
+    descriptions.value = []
+    OFSummaries.value = []
+    MJSummaries.value = []
+    daysSummaries.value = []
+    weeksSummaries.value = []
+    monthsSummaries.value = []
+    transactionsCurrentPage.value = 1
+    transactionsPageSize.value = 100
+    filter.value = {}
+    sort.value = { prop: '', order: '' }
+    memosTableLimit.value = 100
+    memosTableOffset.value = 0
+    memosByOffset.value = {}
+    transactionsTableLimit.value = 100
+    transactionsTableOffset.value = 0
+    transactions.value = []
+    transactionsCount.value = 0
+    memosCount.value = 0
+    pendingTransactionsCount.value = 0
   }
 
   return {
@@ -289,10 +298,8 @@ export const useTransactionsStore = defineStore('transactions', () => {
     transactionsTableLimit,
     transactionsTableOffset,
     transactions,
-    transactionsByOffset,
     transactionsCount,
     memosCount,
-    pendingTransactionsByOffset,
     pendingTransactionsCount,
     // Getters
     getSelectedDay,
@@ -326,12 +333,8 @@ export const useTransactionsStore = defineStore('transactions', () => {
     getTransactionsTableOffset,
     getDaysForSelectedWeek,
     getTransactions,
-    getTransactionsByOffset,
-    getAllTransactions,
     getTransactionsCount,
     getMemosCount,
-    getPendingTransactionsByOffset,
-    getAllPendingTransactions,
     getPendingTransactionsCount,
     // Actions
     setSelectedDay,
@@ -365,13 +368,10 @@ export const useTransactionsStore = defineStore('transactions', () => {
     setDaysForSelectedWeek,
     setWeeksForSelectedMonth,
     setTransactions,
-    setTransactionsByOffset,
-    clearTransactionsByOffset,
     setTransactionsCount,
     setMemosByOffset,
     setMemosCount,
-    setPendingTransactionsByOffset,
-    clearPendingTransactionsByOffset,
     setPendingTransactionsCount,
+    resetStore,
   }
 })
