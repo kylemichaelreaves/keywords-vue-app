@@ -13,7 +13,8 @@ export default function usePendingTransactions() {
   return useInfiniteQuery<Array<PendingTransaction>>({
     initialPageParam: 0,
     queryKey: computed(
-      () => ['pending-transactions', limit.value, selectedMemo.value, selectedStatus.value] as const,
+      () =>
+        ['pending-transactions', limit.value, selectedMemo.value, selectedStatus.value] as const,
     ),
     queryFn: async ({ pageParam = 0 }) => {
       const memoValue = selectedMemo.value

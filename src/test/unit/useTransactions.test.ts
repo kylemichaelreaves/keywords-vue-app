@@ -72,7 +72,6 @@ describe('useTransactions with Memo Selection', () => {
     // Wait for initial query to complete
     await new Promise((resolve) => setTimeout(resolve, 100))
 
-
     // Set memo name (as if user selected it)
     store.setSelectedMemo('Coffee Shop')
 
@@ -103,7 +102,6 @@ describe('useTransactions with Memo Selection', () => {
 
     // Wait for initial query to complete
     await new Promise((resolve) => setTimeout(resolve, 100))
-
 
     // Set memo ID as string (as if loaded from URL)
     store.setSelectedMemo('101')
@@ -253,7 +251,6 @@ describe('useTransactions with Memo Selection', () => {
 
     // Wait for initial query to complete
     await new Promise((resolve) => setTimeout(resolve, 100))
-
 
     store.setSelectedMemo('Coffee Shop')
     store.setTransactionsTableLimit(50)

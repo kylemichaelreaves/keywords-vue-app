@@ -61,11 +61,7 @@
         :style="{ paddingLeft: `${Math.min(row.depth, 12) * 14 + 8}px` }"
         :data-testid="`budget-category-row-${row.path}`"
       >
-        <span
-          v-if="row.hasChildren"
-          class="bv-tree-toggle"
-          @click="toggleExpand(row.path)"
-        >
+        <span v-if="row.hasChildren" class="bv-tree-toggle" @click="toggleExpand(row.path)">
           <el-icon :class="{ 'is-expanded': expandedPaths.has(row.path) }">
             <ArrowRight />
           </el-icon>
