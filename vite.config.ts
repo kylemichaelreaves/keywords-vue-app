@@ -1,4 +1,3 @@
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig, PluginOption } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'node:path'
@@ -28,9 +27,6 @@ function localPostgresTunnelCheckPlugin(): PluginOption {
 export default defineConfig(async () => {
   const plugins: PluginOption[] = [
     vue(),
-    tsconfigPaths({
-      configNames: ['tsconfig.app.json'],
-    }),
     AutoImport({
       resolvers: [
         ElementPlusResolver({ importStyle: false }),
@@ -77,6 +73,7 @@ export default defineConfig(async () => {
     root: fileURLToPath(new URL('./', import.meta.url)),
     plugins,
     resolve: {
+      tsconfigPaths: true,
       alias: ROUTE_ALIASES.map((alias) => ({
         find: `@${alias}`,
         replacement: path.resolve(__dirname, `src/${alias}`),
