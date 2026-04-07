@@ -5,13 +5,13 @@ const isDark = ref(false)
 const hasExplicitPreference = ref(false)
 
 const getInitialTheme = () => {
-  if (typeof window !== 'undefined') {
+  if (typeof globalThis.window !== 'undefined') {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme) {
       hasExplicitPreference.value = true
       return savedTheme === 'dark'
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
+    return globalThis.window.matchMedia('(prefers-color-scheme: dark)').matches
   }
   return false
 }
@@ -20,8 +20,8 @@ const getInitialTheme = () => {
 isDark.value = getInitialTheme()
 
 // Listen to system theme changes — once at module scope (isDark is a singleton)
-if (typeof window !== 'undefined') {
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+if (typeof globalThis.window !== 'undefined') {
+  const mediaQuery = globalThis.window.matchMedia('(prefers-color-scheme: dark)')
   const handleSystemThemeChange = (e: MediaQueryListEvent) => {
     if (!hasExplicitPreference.value) {
       isDark.value = e.matches
@@ -35,7 +35,7 @@ if (typeof window !== 'undefined') {
 
 // Apply theme class to document (always, regardless of source)
 function applyTheme(dark: boolean) {
-  if (typeof window !== 'undefined') {
+  if (typeof globalThis.window !== 'undefined') {
     document.documentElement.classList.toggle('dark', dark)
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
   }
@@ -60,7 +60,7 @@ export function useDarkMode() {
   // Watch for changes and update document class + persist only explicit preferences
   watch(isDark, (newValue) => {
     applyTheme(newValue)
-    if (hasExplicitPreference.value && typeof window !== 'undefined') {
+    if (hasExplicitPreference.value && typeof globalThis.window !== 'undefined') {
       localStorage.setItem('theme', newValue ? 'dark' : 'light')
     }
   })

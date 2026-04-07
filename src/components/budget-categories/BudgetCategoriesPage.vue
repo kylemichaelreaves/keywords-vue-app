@@ -127,8 +127,7 @@ function collectAllPaths(nodes: CategoryNode[]): string[] {
   const paths: string[] = []
   for (const node of nodes) {
     if (node.children?.length) {
-      paths.push(node.value)
-      paths.push(...collectAllPaths(node.children))
+      paths.push(node.value, ...collectAllPaths(node.children))
     }
   }
   return paths

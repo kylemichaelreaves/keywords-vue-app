@@ -30,11 +30,10 @@ export default function useTransactions() {
       const memoValue = selectedMemo.value
       const isMemoId = memoValue && !Number.isNaN(Number(memoValue))
 
-      const memoParam: { memoId?: number; memo?: string } = memoValue
-        ? isMemoId
-          ? { memoId: Number(memoValue) }
-          : { memo: memoValue }
-        : {}
+      let memoParam: { memoId?: number; memo?: string } = {}
+      if (memoValue) {
+        memoParam = isMemoId ? { memoId: Number(memoValue) } : { memo: memoValue }
+      }
 
       return (await fetchTransactions({
         limit: limit.value,

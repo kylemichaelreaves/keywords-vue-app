@@ -11,17 +11,38 @@ import type {
   Transaction,
 } from '@types'
 
+const DEFAULTS = {
+  selectedDay: '',
+  selectedMonth: '',
+  selectedYear: '',
+  selectedMemo: '',
+  selectedWeek: '',
+  selectedType: 'Amount Debit',
+  selectedBudgetCategory: '' as string | null,
+  selectedDescription: '',
+  selectedStatus: 'pending' as 'pending' | 'reviewed',
+  transactionsCurrentPage: 1,
+  transactionsPageSize: 100,
+  memosTableLimit: 100,
+  memosTableOffset: 0,
+  transactionsTableLimit: 100,
+  transactionsTableOffset: 0,
+  transactionsCount: 0,
+  memosCount: 0,
+  pendingTransactionsCount: 0,
+}
+
 export const useTransactionsStore = defineStore('transactions', () => {
   // State
-  const selectedDay = ref('')
-  const selectedMonth = ref('')
-  const selectedYear = ref('')
-  const selectedMemo = ref<string>('')
-  const selectedWeek = ref('')
-  const selectedType = ref('Amount Debit')
-  const selectedBudgetCategory = ref<string | null>('')
-  const selectedDescription = ref('')
-  const selectedStatus = ref<'pending' | 'reviewed'>('pending')
+  const selectedDay = ref(DEFAULTS.selectedDay)
+  const selectedMonth = ref(DEFAULTS.selectedMonth)
+  const selectedYear = ref(DEFAULTS.selectedYear)
+  const selectedMemo = ref<string>(DEFAULTS.selectedMemo)
+  const selectedWeek = ref(DEFAULTS.selectedWeek)
+  const selectedType = ref(DEFAULTS.selectedType)
+  const selectedBudgetCategory = ref<string | null>(DEFAULTS.selectedBudgetCategory)
+  const selectedDescription = ref(DEFAULTS.selectedDescription)
+  const selectedStatus = ref<'pending' | 'reviewed'>(DEFAULTS.selectedStatus)
   const days = ref<Array<DayYear>>([])
   const daysForSelectedWeek = ref<Array<string>>([])
   const weeksForSelectedMonth = ref<Array<string>>([])
@@ -35,19 +56,19 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const daysSummaries = ref<Array<Summaries>>([])
   const weeksSummaries = ref<Array<Summaries>>([])
   const monthsSummaries = ref<Array<Summaries>>([])
-  const transactionsCurrentPage = ref(1)
-  const transactionsPageSize = ref(100)
+  const transactionsCurrentPage = ref(DEFAULTS.transactionsCurrentPage)
+  const transactionsPageSize = ref(DEFAULTS.transactionsPageSize)
   const filter = ref<Record<string, string>>({})
   const sort = ref({ prop: '', order: '' })
-  const memosTableLimit = ref(100)
-  const memosTableOffset = ref(0)
+  const memosTableLimit = ref(DEFAULTS.memosTableLimit)
+  const memosTableOffset = ref(DEFAULTS.memosTableOffset)
   const memosByOffset = ref<Record<number, Array<Memo>>>({})
-  const transactionsTableLimit = ref(100)
-  const transactionsTableOffset = ref(0)
+  const transactionsTableLimit = ref(DEFAULTS.transactionsTableLimit)
+  const transactionsTableOffset = ref(DEFAULTS.transactionsTableOffset)
   const transactions = ref<Array<Transaction>>([])
-  const transactionsCount = ref(0)
-  const memosCount = ref(0)
-  const pendingTransactionsCount = ref(0)
+  const transactionsCount = ref(DEFAULTS.transactionsCount)
+  const memosCount = ref(DEFAULTS.memosCount)
+  const pendingTransactionsCount = ref(DEFAULTS.pendingTransactionsCount)
 
   // Getters
   const getSelectedDay = computed(() => selectedDay.value)
@@ -227,15 +248,15 @@ export const useTransactionsStore = defineStore('transactions', () => {
   }
 
   function resetStore() {
-    selectedDay.value = ''
-    selectedMonth.value = ''
-    selectedYear.value = ''
-    selectedMemo.value = ''
-    selectedWeek.value = ''
-    selectedType.value = 'Amount Debit'
-    selectedBudgetCategory.value = ''
-    selectedDescription.value = ''
-    selectedStatus.value = 'pending'
+    selectedDay.value = DEFAULTS.selectedDay
+    selectedMonth.value = DEFAULTS.selectedMonth
+    selectedYear.value = DEFAULTS.selectedYear
+    selectedMemo.value = DEFAULTS.selectedMemo
+    selectedWeek.value = DEFAULTS.selectedWeek
+    selectedType.value = DEFAULTS.selectedType
+    selectedBudgetCategory.value = DEFAULTS.selectedBudgetCategory
+    selectedDescription.value = DEFAULTS.selectedDescription
+    selectedStatus.value = DEFAULTS.selectedStatus
     days.value = []
     daysForSelectedWeek.value = []
     weeksForSelectedMonth.value = []
@@ -249,19 +270,19 @@ export const useTransactionsStore = defineStore('transactions', () => {
     daysSummaries.value = []
     weeksSummaries.value = []
     monthsSummaries.value = []
-    transactionsCurrentPage.value = 1
-    transactionsPageSize.value = 100
+    transactionsCurrentPage.value = DEFAULTS.transactionsCurrentPage
+    transactionsPageSize.value = DEFAULTS.transactionsPageSize
     filter.value = {}
     sort.value = { prop: '', order: '' }
-    memosTableLimit.value = 100
-    memosTableOffset.value = 0
+    memosTableLimit.value = DEFAULTS.memosTableLimit
+    memosTableOffset.value = DEFAULTS.memosTableOffset
     memosByOffset.value = {}
-    transactionsTableLimit.value = 100
-    transactionsTableOffset.value = 0
+    transactionsTableLimit.value = DEFAULTS.transactionsTableLimit
+    transactionsTableOffset.value = DEFAULTS.transactionsTableOffset
     transactions.value = []
-    transactionsCount.value = 0
-    memosCount.value = 0
-    pendingTransactionsCount.value = 0
+    transactionsCount.value = DEFAULTS.transactionsCount
+    memosCount.value = DEFAULTS.memosCount
+    pendingTransactionsCount.value = DEFAULTS.pendingTransactionsCount
   }
 
   return {

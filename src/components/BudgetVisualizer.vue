@@ -75,12 +75,12 @@ const ROUTE_META: Record<string, { title: string; subtitle?: string }> = {
 }
 
 const pageTitle = computed(() => {
-  const n = route.name != null ? String(route.name) : ''
+  const n = route.name == null ? '' : String(route.name)
   return ROUTE_META[n]?.title ?? 'Budget Visualizer'
 })
 
 const pageSubtitle = computed(() => {
-  const n = route.name != null ? String(route.name) : ''
+  const n = route.name == null ? '' : String(route.name)
   return ROUTE_META[n]?.subtitle ?? ''
 })
 
