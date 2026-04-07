@@ -29,7 +29,10 @@
       aria-label="Transaction Edit Modal"
     >
       <template #header>
-        <span aria-label="Transaction Edit Dialog Title" data-testid="transaction-edit-dialog-title">
+        <span
+          aria-label="Transaction Edit Dialog Title"
+          data-testid="transaction-edit-dialog-title"
+        >
           {{ editModalTitle }}
         </span>
       </template>
@@ -76,7 +79,10 @@
             <template v-if="column.prop === 'id'">
               <router-link
                 class="bv-link"
-                :to="{ name: 'transaction-edit', params: { transactionId: scope.row[column.prop] } }"
+                :to="{
+                  name: 'transaction-edit',
+                  params: { transactionId: scope.row[column.prop] },
+                }"
                 :data-testid="`transaction-link-${scope.row[column.prop]}`"
               >
                 {{ scope.row[column.prop] }}

@@ -67,7 +67,10 @@ const ROUTE_META: Record<string, { title: string; subtitle?: string }> = {
   memos: { title: 'Memos' },
   'memo-summary': { title: 'Memo summary' },
   'memo-edit': { title: 'Edit memo' },
-  'budget-categories': { title: 'Budget categories', subtitle: 'Set spending limits and manage your category hierarchy' },
+  'budget-categories': {
+    title: 'Budget categories',
+    subtitle: 'Set spending limits and manage your category hierarchy',
+  },
   'loan-calculator': { title: 'Loan calculator' },
 }
 

@@ -3,8 +3,8 @@
     <div class="bv-intro">
       <h2 class="bv-intro-title">Budget categories</h2>
       <p class="bv-intro-desc">
-        Browse and select from the budget category tree.
-        Categories assigned here are used to tag memos and transactions.
+        Browse and select from the budget category tree. Categories assigned here are used to tag
+        memos and transactions.
       </p>
     </div>
 
