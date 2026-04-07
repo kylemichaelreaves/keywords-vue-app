@@ -280,8 +280,7 @@ watch(
       'selectedMemo:',
       newSelectedMemo,
     )
-    store.clearTransactionsByOffset()
-    devConsole('log', '[TransactionsTable] Cache cleared, calling refetch...')
+    devConsole('log', '[TransactionsTable] Filters changed, calling refetch...')
     refetch()
   },
   { immediate: false },

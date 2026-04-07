@@ -135,7 +135,6 @@ const viewMode = computed({
   get: () => store.getSelectedStatus || '',
   set: (value: string) => {
     store.setSelectedStatus(value as 'pending' | 'reviewed')
-    store.clearPendingTransactionsByOffset()
   },
 })
 const viewOptions = [
