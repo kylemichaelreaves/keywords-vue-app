@@ -280,7 +280,9 @@ watch(
       'selectedMemo:',
       newSelectedMemo,
     )
-    devConsole('log', '[TransactionsTable] Filters changed, calling refetch...')
+    devConsole('log', '[TransactionsTable] Filters changed, resetting page and refetching...')
+    store.updateTransactionsCurrentPage(1)
+    store.updateTransactionsTableOffset(0)
     refetch()
   },
   { immediate: false },

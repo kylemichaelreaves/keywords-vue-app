@@ -22,10 +22,14 @@ isDark.value = getInitialTheme()
 // Listen to system theme changes — once at module scope (isDark is a singleton)
 if (typeof window !== 'undefined') {
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-  mediaQuery.addEventListener('change', (e) => {
+  const handleSystemThemeChange = (e: MediaQueryListEvent) => {
     if (!hasExplicitPreference.value) {
       isDark.value = e.matches
     }
+  }
+  mediaQuery.addEventListener('change', handleSystemThemeChange)
+  import.meta.hot?.dispose(() => {
+    mediaQuery.removeEventListener('change', handleSystemThemeChange)
   })
 }
 
