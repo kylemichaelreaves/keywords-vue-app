@@ -238,11 +238,7 @@ const saveMemo = () => {
           ]
 
           for (const query of queries) {
-            if (query === 'memo') {
-              queryClient.invalidateQueries({ queryKey: [query, formData.name] })
-            } else {
-              queryClient.invalidateQueries({ queryKey: [query] })
-            }
+            queryClient.invalidateQueries({ queryKey: [query] })
           }
 
           emit('updated', formData)

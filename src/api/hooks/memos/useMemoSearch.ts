@@ -31,7 +31,7 @@ export function useMemoSearch(params: UseMemoSearchParams) {
         search: true,
       })
     },
-    enabled: enabled.value,
+    enabled: enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
