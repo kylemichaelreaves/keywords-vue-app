@@ -15,7 +15,7 @@ export class MonthSummaryPage extends BaseSummaryPage {
     this.monthSummaryTable = page.getByLabel('Month Summary Transactions Table')
     this.transactionsCount = page.getByTestId('transactions-count')
     this.transactionsAmount = page.getByTestId('sum-amount-debit')
-    this.monthTitle = page.getByRole('heading', { level: 2 })
+    this.monthTitle = page.getByTestId('month-summary-title')
   }
 
   // Implement abstract methods from base class

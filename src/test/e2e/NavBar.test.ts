@@ -26,15 +26,16 @@ test.describe('NavBar loads the Budget Visualizer tab', () => {
     const budgetVisualizerTab = navBar.getByRole('tab', { name: 'budget-visualizer' })
     await budgetVisualizerTab.click()
 
-    await expect(page.getByRole('menubar')).toBeVisible()
+    const sidebar = page.getByLabel('Budget sections')
+    await expect(sidebar).toBeVisible()
 
     await expect(page.getByRole('button', { name: 'Add New Transaction' })).toBeVisible()
-    await expect(page.getByRole('link').first()).toBeVisible()
-    await expect(page.getByRole('link').nth(1)).toBeVisible()
-    await expect(page.getByRole('link').nth(2)).toBeVisible()
+    await expect(sidebar.getByRole('link', { name: 'Transactions' })).toBeVisible()
+    await expect(sidebar.getByRole('link', { name: 'Memos' })).toBeVisible()
+    await expect(sidebar.getByRole('link', { name: 'Budget categories' })).toBeVisible()
   })
 
-  test('clicking the Transactions icon on the menu NavBar opens the TransactionsTable', async ({
+  test('clicking the Transactions link in the sidebar opens the TransactionsTable', async ({
     transactionsPage,
   }) => {
     await setupTransactionsTableWithComprehensiveMocks(
@@ -43,30 +44,20 @@ test.describe('NavBar loads the Budget Visualizer tab', () => {
       staticDailyIntervals,
     )
 
-    // find the transaction icon
-    const transactionsIcon = transactionsPage.page
-      .getByRole('menubar')
-      .getByRole('menuitem')
-      .first()
-    // expect its visibility
-    await expect(transactionsIcon).toBeVisible()
+    const sidebar = transactionsPage.page.getByLabel('Budget sections')
+    const transactionsLink = sidebar.getByRole('link', { name: 'Transactions' })
+    await expect(transactionsLink).toBeVisible()
 
-    // mock the transactions API response
     await setupTransactionsTableWithComprehensiveMocks(
       transactionsPage.page,
       [...staticTransactions].reverse(),
       staticDailyIntervals,
     )
 
-    // click the menuitem icon
-    await transactionsIcon.click()
-    // wait for the DOM to load the transactions table
+    await transactionsLink.click()
     await transactionsPage.page.waitForLoadState('domcontentloaded')
-    // wait for the transactions table to be visible
     await transactionsPage.transactionsTable.waitFor({ state: 'visible' })
-    // assert its visibility
     await expect(transactionsPage.transactionsTable).toBeVisible()
-    // check that we're on the /transactions  page
     await expect(transactionsPage.page).toHaveURL(/\/transactions$/)
   })
 })
