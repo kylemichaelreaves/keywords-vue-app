@@ -3,12 +3,12 @@ import { apiPathname, isExecuteApiUrl } from '@test/e2e/helpers/e2eApiUrl.ts'
 
 describe('e2eApiUrl', () => {
   describe('apiPathname', () => {
-    it('strips /api prefix', () => {
-      expect(apiPathname(new URL('http://localhost:5173/api/memos'))).toBe('/memos')
+    it('strips /api/v1 prefix', () => {
+      expect(apiPathname(new URL('http://localhost:5173/api/v1/memos'))).toBe('/memos')
     })
 
-    it('maps bare /api to /', () => {
-      expect(apiPathname(new URL('http://localhost:5173/api'))).toBe('/')
+    it('maps bare /api/v1 to /', () => {
+      expect(apiPathname(new URL('http://localhost:5173/api/v1'))).toBe('/')
     })
 
     it('leaves non-proxy paths unchanged', () => {
@@ -19,15 +19,15 @@ describe('e2eApiUrl', () => {
   describe('isExecuteApiUrl', () => {
     it('matches execute-api host regardless of path prefix', () => {
       expect(
-        isExecuteApiUrl(new URL('https://x.execute-api.us-east-1.amazonaws.com/Stage/memos')),
+        isExecuteApiUrl(new URL('https://x.execute-api.us-east-1.amazonaws.com/Prod/memos')),
       ).toBe(true)
     })
 
-    it('matches localhost /api/memos (Vite proxy base URL)', () => {
-      expect(isExecuteApiUrl(new URL('http://localhost:5173/api/memos?limit=20'))).toBe(true)
+    it('matches localhost /api/v1/memos (Vite proxy base URL)', () => {
+      expect(isExecuteApiUrl(new URL('http://localhost:5173/api/v1/memos?limit=20'))).toBe(true)
     })
 
-    it('matches localhost /memos without /api', () => {
+    it('matches localhost /memos without /api/v1', () => {
       expect(isExecuteApiUrl(new URL('http://127.0.0.1:4173/memos'))).toBe(true)
     })
 

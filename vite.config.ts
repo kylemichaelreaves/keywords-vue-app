@@ -10,6 +10,12 @@ import IconsResolver from 'unplugin-icons/resolver'
 import { ROUTE_ALIASES } from './constants.node'
 import { logLocalPostgresTunnelStatus } from './scripts/checkLocalPostgresTunnel'
 
+const LAMBDA_DEV_URL = 'http://127.0.0.1:3000'
+const API_GATEWAY_URL = process.env.VITE_APIGATEWAY_URL ?? ''
+
+/** In dev, proxy /api/v1 to API Gateway by default. Set VITE_PROXY_LOCAL_LAMBDA=1 to use 127.0.0.1:3000 instead. */
+const apiV1Target = process.env.VITE_PROXY_LOCAL_LAMBDA === '1' ? LAMBDA_DEV_URL : API_GATEWAY_URL
+
 const isStorybookProcess =
   process.env.npm_lifecycle_event === 'storybook' || process.env.SB_MODE === 'development'
 
@@ -64,9 +70,15 @@ export default defineConfig(async () => {
       host: 'localhost',
       port: 5173,
       proxy: {
-        '/api': {
-          target: 'http://127.0.0.1:3000',
+        '/api/v1': {
+          target: apiV1Target,
           changeOrigin: true,
+        },
+        // Fallback when local Lambda was used but died: baseURL becomes /api/gateway; paths must map to .../api/v1/*
+        '/api/gateway': {
+          target: API_GATEWAY_URL,
+          changeOrigin: true,
+          rewrite: (p: string) => p.replace(/^\/api\/gateway/, '/api/v1'),
         },
       },
     },
