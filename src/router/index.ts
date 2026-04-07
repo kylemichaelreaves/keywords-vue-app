@@ -23,6 +23,17 @@ import TransactionEditPage from '@components/transactions/TransactionEditPage.vu
 // import { checkForPendingTransactions } from '@api/helpers/checkForPendingTransactions'
 // import { ElMessage } from 'element-plus'
 
+function clearSelections(
+  store: ReturnType<typeof useTransactionsStore>,
+  keep?: { month?: string; week?: string; memo?: string },
+) {
+  store.setSelectedDay('')
+  store.setSelectedWeek(keep?.week ?? '')
+  store.setSelectedMonth(keep?.month ?? '')
+  store.setSelectedYear('')
+  store.setSelectedMemo(keep?.memo ?? '')
+}
+
 export const routes = [
   {
     path: '/',
@@ -95,14 +106,7 @@ export const routes = [
             component: MonthSummaryTable,
             meta: { requiresAuth: true },
             beforeEnter: (to: RouteLocationNormalized) => {
-              const store = useTransactionsStore()
-              // Clear any previous selections
-              store.setSelectedDay('')
-              store.setSelectedWeek('')
-              store.setSelectedYear('')
-              store.setSelectedMemo('')
-
-              store.setSelectedMonth(to.params.month as string)
+              clearSelections(useTransactionsStore(), { month: to.params.month as string })
             },
           },
           {
@@ -112,14 +116,7 @@ export const routes = [
             meta: { requiresAuth: true },
             props: true,
             beforeEnter: (to: RouteLocationNormalized) => {
-              const store = useTransactionsStore()
-              // clear any previous selections
-              store.setSelectedDay('')
-              store.setSelectedMonth('')
-              store.setSelectedYear('')
-              store.setSelectedMemo('')
-
-              store.setSelectedWeek(to.params.week as string)
+              clearSelections(useTransactionsStore(), { week: to.params.week as string })
             },
           },
         ],
@@ -130,13 +127,7 @@ export const routes = [
         component: PendingTransactionsTable,
         meta: { requiresAuth: true },
         beforeEnter: () => {
-          const store = useTransactionsStore()
-          // Clear any previous selections for pending transactions
-          store.setSelectedDay('')
-          store.setSelectedWeek('')
-          store.setSelectedMonth('')
-          store.setSelectedYear('')
-          store.setSelectedMemo('')
+          clearSelections(useTransactionsStore())
         },
       },
       {
@@ -166,14 +157,7 @@ export const routes = [
         props: true,
         meta: { requiresAuth: true },
         beforeEnter: (to: RouteLocationNormalized) => {
-          const store = useTransactionsStore()
-          // clear any previous selections
-          store.setSelectedDay('')
-          store.setSelectedWeek('')
-          store.setSelectedMonth('')
-          store.setSelectedYear('')
-
-          store.setSelectedMemo(to.params.memoId as string)
+          clearSelections(useTransactionsStore(), { memo: to.params.memoId as string })
         },
       },
       {
@@ -183,14 +167,7 @@ export const routes = [
         meta: { requiresAuth: true },
         props: true,
         beforeEnter: (to: RouteLocationNormalized) => {
-          const store = useTransactionsStore()
-          // clear any previous selections
-          store.setSelectedDay('')
-          store.setSelectedWeek('')
-          store.setSelectedMonth('')
-          store.setSelectedYear('')
-
-          store.setSelectedMemo(to.params.memoId as string)
+          clearSelections(useTransactionsStore(), { memo: to.params.memoId as string })
         },
       },
       {

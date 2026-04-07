@@ -2,7 +2,7 @@
   <div class="app-root">
     <Navbar />
     <Breadcrumbs v-if="!isBudgetVisualizerSection" />
-    <router-view :key="route.path" />
+    <router-view />
   </div>
 </template>
 
