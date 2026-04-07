@@ -48,6 +48,10 @@ export const routes = [
     meta: { requiresAuth: true },
     children: [
       {
+        path: '',
+        redirect: { name: 'transactions' },
+      },
+      {
         path: 'loan-calculator',
         name: 'loan-calculator',
         component: LoanCalculator,
@@ -192,7 +196,7 @@ export const routes = [
       {
         path: 'budget-categories',
         name: 'budget-categories',
-        component: () => import('@components/transactions/selects/BudgetCategoriesTreeSelect.vue'),
+        component: () => import('@components/budget-categories/BudgetCategoriesPage.vue'),
         meta: { requiresAuth: true },
       },
     ],

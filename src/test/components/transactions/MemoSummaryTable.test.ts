@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from '@vue/test-utils'
 import MemoSummaryTable from '@components/memos/MemoSummaryTable.vue'
-import { ElCard, ElStatistic, ElSkeleton } from 'element-plus'
+import { ElStatistic, ElSkeleton } from 'element-plus'
 import { VueQueryPlugin } from '@tanstack/vue-query'
 import { createTestingPinia } from '@pinia/testing'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -78,7 +78,6 @@ describe('MemoSummaryTable.vue', () => {
       global: {
         components: {
           ElStatistic,
-          ElCard,
           ElSkeleton,
         },
         plugins: [
@@ -131,8 +130,8 @@ describe('MemoSummaryTable.vue', () => {
     // Wait for the component to finish loading data
     await wrapper.vm.$nextTick()
 
-    // Check if the card is rendered
-    const card = wrapper.findComponent(ElCard)
+    // Check if the summary card container is rendered
+    const card = wrapper.find('[data-testid="memo-summary-card"]')
     expect(card.exists()).toBe(true)
 
     // Check if the memo title is rendered
@@ -171,7 +170,6 @@ describe('MemoSummaryTable.vue', () => {
       global: {
         components: {
           ElStatistic,
-          ElCard,
           ElSkeleton,
         },
         plugins: [
@@ -212,7 +210,6 @@ describe('MemoSummaryTable.vue', () => {
       global: {
         components: {
           ElStatistic,
-          ElCard,
           ElSkeleton,
         },
         plugins: [

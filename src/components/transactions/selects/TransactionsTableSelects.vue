@@ -52,7 +52,15 @@ const selects = [
 <style scoped>
 .selects {
   display: flex;
-  justify-content: space-evenly;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 0;
+}
+
+.selects :deep(.el-select),
+.selects :deep(.el-input) {
+  --el-input-border-color: var(--bv-border);
+  --el-input-focus-border-color: var(--bv-primary);
 }
 </style>

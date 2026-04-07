@@ -1,23 +1,24 @@
 <template>
-  <el-card data-testid="memos-table-card">
+  <div class="bv-memos" data-testid="memos-table-card">
     <AlertComponent
       :title="error.name"
       :message="error.message"
       type="error"
       v-if="isError && error"
     />
-    <h2 data-testid="memos-table-title">Memos Table</h2>
-    <el-text size="large">A table of all the distinct Memos in the database</el-text>
-    <br />
-    <el-text size="default">
-      Along with the total Amount Debit and Budget Category, if there is one assigned to it
-    </el-text>
+
+    <div class="bv-intro">
+      <h2 class="bv-intro-title" data-testid="memos-table-title">Memos</h2>
+      <p class="bv-intro-desc">
+        All distinct memos with total debit amounts and assigned budget categories.
+      </p>
+    </div>
 
     <el-dialog
       v-model="showMemoEditModal"
       :close-on-click-modal="false"
       :before-close="closeMemoEditModal"
-      width="50%"
+      width="min(520px, 94vw)"
       :title="editModalTitle"
       data-testid="memo-edit-dialog"
       :z-index="3000"
@@ -26,13 +27,14 @@
       <MemoEditForm v-if="selectedMemo" :memo="selectedMemo" @close="closeMemoEditModal" />
     </el-dialog>
 
-    <div @contextmenu.prevent>
+    <section class="bv-section bv-table-section" @contextmenu.prevent>
       <el-table
         v-if="paginatedData"
+        class="bv-table"
         :data="paginatedData"
         table-layout="auto"
         :loading="isLoadingCondition"
-        size="large"
+        size="default"
         :default-sort="{ prop: 'total_amount_debit', order: 'descending' }"
         data-testid="memos-table"
         :row-key="(row: Memo) => row.name"
@@ -60,6 +62,7 @@
             >
               <router-link
                 v-if="column.prop === 'name'"
+                class="bv-link"
                 :to="{ name: 'memo-summary', params: { memoId: scope.row.id.toString() } }"
                 :data-testid="`memo-link-${scope.row.id}`"
               >
@@ -70,8 +73,9 @@
           </template>
         </el-table-column>
       </el-table>
-    </div>
-    <div v-if="isLoadingCondition" class="loading-container" data-testid="memos-table-loading">
+    </section>
+
+    <div v-if="isLoadingCondition" class="bv-loading" data-testid="memos-table-loading">
       <el-skeleton :rows="10" animated>
         <template #template>
           <el-skeleton-item variant="h3" style="width: 200px; margin-bottom: 20px" />
@@ -86,8 +90,11 @@
         </template>
       </el-skeleton>
     </div>
-    <MemosTablePagination />
-  </el-card>
+
+    <div class="bv-pagination-row">
+      <MemosTablePagination />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -228,3 +235,73 @@ defineExpose({
   totalPages: computed(() => Math.ceil(flattenedData.value.length / pageLimit.value)),
 })
 </script>
+
+<style scoped>
+.bv-memos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bv-intro {
+  margin-bottom: 0;
+}
+
+.bv-intro-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--app-text-color);
+}
+
+.bv-intro-desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--bv-sidebar-muted);
+  line-height: 1.5;
+}
+
+.bv-section {
+  border-radius: var(--bv-radius);
+}
+
+.bv-table-section :deep(.el-table) {
+  --el-table-border-color: var(--bv-border);
+  --el-table-header-bg-color: var(--bv-muted-bg);
+  --el-table-row-hover-bg-color: var(--bv-accent);
+  border-radius: var(--bv-radius);
+  overflow: hidden;
+}
+
+.bv-table-section :deep(.el-table th.el-table__cell) {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--app-text-color);
+}
+
+.bv-link {
+  color: var(--bv-primary);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.bv-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.bv-loading {
+  padding: 1.5rem 0;
+}
+
+.bv-pagination-row {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.bv-pagination-row :deep(.el-pagination) {
+  --el-pagination-button-bg-color: var(--bv-panel-bg);
+  --el-pagination-hover-color: var(--bv-primary);
+}
+</style>
