@@ -61,11 +61,18 @@
         :style="{ paddingLeft: `${Math.min(row.depth, 12) * 14 + 8}px` }"
         :data-testid="`budget-category-row-${row.path}`"
       >
-        <span v-if="row.hasChildren" class="bv-tree-toggle" @click="toggleExpand(row.path)">
+        <button
+          v-if="row.hasChildren"
+          type="button"
+          class="bv-tree-toggle"
+          :aria-expanded="expandedPaths.has(row.path)"
+          :aria-label="`${expandedPaths.has(row.path) ? 'Collapse' : 'Expand'} category ${row.node.label}`"
+          @click="toggleExpand(row.path)"
+        >
           <el-icon :class="{ 'is-expanded': expandedPaths.has(row.path) }">
             <ArrowRight />
           </el-icon>
-        </span>
+        </button>
         <span v-else class="bv-tree-leaf-spacer" />
         <span class="bv-tree-label">{{ row.node.label }}</span>
         <span class="bv-tree-path">{{ row.path }}</span>
@@ -248,6 +255,9 @@ function collapseAll() {
   cursor: pointer;
   width: 16px;
   flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
 }
 
 .bv-tree-toggle .el-icon {

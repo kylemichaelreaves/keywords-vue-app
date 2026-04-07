@@ -4,17 +4,15 @@ import { BaseSummaryPage } from './BaseSummaryPage'
 export class MonthSummaryPage extends BaseSummaryPage {
   // Month-specific elements
   readonly monthSummaryTable: Locator
-  readonly transactionsCount: Locator
-  readonly transactionsAmount: Locator
+  readonly monthlyAmountDebitTotal: Locator
   readonly monthTitle: Locator
 
   constructor(page: Page) {
     super(page)
 
     // Initialize month-specific elements
-    this.monthSummaryTable = page.getByLabel('Month Summary Transactions Table')
-    this.transactionsCount = page.getByTestId('transactions-count')
-    this.transactionsAmount = page.getByTestId('sum-amount-debit')
+    this.monthSummaryTable = page.getByTestId('month-summary-transactions-table')
+    this.monthlyAmountDebitTotal = page.getByTestId('monthly-amount-debit-total-statistic')
     this.monthTitle = page.getByTestId('month-summary-title')
   }
 
@@ -50,8 +48,7 @@ export class MonthSummaryPage extends BaseSummaryPage {
 
   async getStats() {
     return {
-      transactionsCount: await this.transactionsCount.textContent(),
-      transactionsAmount: await this.transactionsAmount.textContent(),
+      monthlyAmountDebitTotal: await this.monthlyAmountDebitTotal.textContent(),
     }
   }
 }
