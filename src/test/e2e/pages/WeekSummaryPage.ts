@@ -15,9 +15,9 @@ export class WeekSummaryPage extends BaseSummaryPage {
     // Initialize week-specific elements
     this.weekSummaryHeader = page.getByLabel('Week Summary Header')
     this.headerNavButtonGroup = this.weekSummaryHeader.getByLabel('Navigation Button Group')
-    this.weekSummaryTable = page.getByRole('table').first()
-    this.weekTitle = page.locator('h2')
-    this.daySummariesTable = page.getByRole('table').nth(1)
+    this.weekSummaryTable = page.getByLabel('Week Summary Transactions Table')
+    this.weekTitle = page.getByRole('heading', { level: 2 })
+    this.daySummariesTable = page.getByLabel('Day Summaries')
   }
 
   // Implement abstract methods from base class

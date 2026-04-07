@@ -41,11 +41,11 @@ export const useAuthStore = defineStore('auth', {
     setIsUserAuthenticated(isUserAuthenticated: boolean) {
       this.isUserAuthenticated = isUserAuthenticated
     },
-    async login(username: User['username'], password: User['password']) {
+    async login(email: User['email'], password: User['password']) {
       return await httpClient
         .post('/login', {
-          username: username,
-          password: password,
+          email,
+          password,
         })
         .then((response) => {
           return response.data

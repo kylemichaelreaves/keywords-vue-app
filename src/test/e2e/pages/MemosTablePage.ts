@@ -24,9 +24,9 @@ export class MemosTablePage {
     this.page = page
 
     this.errorAlert = page.getByRole('alert').first()
-    this.memosTable = page.getByRole('table').first()
-    this.memosPageTitle = page.getByRole('heading', { name: /memos table/i })
-    this.memoEditModal = page.getByRole('dialog')
+    this.memosTable = page.getByTestId('memos-table')
+    this.memosPageTitle = page.getByTestId('memos-table-title')
+    this.memoEditModal = page.getByRole('dialog').first()
 
     this.memoEditForm = this.page.getByTestId('memo-edit-form')
     this.memoEditFormAvatar = this.memoEditForm.getByTestId('memo-edit-form-avatar')
