@@ -19,6 +19,17 @@ const getInitialTheme = () => {
 // Initialize theme
 isDark.value = getInitialTheme()
 
+// Listen to system theme changes — once at module scope (isDark is a singleton)
+if (typeof window !== 'undefined') {
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  mediaQuery.addEventListener('change', (e) => {
+    // Only update if no saved preference exists
+    if (!localStorage.getItem('theme')) {
+      isDark.value = e.matches
+    }
+  })
+}
+
 export function useDarkMode() {
   const toggleDarkMode = () => {
     isDark.value = !isDark.value
@@ -42,17 +53,6 @@ export function useDarkMode() {
     },
     { immediate: true },
   )
-
-  // Listen to system theme changes
-  if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    mediaQuery.addEventListener('change', (e) => {
-      // Only update if no saved preference exists
-      if (!localStorage.getItem('theme')) {
-        isDark.value = e.matches
-      }
-    })
-  }
 
   return {
     isDark,
