@@ -55,8 +55,8 @@ describe('Transaction Generator', () => {
       expect(transaction!.balance).toMatch(/^\d+\.\d{2}$/)
 
       // One amount should be 0.00, the other should be > 0
-      const debitAmount = parseFloat(transaction!.amount_debit)
-      const creditAmount = parseFloat(transaction!.amount_credit)
+      const debitAmount = Number.parseFloat(transaction!.amount_debit)
+      const creditAmount = Number.parseFloat(transaction!.amount_credit)
       expect(debitAmount === 0 || creditAmount === 0).toBe(true)
       expect(debitAmount > 0 || creditAmount > 0).toBe(true)
 
@@ -144,7 +144,7 @@ describe('Transaction Generator', () => {
 
         withCheckNumbers.forEach((transaction) => {
           expect(transaction.check_number).toMatch(/^\d{4}$/)
-          const checkNum = parseInt(transaction.check_number!)
+          const checkNum = Number.parseInt(transaction.check_number!)
           expect(checkNum).toBeGreaterThanOrEqual(1001)
           expect(checkNum).toBeLessThanOrEqual(9999)
         })
@@ -156,7 +156,7 @@ describe('Transaction Generator', () => {
 
         withFees.forEach((transaction) => {
           expect(transaction.fees).toMatch(/^\d+\.\d{2}$/)
-          const feeAmount = parseFloat(transaction.fees!)
+          const feeAmount = Number.parseFloat(transaction.fees!)
           expect(feeAmount).toBeGreaterThanOrEqual(0)
           expect(feeAmount).toBeLessThanOrEqual(50)
         })
