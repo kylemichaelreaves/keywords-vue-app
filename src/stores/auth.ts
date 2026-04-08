@@ -37,9 +37,7 @@ export const useAuthStore = defineStore('auth', {
       this.token = token
     },
     setUser(user: PersistedUser | User) {
-      const { password, confirmPassword, ...safe } = user as User
-      void password
-      void confirmPassword
+      const { password: _password, confirmPassword: _confirmPassword, ...safe } = user as User
       this.user = safe
     },
     setIsUserAuthenticated(isUserAuthenticated: boolean) {
