@@ -15,6 +15,10 @@ function clearSelections(
   store.setSelectedMemo(keep?.memo ?? '')
 }
 
+function memoBeforeEnter(to: RouteLocationNormalized) {
+  clearSelections(useTransactionsStore(), { memo: to.params.memoId as string })
+}
+
 export const routes = [
   {
     path: '/',
@@ -112,9 +116,7 @@ export const routes = [
         component: () => import('@components/memos/MemoSummaryTable.vue'),
         props: true,
         meta: { requiresAuth: true },
-        beforeEnter: (to: RouteLocationNormalized) => {
-          clearSelections(useTransactionsStore(), { memo: to.params.memoId as string })
-        },
+        beforeEnter: memoBeforeEnter,
       },
       {
         path: 'memos/:memoId/edit',
@@ -122,9 +124,7 @@ export const routes = [
         component: () => import('@components/memos/MemoEditForm.vue'),
         meta: { requiresAuth: true },
         props: true,
-        beforeEnter: (to: RouteLocationNormalized) => {
-          clearSelections(useTransactionsStore(), { memo: to.params.memoId as string })
-        },
+        beforeEnter: memoBeforeEnter,
       },
       {
         path: 'budget-categories',

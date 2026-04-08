@@ -97,14 +97,11 @@ const { mutate, isPending, isError, error } = useMutation({
   onSuccess: (data) => {
     devConsole('log', 'Login successful', data)
     ElMessage.success(`${data.message}! Wilkommen! Bienvenue! Welcome!`)
-    const { password, confirmPassword, ...safeUser } = data.user
-    void password
-    void confirmPassword
     const token = data.token
-    authStore.setUser(safeUser)
+    authStore.setUser(data.user)
     authStore.setToken(token)
     authStore.setIsUserAuthenticated(true)
-    localStorage.setItem('user', JSON.stringify(safeUser))
+    localStorage.setItem('user', JSON.stringify(authStore.user))
     localStorage.setItem('token', token)
     router.push(redirectTarget.value)
   },
