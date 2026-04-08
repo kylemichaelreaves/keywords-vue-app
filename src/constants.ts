@@ -17,8 +17,9 @@ let baseApiUrl = import.meta.env.DEV ? LAMBDA_DEV_PROXY : `${API_GATEWAY_URL}/ap
 const getBaseApiUrl = (): string => baseApiUrl
 
 /**
- * Checks whether the local Lambda dev server is reachable (via the Vite proxy).
- * If not, falls back to the API Gateway URL.
+ * Checks whether /api/v1 is reachable via the Vite dev proxy.
+ * If unreachable (502-504 or network error) and VITE_APIGATEWAY_URL is set,
+ * switches baseApiUrl to /api/gateway (Vite rewrites to /api/v1 on the gateway).
  * Should be called once during app initialization in DEV mode.
  *
  * @returns The resolved base API URL.
@@ -32,10 +33,11 @@ const initBaseApiUrl = async (): Promise<string> => {
   const timeoutId = setTimeout(() => controller.abort(), 1500)
 
   try {
-    // Ping through the Vite proxy (same-origin, no CORS issues).
-    // The proxy forwards /api/* → 127.0.0.1:3000/api/* (no rewrite).
+    // Ping /api/v1 through the Vite proxy (same-origin, no CORS issues).
+    // The proxy forwards /api/v1/* → API Gateway or localhost:3000 (see vite.config).
     // fetch() only rejects on network errors to Vite; a dead upstream still returns
-    // a response (typically 502), so we must treat proxy/upstream failures as unreachable.
+    // a response (typically 502), so we treat 502-504 as unreachable and fall back
+    // to /api/gateway (which Vite rewrites to /api/v1/* on the API Gateway).
     const response = await fetch(LAMBDA_DEV_PROXY, {
       method: 'HEAD',
       signal: controller.signal,
