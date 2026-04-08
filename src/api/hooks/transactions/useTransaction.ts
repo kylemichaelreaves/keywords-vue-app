@@ -10,7 +10,11 @@ export default function useTransaction(
 ): UseQueryReturnType<Transaction, Error> {
   return useQuery<Transaction>({
     queryKey: computed(() => ['transaction', toValue(transactionNumber)]),
-    queryFn: () => fetchTransaction(toValue(transactionNumber)),
+    queryFn: () => fetchTransaction(toValue(transactionNumber)!),
+    enabled: computed(() => {
+      const val = toValue(transactionNumber)
+      return val != null && Number.isFinite(val)
+    }),
     refetchOnWindowFocus: false,
   })
 }

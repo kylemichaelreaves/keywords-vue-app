@@ -6,7 +6,7 @@ import type { AddressFields } from '@types'
 
 export default function useGeocodeAddress(address: MaybeRefOrGetter<AddressFields>) {
   return useQuery({
-    queryKey: computed(() => ['address', toValue(address)]),
+    queryKey: computed(() => ['address', JSON.stringify(toValue(address))]),
     queryFn: () => geocodeAddress(toValue(address)),
     enabled: false,
   })

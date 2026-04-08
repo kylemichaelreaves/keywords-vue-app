@@ -10,8 +10,6 @@ describe('TableComponent', () => {
   let store: TestingPinia
   let wrapper: VueWrapper
   let transactionsStore: ReturnType<typeof useTransactionsStore>
-  let mockHandleSizeChange: ReturnType<typeof vi.fn<(val: number) => void>>
-  let mockHandleCurrentChange: ReturnType<typeof vi.fn<(val: number) => void>>
 
   beforeEach(() => {
     store = createTestingPinia({
@@ -24,10 +22,9 @@ describe('TableComponent', () => {
     })
     transactionsStore = useTransactionsStore(store)
 
-    mockHandleSizeChange = vi.fn<(val: number) => void>()
-    mockHandleCurrentChange = vi.fn<(val: number) => void>()
-
-    const mockData: Record<string, never>[] = Array.from({ length: 101 }, () => ({}))
+    const mockData: Record<string, string>[] = Array.from({ length: 101 }, (_, i) => ({
+      column1: `row-${i}`,
+    }))
 
     wrapper = mount(TableComponent, {
       props: {
@@ -35,12 +32,6 @@ describe('TableComponent', () => {
         columns: [{ prop: 'column1', label: 'Column 1' }],
         sortableColumns: ['column1'],
         isFetching: false,
-        LIMIT: 100,
-        OFFSET: 0,
-        currentPage: 1,
-        pageSize: 10,
-        handleSizeChange: mockHandleSizeChange,
-        handleCurrentChange: mockHandleCurrentChange,
       },
       global: {
         plugins: [VueQueryPlugin, store],
@@ -51,7 +42,6 @@ describe('TableComponent', () => {
   afterEach(() => {
     vi.resetAllMocks()
 
-    //     reset the store
     transactionsStore.transactionsPageSize = 10
     transactionsStore.transactionsCurrentPage = 1
   })
@@ -61,50 +51,52 @@ describe('TableComponent', () => {
 
     expect(wrapper.findComponent({ name: 'ElTable' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'ElTableColumn' }).exists()).toBe(true)
+  })
+
+  it('renders pagination when data exceeds page size', async () => {
+    await wrapper.vm.$nextTick()
+
     expect(wrapper.findComponent({ name: 'ElPagination' }).exists()).toBe(true)
   })
 
-  it('does not render table when no data is provided', async () => {
-    await wrapper.vm.$nextTick()
+  it('does not render pagination when data fits in one page', async () => {
+    const smallWrapper = mount(TableComponent, {
+      props: {
+        tableData: [{ column1: 'only-row' }],
+        columns: [{ prop: 'column1', label: 'Column 1' }],
+        sortableColumns: [],
+        isFetching: false,
+      },
+      global: {
+        plugins: [VueQueryPlugin, store],
+      },
+    })
 
-    expect(wrapper.find('el-table').exists()).toBe(false)
+    await smallWrapper.vm.$nextTick()
+
+    expect(smallWrapper.findComponent({ name: 'ElPagination' }).exists()).toBe(false)
+
+    smallWrapper.unmount()
   })
 
-  it('updates page size when handleSizeChange is called', async () => {
-    const store = useTransactionsStore()
+  it('renders table with empty state when given an empty array', async () => {
+    const emptyWrapper = mount(TableComponent, {
+      props: {
+        tableData: [],
+        columns: [{ prop: 'column1', label: 'Column 1' }],
+        sortableColumns: [],
+        isFetching: false,
+      },
+      global: {
+        plugins: [VueQueryPlugin, store],
+      },
+    })
 
-    // Call the mock function directly
-    await mockHandleSizeChange(20)
+    await emptyWrapper.vm.$nextTick()
 
-    // Set the store value to simulate what the actual handler would do
-    store.transactionsPageSize = 20
+    expect(emptyWrapper.findComponent({ name: 'ElTable' }).exists()).toBe(true)
+    expect(emptyWrapper.findComponent({ name: 'ElPagination' }).exists()).toBe(false)
 
-    await wrapper.vm.$nextTick()
-
-    // Verify the mock was called
-    expect(mockHandleSizeChange).toHaveBeenCalledWith(20)
-
-    // Check store state instead of component internals
-    expect(store.transactionsPageSize).toBe(20)
-    expect(store.getTransactionsPageSize).toBe(20)
-  })
-
-  it('updates current page when handleCurrentChange is called', async () => {
-    const store = useTransactionsStore()
-
-    // Call the mock function directly
-    await mockHandleCurrentChange(2)
-
-    // Set the store value to simulate what the actual handler would do
-    store.transactionsCurrentPage = 2
-
-    await wrapper.vm.$nextTick()
-
-    // Verify the mock was called
-    expect(mockHandleCurrentChange).toHaveBeenCalledWith(2)
-
-    // Check store state instead of component internals
-    expect(store.transactionsCurrentPage).toBe(2)
-    expect(store.getTransactionsCurrentPage).toBe(2)
+    emptyWrapper.unmount()
   })
 })

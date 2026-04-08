@@ -61,7 +61,12 @@ const props = defineProps({
 const router = useRouter()
 
 const isPending = computed(() => !!props.pendingTransactionId)
-const entityId = computed(() => Number(props.pendingTransactionId || props.transactionId))
+const entityId = computed(() => {
+  const raw = props.pendingTransactionId || props.transactionId
+  if (raw == null) return undefined
+  const parsed = Number(raw)
+  return Number.isFinite(parsed) ? parsed : undefined
+})
 
 const { data: transactionData, isLoading, isError, error } = useTransaction(entityId)
 
