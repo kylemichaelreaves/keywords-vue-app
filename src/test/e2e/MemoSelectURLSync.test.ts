@@ -262,7 +262,7 @@ test.describe('MemoSelect URL Synchronization', () => {
 
     // Navigate to the shared URL
     await newPage.goto(urlWithMemo)
-    await newPage.waitForLoadState('networkidle')
+    await newPage.waitForLoadState('domcontentloaded')
     await newPage.waitForTimeout(1000)
 
     // Verify memo is selected in the new page

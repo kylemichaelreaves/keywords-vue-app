@@ -126,35 +126,34 @@ describe('useTransactions with Memo Selection', () => {
     )
   })
 
-  it('should correctly identify numeric strings as memo IDs', async () => {
+  it.each([
+    { input: '123', expectedId: 123 },
+    { input: '0', expectedId: 0 },
+    { input: '999999', expectedId: 999999 },
+  ])('should use memoId=$expectedId for numeric input "$input"', async ({ input, expectedId }) => {
     const { mockFetchTransactions, store } = setupTest()
 
-    // Test various numeric formats
-    const testCases = [
-      { input: '123', shouldUseMemoId: true, expectedId: 123 },
-      { input: '0', shouldUseMemoId: true, expectedId: 0 },
-      { input: '999999', shouldUseMemoId: true, expectedId: 999999 },
-      { input: 'Coffee Shop', shouldUseMemoId: false },
-      { input: 'Shop 123', shouldUseMemoId: false },
-      { input: '123abc', shouldUseMemoId: false },
-    ]
+    store.setSelectedMemo(input)
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
-    for (const testCase of testCases) {
-      mockFetchTransactions.mockClear()
-      store.setSelectedMemo(testCase.input)
+    const callArgs = mockFetchTransactions.mock.calls[0]![0]
+    expect(callArgs).toHaveProperty('memoId', expectedId)
+    expect(callArgs).not.toHaveProperty('memo')
+  })
+
+  it.each([{ input: 'Coffee Shop' }, { input: 'Shop 123' }, { input: '123abc' }])(
+    'should use memo name for non-numeric input "$input"',
+    async ({ input }) => {
+      const { mockFetchTransactions, store } = setupTest()
+
+      store.setSelectedMemo(input)
       await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
       const callArgs = mockFetchTransactions.mock.calls[0]![0]
-
-      if (testCase.shouldUseMemoId) {
-        expect(callArgs).toHaveProperty('memoId', testCase.expectedId)
-        expect(callArgs).not.toHaveProperty('memo')
-      } else {
-        expect(callArgs).toHaveProperty('memo', testCase.input)
-        expect(callArgs).not.toHaveProperty('memoId')
-      }
-    }
-  })
+      expect(callArgs).toHaveProperty('memo', input)
+      expect(callArgs).not.toHaveProperty('memoId')
+    },
+  )
 
   it('should preserve cache key uniqueness for different memos', async () => {
     const { mockFetchTransactions, store } = setupTest()

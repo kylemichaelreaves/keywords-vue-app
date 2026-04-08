@@ -193,27 +193,22 @@ describe('MonthSummaryTable', () => {
     // Check if the correct number of columns is rendered (5 columns: memo, memo_id, total_amount_debit, category_id, budget_category)
     expect(columns.length).toBe(5)
 
-    // Check columns exist with proper null safety
-    if (columns.length >= 5) {
-      expect(columns[0]?.props('label')).toBe('Memo')
-      expect(columns[1]?.props('label')).toBe('Memo ID')
-      expect(columns[2]?.props('label')).toBe('Total Amount Debit')
-      expect(columns[3]?.props('label')).toBe('Category ID')
-      expect(columns[4]?.props('label')).toBe('Budget Category')
-    }
+    expect(columns[0]?.props('label')).toBe('Memo')
+    expect(columns[1]?.props('label')).toBe('Memo ID')
+    expect(columns[2]?.props('label')).toBe('Total Amount Debit')
+    expect(columns[3]?.props('label')).toBe('Category ID')
+    expect(columns[4]?.props('label')).toBe('Budget Category')
 
     // Check if the component renders the mocked data
-    const tableData = table.props('data')
+    const tableData = table.props('data') as Record<string, unknown>[]
     expect(tableData).toHaveLength(2)
 
-    if (tableData && Array.isArray(tableData)) {
-      expect(tableData[0].memo).toBe('Test Memo 1')
-      expect(tableData[0].memo_id).toBe(1)
-      expect(tableData[0].total_amount_debit).toBe(100.5)
-      expect(tableData[1].memo).toBe('Test Memo 2')
-      expect(tableData[1].memo_id).toBe(2)
-      expect(tableData[1].total_amount_debit).toBe(250.75)
-    }
+    expect(tableData[0].memo).toBe('Test Memo 1')
+    expect(tableData[0].memo_id).toBe(1)
+    expect(tableData[0].total_amount_debit).toBe(100.5)
+    expect(tableData[1].memo).toBe('Test Memo 2')
+    expect(tableData[1].memo_id).toBe(2)
+    expect(tableData[1].total_amount_debit).toBe(250.75)
   })
 
   test('renders loading skeleton when data is loading', async () => {

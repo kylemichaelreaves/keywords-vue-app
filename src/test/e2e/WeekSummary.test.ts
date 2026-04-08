@@ -40,13 +40,13 @@ test.describe('Week Summary Table', () => {
     const nextButton = weekSummaryPage.navigationButtonGroup.getByRole('button', {
       name: 'Next Week',
     })
-    expect(await nextButton.isDisabled()).toBeTruthy()
+    await expect(nextButton).toBeDisabled()
   })
 
   test('should reset the week when reset button is clicked', async () => {
     await weekSummaryPage.clickResetButton()
     await weekSummaryPage.page.waitForURL('/budget-visualizer/transactions', {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
     })
     const weekSelectValue = await transactionsPage.getWeekSelectValue()
     expect(weekSelectValue).toBe('')

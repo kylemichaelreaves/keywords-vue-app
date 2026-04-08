@@ -118,10 +118,8 @@ test.describe('Transactions Table', () => {
     const modalTitleElement = editTransactionModal.getByLabel('Transaction Edit Dialog Title')
     await expect(modalTitleElement).toBeVisible({ timeout: isCI ? 10000 : 5000 })
 
-    const modalTitle = await modalTitleElement.textContent()
     const expectedTitle = 'Edit Transaction: ' + firstTransactionNumber
-
-    expect(modalTitle).toBe(expectedTitle)
+    await expect(modalTitleElement).toHaveText(expectedTitle, { exact: true })
 
     // Verify all form elements are visible
     await transactionsPage.expectTransactionEditFormElementsToBeVisible()

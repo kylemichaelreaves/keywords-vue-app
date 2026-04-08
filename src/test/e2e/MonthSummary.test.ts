@@ -49,13 +49,13 @@ test.describe('Month Summary Page', () => {
     const nextButton = monthSummaryPage.navigationButtonGroup.getByRole('button', {
       name: 'Next Month',
     })
-    expect(await nextButton.isDisabled()).toBeTruthy()
+    await expect(nextButton).toBeDisabled()
   })
 
   test('should handle reset button click', async () => {
     await monthSummaryPage.clickResetButton()
     await monthSummaryPage.page.waitForURL('/budget-visualizer/transactions', {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
     })
     await expect(transactionsPage.page).toHaveURL(/\/budget-visualizer\/transactions/)
     // the monthSelect should be reset when we're back on the TransactionsPage

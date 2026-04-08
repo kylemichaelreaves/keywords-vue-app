@@ -49,7 +49,7 @@ test.describe('Memo Summary Table', () => {
 
     await memosPage.clickFirstMemoLink()
 
-    await memoSummaryTablePage.page.waitForLoadState('networkidle')
+    await memoSummaryTablePage.page.waitForLoadState('domcontentloaded')
     await memoSummaryTablePage.memoSummaryCard.waitFor({ state: 'visible' })
   })
 
@@ -97,7 +97,7 @@ test.describe('Memo Summary Table', () => {
     const currentUrl = page.url()
     await page.goto(currentUrl)
 
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // Now the button should be visible
     await expect(memoSummaryTablePage.budgetCategoryButton).toBeVisible({ timeout: 15000 })

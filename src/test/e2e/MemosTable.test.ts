@@ -45,7 +45,7 @@ test.describe('Memos Table', () => {
     console.log('Page HTML preview:', content.substring(0, 500))
 
     await memosPage.memosTable.waitFor({ state: 'visible' })
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
   })
 
   test('should display the memos table', async () => {

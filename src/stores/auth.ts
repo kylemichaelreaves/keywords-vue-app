@@ -37,8 +37,14 @@ export const useAuthStore = defineStore('auth', {
       this.token = token
     },
     setUser(user: PersistedUser | User) {
-      const { password: _password, confirmPassword: _confirmPassword, ...safe } = user as User
-      this.user = safe
+      this.user = {
+        id: user.id,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+      }
     },
     setIsUserAuthenticated(isUserAuthenticated: boolean) {
       this.isUserAuthenticated = isUserAuthenticated

@@ -61,11 +61,10 @@ describe.skip('TransactionsTable', async () => {
 
     const tableHeaderCells = wrapper.find('thead').findAll('th')
     const firstTransaction = transactionsMock[0]
-    if (firstTransaction) {
-      expect(tableHeaderCells.length).toBe(
-        Object.keys(firstTransaction as Record<string, unknown>).length,
-      )
-    }
+    expect(firstTransaction).toBeDefined()
+    expect(tableHeaderCells.length).toBe(
+      Object.keys(firstTransaction as Record<string, unknown>).length,
+    )
   })
 
   test('renders the correct number of columns with linked columns', async () => {
@@ -80,8 +79,7 @@ describe.skip('TransactionsTable', async () => {
 
     const tableHeaderCells = wrapper.find('thead').findAll('th')
     const firstRow = displayData.rows[0]
-    if (firstRow) {
-      expect(tableHeaderCells.length).toBe(Object.keys(firstRow as Record<string, unknown>).length)
-    }
+    expect(firstRow).toBeDefined()
+    expect(tableHeaderCells.length).toBe(Object.keys(firstRow as Record<string, unknown>).length)
   })
 })
