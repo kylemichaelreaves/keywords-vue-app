@@ -44,9 +44,7 @@ test.describe('Transactions Table', () => {
     })
   })
 
-  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({
-    page,
-  }) => {
+  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async () => {
 
     // BEST PRACTICE: Wait directly for the final state (table with data), not loading states
     await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: isCI ? 45000 : 30000 })
