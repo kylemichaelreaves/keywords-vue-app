@@ -19,7 +19,6 @@ setup('authenticate', async ({ page }) => {
   const authDir = join(__dirnameESM, 'playwright/.auth')
   if (!fs.existsSync(authDir)) {
     fs.mkdirSync(authDir, { recursive: true })
-    console.log('Created auth directory:', authDir)
   }
 
   // Create test user data
@@ -38,10 +37,6 @@ setup('authenticate', async ({ page }) => {
     const email = process.env.VITE_TEST_EMAIL
     const password = process.env.VITE_TEST_PASSWORD
 
-    console.log('Email exists:', !!email)
-    console.log('Password exists:', !!password)
-    console.log('Auth setup using base URL:', baseURL)
-
     await page.goto('/login')
     await page.getByRole('textbox', { name: /email/i }).fill(email || '')
     await page.getByRole('textbox', { name: /password/i }).fill(password || '')
@@ -49,7 +44,6 @@ setup('authenticate', async ({ page }) => {
 
     // Wait for login to complete by checking for navigation or auth state
     await page.waitForLoadState('networkidle', { timeout: 10000 })
-    console.log('Current URL after login attempt:', page.url())
 
     // Ensure we have auth tokens regardless of UI login success
     await page.evaluate(
@@ -60,11 +54,7 @@ setup('authenticate', async ({ page }) => {
       { user: testUser, tkn: token },
     )
 
-    console.log('Auth tokens set through browser')
-
-    // Create auth state from current browser state
     await page.context().storageState({ path: authFile })
-    console.log('Auth file created from browser state')
   } catch (error) {
     console.error('Complete browser failure:', error instanceof Error ? error.message : error)
 
@@ -83,13 +73,5 @@ setup('authenticate', async ({ page }) => {
     }
 
     fs.writeFileSync(authFile, JSON.stringify(minimalAuthState, null, 2))
-    console.log('Fallback auth file created directly for:', baseURL)
-  }
-
-  // Verify the auth file exists
-  if (fs.existsSync(authFile)) {
-    console.log('Auth file exists, size:', fs.statSync(authFile).size, 'bytes')
-  } else {
-    console.error('Auth file creation failed completely')
   }
 })

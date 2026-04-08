@@ -5,7 +5,6 @@ import { staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
 import { waitForTableContent } from '@test/e2e/helpers/waitHelpers'
-import { setupApiRequestLogging, setupAwsApiRequestLogging } from '@test/e2e/helpers/requestLogger'
 import type { Page } from '@playwright/test'
 
 const isCI = !!process.env.CI
@@ -14,11 +13,6 @@ test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
   test.beforeEach(async ({ page }) => {
-    // CI FIX: Enhanced logging and setup for CI environment
-    if (isCI) {
-      setupAwsApiRequestLogging(page)
-    }
-
     transactionsPage = new TransactionsPage(page)
 
     // CRITICAL FIX: Set up API mocks FIRST before any navigation
@@ -53,8 +47,6 @@ test.describe('Transactions Table', () => {
   test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({
     page,
   }) => {
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
 
     // BEST PRACTICE: Wait directly for the final state (table with data), not loading states
     await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: isCI ? 45000 : 30000 })
@@ -83,8 +75,6 @@ test.describe('Transactions Table', () => {
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({
     page,
   }) => {
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
 
     // Test user interaction - right click behavior
     const firstDataCell = transactionsPage.transactionsTable
@@ -142,8 +132,6 @@ test.describe('Transactions Table', () => {
     page,
   }) => {
     // Test user interaction with chart - what they see and can do
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
 
     // User should see the chart
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -213,8 +201,6 @@ test.describe('Transactions Table', () => {
   })
 
   test('daily interval line chart is hidden when a day is selected', async ({ page }) => {
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
 
     // Initially, user should see the chart (aggregate view)
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -234,8 +220,6 @@ test.describe('Transactions Table', () => {
   test('selecting a day from the DailyIntervalLineChart, the date of the node is reflected in the URL params', async ({
     page,
   }) => {
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
 
     // Get the first point in the chart
     const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
@@ -267,8 +251,6 @@ test.describe('Transactions Table', () => {
   })
 
   test('selecting a day in the DaySelect is reflected in the URLs params', async ({ page }) => {
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
 
     // Get the first day from the Pinia store
     const days = await transactionsPage.getDaysFromStore()

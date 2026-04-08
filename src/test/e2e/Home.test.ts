@@ -42,8 +42,6 @@ test('theme toggle functionality works correctly', async ({ page }) => {
   // Check initial theme state
   const initialHtmlClass = await homePage.getHtmlClass()
   const initialTheme = await homePage.getThemeFromLocalStorage()
-  console.log('Initial theme class:', initialHtmlClass)
-  console.log('Initial theme in localStorage:', initialTheme)
 
   // Click the theme toggle to switch themes
   await homePage.toggleTheme()
@@ -54,8 +52,6 @@ test('theme toggle functionality works correctly', async ({ page }) => {
   // Check that the HTML class has changed
   const newHtmlClass = await homePage.getHtmlClass()
   const newTheme = await homePage.getThemeFromLocalStorage()
-  console.log('New theme class:', newHtmlClass)
-  console.log('New theme in localStorage:', newTheme)
 
   expect(newHtmlClass).not.toBe(initialHtmlClass)
   expect(newTheme).not.toBe(initialTheme)

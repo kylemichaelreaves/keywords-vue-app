@@ -81,16 +81,8 @@ test.describe('Month Summary Page', () => {
     // Wait for the memo response to complete
     // const response = await responsePromise
 
-    // Now check if the form is visible
-    try {
-      await monthSummaryPage.expectMemoEditFormVisible()
-      await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
-    } catch (error) {
-      // If form isn't visible, log the current state for debugging
-      const modalContent = await page.locator('[data-testid="memo-edit-dialog"]').textContent()
-      console.log('Modal content:', modalContent)
-      throw error
-    }
+    await monthSummaryPage.expectMemoEditFormVisible()
+    await monthSummaryPage.expectMemoEditFormTitle('Edit Memo:')
 
     await monthSummaryPage.closeMemoEditModal()
     await monthSummaryPage.expectMemoEditModalHidden()
