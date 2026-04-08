@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
-import { Money, OfficeBuilding, Files, Calendar } from '@element-plus/icons-vue'
+import { Odometer, Money, PieChart, Wallet, Memo } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
 import TransactionCreateForm from '@components/transactions/TransactionCreateForm.vue'
 import Breadcrumbs from '@components/Breadcrumbs.vue'
@@ -57,6 +57,7 @@ const showTransactionForm = ref(false)
 const route = useRoute()
 
 const ROUTE_META: Record<string, { title: string; subtitle?: string }> = {
+  dashboard: { title: 'Dashboard', subtitle: 'Overview of your finances' },
   'budget-visualizer': { title: 'Overview' },
   transactions: { title: 'Transactions', subtitle: 'Manage your income and expenses' },
   'pending-transactions': { title: 'Pending transactions' },
@@ -68,10 +69,10 @@ const ROUTE_META: Record<string, { title: string; subtitle?: string }> = {
   'memo-summary': { title: 'Memo summary' },
   'memo-edit': { title: 'Edit memo' },
   'budget-categories': {
-    title: 'Budget categories',
+    title: 'Budgets',
     subtitle: 'Set spending limits and manage your category hierarchy',
   },
-  'loan-calculator': { title: 'Loan calculator' },
+  debt: { title: 'Debt', subtitle: 'Track and calculate loan repayment' },
 }
 
 const pageTitle = computed(() => {
@@ -86,24 +87,29 @@ const pageSubtitle = computed(() => {
 
 const menuItems = [
   {
+    path: '/budget-visualizer/dashboard',
+    icon: Odometer,
+    title: 'Dashboard',
+  },
+  {
     path: '/budget-visualizer/transactions',
     icon: Money,
     title: 'Transactions',
   },
   {
-    path: '/budget-visualizer/memos',
-    icon: OfficeBuilding,
-    title: 'Memos',
-  },
-  {
     path: '/budget-visualizer/budget-categories',
-    icon: Files,
-    title: 'Budget categories',
+    icon: PieChart,
+    title: 'Budgets',
   },
   {
-    path: '/budget-visualizer/loan-calculator',
-    icon: Calendar,
-    title: 'Loan calculator',
+    path: '/budget-visualizer/debt',
+    icon: Wallet,
+    title: 'Debt',
+  },
+  {
+    path: '/budget-visualizer/memos',
+    icon: Memo,
+    title: 'Memos',
   },
 ]
 

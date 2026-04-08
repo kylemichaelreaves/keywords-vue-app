@@ -8,6 +8,6 @@ export class LoanCalculatorPage {
   }
 
   async goto() {
-    await this.page.goto('/budget-visualizer/loan-calculator')
+    await this.page.goto('/budget-visualizer/debt')
   }
 }

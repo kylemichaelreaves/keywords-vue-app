@@ -3,6 +3,7 @@ import Keywords from '@components/Keywords.vue'
 import AddressGeocoderForm from '@components/address/AddressGeocoderForm.vue'
 import BudgetVisualizer from '@components/BudgetVisualizer.vue'
 import LoanCalculator from '@components/loan/LoanCalculator.vue'
+import Dashboard from '@components/Dashboard.vue'
 import TransactionsTable from '@components/transactions/TransactionsTable.vue'
 import PendingTransactionsTable from '@components/transactions/PendingTransactionsTable.vue'
 import MonthSummaryTable from '@components/transactions/summaries/month/MonthSummaryTable.vue'
@@ -60,11 +61,17 @@ export const routes = [
     children: [
       {
         path: '',
-        redirect: { name: 'transactions' },
+        redirect: { name: 'dashboard' },
       },
       {
-        path: 'loan-calculator',
-        name: 'loan-calculator',
+        path: 'dashboard',
+        name: 'dashboard',
+        component: Dashboard,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'debt',
+        name: 'debt',
         component: LoanCalculator,
         meta: { requiresAuth: true },
       },

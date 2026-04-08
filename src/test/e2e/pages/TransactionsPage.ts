@@ -16,8 +16,7 @@ export class TransactionsPage {
   readonly memoSelect: Locator
 
   readonly intervalForm: Locator
-  readonly intervalTypeSelect: Locator
-  readonly intervalNumberInput: Locator
+  readonly periodButtons: Locator
   readonly intervalLineChart: Locator
   readonly intervalLineChartTooltip: Locator
 
@@ -57,8 +56,7 @@ export class TransactionsPage {
 
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
     this.intervalForm = this.page.getByTestId('daily-interval-line-chart-form')
-    this.intervalTypeSelect = this.intervalForm.getByTestId('interval-select')
-    this.intervalNumberInput = this.intervalForm.getByTestId('interval-input-number')
+    this.periodButtons = this.intervalForm.getByTestId('interval-period-buttons')
     this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')
 
     this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
@@ -148,12 +146,8 @@ export class TransactionsPage {
     await this.daySelect.click({ force: true })
   }
 
-  async clickIncreaseInterval() {
-    await this.intervalNumberInput.getByRole('button', { name: /increase/i }).click()
-  }
-
-  async clickDecreaseInterval() {
-    await this.intervalNumberInput.getByRole('button', { name: /decrease/i }).click()
+  async selectPeriod(label: '1M' | '3M' | '6M' | '1Y') {
+    await this.periodButtons.getByRole('button', { name: label }).click()
   }
 
   // Method to wait for transactions table to be fully ready

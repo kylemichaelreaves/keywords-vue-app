@@ -64,10 +64,7 @@ test.describe('Transactions Table', () => {
     await expect(transactionsPage.yearSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.memoSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
-    await expect(transactionsPage.intervalTypeSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
-    await expect(transactionsPage.intervalNumberInput).toBeVisible({
-      timeout: isCI ? 30000 : 15000,
-    })
+    await expect(transactionsPage.periodButtons).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.transactionsTablePagination).toBeVisible({
       timeout: isCI ? 30000 : 15000,
     })

@@ -14,6 +14,15 @@
       </p>
     </div>
 
+    <el-input
+      v-model="searchQuery"
+      placeholder="Search memos..."
+      clearable
+      :prefix-icon="Search"
+      class="bv-search"
+      data-testid="memos-search-input"
+    />
+
     <el-dialog
       v-model="showMemoEditModal"
       :close-on-click-modal="false"
@@ -68,6 +77,15 @@
               >
                 {{ scope.row[column.prop] }}
               </router-link>
+              <el-tag
+                v-else-if="column.prop === 'ambiguous'"
+                :type="scope.row.ambiguous ? 'warning' : 'success'"
+                size="small"
+                effect="plain"
+                round
+              >
+                {{ scope.row.ambiguous ? 'Ambiguous' : 'Resolved' }}
+              </el-tag>
               <span v-else>{{ scope.row[column.prop] }}</span>
             </div>
           </template>
@@ -101,6 +119,7 @@
 import { devConsole } from '@utils/devConsole'
 
 import { computed, ref, watch } from 'vue'
+import { Search } from '@element-plus/icons-vue'
 import { useMemos } from '@api/hooks/memos/useMemos.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import MemosTablePagination from '@components/memos/MemosTablePagination.vue'
@@ -113,6 +132,7 @@ const route = useRoute()
 
 const showMemoEditModal = ref(false)
 const selectedMemo = ref<Memo | null>(null)
+const searchQuery = ref('')
 
 const skeletonWidths = [100, 150, 200, 120, 180, 160, 140, 130]
 
@@ -175,15 +195,23 @@ const flattenedData = computed(() => {
   return allMemos.filter((memo: Memo) => memo.name && memo.name.trim() !== '')
 })
 
+const filteredData = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim()
+  if (!query) return flattenedData.value
+  return flattenedData.value.filter((memo: Memo) =>
+    memo.name?.toLowerCase().includes(query),
+  )
+})
+
 const paginatedData = computed(() => {
   const start = offset.value
   const end = start + pageLimit.value
-  return flattenedData.value.slice(start, end)
+  return filteredData.value.slice(start, end)
 })
 
 const loadMorePagesIfNeeded = async () => {
   const requiredDataCount = currentPage.value * pageLimit.value
-  while (flattenedData.value.length < requiredDataCount && hasNextPage.value) {
+  while (filteredData.value.length < requiredDataCount && hasNextPage.value) {
     await fetchNextPage()
   }
 }
@@ -232,7 +260,7 @@ const editModalTitle = computed(() => {
 defineExpose({
   currentPage,
   pageLimit,
-  totalPages: computed(() => Math.ceil(flattenedData.value.length / pageLimit.value)),
+  totalPages: computed(() => Math.ceil(filteredData.value.length / pageLimit.value)),
 })
 </script>
 
@@ -261,6 +289,15 @@ defineExpose({
   line-height: 1.5;
 }
 
+.bv-search {
+  max-width: 320px;
+}
+
+.bv-search :deep(.el-input__wrapper) {
+  --el-input-border-color: var(--bv-border);
+  --el-input-focus-border-color: var(--bv-primary);
+}
+
 .bv-section {
   border-radius: var(--bv-radius);
 }
@@ -277,6 +314,14 @@ defineExpose({
   font-weight: 500;
   font-size: 0.875rem;
   color: var(--app-text-color);
+}
+
+.bv-table-section :deep(.el-table .el-table__row) {
+  transition: box-shadow 0.15s ease;
+}
+
+.bv-table-section :deep(.el-table .el-table__row:hover) {
+  box-shadow: var(--bv-surface-shadow);
 }
 
 .bv-link {

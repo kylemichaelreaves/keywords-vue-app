@@ -8,6 +8,34 @@
       data-testid="transactions-table-error-alert"
     />
 
+    <section class="bv-summary-cards" data-testid="transactions-summary-cards">
+      <el-card class="bv-stat-card" shadow="never">
+        <el-statistic
+          title="Total Credits"
+          :value="totalCredits"
+          prefix="$"
+          :precision="2"
+          data-testid="total-credits-stat"
+        />
+      </el-card>
+      <el-card class="bv-stat-card" shadow="never">
+        <el-statistic
+          title="Total Debits"
+          :value="totalDebits"
+          prefix="$"
+          :precision="2"
+          data-testid="total-debits-stat"
+        />
+      </el-card>
+      <el-card class="bv-stat-card" shadow="never">
+        <el-statistic
+          title="Top Budget Category"
+          :value="topBudgetCategory"
+          data-testid="top-budget-category-stat"
+        />
+      </el-card>
+    </section>
+
     <section class="bv-section bv-chart-section">
       <DailyIntervalLineChart :first-day="firstDay" />
     </section>
@@ -238,6 +266,32 @@ const flattenedData = computed(() => {
   )
 })
 
+const totalCredits = computed(() => {
+  return flattenedData.value.reduce((sum, t) => sum + (Number(t.amount_credit) || 0), 0)
+})
+
+const totalDebits = computed(() => {
+  return flattenedData.value.reduce((sum, t) => sum + (Number(t.amount_debit) || 0), 0)
+})
+
+const topBudgetCategory = computed(() => {
+  const counts: Record<string, number> = {}
+  for (const t of flattenedData.value) {
+    if (t.budget_category && t.budget_category.trim()) {
+      counts[t.budget_category] = (counts[t.budget_category] || 0) + 1
+    }
+  }
+  let top = '--'
+  let max = 0
+  for (const [cat, count] of Object.entries(counts)) {
+    if (count > max) {
+      max = count
+      top = cat
+    }
+  }
+  return top
+})
+
 devConsole('log', 'Flattened Transactions Data:', flattenedData.value)
 
 const currentPage = computed({
@@ -314,6 +368,30 @@ function getRowKey(row: Transaction): string {
   gap: 1.5rem;
 }
 
+.bv-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.bv-stat-card {
+  --el-card-border-color: var(--bv-border);
+  --el-card-bg-color: var(--bv-panel-bg);
+  border-radius: var(--bv-radius);
+}
+
+.bv-stat-card :deep(.el-statistic__head) {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--bv-sidebar-muted);
+}
+
+.bv-stat-card :deep(.el-statistic__content) {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--app-text-color);
+}
+
 .bv-section {
   border-radius: var(--bv-radius);
 }
@@ -342,6 +420,14 @@ function getRowKey(row: Transaction): string {
   color: var(--app-text-color);
 }
 
+.bv-table-section :deep(.el-table .el-table__row) {
+  transition: box-shadow 0.15s ease;
+}
+
+.bv-table-section :deep(.el-table .el-table__row:hover) {
+  box-shadow: var(--bv-surface-shadow);
+}
+
 .bv-link {
   color: var(--bv-primary);
   font-weight: 500;
@@ -362,5 +448,11 @@ function getRowKey(row: Transaction): string {
 .bv-pagination-row :deep(.el-pagination) {
   --el-pagination-button-bg-color: var(--bv-panel-bg);
   --el-pagination-hover-color: var(--bv-primary);
+}
+
+@media (max-width: 768px) {
+  .bv-summary-cards {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

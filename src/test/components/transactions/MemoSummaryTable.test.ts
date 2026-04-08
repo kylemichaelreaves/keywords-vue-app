@@ -27,11 +27,16 @@ const mockMemoState = {
     id: 1,
     name: 'Test Memo',
     description: 'Test Description',
-  } as { id: number; name: string; description: string } | null),
+    ambiguous: false,
+    recurring: true,
+    necessary: false,
+    budget_category: 'Groceries',
+  } as Record<string, unknown> | null),
   isFetching: ref(false),
   isLoading: ref(false),
   isError: ref(false),
   error: ref(null),
+  refetch: vi.fn(),
 }
 
 // Mock the useMemoSummary hook
@@ -42,6 +47,11 @@ vi.mock('@api/hooks/memos/useMemoSummary', () => ({
 // Mock the useMemo hook
 vi.mock('@api/hooks/memos/useMemo', () => ({
   default: () => mockMemoState,
+}))
+
+// Mock the mutateMemo hook
+vi.mock('@api/hooks/memos/mutateMemo', () => ({
+  default: () => ({ mutate: vi.fn() }),
 }))
 
 // Mock the Vue Router useRoute composable
@@ -119,6 +129,10 @@ describe('MemoSummaryTable.vue', () => {
       id: 1,
       name: 'Test Memo',
       description: 'Test Description',
+      ambiguous: false,
+      recurring: true,
+      necessary: false,
+      budget_category: 'Groceries',
     }
     mockMemoState.isFetching.value = false
     mockMemoState.isLoading.value = false
@@ -139,16 +153,18 @@ describe('MemoSummaryTable.vue', () => {
     expect(memoTitle.exists()).toBe(true)
     expect(memoTitle.text()).toBe('Test Memo')
 
-    // Check if the statistics are rendered
+    // Check if the statistics are rendered (3 stat cards)
     const statistics = wrapper.findAllComponents(ElStatistic)
-    expect(statistics.length).toBe(2)
+    expect(statistics.length).toBe(3)
 
     // Check if the correct statistics are rendered with proper null safety
-    if (statistics.length >= 2) {
-      expect(statistics[0]?.props('title')).toBe('Total Amount Debit')
+    if (statistics.length >= 3) {
+      expect(statistics[0]?.props('title')).toBe('Total Credits')
       expect(statistics[0]?.props('value')).toBe(-300.5)
-      expect(statistics[1]?.props('title')).toBe('Transactions Count')
+      expect(statistics[1]?.props('title')).toBe('Total Debits')
       expect(statistics[1]?.props('value')).toBe(5)
+      expect(statistics[2]?.props('title')).toBe('Budget Category')
+      expect(statistics[2]?.props('value')).toBe('Groceries')
     }
 
     // Check if the summary stats container exists
