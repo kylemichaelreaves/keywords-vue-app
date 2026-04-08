@@ -214,9 +214,14 @@ const loadMorePagesIfNeeded = async () => {
   }
 }
 
-watch(searchQuery, () => {
+watch(searchQuery, async (query) => {
   if (currentPage.value !== 1) {
     currentPage.value = 1
+  }
+  if (query.trim()) {
+    while (hasNextPage.value) {
+      await fetchNextPage()
+    }
   }
 })
 

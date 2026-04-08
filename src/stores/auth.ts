@@ -38,12 +38,13 @@ export const useAuthStore = defineStore('auth', {
     },
     setUser(user: PersistedUser | User) {
       this.user = {
-        id: user.id,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
+        ...emptyUser,
+        id: user.id ?? emptyUser.id,
+        username: user.username ?? emptyUser.username,
+        firstName: user.firstName ?? emptyUser.firstName,
+        lastName: user.lastName ?? emptyUser.lastName,
+        email: user.email ?? emptyUser.email,
+        role: user.role ?? emptyUser.role,
       }
     },
     setIsUserAuthenticated(isUserAuthenticated: boolean) {

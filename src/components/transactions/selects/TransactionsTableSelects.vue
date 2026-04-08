@@ -1,5 +1,5 @@
 <template>
-  <div class="selects" :data-testid="props.dataTestId">
+  <div class="selects">
     <div class="selects-row">
       <DaySelect />
       <WeekSelect />
@@ -27,13 +27,6 @@ import WeekSelect from '@components/transactions/selects/WeekSelect.vue'
 import DaySelect from '@components/transactions/selects/DaySelect.vue'
 import YearSelect from '@components/transactions/selects/YearSelect.vue'
 import { useTransactionsStore } from '@stores/transactions'
-
-const props = defineProps({
-  dataTestId: {
-    type: String,
-    default: 'transactions-table-selects-row',
-  },
-})
 
 const router = useRouter()
 const store = useTransactionsStore()

@@ -16,16 +16,16 @@
           </h2>
           <el-tag
             v-if="typedMemoData"
-            :type="typedMemoData.ambiguous ? 'warning' : 'success'"
+            :type="localAmbiguous ? 'warning' : 'success'"
             size="small"
             effect="plain"
             round
             data-testid="memo-ambiguous-badge"
           >
-            {{ typedMemoData.ambiguous ? 'Ambiguous' : 'Resolved' }}
+            {{ localAmbiguous ? 'Ambiguous' : 'Resolved' }}
           </el-tag>
           <el-tag
-            v-if="typedMemoData?.recurring"
+            v-if="typedMemoData && localRecurring"
             type="info"
             size="small"
             effect="plain"
