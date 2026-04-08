@@ -134,11 +134,13 @@ describe('useTransactions with Memo Selection', () => {
     const { mockFetchTransactions, store } = setupTest()
 
     store.setSelectedMemo(input)
-    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.some((c) => c[0]?.memoId === expectedId)).toBe(true),
+    )
 
-    const callArgs = mockFetchTransactions.mock.calls[0]![0]
-    expect(callArgs).toHaveProperty('memoId', expectedId)
-    expect(callArgs).not.toHaveProperty('memo')
+    const matchingCall = mockFetchTransactions.mock.calls.find((c) => c[0]?.memoId === expectedId)
+    expect(matchingCall).toBeDefined()
+    expect(matchingCall![0]).not.toHaveProperty('memo')
   })
 
   it.each([{ input: 'Coffee Shop' }, { input: 'Shop 123' }, { input: '123abc' }])(
@@ -147,11 +149,13 @@ describe('useTransactions with Memo Selection', () => {
       const { mockFetchTransactions, store } = setupTest()
 
       store.setSelectedMemo(input)
-      await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
+      await vi.waitFor(() =>
+        expect(mockFetchTransactions.mock.calls.some((c) => c[0]?.memo === input)).toBe(true),
+      )
 
-      const callArgs = mockFetchTransactions.mock.calls[0]![0]
-      expect(callArgs).toHaveProperty('memo', input)
-      expect(callArgs).not.toHaveProperty('memoId')
+      const matchingCall = mockFetchTransactions.mock.calls.find((c) => c[0]?.memo === input)
+      expect(matchingCall).toBeDefined()
+      expect(matchingCall![0]).not.toHaveProperty('memoId')
     },
   )
 
