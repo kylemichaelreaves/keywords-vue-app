@@ -58,7 +58,7 @@ export default defineConfigWithVueTs(
       ...pluginPlaywright.configs['flat/recommended'].rules,
       'playwright/expect-expect': [
         'warn',
-        { assertFunctionNames: ['expect', 'expect*', 'openSplitDrawer'] },
+        { assertFunctionNames: ['expect', 'expect**', '**.expect*', 'openSplitDrawer'] },
       ],
     },
   },
