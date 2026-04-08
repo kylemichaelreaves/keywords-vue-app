@@ -45,7 +45,6 @@ test.describe('Transactions Table', () => {
   })
 
   test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async () => {
-
     // BEST PRACTICE: Wait directly for the final state (table with data), not loading states
     await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: isCI ? 45000 : 30000 })
 
@@ -73,7 +72,6 @@ test.describe('Transactions Table', () => {
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({
     page,
   }) => {
-
     // Test user interaction - right click behavior
     const firstDataCell = transactionsPage.transactionsTable
       .getByRole('row')
@@ -199,7 +197,6 @@ test.describe('Transactions Table', () => {
   })
 
   test('daily interval line chart is hidden when a day is selected', async ({ page }) => {
-
     // Initially, user should see the chart (aggregate view)
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     // User clicks on a chart point to drill down
@@ -218,7 +215,6 @@ test.describe('Transactions Table', () => {
   test('selecting a day from the DailyIntervalLineChart, the date of the node is reflected in the URL params', async ({
     page,
   }) => {
-
     // Get the first point in the chart
     const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
     await expect(firstPoint).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -249,7 +245,6 @@ test.describe('Transactions Table', () => {
   })
 
   test('selecting a day in the DaySelect is reflected in the URLs params', async ({ page }) => {
-
     // Get the first day from the Pinia store
     const days = await transactionsPage.getDaysFromStore()
 
