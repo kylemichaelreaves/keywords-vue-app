@@ -214,14 +214,24 @@ const loadMorePagesIfNeeded = async () => {
   }
 }
 
-watch(searchQuery, async (query) => {
+let searchFetchTimer: ReturnType<typeof setTimeout> | null = null
+let searchFetchAborted = false
+
+watch(searchQuery, (query) => {
   if (currentPage.value !== 1) {
     currentPage.value = 1
   }
+
+  searchFetchAborted = true
+  if (searchFetchTimer) clearTimeout(searchFetchTimer)
+
   if (query.trim()) {
-    while (hasNextPage.value) {
-      await fetchNextPage()
-    }
+    searchFetchTimer = setTimeout(async () => {
+      searchFetchAborted = false
+      while (hasNextPage.value && !searchFetchAborted) {
+        await fetchNextPage()
+      }
+    }, 300)
   }
 })
 

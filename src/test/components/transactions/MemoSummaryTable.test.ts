@@ -155,16 +155,18 @@ describe('MemoSummaryTable.vue', () => {
     expect(memoTitle.exists()).toBe(true)
     expect(memoTitle.text()).toBe('Test Memo')
 
-    // Check if the statistics are rendered (3 stat cards)
+    // Check if the statistics are rendered (2 ElStatistic + 1 custom stat)
     const statistics = wrapper.findAllComponents(ElStatistic)
-    expect(statistics.length).toBe(3)
+    expect(statistics.length).toBe(2)
 
     expect(statistics[0]?.props('title')).toBe('Total Amount Debit')
     expect(statistics[0]?.props('value')).toBe(-300.5)
     expect(statistics[1]?.props('title')).toBe('Transactions Count')
     expect(statistics[1]?.props('value')).toBe(5)
-    expect(statistics[2]?.props('title')).toBe('Budget Category')
+
     const budgetCategoryStat = wrapper.find('[data-testid="memo-budget-category-stat"]')
+    expect(budgetCategoryStat.exists()).toBe(true)
+    expect(budgetCategoryStat.text()).toContain('Budget Category')
     expect(budgetCategoryStat.text()).toContain('Groceries')
 
     // Check if the summary stats container exists

@@ -50,7 +50,7 @@ test.describe('Memo Summary Table', () => {
     await memosPage.clickFirstMemoLink()
 
     await memoSummaryTablePage.page.waitForLoadState('domcontentloaded')
-    await memoSummaryTablePage.memoSummaryCard.waitFor({ state: 'visible' })
+    await memoSummaryTablePage.summaryCard.waitFor({ state: 'visible' })
   })
 
   test.afterEach(async ({ page }) => {
@@ -66,7 +66,7 @@ test.describe('Memo Summary Table', () => {
   })
 
   test('should display the memo card table', async () => {
-    await memoSummaryTablePage.expectMemoSummaryCardVisible()
+    await memoSummaryTablePage.expectSummaryCardVisible()
   })
 
   test('should handle back button click', async () => {

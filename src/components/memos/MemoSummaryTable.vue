@@ -45,8 +45,7 @@
             :value="typedSummaryData.sum_amount_debit"
             prefix="$"
             :precision="2"
-            :data-testid="`sum-amount-debit-${memoId}`"
-            :data-value="typedSummaryData.sum_amount_debit"
+            data-testid="memo-transactions-amount"
           />
           <div class="bv-toggle-row">
             <span class="bv-toggle-label">Ambiguous</span>
@@ -64,8 +63,7 @@
           <el-statistic
             title="Transactions Count"
             :value="typedSummaryData.transactions_count"
-            :data-testid="`transactions-count-${memoId}`"
-            :data-value="typedSummaryData.transactions_count"
+            data-testid="memo-transactions-count"
           />
           <div class="bv-toggle-row">
             <span class="bv-toggle-label">Recurring</span>
@@ -80,12 +78,12 @@
           </div>
         </div>
         <div class="bv-stat-card">
-          <el-statistic
-            title="Budget Category"
-            :value="0"
-            :formatter="() => typedMemoData?.budget_category || '--'"
-            data-testid="memo-budget-category-stat"
-          />
+          <div class="el-statistic" data-testid="memo-budget-category-stat">
+            <div class="el-statistic__head">Budget Category</div>
+            <div class="el-statistic__content">
+              <span class="el-statistic__number">{{ typedMemoData?.budget_category || '--' }}</span>
+            </div>
+          </div>
           <div class="bv-toggle-row">
             <span class="bv-toggle-label">Necessary</span>
             <el-switch
