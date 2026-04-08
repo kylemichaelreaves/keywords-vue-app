@@ -77,13 +77,15 @@ export default defineConfig(async ({ mode }) => {
         },
         // Fallback when local Lambda was used but died: baseURL becomes /api/gateway; paths must map to .../api/v1/*
         // Only enabled when API_GATEWAY_URL is configured, otherwise the proxy target would be invalid.
-        ...(API_GATEWAY_URL && {
-          '/api/gateway': {
-            target: API_GATEWAY_URL,
-            changeOrigin: true,
-            rewrite: (p: string) => p.replace(/^\/api\/gateway/, '/api/v1'),
-          },
-        }),
+        ...(API_GATEWAY_URL
+          ? {
+              '/api/gateway': {
+                target: API_GATEWAY_URL,
+                changeOrigin: true,
+                rewrite: (p: string) => p.replace(/^\/api\/gateway/, '/api/v1'),
+              },
+            }
+          : {}),
       },
     },
     root: fileURLToPath(new URL('./', import.meta.url)),

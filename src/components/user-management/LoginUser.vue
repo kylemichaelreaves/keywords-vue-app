@@ -47,7 +47,8 @@
 import { devConsole } from '@utils/devConsole'
 
 import { computed, ref, onMounted, type Component } from 'vue'
-import type { loginFormKeys } from '@types'
+import type { LoginFormKeys } from '@types'
+import type { FormInstance } from 'element-plus'
 import { useMutation } from '@tanstack/vue-query'
 import { useAuthStore } from '@stores/auth.ts'
 import { useRoute, useRouter } from 'vue-router'
@@ -65,7 +66,7 @@ interface LoginFormField {
   showPassword?: boolean
 }
 
-const formRef = ref<InstanceType<typeof import('element-plus').ElForm> | null>(null)
+const formRef = ref<FormInstance>()
 const user = ref({
   email: '',
   password: '',
@@ -114,14 +115,16 @@ const { mutate, isPending, isError, error } = useMutation({
 
 const submitForm = async () => {
   if (!formRef.value) return
-  await formRef.value.validate((valid) => {
-    if (valid) {
-      mutate({ email: user.value.email, password: user.value.password })
-    }
-  })
+  try {
+    const valid = await formRef.value.validate()
+    if (!valid) return
+    mutate({ email: user.value.email, password: user.value.password })
+  } catch {
+    return
+  }
 }
 
-const loginFormFields: Record<loginFormKeys, LoginFormField> = {
+const loginFormFields: Record<LoginFormKeys, LoginFormField> = {
   email: {
     component: ElInput,
     label: 'Email',
