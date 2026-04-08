@@ -98,13 +98,9 @@ const { mutate, isPending, isError, error } = useMutation({
   onSuccess: (data) => {
     devConsole('log', 'Login successful', data)
     ElMessage.success(`${data.message}! Wilkommen! Bienvenue! Welcome!`)
-    const user = data.user
-    const token = data.token
-    authStore.setUser(user)
-    authStore.setToken(token)
-    authStore.setIsUserAuthenticated(true)
-    localStorage.setItem('user', JSON.stringify(user))
-    localStorage.setItem('token', token)
+    authStore.authenticate(data.user, data.token)
+    localStorage.setItem('user', JSON.stringify(authStore.user))
+    localStorage.setItem('token', data.token)
     router.push(redirectTarget.value)
   },
   onError: (error) => {
@@ -158,10 +154,13 @@ onMounted(() => {
   }
 
   if (localUser && localToken && localUser !== 'undefined' && localToken !== 'undefined') {
-    const parsed = JSON.parse(localUser)
-    authStore.setUser(parsed)
-    authStore.setToken(localToken)
-    authStore.setIsUserAuthenticated(true)
+    try {
+      authStore.authenticate(JSON.parse(localUser), localToken)
+    } catch {
+      devConsole('error', 'Failed to parse stored user data, clearing auth')
+      localStorage.removeItem('user')
+      localStorage.removeItem('token')
+    }
   }
 
   if (authStore.getIsUserAuthenticated && authStore.getUser.email) {

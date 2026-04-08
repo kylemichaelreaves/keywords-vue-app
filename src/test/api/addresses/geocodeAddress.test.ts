@@ -1,14 +1,26 @@
 import { geocodeAddress } from '@api/address/geocodeAddress'
-import { vi, test } from 'vitest'
+import { vi, test, describe, afterEach, expect } from 'vitest'
 import { addressesMock } from '@mocks/address'
 import type { AddressFields } from '@types'
+
+vi.mock('@api/httpClient', () => ({
+  httpClient: {
+    get: vi.fn(),
+  },
+}))
+
+import { httpClient } from '@api/httpClient'
+
+const mockGet = vi.mocked(httpClient.get)
 
 describe('geocodeAddress', () => {
   afterEach(() => {
     vi.resetAllMocks()
   })
 
-  test.skip('geocodeAddress returns address data when a valid address is provided', async () => {
+  test('geocodeAddress returns address data when a valid address is provided', async () => {
+    mockGet.mockResolvedValue({ data: addressesMock })
+
     const address: AddressFields = {
       streetAddress: '123 Main St',
       unitOrAptNum: 'Apt 4B',
@@ -19,12 +31,20 @@ describe('geocodeAddress', () => {
 
     const result = await geocodeAddress(address)
 
+    expect(mockGet).toHaveBeenCalledWith('/addresses/geocoder', { params: address })
     expect(result).toEqual(addressesMock)
   })
 
-  test('geocodeAddress throws an error when the address is undefined', async () => {
-    await expect(geocodeAddress(undefined as unknown as AddressFields)).rejects.toThrow(
-      'address is undefined',
-    )
+  test('geocodeAddress rejects when the request fails', async () => {
+    mockGet.mockRejectedValue(new Error('Network error'))
+
+    const address: AddressFields = {
+      streetAddress: '999 Nowhere St',
+      municipality: 'Faketown',
+      state: 'ZZ',
+    }
+
+    await expect(geocodeAddress(address)).rejects.toThrow('Network error')
+    expect(mockGet).toHaveBeenCalledWith('/addresses/geocoder', { params: address })
   })
 })

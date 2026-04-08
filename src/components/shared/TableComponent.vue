@@ -20,8 +20,7 @@
         :label="column.label"
         :sortable="sortableColumns.includes(column.prop)"
       >
-        <template v-slot:[`cell-${column.prop}`]="scope">
-          <!-- Check if column is in routerLinkColumn prop -->
+        <template #default="scope">
           <router-link
             v-if="routerLinkColumn && routerLinkColumn[column.prop]"
             :to="`${routerLinkColumn[column.prop]}/${encodeURIComponent(scope.row[column.prop])}`"
@@ -87,11 +86,6 @@ const props = defineProps({
     type: Object as () => Record<string, string>,
     required: false,
     default: () => ({}),
-  },
-  dataTestId: {
-    type: String,
-    default: '',
-    required: false,
   },
 })
 

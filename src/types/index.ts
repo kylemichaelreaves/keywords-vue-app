@@ -326,6 +326,8 @@ export interface User {
   role?: UserRole
 }
 
+export type PersistedUser = Omit<User, 'password' | 'confirmPassword'>
+
 export type UserRole = 'admin' | 'user' | 'guest'
 
 export interface WeekSummary {

@@ -71,10 +71,10 @@ const canSubmit = computed(() => {
 
 const formFields = [
   { label: 'Street Address', prop: 'streetAddress', placeholder: 'Enter street address' },
-  { label: 'Apt. Number', prop: 'aptNum', placeholder: 'Enter apt. number' },
+  { label: 'Apt. Number', prop: 'unitOrAptNum', placeholder: 'Enter apt. number' },
   { label: 'Municipality', prop: 'municipality', placeholder: 'Enter municipality' },
   { label: 'State', prop: 'state', placeholder: 'Enter state' },
-  { label: 'Zip Code', prop: 'zipCode', placeholder: 'Enter zip code' },
+  { label: 'Zip Code', prop: 'zipcode', placeholder: 'Enter zip code' },
 ]
 
 const rules = {
@@ -101,7 +101,7 @@ const rules = {
   ],
 }
 
-const { isFetching, data, error, refetch } = useGeocodeAddress(formData.value)
+const { isFetching, data, error, refetch } = useGeocodeAddress(formData)
 
 const submitForm = (event: Event) => {
   event.preventDefault()

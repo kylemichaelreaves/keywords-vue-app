@@ -47,9 +47,17 @@ describe('useTransactions with Memo Selection', () => {
     })
   }
 
+  function setupTest(mockData: Record<string, unknown>[] = []) {
+    const mockFn = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
+    mockFn.mockResolvedValue(mockData)
+    mount(createTestComponent(), {
+      global: { plugins: [[VueQueryPlugin, { queryClient }], pinia] },
+    })
+    return { mockFetchTransactions: mockFn, store: useTransactionsStore() }
+  }
+
   it('should include memo name in API call when memo is selected', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([
+    const { mockFetchTransactions, store } = setupTest([
       {
         id: 1,
         transaction_number: 'TX001',
@@ -61,25 +69,13 @@ describe('useTransactions with Memo Selection', () => {
       },
     ])
 
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
-    const store = useTransactionsStore()
-
-    // Wait for initial query to complete
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    // Set memo name (as if user selected it)
     store.setSelectedMemo('Coffee Shop')
 
-    // Wait for query to execute with new memo
-    await new Promise((resolve) => setTimeout(resolve, 200))
-
-    // Verify fetchTransactions was called at least twice (once initial, once with memo)
-    expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2)
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2),
+    )
 
     // Check the last call which should have the memo
     const lastCallIndex = mockFetchTransactions.mock.calls.length - 1
@@ -89,28 +85,15 @@ describe('useTransactions with Memo Selection', () => {
   })
 
   it('should include memoId in API call when numeric ID is in store', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
+    const { mockFetchTransactions, store } = setupTest()
 
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
-    const store = useTransactionsStore()
-
-    // Wait for initial query to complete
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    // Set memo ID as string (as if loaded from URL)
     store.setSelectedMemo('101')
 
-    // Wait for query to execute with new memo
-    await new Promise((resolve) => setTimeout(resolve, 200))
-
-    // Verify fetchTransactions was called at least twice
-    expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2)
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2),
+    )
 
     // Check the last call which should have the memoId
     const lastCallIndex = mockFetchTransactions.mock.calls.length - 1
@@ -120,65 +103,31 @@ describe('useTransactions with Memo Selection', () => {
   })
 
   it('should not include memo parameters when no memo is selected', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
+    const { mockFetchTransactions, store } = setupTest()
 
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
-
-    // Ensure memo is empty
     store.setSelectedMemo('')
 
-    // Wait for query to execute
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    // Verify fetchTransactions was called without memo parameters
-    expect(mockFetchTransactions).toHaveBeenCalled()
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
     const callArgs = mockFetchTransactions.mock.calls[0]![0]
     expect(callArgs).not.toHaveProperty('memo')
     expect(callArgs).not.toHaveProperty('memoId')
   })
 
   it('should refetch when memo selection changes', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
+    const { mockFetchTransactions, store } = setupTest()
 
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
-
-    // Initial load with no memo
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
     const initialCallCount = mockFetchTransactions.mock.calls.length
 
-    // Change memo selection
     store.setSelectedMemo('Coffee Shop')
-    await new Promise((resolve) => setTimeout(resolve, 100))
 
-    // Should have triggered a refetch
-    expect(mockFetchTransactions.mock.calls.length).toBeGreaterThan(initialCallCount)
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.length).toBeGreaterThan(initialCallCount),
+    )
   })
 
   it('should correctly identify numeric strings as memo IDs', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
-
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
+    const { mockFetchTransactions, store } = setupTest()
 
     // Test various numeric formats
     const testCases = [
@@ -193,7 +142,7 @@ describe('useTransactions with Memo Selection', () => {
     for (const testCase of testCases) {
       mockFetchTransactions.mockClear()
       store.setSelectedMemo(testCase.input)
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
       const callArgs = mockFetchTransactions.mock.calls[0]![0]
 
@@ -208,27 +157,15 @@ describe('useTransactions with Memo Selection', () => {
   })
 
   it('should preserve cache key uniqueness for different memos', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
+    const { mockFetchTransactions, store } = setupTest()
 
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
-
-    // Select first memo
     store.setSelectedMemo('Coffee Shop')
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
-    // Select second memo
     store.setSelectedMemo('Gas Station')
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    // Should have triggered separate fetches (not using cache)
-    expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2)
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2),
+    )
 
     // Verify different memo parameters were used
     const firstCall = mockFetchTransactions.mock.calls[0]![0]
@@ -238,27 +175,16 @@ describe('useTransactions with Memo Selection', () => {
   })
 
   it('should include memo parameter alongside other query parameters', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
+    const { mockFetchTransactions, store } = setupTest()
 
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
-
-    // Wait for initial query to complete
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
     store.setSelectedMemo('Coffee Shop')
     store.setTransactionsTableLimit(50)
 
-    // Wait for query to execute with new memo
-    await new Promise((resolve) => setTimeout(resolve, 200))
-
-    // Check the last call which should have all parameters
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2),
+    )
     const lastCallIndex = mockFetchTransactions.mock.calls.length - 1
     const callArgs = mockFetchTransactions.mock.calls[lastCallIndex]![0]
 
