@@ -48,7 +48,8 @@ export default defineConfigWithVueTs(
 
   {
     ...pluginVitest.configs.recommended,
-    files: ['src/test/**/*.{test,spec}.{ts,tsx}', '!src/test/e2e/**'],
+    files: ['src/test/**/*.{test,spec}.{ts,tsx}'],
+    ignores: ['src/test/e2e/**'],
   },
 
   {

@@ -4,7 +4,7 @@ import { devConsole } from '@utils/devConsole'
 export async function fetchIsIntervalGreaterThanOldestDate(
   interval: string,
   dailyTotals = true,
-): Promise<boolean> {
+): Promise<{ is_out_of_range: boolean }[]> {
   try {
     const res = await httpClient.get(`/transactions`, {
       params: {
