@@ -68,6 +68,14 @@ test.describe('Transactions Table', () => {
     await expect(transactionsPage.transactionsTablePagination).toBeVisible({
       timeout: isCI ? 30000 : 15000,
     })
+
+    // Summary cards should be visible with scoped labels
+    await expect(transactionsPage.summaryCards).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.totalCreditsStat).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.totalDebitsStat).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.topBudgetCategoryStat).toBeVisible({
+      timeout: isCI ? 30000 : 15000,
+    })
   })
 
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({

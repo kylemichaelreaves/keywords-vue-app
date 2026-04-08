@@ -198,9 +198,7 @@ const flattenedData = computed(() => {
 const filteredData = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
   if (!query) return flattenedData.value
-  return flattenedData.value.filter((memo: Memo) =>
-    memo.name?.toLowerCase().includes(query),
-  )
+  return flattenedData.value.filter((memo: Memo) => memo.name?.toLowerCase().includes(query))
 })
 
 const paginatedData = computed(() => {
@@ -211,7 +209,7 @@ const paginatedData = computed(() => {
 
 const loadMorePagesIfNeeded = async () => {
   const requiredDataCount = currentPage.value * pageLimit.value
-  while (filteredData.value.length < requiredDataCount && hasNextPage.value) {
+  while (flattenedData.value.length < requiredDataCount && hasNextPage.value) {
     await fetchNextPage()
   }
 }

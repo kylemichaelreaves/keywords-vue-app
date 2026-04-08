@@ -11,7 +11,7 @@
     <section class="bv-summary-cards" data-testid="transactions-summary-cards">
       <el-card class="bv-stat-card" shadow="never">
         <el-statistic
-          title="Total Credits"
+          title="Credits (loaded)"
           :value="totalCredits"
           prefix="$"
           :precision="2"
@@ -20,7 +20,7 @@
       </el-card>
       <el-card class="bv-stat-card" shadow="never">
         <el-statistic
-          title="Total Debits"
+          title="Debits (loaded)"
           :value="totalDebits"
           prefix="$"
           :precision="2"
@@ -29,7 +29,7 @@
       </el-card>
       <el-card class="bv-stat-card" shadow="never">
         <el-statistic
-          title="Top Budget Category"
+          title="Top Category (loaded)"
           :value="topBudgetCategory"
           data-testid="top-budget-category-stat"
         />

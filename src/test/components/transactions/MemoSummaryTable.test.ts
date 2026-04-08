@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from '@vue/test-utils'
 import MemoSummaryTable from '@components/memos/MemoSummaryTable.vue'
-import { ElStatistic, ElSkeleton } from 'element-plus'
+import { ElStatistic, ElSkeleton, ElSwitch } from 'element-plus'
 import { VueQueryPlugin } from '@tanstack/vue-query'
 import { createTestingPinia } from '@pinia/testing'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -49,9 +49,10 @@ vi.mock('@api/hooks/memos/useMemo', () => ({
   default: () => mockMemoState,
 }))
 
-// Mock the mutateMemo hook
+const mockMutate = vi.fn()
+
 vi.mock('@api/hooks/memos/mutateMemo', () => ({
-  default: () => ({ mutate: vi.fn() }),
+  default: () => ({ mutate: mockMutate }),
 }))
 
 // Mock the Vue Router useRoute composable
@@ -89,6 +90,7 @@ describe('MemoSummaryTable.vue', () => {
         components: {
           ElStatistic,
           ElSkeleton,
+          ElSwitch,
         },
         plugins: [
           VueQueryPlugin,
@@ -252,5 +254,56 @@ describe('MemoSummaryTable.vue', () => {
     expect(alert.exists()).toBe(true)
 
     errorWrapper.unmount()
+  })
+
+  test('renders toggle switches reflecting memo data', async () => {
+    await wrapper.vm.$nextTick()
+
+    const ambiguousToggle = wrapper.find('[data-testid="memo-ambiguous-toggle"]')
+    const recurringToggle = wrapper.find('[data-testid="memo-recurring-toggle"]')
+    const necessaryToggle = wrapper.find('[data-testid="memo-necessary-toggle"]')
+
+    expect(ambiguousToggle.exists()).toBe(true)
+    expect(recurringToggle.exists()).toBe(true)
+    expect(necessaryToggle.exists()).toBe(true)
+  })
+
+  test('calls mutate with correct payload when ambiguous toggle is clicked', async () => {
+    await wrapper.vm.$nextTick()
+
+    const toggle = wrapper.find('[data-testid="memo-ambiguous-toggle"]')
+    await toggle.find('input').setValue(true)
+    await wrapper.vm.$nextTick()
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      { memo: { id: 1, name: 'Test Memo', ambiguous: true } },
+      expect.objectContaining({ onSuccess: expect.any(Function), onError: expect.any(Function) }),
+    )
+  })
+
+  test('calls mutate with correct payload when recurring toggle is clicked', async () => {
+    await wrapper.vm.$nextTick()
+
+    const toggle = wrapper.find('[data-testid="memo-recurring-toggle"]')
+    await toggle.find('input').setValue(false)
+    await wrapper.vm.$nextTick()
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      { memo: { id: 1, name: 'Test Memo', recurring: false } },
+      expect.objectContaining({ onSuccess: expect.any(Function), onError: expect.any(Function) }),
+    )
+  })
+
+  test('calls mutate with correct payload when necessary toggle is clicked', async () => {
+    await wrapper.vm.$nextTick()
+
+    const toggle = wrapper.find('[data-testid="memo-necessary-toggle"]')
+    await toggle.find('input').setValue(true)
+    await wrapper.vm.$nextTick()
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      { memo: { id: 1, name: 'Test Memo', necessary: true } },
+      expect.objectContaining({ onSuccess: expect.any(Function), onError: expect.any(Function) }),
+    )
   })
 })

@@ -46,6 +46,11 @@ export class TransactionsPage {
   readonly splitBudgetCategoryAddSplitButton: Locator
   readonly splitBudgetCategoryRows: Locator
 
+  readonly summaryCards: Locator
+  readonly totalCreditsStat: Locator
+  readonly totalDebitsStat: Locator
+  readonly topBudgetCategoryStat: Locator
+
   constructor(public readonly page: Page) {
     this.transactionsTable = this.page.getByLabel('Transactions Table')
     this.daySelect = this.page.getByRole('combobox', { name: 'Day selector' })
@@ -114,6 +119,11 @@ export class TransactionsPage {
     })
 
     this.splitBudgetCategoryRows = this.splitBudgetCategoryDrawer.getByTestId('split-row')
+
+    this.summaryCards = this.page.getByTestId('transactions-summary-cards')
+    this.totalCreditsStat = this.page.getByTestId('total-credits-stat')
+    this.totalDebitsStat = this.page.getByTestId('total-debits-stat')
+    this.topBudgetCategoryStat = this.page.getByTestId('top-budget-category-stat')
   }
 
   async goto() {

@@ -76,6 +76,10 @@ export const routes = [
         meta: { requiresAuth: true },
       },
       {
+        path: 'loan-calculator',
+        redirect: { name: 'debt' },
+      },
+      {
         path: 'transactions',
         name: 'transactions',
         component: TransactionsTable,

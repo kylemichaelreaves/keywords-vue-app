@@ -51,10 +51,12 @@
           <div class="bv-toggle-row">
             <span class="bv-toggle-label">Ambiguous</span>
             <el-switch
-              :model-value="typedMemoData?.ambiguous ?? false"
+              v-model="localAmbiguous"
               size="small"
               data-testid="memo-ambiguous-toggle"
-              @change="(val: boolean | string | number) => toggleMemoField('ambiguous', Boolean(val))"
+              @change="
+                (val: boolean | string | number) => toggleMemoField('ambiguous', Boolean(val))
+              "
             />
           </div>
         </div>
@@ -68,10 +70,12 @@
           <div class="bv-toggle-row">
             <span class="bv-toggle-label">Recurring</span>
             <el-switch
-              :model-value="typedMemoData?.recurring ?? false"
+              v-model="localRecurring"
               size="small"
               data-testid="memo-recurring-toggle"
-              @change="(val: boolean | string | number) => toggleMemoField('recurring', Boolean(val))"
+              @change="
+                (val: boolean | string | number) => toggleMemoField('recurring', Boolean(val))
+              "
             />
           </div>
         </div>
@@ -84,10 +88,12 @@
           <div class="bv-toggle-row">
             <span class="bv-toggle-label">Necessary</span>
             <el-switch
-              :model-value="typedMemoData?.necessary ?? false"
+              v-model="localNecessary"
               size="small"
               data-testid="memo-necessary-toggle"
-              @change="(val: boolean | string | number) => toggleMemoField('necessary', Boolean(val))"
+              @change="
+                (val: boolean | string | number) => toggleMemoField('necessary', Boolean(val))
+              "
             />
           </div>
         </div>
@@ -107,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type Ref } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import useMemoSummary from '@api/hooks/memos/useMemoSummary.ts'
 import useMemo from '@api/hooks/memos/useMemo.ts'
@@ -159,12 +165,40 @@ const isLoadingCondition = computed(
     typedMemoFetching.value,
 )
 
+const localAmbiguous = ref(false)
+const localRecurring = ref(false)
+const localNecessary = ref(false)
+
+watch(
+  typedMemoData,
+  (memo) => {
+    if (memo) {
+      localAmbiguous.value = memo.ambiguous ?? false
+      localRecurring.value = memo.recurring ?? false
+      localNecessary.value = memo.necessary ?? false
+    }
+  },
+  { immediate: true },
+)
+
 function toggleMemoField(field: 'ambiguous' | 'recurring' | 'necessary', value: boolean) {
   const memo = typedMemoData.value
   if (!memo) return
+
+  if (field === 'ambiguous') localAmbiguous.value = value
+  else if (field === 'recurring') localRecurring.value = value
+  else if (field === 'necessary') localNecessary.value = value
+
   mutate(
     { memo: { id: memo.id, name: memo.name, [field]: value } },
-    { onSuccess: () => refetchMemo() },
+    {
+      onSuccess: () => refetchMemo(),
+      onError: () => {
+        localAmbiguous.value = memo.ambiguous ?? false
+        localRecurring.value = memo.recurring ?? false
+        localNecessary.value = memo.necessary ?? false
+      },
+    },
   )
 }
 </script>

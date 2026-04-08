@@ -4,7 +4,6 @@ export class MemoSummaryTablePage {
   readonly page: Page
 
   readonly errorAlert: Locator
-  readonly memoSummaryTable: Locator
   readonly memoSummaryHeader: Locator
   readonly memoSummaryCard: Locator
   readonly memoTransactionsTable: Locator
@@ -21,7 +20,6 @@ export class MemoSummaryTablePage {
     this.errorAlert = page.getByRole('alert').getByTestId('memo-summary-error')
     this.memoSummaryHeader = page.getByTestId('memo-summary-header')
     this.memoSummaryCard = page.getByTestId('memo-summary-card')
-    this.memoSummaryTable = page.getByTestId('memo-transactions-table')
     this.memoTransactionsTable = page.getByTestId('memo-transactions-table')
     this.transactionsCount = page.locator('[data-testid^="transactions-count-"]')
     this.transactionsAmount = page.locator('[data-testid^="sum-amount-debit-"]')
@@ -73,8 +71,8 @@ export class MemoSummaryTablePage {
     }
   }
 
-  expectSummaryTableVisible() {
-    return this.memoSummaryTable.isVisible()
+  expectTransactionsTableVisible() {
+    return this.memoTransactionsTable.isVisible()
   }
 
   expectMemoSummaryCardVisible() {
