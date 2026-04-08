@@ -47,9 +47,17 @@ describe('useTransactions with Memo Selection', () => {
     })
   }
 
+  function setupTest(mockData: Record<string, unknown>[] = []) {
+    const mockFn = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
+    mockFn.mockResolvedValue(mockData)
+    mount(createTestComponent(), {
+      global: { plugins: [[VueQueryPlugin, { queryClient }], pinia] },
+    })
+    return { mockFetchTransactions: mockFn, store: useTransactionsStore() }
+  }
+
   it('should include memo name in API call when memo is selected', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([
+    const { mockFetchTransactions, store } = setupTest([
       {
         id: 1,
         transaction_number: 'TX001',
@@ -60,14 +68,6 @@ describe('useTransactions with Memo Selection', () => {
         amount_credit: '0.00',
       },
     ])
-
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
 
     await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
@@ -85,16 +85,7 @@ describe('useTransactions with Memo Selection', () => {
   })
 
   it('should include memoId in API call when numeric ID is in store', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
-
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
+    const { mockFetchTransactions, store } = setupTest()
 
     await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
@@ -112,16 +103,7 @@ describe('useTransactions with Memo Selection', () => {
   })
 
   it('should not include memo parameters when no memo is selected', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
-
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
+    const { mockFetchTransactions, store } = setupTest()
 
     store.setSelectedMemo('')
 
@@ -132,16 +114,7 @@ describe('useTransactions with Memo Selection', () => {
   })
 
   it('should refetch when memo selection changes', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
-
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
+    const { mockFetchTransactions, store } = setupTest()
 
     await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
     const initialCallCount = mockFetchTransactions.mock.calls.length
@@ -154,16 +127,7 @@ describe('useTransactions with Memo Selection', () => {
   })
 
   it('should correctly identify numeric strings as memo IDs', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
-
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
+    const { mockFetchTransactions, store } = setupTest()
 
     // Test various numeric formats
     const testCases = [
@@ -193,16 +157,7 @@ describe('useTransactions with Memo Selection', () => {
   })
 
   it('should preserve cache key uniqueness for different memos', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
-
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
+    const { mockFetchTransactions, store } = setupTest()
 
     store.setSelectedMemo('Coffee Shop')
     await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
@@ -220,16 +175,7 @@ describe('useTransactions with Memo Selection', () => {
   })
 
   it('should include memo parameter alongside other query parameters', async () => {
-    const mockFetchTransactions = vi.spyOn(fetchTransactionsModule, 'fetchTransactions')
-    mockFetchTransactions.mockResolvedValue([])
-
-    mount(createTestComponent(), {
-      global: {
-        plugins: [[VueQueryPlugin, { queryClient }], pinia],
-      },
-    })
-
-    const store = useTransactionsStore()
+    const { mockFetchTransactions, store } = setupTest()
 
     await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
