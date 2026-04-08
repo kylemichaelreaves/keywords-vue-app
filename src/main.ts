@@ -33,9 +33,7 @@ const token = localStorage.getItem('token')
 if (user && token && user !== 'undefined') {
   try {
     const authStore = useAuthStore()
-    authStore.setUser(JSON.parse(user))
-    authStore.setToken(token)
-    authStore.setIsUserAuthenticated(true)
+    authStore.authenticate(JSON.parse(user), token)
   } catch (error) {
     devConsole('error', 'Failed to parse user data:', error)
     localStorage.removeItem('user')

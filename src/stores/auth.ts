@@ -45,6 +45,11 @@ export const useAuthStore = defineStore('auth', {
     setIsUserAuthenticated(isUserAuthenticated: boolean) {
       this.isUserAuthenticated = isUserAuthenticated
     },
+    authenticate(user: PersistedUser | User, token: string) {
+      this.setUser(user)
+      this.setToken(token)
+      this.setIsUserAuthenticated(true)
+    },
     async login(email: User['email'], password: User['password']) {
       return await httpClient
         .post('/login', {
