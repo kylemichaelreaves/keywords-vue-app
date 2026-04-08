@@ -57,10 +57,8 @@ test.describe('Memos Table', () => {
     expect(title).toBe('Memos')
   })
 
-  test.skip('should handle error state', async () => {
+  test.fixme('should handle error state', async () => {
     await memosPage.expectNoError()
-    // Simulate an error condition if needed
-    // await memosPage.expectError('An error occurred while loading memos')
   })
 
   test('right clicking within a cell should open the edit modal', async () => {

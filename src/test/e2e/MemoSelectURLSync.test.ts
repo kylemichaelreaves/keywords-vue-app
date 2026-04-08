@@ -239,8 +239,9 @@ test.describe('MemoSelect URL Synchronization', () => {
     expect(urlWithMemo).toContain('memo=101')
 
     // Open the same URL in a new context (simulating sharing)
-    const newContext = await page.context().browser()?.newContext()
-    if (!newContext) throw new Error('Could not create new context')
+    const browser = page.context().browser()
+    expect(browser).not.toBeNull()
+    const newContext = await browser!.newContext()
 
     const newPage = await newContext.newPage()
 

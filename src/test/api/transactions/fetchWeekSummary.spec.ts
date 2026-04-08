@@ -1,7 +1,5 @@
 import { fetchWeekSummary } from '@api/timeUnits/weeks/fetchWeekSummary.ts'
 import { weekSummaryMock } from '@mocks/transaction'
-import { server } from '@test/test-setup'
-import { http, HttpResponse } from 'msw'
 import { describe, test, vi } from 'vitest'
 
 describe('fetchWeekSummary', () => {
@@ -16,15 +14,5 @@ describe('fetchWeekSummary', () => {
     expect(result).toEqual(weekSummaryMock)
   })
 
-  test.skip('fetchWeekSummary should throw an error if the request fails', async () => {
-    server.use(
-      http.get('*/transactions/get-week-summary', () => {
-        // return res(ctx.status(500));
-        return new HttpResponse('Unhandled request', { status: 500 })
-      }),
-    )
-
-    const week = '53-2021'
-    await expect(fetchWeekSummary(week)).rejects.toThrow()
-  })
+  test.todo('fetchWeekSummary should throw an error if the request fails')
 })

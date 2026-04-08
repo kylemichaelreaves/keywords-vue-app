@@ -61,9 +61,8 @@ test('theme toggle functionality works correctly', async ({ page }) => {
   expect(newTheme).not.toBe(initialTheme)
 
   // Verify theme classes are applied correctly
-  if (newTheme) {
-    await homePage.expectThemeClass(newTheme)
-  }
+  expect(newTheme).toBeTruthy()
+  await homePage.expectThemeClass(newTheme!)
 
   // Toggle back to verify it works both ways
   await homePage.toggleTheme()
@@ -97,7 +96,6 @@ test('theme toggle persists across page reloads', async ({ page }) => {
   expect(persistedTheme).toBe(newTheme)
 
   // Verify the HTML class matches the persisted theme
-  if (persistedTheme) {
-    await homePage.expectThemeClass(persistedTheme)
-  }
+  expect(persistedTheme).toBeTruthy()
+  await homePage.expectThemeClass(persistedTheme!)
 })

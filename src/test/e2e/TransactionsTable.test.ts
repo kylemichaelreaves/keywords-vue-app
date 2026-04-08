@@ -35,7 +35,9 @@ test.describe('Transactions Table', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // Ensure the Vue app is actually rendered (not showing JSON)
-    await page.waitForSelector('[data-testid="transactions-table-selects"]', { timeout: 15000 })
+    await page
+      .getByTestId('transactions-table-selects')
+      .waitFor({ state: 'visible', timeout: 15000 })
 
     // BEST PRACTICE: Wait for final state only, not intermediate loading states
     await waitForTableContent(transactionsPage.transactionsTable, page, {
@@ -133,7 +135,7 @@ test.describe('Transactions Table', () => {
     const closeButton = transactionsPage.modalCloseButton
     await closeButton.click({ force: isCI })
     await page.waitForLoadState('domcontentloaded')
-    await expect(editTransactionModal).not.toBeVisible()
+    await expect(editTransactionModal).toBeHidden()
   })
 
   test('line chart displays tooltip on hover and allows clicking points to load transactions', async ({

@@ -3,11 +3,7 @@ import { parseDateIWIYYY } from '@api/helpers/parseDateIWIYYY'
 
 describe('parseDateIWIYYY', () => {
   // Test valid input cases
-  test.skip('parseDateIWIYYY should return the correct date for valid input', () => {
-    expect(parseDateIWIYYY('01-2023')?.toISOString()).toEqual(new Date(2023, 0, 1).toISOString())
-    expect(parseDateIWIYYY('02-2023')?.toISOString()).toEqual(new Date(2023, 0, 1).toISOString())
-    expect(parseDateIWIYYY('52-2021')?.toISOString()).toEqual(new Date(2021, 11, 19).toISOString())
-  })
+  test.todo('parseDateIWIYYY should return the correct date for valid input')
 
   // Test invalid input cases
   test('parseDateIWIYYY should return null for invalid input format', () => {

@@ -54,6 +54,13 @@ export default defineConfigWithVueTs(
   {
     ...pluginPlaywright.configs['flat/recommended'],
     files: ['src/test/e2e/**/*.{test,spec}.{ts,tsx}'],
+    rules: {
+      ...pluginPlaywright.configs['flat/recommended'].rules,
+      'playwright/expect-expect': [
+        'warn',
+        { assertFunctionNames: ['expect', 'expect*', 'openSplitDrawer'] },
+      ],
+    },
   },
 
   ...storybook.configs['flat/recommended'],
