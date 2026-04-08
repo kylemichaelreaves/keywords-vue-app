@@ -38,8 +38,13 @@ describe('geocodeAddress', () => {
   test('geocodeAddress rejects when the request fails', async () => {
     mockGet.mockRejectedValue(new Error('Network error'))
 
-    await expect(geocodeAddress(undefined as unknown as AddressFields)).rejects.toThrow(
-      'Network error',
-    )
+    const address: AddressFields = {
+      streetAddress: '999 Nowhere St',
+      municipality: 'Faketown',
+      state: 'ZZ',
+    }
+
+    await expect(geocodeAddress(address)).rejects.toThrow('Network error')
+    expect(mockGet).toHaveBeenCalledWith('/addresses/geocoder', { params: address })
   })
 })
