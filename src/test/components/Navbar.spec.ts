@@ -58,14 +58,14 @@ describe('Navbar.vue', () => {
     const routeTabPanes = wrapper.findAllComponents(ElTabPane)
     const firstRouteTab = routeTabPanes.find((tab) => !tab.classes().includes('login-control'))
 
-    if (firstRouteTab) {
-      // Simulate tab click by emitting the tab-click event on ElTabs
-      await tabs.vm.$emit('tab-click', { index: 1, paneName: '1' })
+    expect(firstRouteTab).toBeDefined()
 
-      // Since this is testing navigation behavior, we can check if the component
-      // responds to tab clicks appropriately
-      expect(firstRouteTab.exists()).toBe(true)
-    }
+    // Simulate tab click by emitting the tab-click event on ElTabs
+    await tabs.vm.$emit('tab-click', { index: 1, paneName: '1' })
+
+    // Since this is testing navigation behavior, we can check if the component
+    // responds to tab clicks appropriately
+    expect(firstRouteTab!.exists()).toBe(true)
   })
 
   it('renders navbar container with correct data-test-id', () => {

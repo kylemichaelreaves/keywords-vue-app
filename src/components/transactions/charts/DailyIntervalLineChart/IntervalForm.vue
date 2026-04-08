@@ -1,11 +1,11 @@
 <template>
-  <div :data-testid="props.dataTestId">
+  <div :data-testid="props.dataTestId" class="interval-form">
     <AlertComponent
       title="Interval Exceeds Oldest Transaction"
       message="Your requested interval exceeds the oldest dated transaction. Please choose a smaller interval."
       type="error"
-      v-if="isOutOfRange"
-      @close="onClose"
+      v-if="isOutOfRange && !isSmallestPreset"
+      :close="() => selectPreset(presets[0])"
     />
 
     <AlertComponent
@@ -15,44 +15,23 @@
       v-if="error && isError"
     />
 
-    <el-form label-position="top" :disabled="isOutOfRange || isFetching || isLoading">
-      <div class="form-row">
-        <el-form-item label="Interval Count" class="form-item-inline">
-          <el-input-number
-            v-model="numberInput"
-            :min="1"
-            :max="100"
-            :step="1"
-            @change="handleNumberInputChange"
-            controls-position="right"
-            class="input-number-inline"
-            data-testid="interval-input-number"
-          />
-        </el-form-item>
-        <el-form-item label="Interval Type" class="form-item-inline">
-          <el-select
-            v-model="intervalSelect"
-            placeholder="Select interval"
-            class="select-inline"
-            clearable
-            @clear="onClearIntervalSelect"
-            data-testid="interval-select"
-          >
-            <el-option
-              v-for="option in selectOptions"
-              :key="option.value"
-              :label="option.label"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-      </div>
-    </el-form>
+    <el-button-group class="period-buttons" data-testid="interval-period-buttons">
+      <el-button
+        v-for="preset in presets"
+        :key="preset.label"
+        :type="activePreset === preset.value ? 'primary' : 'default'"
+        :disabled="isFetching || isLoading"
+        :data-testid="`interval-btn-${preset.label}`"
+        @click="selectPreset(preset)"
+      >
+        {{ preset.label }}
+      </el-button>
+    </el-button-group>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useIsIntervalGreaterThanOldestDate } from '@api/hooks/transactions/useIsIntervalGreaterThanOldestDate.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
@@ -63,78 +42,58 @@ const props = defineProps({
   },
 })
 
-// Using defineModel for the interval value
 const intervalValue = defineModel<string>('intervalValue', {
   default: '1 month',
 })
 
-const intervalSelect = ref('month')
-const numberInput = ref(1)
+const presets = [
+  { label: '1M', value: '1 month' },
+  { label: '3M', value: '3 months' },
+  { label: '6M', value: '6 months' },
+  { label: '1Y', value: '1 year' },
+]
 
-// Computed property to build the interval string
-const computedIntervalValue = computed(() => {
-  return `${numberInput.value} ${intervalSelect.value}`
-})
+const activePreset = computed(
+  () => presets.find((p) => p.value === intervalValue.value)?.value ?? intervalValue.value,
+)
 
-const { data, error, isError, isLoading, isFetching, refetch } =
-  useIsIntervalGreaterThanOldestDate(computedIntervalValue)
+const { data, error, isError, isLoading, isFetching } =
+  useIsIntervalGreaterThanOldestDate(intervalValue)
 
-// get is_out_of_range from the data object
 const isOutOfRange = computed(() => {
   return data?.value?.map((item: { is_out_of_range: boolean }) => item.is_out_of_range)[0]
 })
 
-const handleNumberInputChange = (cur: number | undefined) => {
-  if (cur !== undefined) {
-    numberInput.value = cur
-  }
+const isSmallestPreset = computed(() => intervalValue.value === presets[0].value)
+
+function selectPreset(preset: (typeof presets)[number]) {
+  intervalValue.value = preset.value
 }
-
-const onClose = () => {
-  intervalSelect.value = 'month'
-  numberInput.value = 1
-}
-
-const onClearIntervalSelect = () => {
-  intervalSelect.value = ''
-}
-
-const selectOptions = computed(() => {
-  return [
-    { value: 'days', label: numberInput.value == 1 ? 'Day' : 'Days' },
-    { value: 'weeks', label: numberInput.value == 1 ? 'Week' : 'Weeks' },
-    { value: 'months', label: numberInput.value == 1 ? 'Month' : 'Months' },
-    { value: 'years', label: numberInput.value == 1 ? 'Year' : 'Years' },
-  ]
-})
-
-// Update the model value whenever the computed interval changes
-watch(computedIntervalValue, (newVal) => {
-  if (newVal) {
-    intervalValue.value = newVal
-  }
-})
-
-watch(intervalSelect, (newVal) => {
-  if (newVal) {
-    refetch()
-  }
-})
 </script>
 
 <style scoped>
-.form-row {
+.interval-form {
   display: flex;
+  flex-direction: column;
   align-items: flex-end;
-  justify-content: end;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
 }
 
-.form-item-inline {
-  margin-right: 10px;
-  margin-bottom: 0;
+.interval-form :deep(.el-alert) {
+  width: 100%;
 }
 
-.form-item-inline:last-child {
-  margin-right: 0;
+.period-buttons :deep(.el-button) {
+  font-weight: 500;
+  font-size: 0.8125rem;
+}
+
+.period-buttons :deep(.el-button--primary) {
+  --el-button-bg-color: var(--bv-primary);
+  --el-button-border-color: var(--bv-primary);
+  --el-button-text-color: var(--bv-primary-fg);
+  --el-button-hover-bg-color: var(--bv-primary-hover);
+  --el-button-hover-border-color: var(--bv-primary-hover);
 }
 </style>

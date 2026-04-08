@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test'
 import { HomePage } from './pages/HomePage'
 import { BudgetVisualizerPage } from './pages/BudgetVisualizerPage'
 
-test('Check localStorage', async ({ page }) => {
+test('auth token is present in localStorage after setup', async ({ page }) => {
   await page.goto('/')
   const token = await page.evaluate(() => localStorage.getItem('token'))
-  console.log('Token in test:', token)
+  expect(token).toBeTruthy()
 })
 
 test('has title', async ({ page }) => {
@@ -42,8 +42,6 @@ test('theme toggle functionality works correctly', async ({ page }) => {
   // Check initial theme state
   const initialHtmlClass = await homePage.getHtmlClass()
   const initialTheme = await homePage.getThemeFromLocalStorage()
-  console.log('Initial theme class:', initialHtmlClass)
-  console.log('Initial theme in localStorage:', initialTheme)
 
   // Click the theme toggle to switch themes
   await homePage.toggleTheme()
@@ -54,16 +52,13 @@ test('theme toggle functionality works correctly', async ({ page }) => {
   // Check that the HTML class has changed
   const newHtmlClass = await homePage.getHtmlClass()
   const newTheme = await homePage.getThemeFromLocalStorage()
-  console.log('New theme class:', newHtmlClass)
-  console.log('New theme in localStorage:', newTheme)
 
   expect(newHtmlClass).not.toBe(initialHtmlClass)
   expect(newTheme).not.toBe(initialTheme)
 
   // Verify theme classes are applied correctly
-  if (newTheme) {
-    await homePage.expectThemeClass(newTheme)
-  }
+  expect(newTheme).toBeTruthy()
+  await homePage.expectThemeClass(newTheme!)
 
   // Toggle back to verify it works both ways
   await homePage.toggleTheme()
@@ -97,7 +92,6 @@ test('theme toggle persists across page reloads', async ({ page }) => {
   expect(persistedTheme).toBe(newTheme)
 
   // Verify the HTML class matches the persisted theme
-  if (persistedTheme) {
-    await homePage.expectThemeClass(persistedTheme)
-  }
+  expect(persistedTheme).toBeTruthy()
+  await homePage.expectThemeClass(persistedTheme!)
 })

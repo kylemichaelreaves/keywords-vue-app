@@ -55,8 +55,8 @@ describe('Transaction Generator', () => {
       expect(transaction!.balance).toMatch(/^\d+\.\d{2}$/)
 
       // One amount should be 0.00, the other should be > 0
-      const debitAmount = parseFloat(transaction!.amount_debit)
-      const creditAmount = parseFloat(transaction!.amount_credit)
+      const debitAmount = Number.parseFloat(transaction!.amount_debit)
+      const creditAmount = Number.parseFloat(transaction!.amount_credit)
       expect(debitAmount === 0 || creditAmount === 0).toBe(true)
       expect(debitAmount > 0 || creditAmount > 0).toBe(true)
 
@@ -140,27 +140,25 @@ describe('Transaction Generator', () => {
     describe('optional fields', () => {
       test('check_number should be either undefined or a valid check number', () => {
         const transactions = generateTransactionsArray(10)
+        const withCheckNumbers = transactions.filter((t) => t.check_number !== undefined)
 
-        transactions.forEach((transaction) => {
-          if (transaction.check_number !== undefined) {
-            expect(transaction.check_number).toMatch(/^\d{4}$/)
-            const checkNum = parseInt(transaction.check_number)
-            expect(checkNum).toBeGreaterThanOrEqual(1001)
-            expect(checkNum).toBeLessThanOrEqual(9999)
-          }
+        withCheckNumbers.forEach((transaction) => {
+          expect(transaction.check_number).toMatch(/^\d{4}$/)
+          const checkNum = Number.parseInt(transaction.check_number!)
+          expect(checkNum).toBeGreaterThanOrEqual(1001)
+          expect(checkNum).toBeLessThanOrEqual(9999)
         })
       })
 
       test('fees should be either undefined or a valid amount', () => {
         const transactions = generateTransactionsArray(10)
+        const withFees = transactions.filter((t) => t.fees !== undefined)
 
-        transactions.forEach((transaction) => {
-          if (transaction.fees !== undefined) {
-            expect(transaction.fees).toMatch(/^\d+\.\d{2}$/)
-            const feeAmount = parseFloat(transaction.fees)
-            expect(feeAmount).toBeGreaterThanOrEqual(0)
-            expect(feeAmount).toBeLessThanOrEqual(50)
-          }
+        withFees.forEach((transaction) => {
+          expect(transaction.fees).toMatch(/^\d+\.\d{2}$/)
+          const feeAmount = Number.parseFloat(transaction.fees!)
+          expect(feeAmount).toBeGreaterThanOrEqual(0)
+          expect(feeAmount).toBeLessThanOrEqual(50)
         })
       })
     })

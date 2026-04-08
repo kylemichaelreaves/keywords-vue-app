@@ -139,26 +139,20 @@ describe('WeekSummaryTable', () => {
     const columns = table.findAllComponents(ElTableColumn)
     expect(columns.length).toBe(4)
 
-    // Check columns exist with proper null safety
-    expect(columns.length).toBeGreaterThan(0)
-    if (columns.length >= 4) {
-      expect(columns[0]?.props('label')).toBe('Memo')
-      expect(columns[1]?.props('label')).toBe('Memo Id')
-      expect(columns[2]?.props('label')).toBe('Weekly Amount Debit')
-      expect(columns[3]?.props('label')).toBe('Budget Category')
-    }
+    expect(columns[0]?.props('label')).toBe('Memo')
+    expect(columns[1]?.props('label')).toBe('Memo Id')
+    expect(columns[2]?.props('label')).toBe('Weekly Amount Debit')
+    expect(columns[3]?.props('label')).toBe('Budget Category')
 
     // Check if the component renders the mocked data
     const tableComponent = wrapper.findComponent(ElTable)
-    const tableData = tableComponent.props('data')
+    const tableData = tableComponent.props('data') as Record<string, unknown>[]
     expect(tableData).toHaveLength(2)
 
-    if (tableData && Array.isArray(tableData)) {
-      expect(tableData[0].memo).toBe('Test Memo 1')
-      expect(tableData[0].total_amount_debit).toBe(100.5)
-      expect(tableData[1].memo).toBe('Test Memo 2')
-      expect(tableData[1].total_amount_debit).toBe(250.75)
-    }
+    expect(tableData[0].memo).toBe('Test Memo 1')
+    expect(tableData[0].total_amount_debit).toBe(100.5)
+    expect(tableData[1].memo).toBe('Test Memo 2')
+    expect(tableData[1].total_amount_debit).toBe(250.75)
   })
 
   test('renders loading skeleton when data is loading', async () => {

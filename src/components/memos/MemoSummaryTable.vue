@@ -10,9 +10,31 @@
 
     <div class="bv-memo-header" data-testid="memo-summary-card">
       <div class="bv-memo-header-top" data-testid="memo-summary-header">
-        <h2 class="bv-memo-title" data-testid="memo-title">
-          {{ typedMemoData?.name || 'Loading...' }}
-        </h2>
+        <div class="bv-memo-title-row">
+          <h2 class="bv-memo-title" data-testid="memo-title">
+            {{ typedMemoData?.name || 'Loading...' }}
+          </h2>
+          <el-tag
+            v-if="typedMemoData"
+            :type="localAmbiguous ? 'warning' : 'success'"
+            size="small"
+            effect="plain"
+            round
+            data-testid="memo-ambiguous-badge"
+          >
+            {{ localAmbiguous ? 'Ambiguous' : 'Resolved' }}
+          </el-tag>
+          <el-tag
+            v-if="typedMemoData && localRecurring"
+            type="info"
+            size="small"
+            effect="plain"
+            round
+            data-testid="memo-recurring-badge"
+          >
+            Recurring
+          </el-tag>
+        </div>
         <MemoBudgetCategory v-if="typedMemoData" :memo-id="memoId" />
       </div>
 
@@ -23,17 +45,56 @@
             :value="typedSummaryData.sum_amount_debit"
             prefix="$"
             :precision="2"
-            :data-testid="`sum-amount-debit-${memoId}`"
-            :data-value="typedSummaryData.sum_amount_debit"
+            data-testid="memo-transactions-amount"
           />
+          <div class="bv-toggle-row">
+            <span class="bv-toggle-label">Ambiguous</span>
+            <el-switch
+              v-model="localAmbiguous"
+              size="small"
+              data-testid="memo-ambiguous-toggle"
+              @change="
+                (val: boolean | string | number) => toggleMemoField('ambiguous', Boolean(val))
+              "
+            />
+          </div>
         </div>
         <div class="bv-stat-card">
           <el-statistic
             title="Transactions Count"
             :value="typedSummaryData.transactions_count"
-            :data-testid="`transactions-count-${memoId}`"
-            :data-value="typedSummaryData.transactions_count"
+            data-testid="memo-transactions-count"
           />
+          <div class="bv-toggle-row">
+            <span class="bv-toggle-label">Recurring</span>
+            <el-switch
+              v-model="localRecurring"
+              size="small"
+              data-testid="memo-recurring-toggle"
+              @change="
+                (val: boolean | string | number) => toggleMemoField('recurring', Boolean(val))
+              "
+            />
+          </div>
+        </div>
+        <div class="bv-stat-card">
+          <div class="el-statistic" data-testid="memo-budget-category-stat">
+            <div class="el-statistic__head">Budget Category</div>
+            <div class="el-statistic__content">
+              <span class="el-statistic__number">{{ typedMemoData?.budget_category || '--' }}</span>
+            </div>
+          </div>
+          <div class="bv-toggle-row">
+            <span class="bv-toggle-label">Necessary</span>
+            <el-switch
+              v-model="localNecessary"
+              size="small"
+              data-testid="memo-necessary-toggle"
+              @change="
+                (val: boolean | string | number) => toggleMemoField('necessary', Boolean(val))
+              "
+            />
+          </div>
         </div>
       </div>
 
@@ -51,10 +112,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type Ref } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import useMemoSummary from '@api/hooks/memos/useMemoSummary.ts'
 import useMemo from '@api/hooks/memos/useMemo.ts'
+import mutateMemo from '@api/hooks/memos/mutateMemo.ts'
 import MemoTransactionsTable from '@components/memos/MemoTransactionsTable.vue'
 import MemoBudgetCategory from '@components/memos/MemoBudgetCategory.vue'
 import BackButton from '@components/shared/BackButton.vue'
@@ -65,7 +127,12 @@ const route = useRoute()
 const memoId = computed(() => Number.parseInt(route.params.memoId as string))
 
 // Fetch memo data to get the memo name and other details
-const { data: memoData, isLoading: memoLoading, isFetching: memoFetching } = useMemo(memoId.value)
+const {
+  data: memoData,
+  isLoading: memoLoading,
+  isFetching: memoFetching,
+  refetch: refetchMemo,
+} = useMemo(memoId.value)
 
 // Fetch memo summary data
 const {
@@ -75,6 +142,8 @@ const {
   isError,
   error,
 } = useMemoSummary(memoId.value)
+
+const { mutate } = mutateMemo()
 
 // Type assertions to help IDE with type resolution
 const typedSummaryData = summaryData as Ref<MemoSummary | undefined>
@@ -94,6 +163,43 @@ const isLoadingCondition = computed(
     typedMemoLoading.value ||
     typedMemoFetching.value,
 )
+
+const localAmbiguous = ref(false)
+const localRecurring = ref(false)
+const localNecessary = ref(false)
+
+watch(
+  typedMemoData,
+  (memo) => {
+    if (memo) {
+      localAmbiguous.value = memo.ambiguous ?? false
+      localRecurring.value = memo.recurring ?? false
+      localNecessary.value = memo.necessary ?? false
+    }
+  },
+  { immediate: true },
+)
+
+function toggleMemoField(field: 'ambiguous' | 'recurring' | 'necessary', value: boolean) {
+  const memo = typedMemoData.value
+  if (!memo) return
+
+  if (field === 'ambiguous') localAmbiguous.value = value
+  else if (field === 'recurring') localRecurring.value = value
+  else if (field === 'necessary') localNecessary.value = value
+
+  mutate(
+    { memo: { id: memo.id, name: memo.name, [field]: value } },
+    {
+      onSuccess: () => refetchMemo(),
+      onError: () => {
+        localAmbiguous.value = memo.ambiguous ?? false
+        localRecurring.value = memo.recurring ?? false
+        localNecessary.value = memo.necessary ?? false
+      },
+    },
+  )
+}
 </script>
 
 <style scoped>
@@ -117,6 +223,13 @@ const isLoadingCondition = computed(
   flex-wrap: wrap;
 }
 
+.bv-memo-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .bv-memo-title {
   margin: 0;
   font-size: 1.5rem;
@@ -126,7 +239,7 @@ const isLoadingCondition = computed(
 
 .bv-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
@@ -147,6 +260,21 @@ const isLoadingCondition = computed(
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--app-text-color);
+}
+
+.bv-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--bv-border);
+}
+
+.bv-toggle-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--bv-sidebar-muted);
 }
 
 .bv-loading {

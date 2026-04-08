@@ -5,7 +5,6 @@ import { staticTransactions } from '@test/e2e/mocks/transactionsMock.ts'
 import { staticDailyIntervals } from '@test/e2e/mocks/dailyIntervalMock.ts'
 import { setupTransactionsTableWithComprehensiveMocks } from '@test/e2e/helpers/setupTestMocks'
 import { waitForTableContent } from '@test/e2e/helpers/waitHelpers'
-import { setupApiRequestLogging, setupAwsApiRequestLogging } from '@test/e2e/helpers/requestLogger'
 import type { Page } from '@playwright/test'
 
 const isCI = !!process.env.CI
@@ -14,11 +13,6 @@ test.describe('Transactions Table', () => {
   let transactionsPage: TransactionsPage
 
   test.beforeEach(async ({ page }) => {
-    // CI FIX: Enhanced logging and setup for CI environment
-    if (isCI) {
-      setupAwsApiRequestLogging(page)
-    }
-
     transactionsPage = new TransactionsPage(page)
 
     // CRITICAL FIX: Set up API mocks FIRST before any navigation
@@ -35,7 +29,9 @@ test.describe('Transactions Table', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // Ensure the Vue app is actually rendered (not showing JSON)
-    await page.waitForSelector('[data-testid="transactions-table-selects"]', { timeout: 15000 })
+    await page
+      .getByTestId('transactions-table-selects')
+      .waitFor({ state: 'visible', timeout: 15000 })
 
     // BEST PRACTICE: Wait for final state only, not intermediate loading states
     await waitForTableContent(transactionsPage.transactionsTable, page, {
@@ -48,12 +44,7 @@ test.describe('Transactions Table', () => {
     })
   })
 
-  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async ({
-    page,
-  }) => {
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
-
+  test('The TransactionsPage contains all of its elements: selects, the line chart and its form, pagination, and the table itself', async () => {
     // BEST PRACTICE: Wait directly for the final state (table with data), not loading states
     await expect(transactionsPage.transactionsTable).toBeVisible({ timeout: isCI ? 45000 : 30000 })
 
@@ -64,11 +55,16 @@ test.describe('Transactions Table', () => {
     await expect(transactionsPage.yearSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.memoSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
-    await expect(transactionsPage.intervalTypeSelect).toBeVisible({ timeout: isCI ? 30000 : 15000 })
-    await expect(transactionsPage.intervalNumberInput).toBeVisible({
+    await expect(transactionsPage.periodButtons).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.transactionsTablePagination).toBeVisible({
       timeout: isCI ? 30000 : 15000,
     })
-    await expect(transactionsPage.transactionsTablePagination).toBeVisible({
+
+    // Summary cards should be visible with scoped labels
+    await expect(transactionsPage.summaryCards).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.totalCreditsStat).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.totalDebitsStat).toBeVisible({ timeout: isCI ? 30000 : 15000 })
+    await expect(transactionsPage.topBudgetCategoryStat).toBeVisible({
       timeout: isCI ? 30000 : 15000,
     })
   })
@@ -76,9 +72,6 @@ test.describe('Transactions Table', () => {
   test('right clicking on a cell in the TransactionsTable opens the context menu', async ({
     page,
   }) => {
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
-
     // Test user interaction - right click behavior
     const firstDataCell = transactionsPage.transactionsTable
       .getByRole('row')
@@ -113,10 +106,8 @@ test.describe('Transactions Table', () => {
     const modalTitleElement = editTransactionModal.getByLabel('Transaction Edit Dialog Title')
     await expect(modalTitleElement).toBeVisible({ timeout: isCI ? 10000 : 5000 })
 
-    const modalTitle = await modalTitleElement.textContent()
     const expectedTitle = 'Edit Transaction: ' + firstTransactionNumber
-
-    expect(modalTitle).toBe(expectedTitle)
+    await expect(modalTitleElement).toHaveText(expectedTitle)
 
     // Verify all form elements are visible
     await transactionsPage.expectTransactionEditFormElementsToBeVisible()
@@ -130,15 +121,13 @@ test.describe('Transactions Table', () => {
     const closeButton = transactionsPage.modalCloseButton
     await closeButton.click({ force: isCI })
     await page.waitForLoadState('domcontentloaded')
-    await expect(editTransactionModal).not.toBeVisible()
+    await expect(editTransactionModal).toBeHidden()
   })
 
   test('line chart displays tooltip on hover and allows clicking points to load transactions', async ({
     page,
   }) => {
     // Test user interaction with chart - what they see and can do
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
 
     // User should see the chart
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -208,9 +197,6 @@ test.describe('Transactions Table', () => {
   })
 
   test('daily interval line chart is hidden when a day is selected', async ({ page }) => {
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
-
     // Initially, user should see the chart (aggregate view)
     await expect(transactionsPage.intervalLineChart).toBeVisible({ timeout: isCI ? 30000 : 15000 })
     // User clicks on a chart point to drill down
@@ -229,9 +215,6 @@ test.describe('Transactions Table', () => {
   test('selecting a day from the DailyIntervalLineChart, the date of the node is reflected in the URL params', async ({
     page,
   }) => {
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
-
     // Get the first point in the chart
     const firstPoint = transactionsPage.intervalLineChart.getByTestId('chart-dot-0')
     await expect(firstPoint).toBeVisible({ timeout: isCI ? 30000 : 15000 })
@@ -262,9 +245,6 @@ test.describe('Transactions Table', () => {
   })
 
   test('selecting a day in the DaySelect is reflected in the URLs params', async ({ page }) => {
-    // Log only API requests for this test
-    setupApiRequestLogging(page)
-
     // Get the first day from the Pinia store
     const days = await transactionsPage.getDaysFromStore()
 

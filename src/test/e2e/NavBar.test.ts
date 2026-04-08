@@ -32,7 +32,7 @@ test.describe('NavBar loads the Budget Visualizer tab', () => {
     await expect(page.getByRole('button', { name: 'Add New Transaction' })).toBeVisible()
     await expect(sidebar.getByRole('link', { name: 'Transactions' })).toBeVisible()
     await expect(sidebar.getByRole('link', { name: 'Memos' })).toBeVisible()
-    await expect(sidebar.getByRole('link', { name: 'Budget categories' })).toBeVisible()
+    await expect(sidebar.getByRole('link', { name: 'Budgets' })).toBeVisible()
   })
 
   test('clicking the Transactions link in the sidebar opens the TransactionsTable', async ({

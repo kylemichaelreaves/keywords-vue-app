@@ -3,40 +3,13 @@ import type { Page } from '@playwright/test'
 import type { Transaction, DailyInterval } from '@types'
 import { mockCommonRoutes, type CommonRoutesOptions } from './mockCommonRoutes'
 
-const isCI = !!process.env.CI
-
-// ============================================================================
-// CI-SAFE SETUP - Use this in all tests
-// ============================================================================
-
 /**
  * Sets up all routes safely for both local and CI environments.
  * This function ensures routes are registered before any requests can be made.
  */
 export async function setupTestMocks(page: Page, options: CommonRoutesOptions = {}): Promise<void> {
-  // CI FIX: Clear all existing routes first
   await page.unrouteAll({ behavior: 'wait' })
-
-  // CI DEBUG: Log all requests to help diagnose failures
-  if (isCI) {
-    page.on('request', (req) => {
-      if (req.url().includes('execute-api')) {
-        console.log(`[CI REQUEST] ${req.method()} ${req.url()}`)
-      }
-    })
-    page.on('response', (res) => {
-      if (res.url().includes('execute-api')) {
-        console.log(`[CI RESPONSE] ${res.status()} ${res.url()}`)
-      }
-    })
-  }
-
-  // Register all routes
   await mockCommonRoutes(page, options)
-
-  if (isCI) {
-    console.log('[CI SETUP] All routes registered successfully')
-  }
 }
 
 // ============================================================================

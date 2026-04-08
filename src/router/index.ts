@@ -1,27 +1,10 @@
 import Home from '@components/Home.vue'
-import Keywords from '@components/Keywords.vue'
-import AddressGeocoderForm from '@components/address/AddressGeocoderForm.vue'
-import BudgetVisualizer from '@components/BudgetVisualizer.vue'
+import Dashboard from '@components/Dashboard.vue'
 import LoanCalculator from '@components/loan/LoanCalculator.vue'
-import TransactionsTable from '@components/transactions/TransactionsTable.vue'
-import PendingTransactionsTable from '@components/transactions/PendingTransactionsTable.vue'
-import MonthSummaryTable from '@components/transactions/summaries/month/MonthSummaryTable.vue'
-import WeekSummaryTable from '@components/transactions/summaries/week/WeekSummaryTable.vue'
-import MemosTable from '@components/memos/MemosTable.vue'
-import MemoSummaryTable from '@components/memos/MemoSummaryTable.vue'
 import NotFound from '@components/NotFound.vue'
 import LoginUser from '@components/user-management/LoginUser.vue'
-import MemoEditForm from '@components/memos/MemoEditForm.vue'
-import {
-  createRouter,
-  createWebHistory,
-  type RouteLocationNormalized,
-  // type NavigationGuardNext,
-} from 'vue-router'
+import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
 import { useTransactionsStore } from '@stores/transactions.ts'
-import TransactionEditPage from '@components/transactions/TransactionEditPage.vue'
-// import { checkForPendingTransactions } from '@api/helpers/checkForPendingTransactions'
-// import { ElMessage } from 'element-plus'
 
 function clearSelections(
   store: ReturnType<typeof useTransactionsStore>,
@@ -34,6 +17,10 @@ function clearSelections(
   store.setSelectedMemo(keep?.memo ?? '')
 }
 
+function memoBeforeEnter(to: RouteLocationNormalized) {
+  clearSelections(useTransactionsStore(), { memo: to.params.memoId as string })
+}
+
 export const routes = [
   {
     path: '/',
@@ -43,67 +30,52 @@ export const routes = [
   {
     path: '/keywords',
     name: 'keywords',
-    component: Keywords,
+    component: () => import('@components/Keywords.vue'),
     meta: { requiresAuth: true },
   },
   {
     path: '/address-geocoder',
     name: 'address-geocoder',
-    component: AddressGeocoderForm,
+    component: () => import('@components/address/AddressGeocoderForm.vue'),
     meta: { requiresAuth: true },
   },
   {
     path: '/budget-visualizer',
     name: 'budget-visualizer',
-    component: BudgetVisualizer,
+    component: () => import('@components/BudgetVisualizer.vue'),
     meta: { requiresAuth: true },
     children: [
       {
         path: '',
-        redirect: { name: 'transactions' },
+        redirect: { name: 'dashboard' },
       },
       {
-        path: 'loan-calculator',
-        name: 'loan-calculator',
+        path: 'dashboard',
+        name: 'dashboard',
+        component: Dashboard,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'debt',
+        name: 'debt',
         component: LoanCalculator,
         meta: { requiresAuth: true },
       },
       {
+        path: 'loan-calculator',
+        redirect: { name: 'debt' },
+      },
+      {
         path: 'transactions',
         name: 'transactions',
-        component: TransactionsTable,
+        component: () => import('@components/transactions/TransactionsTable.vue'),
         meta: { requiresAuth: true },
-        // beforeEnter: async (
-        //   to: RouteLocationNormalized,
-        //   from: RouteLocationNormalized,
-        //   next: NavigationGuardNext,
-        // ) => {
-        //   const hasPendingTransactions = await checkForPendingTransactions()
-        //
-        //   if (hasPendingTransactions) {
-        //     ElMessage.warning({
-        //       message:
-        //         'You have pending ambiguous transactions to review. Redirecting to pending transactions page.',
-        //       duration: 4000,
-        //     })
-        //
-        //     next({ name: 'pending-transactions' })
-        //   } else {
-        //     const store = useTransactionsStore()
-        //     store.setSelectedDay('')
-        //     store.setSelectedWeek('')
-        //     store.setSelectedMonth('')
-        //     store.setSelectedYear('')
-        //     store.setSelectedMemo('')
-        //
-        //     next()
-        //   }
-        // },
         children: [
           {
             path: 'months/:month/summary',
             name: 'month-summary',
-            component: MonthSummaryTable,
+            component: () =>
+              import('@components/transactions/summaries/month/MonthSummaryTable.vue'),
             meta: { requiresAuth: true },
             beforeEnter: (to: RouteLocationNormalized) => {
               clearSelections(useTransactionsStore(), { month: to.params.month as string })
@@ -112,7 +84,7 @@ export const routes = [
           {
             path: 'weeks/:week/summary/',
             name: 'week-summary',
-            component: WeekSummaryTable,
+            component: () => import('@components/transactions/summaries/week/WeekSummaryTable.vue'),
             meta: { requiresAuth: true },
             props: true,
             beforeEnter: (to: RouteLocationNormalized) => {
@@ -124,7 +96,7 @@ export const routes = [
       {
         path: 'transactions/pending',
         name: 'pending-transactions',
-        component: PendingTransactionsTable,
+        component: () => import('@components/transactions/PendingTransactionsTable.vue'),
         meta: { requiresAuth: true },
         beforeEnter: () => {
           clearSelections(useTransactionsStore())
@@ -133,42 +105,38 @@ export const routes = [
       {
         path: 'transactions/pending/:pendingTransactionId/edit',
         name: 'pending-transaction-edit',
-        component: TransactionEditPage,
+        component: () => import('@components/transactions/TransactionEditPage.vue'),
         meta: { requiresAuth: true },
         props: true,
       },
       {
         path: 'transactions/:transactionId/edit',
         name: 'transaction-edit',
-        component: TransactionEditPage,
+        component: () => import('@components/transactions/TransactionEditPage.vue'),
         meta: { requiresAuth: true },
         props: true,
       },
       {
         path: 'memos',
         name: 'memos',
-        component: MemosTable,
+        component: () => import('@components/memos/MemosTable.vue'),
         meta: { requiresAuth: true },
       },
       {
         path: 'memos/:memoId/summary',
         name: 'memo-summary',
-        component: MemoSummaryTable,
+        component: () => import('@components/memos/MemoSummaryTable.vue'),
         props: true,
         meta: { requiresAuth: true },
-        beforeEnter: (to: RouteLocationNormalized) => {
-          clearSelections(useTransactionsStore(), { memo: to.params.memoId as string })
-        },
+        beforeEnter: memoBeforeEnter,
       },
       {
         path: 'memos/:memoId/edit',
         name: 'memo-edit',
-        component: MemoEditForm,
+        component: () => import('@components/memos/MemoEditForm.vue'),
         meta: { requiresAuth: true },
         props: true,
-        beforeEnter: (to: RouteLocationNormalized) => {
-          clearSelections(useTransactionsStore(), { memo: to.params.memoId as string })
-        },
+        beforeEnter: memoBeforeEnter,
       },
       {
         path: 'budget-categories',

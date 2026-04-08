@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from '@vue/test-utils'
 import MemoSummaryTable from '@components/memos/MemoSummaryTable.vue'
-import { ElStatistic, ElSkeleton } from 'element-plus'
+import { ElStatistic, ElSkeleton, ElSwitch } from 'element-plus'
 import { VueQueryPlugin } from '@tanstack/vue-query'
 import { createTestingPinia } from '@pinia/testing'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -27,11 +27,16 @@ const mockMemoState = {
     id: 1,
     name: 'Test Memo',
     description: 'Test Description',
-  } as { id: number; name: string; description: string } | null),
+    ambiguous: false,
+    recurring: true,
+    necessary: false,
+    budget_category: 'Groceries',
+  } as Record<string, unknown> | null),
   isFetching: ref(false),
   isLoading: ref(false),
   isError: ref(false),
   error: ref(null),
+  refetch: vi.fn(),
 }
 
 // Mock the useMemoSummary hook
@@ -42,6 +47,12 @@ vi.mock('@api/hooks/memos/useMemoSummary', () => ({
 // Mock the useMemo hook
 vi.mock('@api/hooks/memos/useMemo', () => ({
   default: () => mockMemoState,
+}))
+
+const mockMutate = vi.fn()
+
+vi.mock('@api/hooks/memos/mutateMemo', () => ({
+  default: () => ({ mutate: mockMutate }),
 }))
 
 // Mock the Vue Router useRoute composable
@@ -79,6 +90,7 @@ describe('MemoSummaryTable.vue', () => {
         components: {
           ElStatistic,
           ElSkeleton,
+          ElSwitch,
         },
         plugins: [
           VueQueryPlugin,
@@ -119,6 +131,10 @@ describe('MemoSummaryTable.vue', () => {
       id: 1,
       name: 'Test Memo',
       description: 'Test Description',
+      ambiguous: false,
+      recurring: true,
+      necessary: false,
+      budget_category: 'Groceries',
     }
     mockMemoState.isFetching.value = false
     mockMemoState.isLoading.value = false
@@ -139,17 +155,19 @@ describe('MemoSummaryTable.vue', () => {
     expect(memoTitle.exists()).toBe(true)
     expect(memoTitle.text()).toBe('Test Memo')
 
-    // Check if the statistics are rendered
+    // Check if the statistics are rendered (2 ElStatistic + 1 custom stat)
     const statistics = wrapper.findAllComponents(ElStatistic)
     expect(statistics.length).toBe(2)
 
-    // Check if the correct statistics are rendered with proper null safety
-    if (statistics.length >= 2) {
-      expect(statistics[0]?.props('title')).toBe('Total Amount Debit')
-      expect(statistics[0]?.props('value')).toBe(-300.5)
-      expect(statistics[1]?.props('title')).toBe('Transactions Count')
-      expect(statistics[1]?.props('value')).toBe(5)
-    }
+    expect(statistics[0]?.props('title')).toBe('Total Amount Debit')
+    expect(statistics[0]?.props('value')).toBe(-300.5)
+    expect(statistics[1]?.props('title')).toBe('Transactions Count')
+    expect(statistics[1]?.props('value')).toBe(5)
+
+    const budgetCategoryStat = wrapper.find('[data-testid="memo-budget-category-stat"]')
+    expect(budgetCategoryStat.exists()).toBe(true)
+    expect(budgetCategoryStat.text()).toContain('Budget Category')
+    expect(budgetCategoryStat.text()).toContain('Groceries')
 
     // Check if the summary stats container exists
     const summaryStats = wrapper.find('[data-testid="memo-summary-stats"]')
@@ -236,5 +254,56 @@ describe('MemoSummaryTable.vue', () => {
     expect(alert.exists()).toBe(true)
 
     errorWrapper.unmount()
+  })
+
+  test('renders toggle switches reflecting memo data', async () => {
+    await wrapper.vm.$nextTick()
+
+    const ambiguousToggle = wrapper.find('[data-testid="memo-ambiguous-toggle"]')
+    const recurringToggle = wrapper.find('[data-testid="memo-recurring-toggle"]')
+    const necessaryToggle = wrapper.find('[data-testid="memo-necessary-toggle"]')
+
+    expect(ambiguousToggle.exists()).toBe(true)
+    expect(recurringToggle.exists()).toBe(true)
+    expect(necessaryToggle.exists()).toBe(true)
+  })
+
+  test('calls mutate with correct payload when ambiguous toggle is clicked', async () => {
+    await wrapper.vm.$nextTick()
+
+    const toggle = wrapper.find('[data-testid="memo-ambiguous-toggle"]')
+    await toggle.find('input').setValue(true)
+    await wrapper.vm.$nextTick()
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      { memo: { id: 1, name: 'Test Memo', ambiguous: true } },
+      expect.objectContaining({ onSuccess: expect.any(Function), onError: expect.any(Function) }),
+    )
+  })
+
+  test('calls mutate with correct payload when recurring toggle is clicked', async () => {
+    await wrapper.vm.$nextTick()
+
+    const toggle = wrapper.find('[data-testid="memo-recurring-toggle"]')
+    await toggle.find('input').setValue(false)
+    await wrapper.vm.$nextTick()
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      { memo: { id: 1, name: 'Test Memo', recurring: false } },
+      expect.objectContaining({ onSuccess: expect.any(Function), onError: expect.any(Function) }),
+    )
+  })
+
+  test('calls mutate with correct payload when necessary toggle is clicked', async () => {
+    await wrapper.vm.$nextTick()
+
+    const toggle = wrapper.find('[data-testid="memo-necessary-toggle"]')
+    await toggle.find('input').setValue(true)
+    await wrapper.vm.$nextTick()
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      { memo: { id: 1, name: 'Test Memo', necessary: true } },
+      expect.objectContaining({ onSuccess: expect.any(Function), onError: expect.any(Function) }),
+    )
   })
 })

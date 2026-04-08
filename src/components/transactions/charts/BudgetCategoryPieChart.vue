@@ -80,10 +80,8 @@
       <el-text type="info">No budget category data available for visualization.</el-text>
     </div>
 
-    <!-- Show fallback when conditions don't match -->
-    <div v-else style="background: #ffe6e6; padding: 20px; text-align: center">
-      <strong>FALLBACK STATE</strong><br />
-      This shouldn't show if everything is working correctly.
+    <div v-else class="pie-chart-empty">
+      <el-text type="info">Unable to display chart.</el-text>
     </div>
   </div>
 </template>
@@ -532,5 +530,10 @@ onMounted(async () => {
   flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
+}
+
+.pie-chart-empty {
+  padding: 20px;
+  text-align: center;
 }
 </style>

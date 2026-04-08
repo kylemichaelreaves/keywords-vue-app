@@ -48,10 +48,9 @@ test.describe('MemoSelect URL Synchronization', () => {
     // Select "Coffee Shop"
     await memoAutocomplete.selectSuggestion('Coffee Shop')
 
-    // Wait for URL to update
-    await page.waitForTimeout(500)
+    // Wait for URL to update with memo ID
+    await expect(page).toHaveURL(/memo=101/)
 
-    // Verify URL contains memo ID (101), not name
     const currentUrl = page.url()
     expect(currentUrl).toContain('memo=101')
     expect(currentUrl).not.toContain('memo=Coffee')
@@ -74,14 +73,11 @@ test.describe('MemoSelect URL Synchronization', () => {
       (response) => response.url().includes('/memos') && response.url().includes('name=Coffee'),
     )
     await memoAutocomplete.selectSuggestion('Coffee Shop')
-    await page.waitForTimeout(500)
-
-    // Verify URL has memo
-    expect(page.url()).toContain('memo=101')
+    await expect(page).toHaveURL(/memo=101/)
 
     // Clear the selection
     await memoAutocomplete.clickClearButton()
-    await page.waitForTimeout(500)
+    await page.waitForURL((url) => !url.href.includes('memo='))
 
     // Verify URL no longer has memo parameter
     const currentUrl = page.url()
@@ -95,9 +91,6 @@ test.describe('MemoSelect URL Synchronization', () => {
     // Navigate directly to transactions page with memo ID in URL
     await page.goto('/budget-visualizer/transactions?memo=101')
     await transactionsPage.waitForTransactionsTableReady()
-
-    // Wait for memos to load and component to initialize
-    await page.waitForTimeout(1000)
 
     // Verify the autocomplete shows the memo name (not ID)
     await memoAutocomplete.expectValue('Coffee Shop')
@@ -118,15 +111,11 @@ test.describe('MemoSelect URL Synchronization', () => {
       (response) => response.url().includes('/memos') && response.url().includes('name=Coffee'),
     )
     await memoAutocomplete.selectSuggestion('Coffee Shop')
-    await page.waitForTimeout(500)
-
-    // Verify URL has memo
-    expect(page.url()).toContain('memo=101')
+    await expect(page).toHaveURL(/memo=101/)
 
     // Refresh the page
     await page.reload()
     await transactionsPage.waitForTransactionsTableReady()
-    await page.waitForTimeout(1000)
 
     // Verify memo is still selected after refresh
     await memoAutocomplete.expectValue('Coffee Shop')
@@ -150,7 +139,7 @@ test.describe('MemoSelect URL Synchronization', () => {
       (response) => response.url().includes('/memos') && response.url().includes('name=Coffee'),
     )
     await memoAutocomplete.selectSuggestion('Coffee Shop')
-    await page.waitForTimeout(500)
+    await expect(page).toHaveURL(/memo=101/)
 
     // Verify URL has memo AND still has other parameters
     currentUrl = page.url()
@@ -171,7 +160,7 @@ test.describe('MemoSelect URL Synchronization', () => {
       (response) => response.url().includes('/memos') && response.url().includes('name=Coffee'),
     )
     await memoAutocomplete.selectSuggestion('Coffee Shop')
-    await page.waitForTimeout(500)
+    await expect(page).toHaveURL(/memo=101/)
 
     // Verify all parameters present
     let currentUrl = page.url()
@@ -181,7 +170,7 @@ test.describe('MemoSelect URL Synchronization', () => {
 
     // Clear memo
     await memoAutocomplete.clickClearButton()
-    await page.waitForTimeout(500)
+    await page.waitForURL((url) => !url.href.includes('memo='))
 
     // Verify only memo is removed, others remain
     currentUrl = page.url()
@@ -219,7 +208,7 @@ test.describe('MemoSelect URL Synchronization', () => {
       (response) => response.url().includes('/memos') && response.url().includes('name=Coffee'),
     )
     await memoAutocomplete.selectSuggestion('Coffee Shop')
-    await page.waitForTimeout(500)
+    await expect(page).toHaveURL(/memo=101/)
 
     // Wait for transactions API call
     const transactionsRequest = await transactionsRequestPromise
@@ -243,15 +232,16 @@ test.describe('MemoSelect URL Synchronization', () => {
       (response) => response.url().includes('/memos') && response.url().includes('name=Coffee'),
     )
     await memoAutocomplete.selectSuggestion('Coffee Shop')
-    await page.waitForTimeout(500)
+    await expect(page).toHaveURL(/memo=101/)
 
     // Get the URL
     const urlWithMemo = page.url()
     expect(urlWithMemo).toContain('memo=101')
 
     // Open the same URL in a new context (simulating sharing)
-    const newContext = await page.context().browser()?.newContext()
-    if (!newContext) throw new Error('Could not create new context')
+    const browser = page.context().browser()
+    expect(browser).not.toBeNull()
+    const newContext = await browser!.newContext()
 
     const newPage = await newContext.newPage()
 
@@ -262,8 +252,7 @@ test.describe('MemoSelect URL Synchronization', () => {
 
     // Navigate to the shared URL
     await newPage.goto(urlWithMemo)
-    await newPage.waitForLoadState('networkidle')
-    await newPage.waitForTimeout(1000)
+    await newPage.waitForLoadState('domcontentloaded')
 
     // Verify memo is selected in the new page
     const newMemoAutocomplete = new AutocompleteComponent(newPage, 'transactions-table-memo-select')
@@ -314,7 +303,6 @@ test.describe('MemoSelect URL with useTransactions Integration', () => {
       (response) => response.url().includes('/memos') && response.url().includes('name=Coffee'),
     )
     await memoAutocomplete.selectSuggestion('Coffee Shop')
-    // await page.waitForTimeout(1000)
 
     // Verify URL was updated with memo ID
     expect(page.url()).toContain('memo=101')

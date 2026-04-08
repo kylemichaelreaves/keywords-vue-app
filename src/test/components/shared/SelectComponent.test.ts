@@ -51,10 +51,9 @@ describe('SelectComponent', () => {
     }
 
     const onChangeFunction = wrapper.props('onChange') as (value: string) => void
-    if (typeof onChangeFunction === 'function') {
-      onChangeFunction('2')
-      expect(onChangeMock).toHaveBeenCalledWith('2')
-    }
+    expect(typeof onChangeFunction).toBe('function')
+    onChangeFunction('2')
+    expect(onChangeMock).toHaveBeenCalledWith('2')
   })
 
   test('renders with correct placeholder', () => {

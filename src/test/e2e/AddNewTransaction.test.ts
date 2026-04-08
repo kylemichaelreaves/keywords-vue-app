@@ -38,5 +38,5 @@ test('clicking the Close closes the form', async ({ page }) => {
   await page.getByLabel('Close this dialog').click()
   await expect(
     page.getByText('Add New TransactionCreditDebitDateDescriptionMemoAmount DebitAmount Credit'),
-  ).not.toBeVisible()
+  ).toBeHidden()
 })

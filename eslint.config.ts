@@ -7,7 +7,6 @@ import pluginPlaywright from 'eslint-plugin-playwright'
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 import storybook from 'eslint-plugin-storybook'
 
-
 export default defineConfigWithVueTs(
   // Global ignores - must be the first config object and ONLY contain ignores
   {
@@ -25,14 +24,14 @@ export default defineConfigWithVueTs(
       '**/src/stories/**',
       '**/*.config.d.ts',
       '**/components.d.ts',
-      '**/auto-imports.d.ts'
-    ]
+      '**/auto-imports.d.ts',
+    ],
   },
 
   // Main linting config
   {
     name: 'app/files-to-lint',
-    files: ['**/*.{ts,mts,tsx,vue}']
+    files: ['**/*.{ts,mts,tsx,vue}'],
   },
 
   pluginVue.configs['flat/essential'],
@@ -43,27 +42,35 @@ export default defineConfigWithVueTs(
     name: 'app/vue-rules',
     files: ['**/*.vue'],
     rules: {
-      'vue/multi-word-component-names': 'off'
-    }
+      'vue/multi-word-component-names': 'off',
+    },
   },
 
   {
     ...pluginVitest.configs.recommended,
-    files: ['src/**/__tests__/*']
+    files: ['src/test/**/*.{test,spec}.{ts,tsx}'],
+    ignores: ['src/test/e2e/**'],
   },
 
   {
     ...pluginPlaywright.configs['flat/recommended'],
-    files: ['e2e/**/*.{test,spec}.{js,ts,jsx,tsx}']
+    files: ['src/test/e2e/**/*.{test,spec}.{ts,tsx}'],
+    rules: {
+      ...pluginPlaywright.configs['flat/recommended'].rules,
+      'playwright/expect-expect': [
+        'warn',
+        { assertFunctionNames: ['expect'], assertFunctionPatterns: ['^expect', '^openSplitDrawer$'] },
+      ],
+    },
   },
 
   ...storybook.configs['flat/recommended'],
   {
     files: ['**/*.stories.{js,ts,jsx,tsx,vue}'],
     rules: {
-      'import/no-anonymous-default-export': 'off'
+      'import/no-anonymous-default-export': 'off',
     },
   },
 
-  skipFormatting
+  skipFormatting,
 )

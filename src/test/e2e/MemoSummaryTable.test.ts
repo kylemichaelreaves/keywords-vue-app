@@ -15,23 +15,8 @@ test.describe('Memo Summary Table', () => {
     memosPage = new MemosTablePage(page)
     memoSummaryTablePage = new MemoSummaryTablePage(page)
 
-    // Ensure no requests go out before routes are ready
-    await page.route('**/*', (route) => route.continue()) // Catch-all first
-    await page.unrouteAll() // Clear it
-
-    // Set up request logging to debug CI
-    if (process.env.CI) {
-      page.on('request', (req) => {
-        if (req.url().includes('memos')) {
-          console.log('[CI REQUEST]', req.url())
-        }
-      })
-      page.on('response', (res) => {
-        if (res.url().includes('memos')) {
-          console.log('[CI RESPONSE]', res.status(), res.url())
-        }
-      })
-    }
+    await page.route('**/*', (route) => route.continue())
+    await page.unrouteAll()
 
     const memos = generateMemosArray()
     memoWithoutBudgetCategory = {
@@ -49,8 +34,8 @@ test.describe('Memo Summary Table', () => {
 
     await memosPage.clickFirstMemoLink()
 
-    await memoSummaryTablePage.page.waitForLoadState('networkidle')
-    await memoSummaryTablePage.memoSummaryCard.waitFor({ state: 'visible' })
+    await memoSummaryTablePage.page.waitForLoadState('domcontentloaded')
+    await memoSummaryTablePage.summaryCard.waitFor({ state: 'visible' })
   })
 
   test.afterEach(async ({ page }) => {
@@ -66,7 +51,7 @@ test.describe('Memo Summary Table', () => {
   })
 
   test('should display the memo card table', async () => {
-    await memoSummaryTablePage.expectMemoSummaryCardVisible()
+    await memoSummaryTablePage.expectSummaryCardVisible()
   })
 
   test('should handle back button click', async () => {
@@ -97,7 +82,7 @@ test.describe('Memo Summary Table', () => {
     const currentUrl = page.url()
     await page.goto(currentUrl)
 
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // Now the button should be visible
     await expect(memoSummaryTablePage.budgetCategoryButton).toBeVisible({ timeout: 15000 })

@@ -4,14 +4,16 @@ export class MemoSummaryTablePage {
   readonly page: Page
 
   readonly errorAlert: Locator
-  readonly memoSummaryTable: Locator
-  readonly memoSummaryHeader: Locator
-  readonly memoSummaryCard: Locator
-  readonly memoTransactionsTable: Locator
-  readonly transactionsCount: Locator
-  readonly transactionsAmount: Locator
+  readonly summaryHeader: Locator
+  readonly summaryCard: Locator
+  readonly title: Locator
   readonly backButton: Locator
-  readonly memoTitle: Locator
+
+  readonly transactionsAmount: Locator
+  readonly transactionsCount: Locator
+  readonly budgetCategory: Locator
+
+  readonly transactionsTable: Locator
   readonly budgetCategoryButton: Locator
   readonly budgetCategoryModal: Locator
 
@@ -19,17 +21,17 @@ export class MemoSummaryTablePage {
     this.page = page
 
     this.errorAlert = page.getByRole('alert').getByTestId('memo-summary-error')
-    this.memoSummaryHeader = page.getByTestId('memo-summary-header')
-    this.memoSummaryCard = page.getByTestId('memo-summary-card')
-    this.memoSummaryTable = page.getByTestId('memo-transactions-table')
-    this.memoTransactionsTable = page.getByTestId('memo-transactions-table')
-    this.transactionsCount = page.locator('[data-testid^="transactions-count-"]')
-    this.transactionsAmount = page.locator('[data-testid^="sum-amount-debit-"]')
+    this.summaryHeader = page.getByTestId('memo-summary-header')
+    this.summaryCard = page.getByTestId('memo-summary-card')
+    this.title = this.summaryHeader.getByTestId('memo-title')
     this.backButton = page.getByRole('button', { name: 'Go Back' })
-    this.memoTitle = this.memoSummaryHeader.getByTestId('memo-title')
-    // Target the button by its data-testid within the budget category column
-    this.budgetCategoryButton = page.getByTestId('budget-category-button')
 
+    this.transactionsAmount = page.getByTestId('memo-transactions-amount')
+    this.transactionsCount = page.getByTestId('memo-transactions-count')
+    this.budgetCategory = page.getByTestId('memo-budget-category-stat')
+
+    this.transactionsTable = page.getByTestId('memo-transactions-table')
+    this.budgetCategoryButton = page.getByTestId('budget-category-button')
     this.budgetCategoryModal = page.getByTestId('budget-category-modal')
   }
 
@@ -53,8 +55,7 @@ export class MemoSummaryTablePage {
   }
 
   async getMemoTitle() {
-    // Wait for the title to be loaded (not "Loading...")
-    await this.memoTitle.waitFor({ state: 'visible' })
+    await this.title.waitFor({ state: 'visible' })
     await this.page.waitForFunction(
       (selector) => {
         const element = document.querySelector(selector)
@@ -63,22 +64,23 @@ export class MemoSummaryTablePage {
       '[data-testid="memo-title"]',
       { timeout: 10000 },
     )
-    return this.memoTitle.textContent()
+    return this.title.textContent()
   }
 
   async getStats() {
     return {
       transactionsCount: await this.transactionsCount.textContent(),
       transactionsAmount: await this.transactionsAmount.textContent(),
+      budgetCategory: await this.budgetCategory.textContent(),
     }
   }
 
-  expectSummaryTableVisible() {
-    return this.memoSummaryTable.isVisible()
+  expectTransactionsTableVisible() {
+    return this.transactionsTable.isVisible()
   }
 
-  expectMemoSummaryCardVisible() {
-    return this.memoSummaryCard.isVisible()
+  expectSummaryCardVisible() {
+    return this.summaryCard.isVisible()
   }
 
   async hasError() {

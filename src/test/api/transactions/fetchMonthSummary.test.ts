@@ -14,8 +14,5 @@ describe('fetchMonthSummary', () => {
     expect(result).toEqual(monthSummaryMock)
   })
 
-  test.skip('fetchMonthSummary should throw an error if the request fails', async () => {
-    const week = '13-2023'
-    await expect(fetchMonthSummary(week)).rejects.toThrow()
-  })
+  test.todo('fetchMonthSummary should throw an error if the request fails')
 })

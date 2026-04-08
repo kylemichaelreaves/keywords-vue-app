@@ -13,23 +13,15 @@ import { generateBudgetCategoryHierarchy } from '@test/e2e/mocks/budgetCategorie
 import { generateMonthSummaryArray } from '@test/e2e/mocks/monthSummaryMock.ts'
 import { isExecuteApiUrl } from '@test/e2e/helpers/e2eApiUrl.ts'
 
-const isCI = !!process.env.CI
-const DEBUG = !!process.env.DEBUG_MOCKS
-
 // ============================================================================
 // SHARED UTILITIES
 // ============================================================================
 
-function corsHeaders(): Record<string, string> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-  }
-  if (isCI) {
-    headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-  }
-  return headers
+const corsHeaders: Record<string, string> = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
 
 function fulfill(route: Route, data: unknown, status = 200) {
@@ -37,15 +29,8 @@ function fulfill(route: Route, data: unknown, status = 200) {
     status,
     contentType: 'application/json',
     body: JSON.stringify(data),
-    headers: corsHeaders(),
+    headers: corsHeaders,
   })
-}
-
-function log(category: string, message: string, data?: unknown) {
-  // Always log in CI for debugging
-  if (isCI || DEBUG) {
-    console.log(`[MOCK:${category}] ${message}`, data ? JSON.stringify(data) : '')
-  }
 }
 
 // ============================================================================
@@ -67,7 +52,6 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
       url.pathname.endsWith('/memos') &&
       url.searchParams.get('count') === 'true',
     (route) => {
-      log('Memos', 'Count request')
       fulfill(route, { count: validMemos.length * 4 })
     },
   )
@@ -85,8 +69,6 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
       const idParam = url.searchParams.get('id')
       const nameParam = url.searchParams.get('name')
       const searchParam = url.searchParams.get('search')
-
-      log('Memos', 'List request', { limit, offset, idParam, nameParam, searchParam })
 
       if (idParam) {
         const memo = validMemos.find((m) => m.id === Number.parseInt(idParam, 10))
@@ -115,7 +97,6 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
     (url) =>
       isExecuteApiUrl(url) && url.pathname.includes('/memos/') && url.pathname.endsWith('/summary'),
     (route) => {
-      log('Memos', 'Summary request')
       fulfill(route, { sum_amount_debit: 0, transactions_count: 1 })
     },
   )
@@ -145,7 +126,6 @@ export async function mockMemoRoutes(page: Page, options: MemoMockOptions = {}) 
         memo = Object.assign({}, validMemos[0], { id: memoId })
       }
 
-      log('Memos', 'Individual memo by ID', { memoId, found: !!memo })
       fulfill(route, memo || { error: 'Memo not found' }, memo ? 200 : 404)
     },
   )
@@ -175,7 +155,6 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
       url.pathname.endsWith('/transactions') &&
       url.searchParams.get('dailyTotals') === 'true',
     (route) => {
-      log('Transactions', 'Daily totals request')
       fulfill(route, dailyIntervals)
     },
   )
@@ -187,7 +166,6 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
       url.pathname.endsWith('/transactions') &&
       url.searchParams.get('count') === 'true',
     (route) => {
-      log('Transactions', 'Count request')
       fulfill(route, { count: transactions.length })
     },
   )
@@ -201,7 +179,6 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
     (route) => {
       const url = new URL(route.request().url())
       const memoId = url.searchParams.get('memoId')
-      log('Transactions', 'By memoId', { memoId })
       fulfill(route, generateTransactionsArray(5, `Memo ${memoId}`))
     },
   )
@@ -213,7 +190,6 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
       url.pathname.endsWith('/transactions') &&
       url.searchParams.get('budgetCategoryHierarchySum') === 'true',
     (route) => {
-      log('Transactions', 'Budget category hierarchy sum')
       fulfill(route, generateBudgetCategoryHierarchy())
     },
   )
@@ -228,7 +204,6 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
       const url = new URL(route.request().url())
       const timeFrame = url.searchParams.get('timeFrame')
       const amount = timeFrame === 'week' ? -700 : -5000
-      log('Transactions', 'Total amount debit', { timeFrame, amount })
       fulfill(route, [{ total_amount_debit: amount }])
     },
   )
@@ -250,9 +225,6 @@ export async function mockTransactionRoutes(page: Page, options: TransactionMock
       const url = new URL(route.request().url())
       const timeFrame = url.searchParams.get('timeFrame')
       const date = url.searchParams.get('date')
-      const limit = url.searchParams.get('limit')
-
-      log('Transactions', 'General request', { timeFrame, date, limit })
 
       if (timeFrame === 'day' && date) {
         return fulfill(route, generateTransactionsArray(5, '', date))
@@ -282,7 +254,6 @@ export async function mockTimeIntervalRoutes(page: Page) {
         date.setDate(date.getDate() - (29 - i))
         return { day: date.toISOString().split('T')[0] }
       })
-      log('TimeIntervals', 'Days', { count: days.length })
       fulfill(route, days)
     },
   )
@@ -291,7 +262,6 @@ export async function mockTimeIntervalRoutes(page: Page) {
   await page.route(
     (url) => isExecuteApiUrl(url) && url.pathname.endsWith('/transactions/weeks'),
     (route) => {
-      log('TimeIntervals', 'Weeks')
       fulfill(route, generateWeeksArray())
     },
   )
@@ -300,7 +270,6 @@ export async function mockTimeIntervalRoutes(page: Page) {
   await page.route(
     (url) => isExecuteApiUrl(url) && url.pathname.endsWith('/transactions/months'),
     (route) => {
-      log('TimeIntervals', 'Months')
       fulfill(route, generateMonthsArray())
     },
   )
@@ -309,7 +278,6 @@ export async function mockTimeIntervalRoutes(page: Page) {
   await page.route(
     (url) => isExecuteApiUrl(url) && url.pathname.endsWith('/transactions/years'),
     (route) => {
-      log('TimeIntervals', 'Years')
       fulfill(route, generateYearsArray())
     },
   )
@@ -321,7 +289,6 @@ export async function mockTimeIntervalRoutes(page: Page) {
       url.pathname.includes('/transactions/weeks/') &&
       url.pathname.endsWith('/summary'),
     (route) => {
-      log('TimeIntervals', 'Week summary')
       fulfill(route, generateMonthSummaryArray(20))
     },
   )
@@ -333,7 +300,6 @@ export async function mockTimeIntervalRoutes(page: Page) {
       url.pathname.includes('/transactions/weeks/') &&
       url.pathname.endsWith('/days'),
     (route) => {
-      log('TimeIntervals', 'Week days')
       fulfill(route, [])
     },
   )
@@ -345,7 +311,6 @@ export async function mockTimeIntervalRoutes(page: Page) {
       url.pathname.includes('/transactions/months/') &&
       url.pathname.endsWith('/summary'),
     (route) => {
-      log('TimeIntervals', 'Month summary')
       fulfill(route, generateMonthSummaryArray())
     },
   )
@@ -378,7 +343,6 @@ export async function mockBudgetCategoryRoutes(
   await page.route(
     (url) => isExecuteApiUrl(url) && url.pathname.endsWith('/budget-categories'),
     (route) => {
-      log('BudgetCategories', 'List request')
       fulfill(route, budgetCategories)
     },
   )
@@ -390,9 +354,6 @@ export async function mockBudgetCategoryRoutes(
       url.pathname.endsWith('/transactions') &&
       url.searchParams.get('budgetCategoryHierarchySum') === 'true',
     (route) => {
-      const url = new URL(route.request().url())
-      const requestTimeFrame = url.searchParams.get('timeFrame')
-      log('BudgetCategories', 'Hierarchy sum', { timeFrame: requestTimeFrame })
       fulfill(route, budgetCategories)
     },
   )
@@ -429,13 +390,6 @@ export async function mockCommonRoutes(page: Page, options: CommonRoutesOptions 
   }
 
   await Promise.all(promises)
-
-  log('Common', 'All routes registered', {
-    memos: !options.skipMemos,
-    transactions: !options.skipTransactions,
-    timeIntervals: !options.skipTimeIntervals,
-    budgetCategories: !options.skipBudgetCategories,
-  })
 }
 
 // ============================================================================
