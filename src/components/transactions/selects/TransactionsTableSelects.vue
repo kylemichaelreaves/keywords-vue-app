@@ -53,7 +53,7 @@ function clearAllFilters() {
   store.setSelectedMonth('')
   store.setSelectedYear('')
   store.setSelectedMemo('')
-  router.replace({ path: '/budget-visualizer/transactions', query: {} })
+  router.replace({ name: 'transactions', query: {} })
 }
 </script>
 

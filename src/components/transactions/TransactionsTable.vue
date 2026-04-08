@@ -11,8 +11,8 @@
     <section class="bv-summary-cards" data-testid="transactions-summary-cards">
       <el-card class="bv-stat-card" shadow="never">
         <el-statistic
-          title="Credits (loaded)"
-          :value="totalCredits"
+          title="Total Credits"
+          :value="summaryStats.credits"
           prefix="$"
           :precision="2"
           data-testid="total-credits-stat"
@@ -20,8 +20,8 @@
       </el-card>
       <el-card class="bv-stat-card" shadow="never">
         <el-statistic
-          title="Debits (loaded)"
-          :value="totalDebits"
+          title="Total Debits"
+          :value="summaryStats.debits"
           prefix="$"
           :precision="2"
           data-testid="total-debits-stat"
@@ -29,8 +29,8 @@
       </el-card>
       <el-card class="bv-stat-card" shadow="never">
         <el-statistic
-          title="Top Category (loaded)"
-          :value="topBudgetCategory"
+          title="Top Budget Category"
+          :value="summaryStats.topCategory"
           data-testid="top-budget-category-stat"
         />
       </el-card>
@@ -266,30 +266,29 @@ const flattenedData = computed(() => {
   )
 })
 
-const totalCredits = computed(() => {
-  return flattenedData.value.reduce((sum, t) => sum + (Number(t.amount_credit) || 0), 0)
-})
+const summaryStats = computed(() => {
+  let credits = 0
+  let debits = 0
+  const categoryCounts: Record<string, number> = {}
 
-const totalDebits = computed(() => {
-  return flattenedData.value.reduce((sum, t) => sum + (Number(t.amount_debit) || 0), 0)
-})
-
-const topBudgetCategory = computed(() => {
-  const counts: Record<string, number> = {}
   for (const t of flattenedData.value) {
-    if (t.budget_category && t.budget_category.trim()) {
-      counts[t.budget_category] = (counts[t.budget_category] || 0) + 1
+    credits += Number(t.amount_credit) || 0
+    debits += Number(t.amount_debit) || 0
+    if (typeof t.budget_category === 'string' && t.budget_category.trim()) {
+      categoryCounts[t.budget_category] = (categoryCounts[t.budget_category] || 0) + 1
     }
   }
-  let top = '--'
-  let max = 0
-  for (const [cat, count] of Object.entries(counts)) {
-    if (count > max) {
-      max = count
-      top = cat
+
+  let topCategory = '--'
+  let maxCount = 0
+  for (const [cat, count] of Object.entries(categoryCounts)) {
+    if (count > maxCount) {
+      maxCount = count
+      topCategory = cat
     }
   }
-  return top
+
+  return { credits, debits, topCategory }
 })
 
 devConsole('log', 'Flattened Transactions Data:', flattenedData.value)
@@ -420,11 +419,11 @@ function getRowKey(row: Transaction): string {
   color: var(--app-text-color);
 }
 
-.bv-table-section :deep(.el-table .el-table__row) {
+.bv-table-section :deep(.el-table .el-table__row > td.el-table__cell) {
   transition: box-shadow 0.15s ease;
 }
 
-.bv-table-section :deep(.el-table .el-table__row:hover) {
+.bv-table-section :deep(.el-table .el-table__row:hover > td.el-table__cell) {
   box-shadow: var(--bv-surface-shadow);
 }
 

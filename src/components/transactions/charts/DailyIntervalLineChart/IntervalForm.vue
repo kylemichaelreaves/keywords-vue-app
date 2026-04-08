@@ -4,8 +4,8 @@
       title="Interval Exceeds Oldest Transaction"
       message="Your requested interval exceeds the oldest dated transaction. Please choose a smaller interval."
       type="error"
-      v-if="isOutOfRange"
-      @close="selectPreset(presets[0])"
+      v-if="isOutOfRange && !isSmallestPreset"
+      :close="() => selectPreset(presets[0])"
     />
 
     <AlertComponent
@@ -64,6 +64,8 @@ const isOutOfRange = computed(() => {
   return data?.value?.map((item: { is_out_of_range: boolean }) => item.is_out_of_range)[0]
 })
 
+const isSmallestPreset = computed(() => intervalValue.value === presets[0].value)
+
 function selectPreset(preset: (typeof presets)[number]) {
   intervalValue.value = preset.value
 }
@@ -72,9 +74,14 @@ function selectPreset(preset: (typeof presets)[number]) {
 <style scoped>
 .interval-form {
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
   padding: 0.5rem 0.75rem;
+}
+
+.interval-form :deep(.el-alert) {
+  width: 100%;
 }
 
 .period-buttons :deep(.el-button) {

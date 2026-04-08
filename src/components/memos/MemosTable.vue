@@ -320,11 +320,11 @@ defineExpose({
   color: var(--app-text-color);
 }
 
-.bv-table-section :deep(.el-table .el-table__row) {
+.bv-table-section :deep(.el-table .el-table__row > td.el-table__cell) {
   transition: box-shadow 0.15s ease;
 }
 
-.bv-table-section :deep(.el-table .el-table__row:hover) {
+.bv-table-section :deep(.el-table .el-table__row:hover > td.el-table__cell) {
   box-shadow: var(--bv-surface-shadow);
 }
 
