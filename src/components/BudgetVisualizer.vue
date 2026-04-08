@@ -34,7 +34,7 @@
       </header>
 
       <main class="bv-main">
-        <router-view :key="route.fullPath" />
+        <router-view />
       </main>
     </div>
 
