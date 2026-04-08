@@ -1,4 +1,4 @@
-import { defineConfig, PluginOption } from 'vite'
+import { defineConfig, loadEnv, PluginOption } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -11,10 +11,6 @@ import { ROUTE_ALIASES } from './constants.node'
 import { logLocalPostgresTunnelStatus } from './scripts/checkLocalPostgresTunnel'
 
 const LAMBDA_DEV_URL = 'http://127.0.0.1:3000'
-const API_GATEWAY_URL = process.env.VITE_APIGATEWAY_URL ?? ''
-
-/** In dev, proxy /api/v1 to API Gateway by default. Set VITE_PROXY_LOCAL_LAMBDA=1 to use 127.0.0.1:3000 instead. */
-const apiV1Target = process.env.VITE_PROXY_LOCAL_LAMBDA === '1' ? LAMBDA_DEV_URL : API_GATEWAY_URL
 
 const isStorybookProcess =
   process.env.npm_lifecycle_event === 'storybook' || process.env.SB_MODE === 'development'
@@ -30,7 +26,12 @@ function localPostgresTunnelCheckPlugin(): PluginOption {
   }
 }
 
-export default defineConfig(async () => {
+export default defineConfig(async ({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), 'VITE_')
+  const API_GATEWAY_URL = env.VITE_APIGATEWAY_URL ?? ''
+  const apiV1Target =
+    process.env.VITE_PROXY_LOCAL_LAMBDA === '1' ? LAMBDA_DEV_URL : API_GATEWAY_URL || LAMBDA_DEV_URL
+
   const plugins: PluginOption[] = [
     vue(),
     AutoImport({
@@ -75,11 +76,14 @@ export default defineConfig(async () => {
           changeOrigin: true,
         },
         // Fallback when local Lambda was used but died: baseURL becomes /api/gateway; paths must map to .../api/v1/*
-        '/api/gateway': {
-          target: API_GATEWAY_URL,
-          changeOrigin: true,
-          rewrite: (p: string) => p.replace(/^\/api\/gateway/, '/api/v1'),
-        },
+        // Only enabled when API_GATEWAY_URL is configured, otherwise the proxy target would be invalid.
+        ...(API_GATEWAY_URL && {
+          '/api/gateway': {
+            target: API_GATEWAY_URL,
+            changeOrigin: true,
+            rewrite: (p: string) => p.replace(/^\/api\/gateway/, '/api/v1'),
+          },
+        }),
       },
     },
     root: fileURLToPath(new URL('./', import.meta.url)),

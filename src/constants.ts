@@ -50,12 +50,19 @@ const initBaseApiUrl = async (): Promise<string> => {
       LAMBDA_DEV_PROXY,
     )
   } catch {
-    baseApiUrl = GATEWAY_DEV_PROXY
-    devConsole(
-      'info',
-      '[constants] Local dev server not reachable, falling back to gateway proxy:',
-      GATEWAY_DEV_PROXY,
-    )
+    if (API_GATEWAY_URL) {
+      baseApiUrl = GATEWAY_DEV_PROXY
+      devConsole(
+        'info',
+        '[constants] Local dev server not reachable, falling back to gateway proxy:',
+        GATEWAY_DEV_PROXY,
+      )
+    } else {
+      devConsole(
+        'warn',
+        '[constants] Local dev server not reachable and VITE_APIGATEWAY_URL is not set. API calls will fail.',
+      )
+    }
   } finally {
     clearTimeout(timeoutId)
   }

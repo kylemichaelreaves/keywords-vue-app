@@ -7,8 +7,18 @@ describe('e2eApiUrl', () => {
       expect(apiPathname(new URL('http://localhost:5173/api/v1/memos'))).toBe('/memos')
     })
 
+    it('strips /api/gateway prefix', () => {
+      expect(apiPathname(new URL('http://localhost:5173/api/gateway/transactions'))).toBe(
+        '/transactions',
+      )
+    })
+
     it('maps bare /api/v1 to /', () => {
       expect(apiPathname(new URL('http://localhost:5173/api/v1'))).toBe('/')
+    })
+
+    it('maps bare /api/gateway to /', () => {
+      expect(apiPathname(new URL('http://localhost:5173/api/gateway'))).toBe('/')
     })
 
     it('leaves non-proxy paths unchanged', () => {
@@ -27,7 +37,11 @@ describe('e2eApiUrl', () => {
       expect(isExecuteApiUrl(new URL('http://localhost:5173/api/v1/memos?limit=20'))).toBe(true)
     })
 
-    it('matches localhost /memos without /api/v1', () => {
+    it('matches localhost /api/gateway/transactions (fallback proxy)', () => {
+      expect(isExecuteApiUrl(new URL('http://localhost:5173/api/gateway/transactions'))).toBe(true)
+    })
+
+    it('matches localhost /memos without proxy prefix', () => {
       expect(isExecuteApiUrl(new URL('http://127.0.0.1:4173/memos'))).toBe(true)
     })
 

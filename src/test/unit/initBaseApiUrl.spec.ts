@@ -39,7 +39,7 @@ describe('initBaseApiUrl', () => {
     expect(getBaseApiUrl()).toBe('/api/v1')
   })
 
-  it('defaults fallback to /api/gateway when VITE_APIGATEWAY_URL is unset (dev, proxy down)', async () => {
+  it('stays on /api/v1 when VITE_APIGATEWAY_URL is unset and proxy is down (no gateway fallback)', async () => {
     vi.stubEnv('VITE_APIGATEWAY_URL', undefined as unknown as string)
     vi.stubEnv('DEV', true)
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('connection refused')))
@@ -47,7 +47,7 @@ describe('initBaseApiUrl', () => {
     const { initBaseApiUrl, getBaseApiUrl } = await import('@constants')
     await initBaseApiUrl()
 
-    expect(getBaseApiUrl()).toBe('/api/gateway')
+    expect(getBaseApiUrl()).toBe('/api/v1')
   })
 
   it('keeps /api/v1 when proxy HEAD succeeds', async () => {
