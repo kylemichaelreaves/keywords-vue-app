@@ -164,7 +164,8 @@ describe('MemoSummaryTable.vue', () => {
     expect(statistics[1]?.props('title')).toBe('Transactions Count')
     expect(statistics[1]?.props('value')).toBe(5)
     expect(statistics[2]?.props('title')).toBe('Budget Category')
-    expect(statistics[2]?.props('value')).toBe('Groceries')
+    const budgetCategoryStat = wrapper.find('[data-testid="memo-budget-category-stat"]')
+    expect(budgetCategoryStat.text()).toContain('Groceries')
 
     // Check if the summary stats container exists
     const summaryStats = wrapper.find('[data-testid="memo-summary-stats"]')

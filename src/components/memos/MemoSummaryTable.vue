@@ -80,9 +80,12 @@
           </div>
         </div>
         <div class="bv-stat-card">
-          <el-statistic title="Budget Category" data-testid="memo-budget-category-stat">
-            <template #value>{{ typedMemoData?.budget_category || '--' }}</template>
-          </el-statistic>
+          <el-statistic
+            title="Budget Category"
+            :value="0"
+            :formatter="() => typedMemoData?.budget_category || '--'"
+            data-testid="memo-budget-category-stat"
+          />
           <div class="bv-toggle-row">
             <span class="bv-toggle-label">Necessary</span>
             <el-switch
