@@ -69,17 +69,13 @@ describe('useTransactions with Memo Selection', () => {
 
     const store = useTransactionsStore()
 
-    // Wait for initial query to complete
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
-    // Set memo name (as if user selected it)
     store.setSelectedMemo('Coffee Shop')
 
-    // Wait for query to execute with new memo
-    await new Promise((resolve) => setTimeout(resolve, 200))
-
-    // Verify fetchTransactions was called at least twice (once initial, once with memo)
-    expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2)
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2),
+    )
 
     // Check the last call which should have the memo
     const lastCallIndex = mockFetchTransactions.mock.calls.length - 1
@@ -100,17 +96,13 @@ describe('useTransactions with Memo Selection', () => {
 
     const store = useTransactionsStore()
 
-    // Wait for initial query to complete
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
-    // Set memo ID as string (as if loaded from URL)
     store.setSelectedMemo('101')
 
-    // Wait for query to execute with new memo
-    await new Promise((resolve) => setTimeout(resolve, 200))
-
-    // Verify fetchTransactions was called at least twice
-    expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2)
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2),
+    )
 
     // Check the last call which should have the memoId
     const lastCallIndex = mockFetchTransactions.mock.calls.length - 1
@@ -131,14 +123,9 @@ describe('useTransactions with Memo Selection', () => {
 
     const store = useTransactionsStore()
 
-    // Ensure memo is empty
     store.setSelectedMemo('')
 
-    // Wait for query to execute
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    // Verify fetchTransactions was called without memo parameters
-    expect(mockFetchTransactions).toHaveBeenCalled()
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
     const callArgs = mockFetchTransactions.mock.calls[0]![0]
     expect(callArgs).not.toHaveProperty('memo')
     expect(callArgs).not.toHaveProperty('memoId')
@@ -156,16 +143,14 @@ describe('useTransactions with Memo Selection', () => {
 
     const store = useTransactionsStore()
 
-    // Initial load with no memo
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
     const initialCallCount = mockFetchTransactions.mock.calls.length
 
-    // Change memo selection
     store.setSelectedMemo('Coffee Shop')
-    await new Promise((resolve) => setTimeout(resolve, 100))
 
-    // Should have triggered a refetch
-    expect(mockFetchTransactions.mock.calls.length).toBeGreaterThan(initialCallCount)
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.length).toBeGreaterThan(initialCallCount),
+    )
   })
 
   it('should correctly identify numeric strings as memo IDs', async () => {
@@ -193,7 +178,7 @@ describe('useTransactions with Memo Selection', () => {
     for (const testCase of testCases) {
       mockFetchTransactions.mockClear()
       store.setSelectedMemo(testCase.input)
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
       const callArgs = mockFetchTransactions.mock.calls[0]![0]
 
@@ -219,16 +204,13 @@ describe('useTransactions with Memo Selection', () => {
 
     const store = useTransactionsStore()
 
-    // Select first memo
     store.setSelectedMemo('Coffee Shop')
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
-    // Select second memo
     store.setSelectedMemo('Gas Station')
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    // Should have triggered separate fetches (not using cache)
-    expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2)
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2),
+    )
 
     // Verify different memo parameters were used
     const firstCall = mockFetchTransactions.mock.calls[0]![0]
@@ -249,16 +231,14 @@ describe('useTransactions with Memo Selection', () => {
 
     const store = useTransactionsStore()
 
-    // Wait for initial query to complete
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await vi.waitFor(() => expect(mockFetchTransactions).toHaveBeenCalled())
 
     store.setSelectedMemo('Coffee Shop')
     store.setTransactionsTableLimit(50)
 
-    // Wait for query to execute with new memo
-    await new Promise((resolve) => setTimeout(resolve, 200))
-
-    // Check the last call which should have all parameters
+    await vi.waitFor(() =>
+      expect(mockFetchTransactions.mock.calls.length).toBeGreaterThanOrEqual(2),
+    )
     const lastCallIndex = mockFetchTransactions.mock.calls.length - 1
     const callArgs = mockFetchTransactions.mock.calls[lastCallIndex]![0]
 

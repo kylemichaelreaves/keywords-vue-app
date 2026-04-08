@@ -214,44 +214,42 @@ const fields: Record<MemoKeys, MemoFormFields> = {
   },
 }
 
-const saveMemo = () => {
-  // if not valid,  return
+const saveMemo = async () => {
   if (!formRef.value) return
 
   try {
-    formRef.value.validate()
-
-    mutate(
-      {
-        memo: formData,
-      },
-      {
-        onSuccess: () => {
-          ElMessage.success('Memo updated successfully.')
-
-          const queries = [
-            'budget-category-summary',
-            'budget-category-amount-debit',
-            'month-summary',
-            'week-summary',
-            'memo',
-          ]
-
-          for (const query of queries) {
-            queryClient.invalidateQueries({ queryKey: [query] })
-          }
-
-          emit('updated', formData)
-          emit('close')
-        },
-        onError: (error) => {
-          ElMessage.error(`An error occurred while updating the memo: ${error.message}`)
-        },
-      },
-    )
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    ElMessage.error(`An unexpected error occurred: ${errorMessage}`)
+    await formRef.value.validate()
+  } catch {
+    return
   }
+
+  mutate(
+    {
+      memo: formData,
+    },
+    {
+      onSuccess: () => {
+        ElMessage.success('Memo updated successfully.')
+
+        const queries = [
+          'budget-category-summary',
+          'budget-category-amount-debit',
+          'month-summary',
+          'week-summary',
+          'memo',
+        ]
+
+        for (const query of queries) {
+          queryClient.invalidateQueries({ queryKey: [query] })
+        }
+
+        emit('updated', formData)
+        emit('close')
+      },
+      onError: (error) => {
+        ElMessage.error(`An error occurred while updating the memo: ${error.message}`)
+      },
+    },
+  )
 }
 </script>

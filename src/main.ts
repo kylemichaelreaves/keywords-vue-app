@@ -79,10 +79,6 @@ router.beforeEach((to, from, next) => {
 
 app.mount('#app')
 
-// Expose pinia to globalThis for Playwright testing
-// Expose in all environments except when explicitly disabled
-// This enables E2E testing in preview builds while still allowing
-// production builds to disable it if needed
-if (import.meta.env.VITE_DISABLE_PINIA_TESTING !== 'true') {
+if (import.meta.env.DEV || import.meta.env.VITE_EXPOSE_PINIA_FOR_E2E === 'true') {
   ;(globalThis as GlobalWithPinia).__PINIA__ = pinia
 }

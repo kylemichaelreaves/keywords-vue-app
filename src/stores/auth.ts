@@ -1,23 +1,24 @@
 import { defineStore } from 'pinia'
-import type { User } from '@types'
+import type { PersistedUser, User } from '@types'
 import { httpClient } from '@api/httpClient.ts'
+
+const emptyUser: PersistedUser = {
+  id: 0,
+  firstName: '',
+  lastName: '',
+  username: '',
+  email: '',
+  role: 'guest',
+}
 
 export const useAuthStore = defineStore('auth', {
   state: (): {
     token: string
-    user: User
+    user: PersistedUser
     isUserAuthenticated: boolean
   } => ({
     token: '',
-    user: {
-      id: 0,
-      firstName: '',
-      lastName: '',
-      username: '',
-      email: '',
-      password: '',
-      role: 'guest',
-    },
+    user: { ...emptyUser },
     isUserAuthenticated: false,
   }),
   getters: {
@@ -35,8 +36,11 @@ export const useAuthStore = defineStore('auth', {
     setToken(token: string) {
       this.token = token
     },
-    setUser(user: User) {
-      this.user = user
+    setUser(user: PersistedUser | User) {
+      const { password, confirmPassword, ...safe } = user as User
+      void password
+      void confirmPassword
+      this.user = safe
     },
     setIsUserAuthenticated(isUserAuthenticated: boolean) {
       this.isUserAuthenticated = isUserAuthenticated
@@ -56,15 +60,7 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('token')
       this.setToken('')
       this.setIsUserAuthenticated(false)
-      this.setUser({
-        id: 0,
-        firstName: '',
-        lastName: '',
-        username: '',
-        email: '',
-        password: '',
-        role: 'guest',
-      })
+      this.setUser({ ...emptyUser })
     },
   },
 })

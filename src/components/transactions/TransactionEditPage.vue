@@ -45,6 +45,7 @@ import TransactionEditForm from '@components/transactions/TransactionEditForm.vu
 import AlertComponent from '@components/shared/AlertComponent.vue'
 import useTransaction from '@api/hooks/transactions/useTransaction'
 import type { PendingTransaction, Transaction } from '@types'
+import { devConsole } from '@utils/devConsole'
 
 const props = defineProps({
   transactionId: {
@@ -60,25 +61,26 @@ const props = defineProps({
 const router = useRouter()
 
 const isPending = computed(() => !!props.pendingTransactionId)
-const entityId = computed(() => props.pendingTransactionId || props.transactionId)
+const entityId = computed(() => Number(props.pendingTransactionId || props.transactionId))
 
-// Fetch the specific transaction by ID
-const { data: transactionData, isLoading, isError, error } = useTransaction(Number(entityId.value))
+const { data: transactionData, isLoading, isError, error } = useTransaction(entityId)
 
 const transaction = computed(() => {
   const data = toValue(transactionData)
   if (!data) return null
 
-  // Type guard to check if it's a PendingTransaction
-  // We need to use unknown since Transaction and PendingTransaction don't overlap
   const isPendingTransaction = (obj: unknown): obj is PendingTransaction => {
     return typeof obj === 'object' && obj !== null && 'transaction_data' in obj && 'status' in obj
   }
 
-  // If it's a pending transaction, extract the transaction data from the transaction_data field
   if (isPending.value && isPendingTransaction(data)) {
     if (typeof data.transaction_data === 'string') {
-      return JSON.parse(data.transaction_data) as Transaction
+      try {
+        return JSON.parse(data.transaction_data) as Transaction
+      } catch (e) {
+        devConsole('error', 'Failed to parse transaction_data JSON:', e)
+        return null
+      }
     }
     return data.transaction_data as Transaction
   }

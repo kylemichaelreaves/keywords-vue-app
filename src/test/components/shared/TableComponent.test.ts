@@ -14,15 +14,19 @@ describe('TableComponent', () => {
   let mockHandleCurrentChange: ReturnType<typeof vi.fn<(val: number) => void>>
 
   beforeEach(() => {
-    store = createTestingPinia()
+    store = createTestingPinia({
+      initialState: {
+        transactions: {
+          currentPage: 1,
+          pageSize: 10,
+        },
+      },
+    })
     transactionsStore = useTransactionsStore(store)
 
-    // Create mock functions
     mockHandleSizeChange = vi.fn<(val: number) => void>()
     mockHandleCurrentChange = vi.fn<(val: number) => void>()
 
-    // Create proper mock data that matches the expected table data structure
-    // Use empty objects to satisfy the Record<string, never>[] type requirement
     const mockData: Record<string, never>[] = Array.from({ length: 101 }, () => ({}))
 
     wrapper = mount(TableComponent, {
@@ -39,17 +43,7 @@ describe('TableComponent', () => {
         handleCurrentChange: mockHandleCurrentChange,
       },
       global: {
-        plugins: [
-          VueQueryPlugin,
-          createTestingPinia({
-            initialState: {
-              transactions: {
-                currentPage: 1,
-                pageSize: 10,
-              },
-            },
-          }),
-        ],
+        plugins: [VueQueryPlugin, store],
       },
     })
   })
@@ -76,7 +70,6 @@ describe('TableComponent', () => {
     expect(wrapper.find('el-table').exists()).toBe(false)
   })
 
-  // TODO these shouldn't be use the store but rather should use the state within the component
   it('updates page size when handleSizeChange is called', async () => {
     const store = useTransactionsStore()
 
@@ -96,7 +89,6 @@ describe('TableComponent', () => {
     expect(store.getTransactionsPageSize).toBe(20)
   })
 
-  // TODO these shouldn't be use the store but rather should use the state within the component
   it('updates current page when handleCurrentChange is called', async () => {
     const store = useTransactionsStore()
 
