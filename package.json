@@ -62,7 +62,7 @@
     "@types/jsdom": "^28.0.1",
     "@types/katex": "^0.16.7",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^25.5.2",
+    "@types/node": "^22.19.17",
     "@typescript-eslint/eslint-plugin": "^8.55.0",
     "@typescript-eslint/parser": "^8.55.0",
     "@vitejs/plugin-basic-ssl": "^2.3.0",

@@ -21,7 +21,7 @@ export class MemoSummaryTablePage {
     this.errorAlert = page.getByRole('alert').getByTestId('memo-summary-error')
     this.memoSummaryHeader = page.getByTestId('memo-summary-header')
     this.memoSummaryCard = page.getByTestId('memo-summary-card')
-    this.memoSummaryTable = page.getByTestId('memo-summary-table')
+    this.memoSummaryTable = page.getByTestId('memo-transactions-table')
     this.memoTransactionsTable = page.getByTestId('memo-transactions-table')
     this.transactionsCount = page.locator('[data-testid^="transactions-count-"]')
     this.transactionsAmount = page.locator('[data-testid^="sum-amount-debit-"]')

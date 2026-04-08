@@ -59,7 +59,7 @@
         :key="row.path"
         class="bv-tree-row"
         :style="{ paddingLeft: `${Math.min(row.depth, 12) * 14 + 8}px` }"
-        :data-testid="`budget-category-row-${row.path}`"
+        :data-testid="`budget-category-row-${encodeURIComponent(row.path)}`"
       >
         <button
           v-if="row.hasChildren"
