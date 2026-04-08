@@ -30,7 +30,7 @@ export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
   const API_GATEWAY_URL = env.VITE_APIGATEWAY_URL ?? ''
   const apiV1Target =
-    process.env.VITE_PROXY_LOCAL_LAMBDA === '1' ? LAMBDA_DEV_URL : API_GATEWAY_URL || LAMBDA_DEV_URL
+    env.VITE_PROXY_LOCAL_LAMBDA === '1' ? LAMBDA_DEV_URL : API_GATEWAY_URL || LAMBDA_DEV_URL
 
   const plugins: PluginOption[] = [
     vue(),

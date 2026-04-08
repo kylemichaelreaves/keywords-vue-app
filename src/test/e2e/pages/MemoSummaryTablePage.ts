@@ -23,8 +23,8 @@ export class MemoSummaryTablePage {
     this.memoSummaryCard = page.getByTestId('memo-summary-card')
     this.memoSummaryTable = page.getByTestId('memo-summary-table')
     this.memoTransactionsTable = page.getByTestId('memo-transactions-table')
-    this.transactionsCount = page.getByTestId('transactions-count')
-    this.transactionsAmount = page.getByTestId('sum-amount-debit')
+    this.transactionsCount = page.locator('[data-testid^="transactions-count-"]')
+    this.transactionsAmount = page.locator('[data-testid^="sum-amount-debit-"]')
     this.backButton = page.getByRole('button', { name: 'Go Back' })
     this.memoTitle = this.memoSummaryHeader.getByTestId('memo-title')
     // Target the button by its data-testid within the budget category column
