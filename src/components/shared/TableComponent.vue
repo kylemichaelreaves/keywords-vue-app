@@ -56,7 +56,7 @@ import { useTransactionsStore } from '@stores/transactions'
 
 const props = defineProps({
   tableData: {
-    type: Array as () => Record<string, never>[],
+    type: Array as () => Record<string, unknown>[],
     required: true,
   },
   columns: {

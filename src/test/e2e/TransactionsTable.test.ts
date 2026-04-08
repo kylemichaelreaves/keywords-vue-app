@@ -121,7 +121,7 @@ test.describe('Transactions Table', () => {
     await expect(modalTitleElement).toBeVisible({ timeout: isCI ? 10000 : 5000 })
 
     const expectedTitle = 'Edit Transaction: ' + firstTransactionNumber
-    await expect(modalTitleElement).toHaveText(expectedTitle, { exact: true })
+    await expect(modalTitleElement).toHaveText(expectedTitle)
 
     // Verify all form elements are visible
     await transactionsPage.expectTransactionEditFormElementsToBeVisible()

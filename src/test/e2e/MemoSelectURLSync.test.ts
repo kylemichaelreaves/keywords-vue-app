@@ -77,7 +77,7 @@ test.describe('MemoSelect URL Synchronization', () => {
 
     // Clear the selection
     await memoAutocomplete.clickClearButton()
-    await page.waitForURL((url) => !url.includes('memo='))
+    await page.waitForURL((url) => !url.href.includes('memo='))
 
     // Verify URL no longer has memo parameter
     const currentUrl = page.url()
@@ -170,7 +170,7 @@ test.describe('MemoSelect URL Synchronization', () => {
 
     // Clear memo
     await memoAutocomplete.clickClearButton()
-    await page.waitForURL((url) => !url.includes('memo='))
+    await page.waitForURL((url) => !url.href.includes('memo='))
 
     // Verify only memo is removed, others remain
     currentUrl = page.url()

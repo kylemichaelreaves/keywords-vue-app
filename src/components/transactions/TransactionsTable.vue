@@ -28,11 +28,9 @@
         />
       </el-card>
       <el-card class="bv-stat-card" shadow="never">
-        <el-statistic
-          title="Top Budget Category"
-          :value="summaryStats.topCategory"
-          data-testid="top-budget-category-stat"
-        />
+        <el-statistic title="Top Budget Category" data-testid="top-budget-category-stat">
+          <template #value>{{ summaryStats.topCategory }}</template>
+        </el-statistic>
       </el-card>
     </section>
 
