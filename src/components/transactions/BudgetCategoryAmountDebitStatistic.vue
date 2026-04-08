@@ -1,8 +1,8 @@
 <template>
   <div>
     <AlertComponent
-      title="error.name"
-      message="error.message"
+      :title="error.name"
+      :message="error.message"
       type="error"
       v-if="isError && error"
     />

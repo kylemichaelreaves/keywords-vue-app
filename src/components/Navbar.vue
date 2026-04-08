@@ -16,7 +16,7 @@
         <template v-slot:label>
           <span class="custom-tabs-label">
             <el-icon style="vertical-align: middle" size="1.5em">
-              <component :is="routeIcon(route).value" />
+              <component :is="routeIcon(route)" />
             </el-icon>
             <span>{{ String(route.name) }}</span>
           </span>
@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { devConsole } from '@utils/devConsole'
 
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { TabsPaneContext, ElTabs, ElTabPane } from 'element-plus'
@@ -73,9 +73,12 @@ import {
   User,
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '@stores/auth'
+import { useTransactionsStore } from '@stores/transactions'
+import { queryClient } from '@api/queryClient.ts'
 import ThemeToggle from '@components/ThemeToggle.vue'
 
 const authStore = useAuthStore()
+const transactionsStore = useTransactionsStore()
 const router = useRouter()
 const route = useRoute()
 
@@ -97,21 +100,20 @@ router.afterEach((to) => {
   }
 })
 
-const routeIcon = (route: RouteRecordRaw) =>
-  computed(() => {
-    switch (route.name) {
-      case 'home':
-        return HomeFilled
-      case 'address-geocoder':
-        return LocationFilled
-      case 'keywords':
-        return Key
-      case 'budget-visualizer':
-        return TrendCharts
-      default:
-        return InfoFilled
-    }
-  })
+function routeIcon(route: RouteRecordRaw) {
+  switch (route.name) {
+    case 'home':
+      return HomeFilled
+    case 'address-geocoder':
+      return LocationFilled
+    case 'keywords':
+      return Key
+    case 'budget-visualizer':
+      return TrendCharts
+    default:
+      return InfoFilled
+  }
+}
 
 async function handleClick(tab: TabsPaneContext) {
   const tabIndex = Number(tab.index)
@@ -132,6 +134,8 @@ async function handleClick(tab: TabsPaneContext) {
 async function handleLoginLogout() {
   if (authStore.isUserAuthenticated) {
     authStore.logout()
+    transactionsStore.resetStore()
+    queryClient.clear()
     await router.push({ path: '/' })
   } else {
     await router.push({ path: '/login' })

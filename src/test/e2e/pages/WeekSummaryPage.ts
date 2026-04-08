@@ -7,7 +7,7 @@ export class WeekSummaryPage extends BaseSummaryPage {
   readonly headerNavButtonGroup: Locator
   readonly weekSummaryTable: Locator
   readonly weekTitle: Locator
-  readonly daySummariesTable: Locator
+  readonly daySummariesContainer: Locator
 
   constructor(page: Page) {
     super(page)
@@ -15,9 +15,9 @@ export class WeekSummaryPage extends BaseSummaryPage {
     // Initialize week-specific elements
     this.weekSummaryHeader = page.getByLabel('Week Summary Header')
     this.headerNavButtonGroup = this.weekSummaryHeader.getByLabel('Navigation Button Group')
-    this.weekSummaryTable = page.getByRole('table').first()
-    this.weekTitle = page.locator('h2')
-    this.daySummariesTable = page.getByRole('table').nth(1)
+    this.weekSummaryTable = page.getByLabel('Week Summary Transactions Table')
+    this.weekTitle = page.getByTestId('week-summary-title')
+    this.daySummariesContainer = page.getByLabel('Day Summaries')
   }
 
   // Implement abstract methods from base class

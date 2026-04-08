@@ -129,7 +129,7 @@ export type LoanFormType = {
   [key: string]: number | Date
 }
 
-export type loginFormKeys = 'username' | 'password'
+export type LoginFormKeys = 'email' | 'password'
 
 export interface LoginFormFields {
   component: 'el-input'

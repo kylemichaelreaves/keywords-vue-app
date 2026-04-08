@@ -72,6 +72,10 @@ function findRouteChain(
 
 <style scoped>
 .router-class {
-  color: #ffffff;
+  color: var(--app-text-color-secondary);
+}
+
+.router-class:hover {
+  color: var(--bv-primary);
 }
 </style>

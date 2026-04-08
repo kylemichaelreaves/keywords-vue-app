@@ -1,17 +1,17 @@
 import { ref, computed, watch } from 'vue'
 
 const isDark = ref(false)
+// Track whether the user explicitly chose a theme (vs inheriting system preference)
+const hasExplicitPreference = ref(false)
 
-// Check for saved theme preference or default to light mode
 const getInitialTheme = () => {
-  if (typeof window !== 'undefined') {
-    // Check localStorage first
+  if (typeof globalThis.window !== 'undefined') {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme) {
+      hasExplicitPreference.value = true
       return savedTheme === 'dark'
     }
-    // Fall back to system preference
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
+    return globalThis.window.matchMedia('(prefers-color-scheme: dark)').matches
   }
   return false
 }
@@ -19,40 +19,51 @@ const getInitialTheme = () => {
 // Initialize theme
 isDark.value = getInitialTheme()
 
+// Listen to system theme changes — once at module scope (isDark is a singleton)
+if (typeof globalThis.window !== 'undefined') {
+  const mediaQuery = globalThis.window.matchMedia('(prefers-color-scheme: dark)')
+  const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+    if (!hasExplicitPreference.value) {
+      isDark.value = e.matches
+    }
+  }
+  mediaQuery.addEventListener('change', handleSystemThemeChange)
+  import.meta.hot?.dispose(() => {
+    mediaQuery.removeEventListener('change', handleSystemThemeChange)
+  })
+}
+
+// Apply theme class to document (always, regardless of source)
+function applyTheme(dark: boolean) {
+  if (typeof globalThis.window !== 'undefined') {
+    document.documentElement.classList.toggle('dark', dark)
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+  }
+}
+
+// Apply initial theme immediately
+applyTheme(isDark.value)
+
 export function useDarkMode() {
   const toggleDarkMode = () => {
+    hasExplicitPreference.value = true
     isDark.value = !isDark.value
   }
 
   const setDarkMode = (dark: boolean) => {
+    hasExplicitPreference.value = true
     isDark.value = dark
   }
 
   const theme = computed(() => (isDark.value ? 'dark' : 'light'))
 
-  // Watch for changes and update localStorage + document class
-  watch(
-    isDark,
-    (newValue) => {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('theme', newValue ? 'dark' : 'light')
-        document.documentElement.classList.toggle('dark', newValue)
-        document.documentElement.setAttribute('data-theme', newValue ? 'dark' : 'light')
-      }
-    },
-    { immediate: true },
-  )
-
-  // Listen to system theme changes
-  if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    mediaQuery.addEventListener('change', (e) => {
-      // Only update if no saved preference exists
-      if (!localStorage.getItem('theme')) {
-        isDark.value = e.matches
-      }
-    })
-  }
+  // Watch for changes and update document class + persist only explicit preferences
+  watch(isDark, (newValue) => {
+    applyTheme(newValue)
+    if (hasExplicitPreference.value && typeof globalThis.window !== 'undefined') {
+      localStorage.setItem('theme', newValue ? 'dark' : 'light')
+    }
+  })
 
   return {
     isDark,

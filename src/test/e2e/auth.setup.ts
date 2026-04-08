@@ -35,17 +35,17 @@ setup('authenticate', async ({ page }) => {
 
   try {
     // First attempt: Try normal login through UI
-    const userName = process.env.VITE_TEST_USERNAME
+    const email = process.env.VITE_TEST_EMAIL
     const password = process.env.VITE_TEST_PASSWORD
 
-    console.log('Username exists:', !!userName)
+    console.log('Email exists:', !!email)
     console.log('Password exists:', !!password)
     console.log('Auth setup using base URL:', baseURL)
 
     await page.goto('/login')
-    await page.getByRole('textbox', { name: '* Username' }).fill(userName || '')
-    await page.getByRole('textbox', { name: '* Password' }).fill(password || '')
-    await page.getByRole('textbox', { name: '* Password' }).press('Enter')
+    await page.getByRole('textbox', { name: /email/i }).fill(email || '')
+    await page.getByRole('textbox', { name: /password/i }).fill(password || '')
+    await page.getByRole('button', { name: /login/i }).click()
 
     // Wait for login to complete by checking for navigation or auth state
     await page.waitForLoadState('networkidle', { timeout: 10000 })

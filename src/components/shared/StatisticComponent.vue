@@ -58,32 +58,32 @@ const difference = computed(() => {
 <style scoped>
 /* Small size */
 .statistic-small :deep(.el-statistic__content) {
-  font-size: 18px !important;
+  font-size: 18px;
 }
 
 .statistic-small :deep(.el-statistic__head) {
-  font-size: 12px !important;
-  margin-bottom: 4px !important;
+  font-size: 12px;
+  margin-bottom: 4px;
 }
 
 /* Default size */
 .statistic-default :deep(.el-statistic__content) {
-  font-size: 24px !important;
+  font-size: 24px;
 }
 
 .statistic-default :deep(.el-statistic__head) {
-  font-size: 14px !important;
-  margin-bottom: 6px !important;
+  font-size: 14px;
+  margin-bottom: 6px;
 }
 
 /* Large size */
 .statistic-large :deep(.el-statistic__content) {
-  font-size: 32px !important;
+  font-size: 32px;
 }
 
 .statistic-large :deep(.el-statistic__head) {
-  font-size: 16px !important;
-  margin-bottom: 8px !important;
+  font-size: 16px;
+  margin-bottom: 8px;
 }
 
 .footer {

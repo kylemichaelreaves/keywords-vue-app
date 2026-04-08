@@ -97,6 +97,7 @@ function initializeBudgetCategoryState(txn: Transaction): BudgetCategoryState {
 // Reactive computed that creates proper getter/setters for each field
 const formValues = computed(() => {
   const values: Record<string, unknown> = {}
+  if (!transaction) return values
 
   // Create getter/setter for each field
   const keys = Object.keys(fields.value) as TransactionKeys[]
@@ -107,7 +108,7 @@ const formValues = computed(() => {
         if (key === 'budget_category') {
           return budgetCategoryState.value
         }
-        return transaction[key]
+        return transaction[key] ?? null
       },
       set(value) {
         if (key === 'budget_category') {

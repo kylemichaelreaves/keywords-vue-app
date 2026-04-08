@@ -1,105 +1,120 @@
 <template>
-  <AlertComponent
-    v-if="isError && error"
-    :title="error.name"
-    :message="error.message"
-    type="error"
-    data-testid="transactions-table-error-alert"
-  />
-
-  <DailyIntervalLineChart :first-day="firstDay" />
-
-  <MonthSummaryTable v-if="selectedMonth" />
-  <WeekSummaryTable v-if="selectedWeek" />
-
-  <TransactionsTableSelects data-testid="transactions-table-selects" />
-
-  <el-dialog
-    v-model="showTransactionEditModal"
-    :close-on-click-modal="false"
-    :before-close="closeTransactionEditModal"
-    width="50%"
-    :title="editModalTitle"
-    data-testid="transaction-edit-dialog"
-    aria-label="Transaction Edit Modal"
-  >
-    <template #header>
-      <span aria-label="Transaction Edit Dialog Title" data-testid="transaction-edit-dialog-title">
-        {{ editModalTitle }}
-      </span>
-    </template>
-    <TransactionEditForm
-      aria-label="Transaction Edit Form"
-      v-if="selectedTransaction"
-      :transaction="selectedTransaction"
-      @close="closeTransactionEditModal"
-    />
-  </el-dialog>
-
-  <div @contextmenu.prevent>
-    <!-- Show skeleton when loading -->
-    <TableSkeleton
-      v-if="isLoadingCondition"
-      :columns="transactionColumns"
-      :rows="LIMIT"
-      data-testid="transactions-table-skeleton"
+  <div class="bv-transactions">
+    <AlertComponent
+      v-if="isError && error"
+      :title="error.name"
+      :message="error.message"
+      type="error"
+      data-testid="transactions-table-error-alert"
     />
 
-    <!-- Show actual table when not loading -->
-    <el-table
-      v-else-if="paginatedData.length"
-      data-testid="transactions-table"
-      aria-label="Transactions Table"
-      :row-key="getRowKey"
-      :data="paginatedData"
-      height="auto"
-      size="small"
-      border
-      stripe
-      show-summary
-      show-overflow-tooltip
-      @row-contextmenu="(row: Transaction) => openTransactionEditModal(row)"
+    <section class="bv-section bv-chart-section">
+      <DailyIntervalLineChart :first-day="firstDay" />
+    </section>
+
+    <MonthSummaryTable v-if="selectedMonth" />
+    <WeekSummaryTable v-if="selectedWeek" />
+
+    <section class="bv-section bv-filters-section">
+      <TransactionsTableSelects data-testid="transactions-table-selects" />
+    </section>
+
+    <el-dialog
+      v-model="showTransactionEditModal"
+      :close-on-click-modal="false"
+      :before-close="closeTransactionEditModal"
+      width="min(640px, 94vw)"
+      :title="editModalTitle"
+      data-testid="transaction-edit-dialog"
+      aria-label="Transaction Edit Modal"
     >
-      <el-table-column
-        v-for="column in transactionColumns"
-        :key="column.prop"
-        :prop="column.prop"
-        :label="column.label"
-        :sortable="column.sortable"
-        :data-testid="`column-${column.prop}`"
-        width="auto"
+      <template #header>
+        <span
+          aria-label="Transaction Edit Dialog Title"
+          data-testid="transaction-edit-dialog-title"
+        >
+          {{ editModalTitle }}
+        </span>
+      </template>
+      <TransactionEditForm
+        aria-label="Transaction Edit Form"
+        v-if="selectedTransaction"
+        :transaction="selectedTransaction"
+        @close="closeTransactionEditModal"
+      />
+    </el-dialog>
+
+    <section class="bv-section bv-table-section" @contextmenu.prevent>
+      <TableSkeleton
+        v-if="isLoadingCondition"
+        :columns="transactionColumns"
+        :rows="LIMIT"
+        data-testid="transactions-table-skeleton"
+      />
+
+      <el-table
+        v-else-if="paginatedData.length"
+        class="bv-table"
+        data-testid="transactions-table"
+        aria-label="Transactions Table"
+        :row-key="getRowKey"
+        :data="paginatedData"
+        height="auto"
+        size="small"
+        stripe
+        show-summary
+        show-overflow-tooltip
+        @row-contextmenu="(row: Transaction) => openTransactionEditModal(row)"
       >
-        <template v-slot:default="scope">
-          <template v-if="column.prop === 'id'">
-            <router-link
-              :to="{ name: 'transaction-edit', params: { transactionId: scope.row[column.prop] } }"
-              :data-testid="`transaction-link-${scope.row[column.prop]}`"
-            >
+        <el-table-column
+          v-for="column in transactionColumns"
+          :key="column.prop"
+          :prop="column.prop"
+          :label="column.label"
+          :sortable="column.sortable"
+          :data-testid="`column-${column.prop}`"
+          width="auto"
+        >
+          <template v-slot:default="scope">
+            <template v-if="column.prop === 'id'">
+              <router-link
+                class="bv-link"
+                :to="{
+                  name: 'transaction-edit',
+                  params: { transactionId: scope.row[column.prop] },
+                }"
+                :data-testid="`transaction-link-${scope.row[column.prop]}`"
+              >
+                {{ scope.row[column.prop] }}
+              </router-link>
+            </template>
+            <template v-else-if="column.prop === 'date'">
+              <div :data-testid="`date-cell-${scope.row[column.prop]}`">
+                {{ formatDate(scope.row[column.prop]) }}
+              </div>
+            </template>
+            <template v-else-if="column.prop === 'memo_id'">
+              <router-link
+                class="bv-link"
+                v-if="scope.row[column.prop] && scope.row[column.prop].toString().trim()"
+                :to="{ name: 'memo-summary', params: { memoId: scope.row[column.prop] } }"
+                data-testid="memo-link"
+              >
+                {{ scope.row[column.prop] }}
+              </router-link>
+            </template>
+            <template v-else>
               {{ scope.row[column.prop] }}
-            </router-link>
+            </template>
           </template>
-          <template v-else-if="column.prop === 'date'">
-            <div :data-testid="`date-cell-${scope.row[column.prop]}`">
-              {{ formatDate(scope.row[column.prop]) }}
-            </div>
-          </template>
-          <template v-else-if="column.prop === 'memo_id'">
-            <router-link
-              v-if="scope.row[column.prop] && scope.row[column.prop].toString().trim()"
-              :to="{ name: 'memo-summary', params: { memoId: scope.row[column.prop] } }"
-              data-testid="memo-link"
-            >
-              {{ scope.row[column.prop] }}
-            </router-link>
-          </template>
-          <template v-else>
-            {{ scope.row[column.prop] }}
-          </template>
-        </template>
-      </el-table-column>
-    </el-table>
+        </el-table-column>
+      </el-table>
+    </section>
+
+    <div class="bv-pagination-row" v-if="!isPaginationDisabled">
+      <TransactionTablePagination />
+    </div>
   </div>
-  <TransactionTablePagination v-if="!isPaginationDisabled" />
 </template>
 
 <script setup lang="ts">
@@ -265,8 +280,9 @@ watch(
       'selectedMemo:',
       newSelectedMemo,
     )
-    store.clearTransactionsByOffset()
-    devConsole('log', '[TransactionsTable] Cache cleared, calling refetch...')
+    devConsole('log', '[TransactionsTable] Filters changed, resetting page and refetching...')
+    store.updateTransactionsCurrentPage(1)
+    store.updateTransactionsTableOffset(0)
     refetch()
   },
   { immediate: false },
@@ -290,3 +306,61 @@ function getRowKey(row: Transaction): string {
   return row.transaction_number ?? ''
 }
 </script>
+
+<style scoped>
+.bv-transactions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bv-section {
+  border-radius: var(--bv-radius);
+}
+
+.bv-chart-section {
+  overflow: hidden;
+  border: 1px solid var(--bv-border);
+  border-radius: var(--bv-radius);
+}
+
+.bv-filters-section {
+  padding: 0.25rem 0;
+}
+
+.bv-table-section :deep(.el-table) {
+  --el-table-border-color: var(--bv-border);
+  --el-table-header-bg-color: var(--bv-muted-bg);
+  --el-table-row-hover-bg-color: var(--bv-accent);
+  border-radius: var(--bv-radius);
+  overflow: hidden;
+}
+
+.bv-table-section :deep(.el-table th.el-table__cell) {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--app-text-color);
+}
+
+.bv-link {
+  color: var(--bv-primary);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.bv-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.bv-pagination-row {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.bv-pagination-row :deep(.el-pagination) {
+  --el-pagination-button-bg-color: var(--bv-panel-bg);
+  --el-pagination-hover-color: var(--bv-primary);
+}
+</style>

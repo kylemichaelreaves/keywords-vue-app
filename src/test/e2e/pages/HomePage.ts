@@ -26,8 +26,8 @@ export class HomePage {
   }
 
   async navigateToHome() {
-    await this.page.getByRole('link').first().click()
-    await this.page.getByText('home', { exact: true }).click()
+    await this.page.goto('/')
+    await this.navbar.waitFor()
   }
 
   async reload() {

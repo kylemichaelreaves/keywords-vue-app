@@ -22,20 +22,19 @@
     "forceConsistentCasingInFileNames": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": ["vite/client", "vitest/globals"],
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@components/*": ["src/components/*"],
-      "@composables/*": ["src/composables/*"],
-      "@types": ["src/types/index.ts"],
-      "@test/*": ["src/test/*"],
-      "@mocks/*": ["src/mocks/*"],
-      "@api/*": ["src/api/*"],
-      "@stores/*": ["src/stores/*"],
-      "@constants": ["src/constants.ts"],
-      "@main": ["src/main.ts"],
-      "@router": ["src/router/index.ts"],
-      "@utils/*": ["src/utils/*"]
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@composables/*": ["./src/composables/*"],
+      "@types": ["./src/types/index.ts"],
+      "@test/*": ["./src/test/*"],
+      "@mocks/*": ["./src/mocks/*"],
+      "@api/*": ["./src/api/*"],
+      "@stores/*": ["./src/stores/*"],
+      "@constants": ["./src/constants.ts"],
+      "@main": ["./src/main.ts"],
+      "@router": ["./src/router/index.ts"],
+      "@utils/*": ["./src/utils/*"]
     }
   }
 }

@@ -11,7 +11,7 @@
   />
   <div class="container">
     <el-card class="login-el-card">
-      <el-form :model="user" :rules="rules" label-width="120px">
+      <el-form ref="formRef" :model="user" :rules="rules" label-width="120px">
         <el-form-item
           v-for="(field, key) in loginFormFields"
           :key="key"
@@ -47,7 +47,8 @@
 import { devConsole } from '@utils/devConsole'
 
 import { computed, ref, onMounted, type Component } from 'vue'
-import type { loginFormKeys } from '@types'
+import type { LoginFormKeys } from '@types'
+import type { FormInstance } from 'element-plus'
 import { useMutation } from '@tanstack/vue-query'
 import { useAuthStore } from '@stores/auth.ts'
 import { useRoute, useRouter } from 'vue-router'
@@ -65,8 +66,9 @@ interface LoginFormField {
   showPassword?: boolean
 }
 
+const formRef = ref<FormInstance>()
 const user = ref({
-  username: '',
+  email: '',
   password: '',
 })
 
@@ -80,7 +82,7 @@ const redirectTarget = computed(
 
 // the button should be disabled when isPending OR if both fields don't have values
 const isDisabledCondition = computed(() => {
-  return isPending.value || !user.value.username || !user.value.password
+  return isPending.value || !user.value.email || !user.value.password
 })
 
 const errorDescription = computed(() => {
@@ -90,8 +92,8 @@ const errorDescription = computed(() => {
 
 const { mutate, isPending, isError, error } = useMutation({
   mutationKey: ['login'],
-  mutationFn: async ({ username, password }: { username: string; password: string }) => {
-    return await authStore.login(username, password)
+  mutationFn: async ({ email, password }: { email: string; password: string }) => {
+    return await authStore.login(email, password)
   },
   onSuccess: (data) => {
     devConsole('log', 'Login successful', data)
@@ -111,15 +113,22 @@ const { mutate, isPending, isError, error } = useMutation({
   },
 })
 
-const submitForm = () => {
-  mutate({ username: user.value.username, password: user.value.password })
+const submitForm = async () => {
+  if (!formRef.value) return
+  try {
+    const valid = await formRef.value.validate()
+    if (!valid) return
+    mutate({ email: user.value.email, password: user.value.password })
+  } catch {
+    return
+  }
 }
 
-const loginFormFields: Record<loginFormKeys, LoginFormField> = {
-  username: {
+const loginFormFields: Record<LoginFormKeys, LoginFormField> = {
+  email: {
     component: ElInput,
-    label: 'Username',
-    placeholder: 'Enter username',
+    label: 'Email',
+    placeholder: 'Enter email',
     type: 'text',
   },
   password: {
@@ -132,7 +141,10 @@ const loginFormFields: Record<loginFormKeys, LoginFormField> = {
 }
 
 const rules = {
-  username: [{ required: true, message: 'Please enter username', trigger: 'blur' }],
+  email: [
+    { required: true, message: 'Please enter email', trigger: 'blur' },
+    { type: 'email' as const, message: 'Please enter a valid email', trigger: 'blur' },
+  ],
   password: [{ required: true, message: 'Please enter password', trigger: 'blur' }],
 }
 
@@ -152,7 +164,7 @@ onMounted(() => {
     authStore.setIsUserAuthenticated(true)
   }
 
-  if (authStore.getIsUserAuthenticated && authStore.getUser.username) {
+  if (authStore.getIsUserAuthenticated && authStore.getUser.email) {
     router.push(redirectTarget.value)
   }
 })

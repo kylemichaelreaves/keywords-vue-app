@@ -12,36 +12,26 @@ export default function usePendingTransactions() {
 
   return useInfiniteQuery<Array<PendingTransaction>>({
     initialPageParam: 0,
-    // Pass computed refs directly - Vue Query will unwrap and track them automatically
-    queryKey: ['pending-transactions', limit, selectedMemo, selectedStatus] as const,
+    queryKey: computed(
+      () =>
+        ['pending-transactions', limit.value, selectedMemo.value, selectedStatus.value] as const,
+    ),
     queryFn: async ({ pageParam = 0 }) => {
-      const cachedTransactions = store.getPendingTransactionsByOffset(Number(pageParam))
-      if (cachedTransactions && cachedTransactions.length > 0) {
-        return cachedTransactions
-      } else {
-        const memoValue = selectedMemo.value
-        // Determine if we have a memo ID (numeric) or memo name (string)
-        const isMemoId = memoValue && !Number.isNaN(Number(memoValue))
+      const memoValue = selectedMemo.value
+      const isMemoId = memoValue && !Number.isNaN(Number(memoValue))
 
-        // Build memo parameter based on type
-        const memoParam = memoValue
-          ? isMemoId
-            ? { memoId: Number(memoValue) }
-            : { memo: memoValue }
-          : {}
+      const memoParam = memoValue
+        ? isMemoId
+          ? { memoId: Number(memoValue) }
+          : { memo: memoValue }
+        : {}
 
-        const transactions = await fetchPendingTransactions({
-          limit: limit.value,
-          offset: Number(pageParam),
-          ...memoParam,
-          status: selectedStatus.value || undefined,
-        })
-        store.setPendingTransactionsByOffset(
-          Number(pageParam),
-          transactions as PendingTransaction[],
-        )
-        return transactions
-      }
+      return (await fetchPendingTransactions({
+        limit: limit.value,
+        offset: Number(pageParam),
+        ...memoParam,
+        status: selectedStatus.value || undefined,
+      })) as PendingTransaction[]
     },
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.length < limit.value) {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bv-memo-summary">
     <AlertComponent
       v-if="isError && typedError"
       :title="typedError?.name || 'Error'"
@@ -8,41 +8,43 @@
       data-testid="memo-summary-error"
     />
 
-    <el-card data-testid="memo-summary-card">
-      <template #header>
-        <div class="header-content" data-testid="memo-summary-header">
-          <h2 class="memo-title" data-testid="memo-title">
-            {{ typedMemoData?.name || 'Loading...' }}
-          </h2>
-          <MemoBudgetCategory v-if="typedMemoData" :memo-id="memoId" />
-        </div>
-      </template>
-
-      <div v-if="typedSummaryData" class="summary-stats" data-testid="memo-summary-stats">
-        <el-statistic
-          title="Total Amount Debit"
-          :value="typedSummaryData.sum_amount_debit"
-          prefix="$"
-          :precision="2"
-          class="stat-item"
-          :data-testid="`sum-amount-debit-${memoId}`"
-          :data-value="typedSummaryData.sum_amount_debit"
-        />
-        <el-statistic
-          title="Transactions Count"
-          :value="typedSummaryData.transactions_count"
-          class="stat-item"
-          :data-testid="`transactions-count-${memoId}`"
-          :data-value="typedSummaryData.transactions_count"
-        />
+    <div class="bv-memo-header" data-testid="memo-summary-card">
+      <div class="bv-memo-header-top" data-testid="memo-summary-header">
+        <h2 class="bv-memo-title" data-testid="memo-title">
+          {{ typedMemoData?.name || 'Loading...' }}
+        </h2>
+        <MemoBudgetCategory v-if="typedMemoData" :memo-id="memoId" />
       </div>
 
-      <div v-else-if="isLoadingCondition" class="loading-container">
+      <div v-if="typedSummaryData" class="bv-stats" data-testid="memo-summary-stats">
+        <div class="bv-stat-card">
+          <el-statistic
+            title="Total Amount Debit"
+            :value="typedSummaryData.sum_amount_debit"
+            prefix="$"
+            :precision="2"
+            :data-testid="`sum-amount-debit-${memoId}`"
+            :data-value="typedSummaryData.sum_amount_debit"
+          />
+        </div>
+        <div class="bv-stat-card">
+          <el-statistic
+            title="Transactions Count"
+            :value="typedSummaryData.transactions_count"
+            :data-testid="`transactions-count-${memoId}`"
+            :data-value="typedSummaryData.transactions_count"
+          />
+        </div>
+      </div>
+
+      <div v-else-if="isLoadingCondition" class="bv-loading">
         <el-skeleton :rows="2" animated />
       </div>
-    </el-card>
+    </div>
 
-    <MemoTransactionsTable :memo-id="memoId" data-testid="memo-transactions-table" />
+    <section class="bv-section bv-table-section">
+      <MemoTransactionsTable :memo-id="memoId" data-testid="memo-transactions-table" />
+    </section>
 
     <BackButton data-testid="memo-summary-back-button" />
   </div>
@@ -95,49 +97,89 @@ const isLoadingCondition = computed(
 </script>
 
 <style scoped>
-.header-content {
+.bv-memo-summary {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bv-memo-header {
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
-.memo-title {
+.bv-memo-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.bv-memo-title {
   margin: 0;
   font-size: 1.5rem;
-  font-weight: bold;
-  flex: 1;
+  font-weight: 500;
+  color: var(--app-text-color);
 }
 
-.summary-stats {
+.bv-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
-  margin: 1rem 0;
+  gap: 1rem;
 }
 
-.stat-item {
-  text-align: center;
-  padding: 1rem;
-  border: 1px solid var(--el-border-color-light);
-  border-radius: var(--el-border-radius-base);
-  background: var(--el-bg-color-page);
+.bv-stat-card {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--bv-border);
+  border-radius: var(--bv-radius);
+  background: var(--bv-panel-bg);
 }
 
-.loading-container {
-  padding: 2rem 0;
+.bv-stat-card :deep(.el-statistic__head) {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--bv-sidebar-muted);
+}
+
+.bv-stat-card :deep(.el-statistic__content) {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--app-text-color);
+}
+
+.bv-loading {
+  padding: 1.5rem 0;
+}
+
+.bv-section {
+  border-radius: var(--bv-radius);
+}
+
+.bv-table-section :deep(.el-table) {
+  --el-table-border-color: var(--bv-border);
+  --el-table-header-bg-color: var(--bv-muted-bg);
+  --el-table-row-hover-bg-color: var(--bv-accent);
+  border-radius: var(--bv-radius);
+  overflow: hidden;
+}
+
+.bv-table-section :deep(.el-table th.el-table__cell) {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--app-text-color);
 }
 
 @media (max-width: 768px) {
-  .header-content {
+  .bv-memo-header-top {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
 
-  .summary-stats {
+  .bv-stats {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
 }
 </style>

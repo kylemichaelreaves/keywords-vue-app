@@ -21,7 +21,7 @@ export function useMemoById(params: UseMemoByIdParams) {
   )
 
   return useQuery<Memo | null>({
-    queryKey: computed(() => ['memo', { id: memoId.value, name: memoName.value }]),
+    queryKey: computed(() => ['memo', memoId.value, memoName.value]),
     queryFn: async () => {
       devConsole('log', '🟣 useMemoById: queryFn called', {
         memoId: memoId.value,

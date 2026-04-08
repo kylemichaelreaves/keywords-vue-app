@@ -5,7 +5,7 @@
     :message="error.message"
     type="error"
   />
-  <el-row class="day-summaries-row">
+  <el-row class="day-summaries-row" aria-label="Day Summaries">
     <el-col v-for="(dayData, index) in data" :key="index" class="day-summary-col">
       <div v-if="dayData && dayData.length > 0">
         <h3>{{ formatDate(dayData[0]?.Date) }}</h3>

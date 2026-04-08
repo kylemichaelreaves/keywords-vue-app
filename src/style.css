@@ -12,6 +12,25 @@
   --app-card-bg: #ffffff;
   --app-shadow: rgba(0, 0, 0, 0.1);
 
+  /* Budget Visualizer tokens (matched to Figma Make theme) */
+  --bv-sidebar-bg: #ffffff;
+  --bv-sidebar-text: #213547;
+  --bv-sidebar-muted: #717182;
+  --bv-sidebar-hover-bg: #e9ebef;
+  --bv-sidebar-active-bg: #030213;
+  --bv-sidebar-active-text: #ffffff;
+  --bv-main-bg: #ffffff;
+  --bv-panel-bg: #ffffff;
+  --bv-topbar-bg: #ffffff;
+  --bv-border: rgba(0, 0, 0, 0.1);
+  --bv-muted-bg: #ececf0;
+  --bv-primary: #030213;
+  --bv-primary-fg: #ffffff;
+  --bv-primary-hover: #1a1a2e;
+  --bv-accent: #e9ebef;
+  --bv-radius: 0.625rem;
+  --bv-surface-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
   color-scheme: light;
   color: var(--app-text-color);
   background-color: var(--app-bg-color);
@@ -32,6 +51,24 @@
   --app-card-bg: #242424;
   --app-shadow: rgba(0, 0, 0, 0.4);
 
+  --bv-sidebar-bg: hsl(0 0% 14.5%);
+  --bv-sidebar-text: hsl(0 0% 98.5%);
+  --bv-sidebar-muted: hsl(0 0% 70.8%);
+  --bv-sidebar-hover-bg: hsl(0 0% 26.9%);
+  --bv-sidebar-active-bg: hsl(0 0% 98.5%);
+  --bv-sidebar-active-text: hsl(0 0% 20.5%);
+  --bv-main-bg: hsl(0 0% 14.5%);
+  --bv-panel-bg: hsl(0 0% 14.5%);
+  --bv-topbar-bg: hsl(0 0% 14.5%);
+  --bv-border: hsl(0 0% 26.9%);
+  --bv-muted-bg: hsl(0 0% 26.9%);
+  --bv-primary: hsl(0 0% 98.5%);
+  --bv-primary-fg: hsl(0 0% 20.5%);
+  --bv-primary-hover: hsl(0 0% 85%);
+  --bv-accent: hsl(0 0% 26.9%);
+  --bv-radius: 0.625rem;
+  --bv-surface-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+
   color-scheme: dark;
   color: var(--app-text-color);
   background-color: var(--app-bg-color);
@@ -45,6 +82,24 @@
   --app-border-color: #e4e7ed;
   --app-card-bg: #ffffff;
   --app-shadow: rgba(0, 0, 0, 0.1);
+
+  --bv-sidebar-bg: #ffffff;
+  --bv-sidebar-text: #213547;
+  --bv-sidebar-muted: #717182;
+  --bv-sidebar-hover-bg: #e9ebef;
+  --bv-sidebar-active-bg: #030213;
+  --bv-sidebar-active-text: #ffffff;
+  --bv-main-bg: #ffffff;
+  --bv-panel-bg: #ffffff;
+  --bv-topbar-bg: #ffffff;
+  --bv-border: rgba(0, 0, 0, 0.1);
+  --bv-muted-bg: #ececf0;
+  --bv-primary: #030213;
+  --bv-primary-fg: #ffffff;
+  --bv-primary-hover: #1a1a2e;
+  --bv-accent: #e9ebef;
+  --bv-radius: 0.625rem;
+  --bv-surface-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
   color-scheme: light;
   color: var(--app-text-color);

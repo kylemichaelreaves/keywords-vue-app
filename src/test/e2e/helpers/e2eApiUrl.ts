@@ -1,12 +1,15 @@
 /**
- * Pure URL helpers for Playwright route matching (Vite /api proxy vs direct paths).
+ * Pure URL helpers for Playwright route matching (Vite dev proxy prefixes).
  */
 
-/** Path after optional /api prefix (Vite dev proxy uses /api → backend). */
+const API_PREFIXES = ['/api/v1', '/api/gateway']
+
+/** Path after optional dev proxy prefix (/api/v1 or /api/gateway). */
 export function apiPathname(url: URL): string {
   const { pathname } = url
-  if (pathname === '/api' || pathname.startsWith('/api/')) {
-    return pathname === '/api' ? '/' : pathname.slice('/api'.length)
+  for (const prefix of API_PREFIXES) {
+    if (pathname === prefix) return '/'
+    if (pathname.startsWith(prefix + '/')) return pathname.slice(prefix.length)
   }
   return pathname
 }

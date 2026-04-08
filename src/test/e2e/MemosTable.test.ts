@@ -54,7 +54,7 @@ test.describe('Memos Table', () => {
 
   test('should display the correct page title', async () => {
     const title = await memosPage.getMemosPageTitle()
-    expect(title).toBe('Memos Table')
+    expect(title).toBe('Memos')
   })
 
   test.skip('should handle error state', async () => {

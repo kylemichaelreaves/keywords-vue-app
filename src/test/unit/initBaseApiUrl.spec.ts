@@ -14,7 +14,7 @@ describe('initBaseApiUrl', () => {
     vi.resetModules()
   })
 
-  it('falls back to API gateway URL when proxy HEAD returns 502', async () => {
+  it('falls back to gateway dev proxy when proxy HEAD returns 502', async () => {
     vi.stubEnv('DEV', true)
     vi.stubGlobal(
       'fetch',
@@ -27,19 +27,19 @@ describe('initBaseApiUrl', () => {
     const { initBaseApiUrl, getBaseApiUrl } = await import('@constants')
     await initBaseApiUrl()
 
-    expect(getBaseApiUrl()).toBe('https://gw.example.execute-api.us-east-1.amazonaws.com/Stage/api')
+    expect(getBaseApiUrl()).toBe('/api/gateway')
   })
 
-  it('defaults baseApiUrl to /api when VITE_APIGATEWAY_URL is unset (production)', async () => {
+  it('defaults baseApiUrl to /api/v1 when VITE_APIGATEWAY_URL is unset (production)', async () => {
     vi.stubEnv('VITE_APIGATEWAY_URL', undefined as unknown as string)
     vi.stubEnv('DEV', false)
 
     const { getBaseApiUrl } = await import('@constants')
 
-    expect(getBaseApiUrl()).toBe('/api')
+    expect(getBaseApiUrl()).toBe('/api/v1')
   })
 
-  it('defaults fallback to /api when VITE_APIGATEWAY_URL is unset (dev, proxy down)', async () => {
+  it('stays on /api/v1 when VITE_APIGATEWAY_URL is unset and proxy is down (no gateway fallback)', async () => {
     vi.stubEnv('VITE_APIGATEWAY_URL', undefined as unknown as string)
     vi.stubEnv('DEV', true)
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('connection refused')))
@@ -47,10 +47,10 @@ describe('initBaseApiUrl', () => {
     const { initBaseApiUrl, getBaseApiUrl } = await import('@constants')
     await initBaseApiUrl()
 
-    expect(getBaseApiUrl()).toBe('/api')
+    expect(getBaseApiUrl()).toBe('/api/v1')
   })
 
-  it('keeps /api when proxy HEAD succeeds', async () => {
+  it('keeps /api/v1 when proxy HEAD succeeds', async () => {
     vi.stubEnv('DEV', true)
     vi.stubGlobal(
       'fetch',
@@ -63,6 +63,6 @@ describe('initBaseApiUrl', () => {
     const { initBaseApiUrl, getBaseApiUrl } = await import('@constants')
     await initBaseApiUrl()
 
-    expect(getBaseApiUrl()).toBe('/api')
+    expect(getBaseApiUrl()).toBe('/api/v1')
   })
 })

@@ -57,8 +57,8 @@ export class TransactionsPage {
 
     this.intervalLineChart = this.page.getByTestId('daily-interval-line-chart')
     this.intervalForm = this.page.getByTestId('daily-interval-line-chart-form')
-    this.intervalTypeSelect = this.page.getByText('Interval Type')
-    this.intervalNumberInput = this.page.getByText('Interval Count')
+    this.intervalTypeSelect = this.intervalForm.getByTestId('interval-select')
+    this.intervalNumberInput = this.intervalForm.getByTestId('interval-input-number')
     this.intervalLineChartTooltip = this.page.getByTestId('line-chart-tooltip')
 
     this.transactionsTablePagination = this.page.getByTestId('transactions-table-pagination')
@@ -149,17 +149,11 @@ export class TransactionsPage {
   }
 
   async clickIncreaseInterval() {
-    await this.page
-      .locator('button')
-      .filter({ hasText: /^Increase Interval$/ })
-      .click()
+    await this.intervalNumberInput.getByRole('button', { name: /increase/i }).click()
   }
 
   async clickDecreaseInterval() {
-    await this.page
-      .locator('button')
-      .filter({ hasText: /^Decrease Interval$/ })
-      .click()
+    await this.intervalNumberInput.getByRole('button', { name: /decrease/i }).click()
   }
 
   // Method to wait for transactions table to be fully ready

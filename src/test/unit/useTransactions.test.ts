@@ -72,9 +72,6 @@ describe('useTransactions with Memo Selection', () => {
     // Wait for initial query to complete
     await new Promise((resolve) => setTimeout(resolve, 100))
 
-    // Clear cache to ensure fetchTransactions is called with new memo
-    store.clearTransactionsByOffset()
-
     // Set memo name (as if user selected it)
     store.setSelectedMemo('Coffee Shop')
 
@@ -105,9 +102,6 @@ describe('useTransactions with Memo Selection', () => {
 
     // Wait for initial query to complete
     await new Promise((resolve) => setTimeout(resolve, 100))
-
-    // Clear cache to ensure fetchTransactions is called with new memo
-    store.clearTransactionsByOffset()
 
     // Set memo ID as string (as if loaded from URL)
     store.setSelectedMemo('101')
@@ -257,9 +251,6 @@ describe('useTransactions with Memo Selection', () => {
 
     // Wait for initial query to complete
     await new Promise((resolve) => setTimeout(resolve, 100))
-
-    // Clear cache to ensure fetchTransactions is called with new memo
-    store.clearTransactionsByOffset()
 
     store.setSelectedMemo('Coffee Shop')
     store.setTransactionsTableLimit(50)
