@@ -159,9 +159,9 @@ describe('MemoSummaryTable.vue', () => {
 
     // Check if the correct statistics are rendered with proper null safety
     if (statistics.length >= 3) {
-      expect(statistics[0]?.props('title')).toBe('Total Credits')
+      expect(statistics[0]?.props('title')).toBe('Total Amount Debit')
       expect(statistics[0]?.props('value')).toBe(-300.5)
-      expect(statistics[1]?.props('title')).toBe('Total Debits')
+      expect(statistics[1]?.props('title')).toBe('Transactions Count')
       expect(statistics[1]?.props('value')).toBe(5)
       expect(statistics[2]?.props('title')).toBe('Budget Category')
       expect(statistics[2]?.props('value')).toBe('Groceries')

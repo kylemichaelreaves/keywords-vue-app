@@ -216,6 +216,12 @@ const loadMorePagesIfNeeded = async () => {
   }
 }
 
+watch(searchQuery, () => {
+  if (currentPage.value !== 1) {
+    currentPage.value = 1
+  }
+})
+
 // Auto-load more data when pagination changes
 watch(
   [currentPage, pageLimit],

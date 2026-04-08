@@ -41,7 +41,7 @@
       <div v-if="typedSummaryData" class="bv-stats" data-testid="memo-summary-stats">
         <div class="bv-stat-card">
           <el-statistic
-            title="Total Credits"
+            title="Total Amount Debit"
             :value="typedSummaryData.sum_amount_debit"
             prefix="$"
             :precision="2"
@@ -54,13 +54,13 @@
               :model-value="typedMemoData?.ambiguous ?? false"
               size="small"
               data-testid="memo-ambiguous-toggle"
-              @change="(val: boolean) => toggleMemoField('ambiguous', val)"
+              @change="(val: boolean | string | number) => toggleMemoField('ambiguous', Boolean(val))"
             />
           </div>
         </div>
         <div class="bv-stat-card">
           <el-statistic
-            title="Total Debits"
+            title="Transactions Count"
             :value="typedSummaryData.transactions_count"
             :data-testid="`transactions-count-${memoId}`"
             :data-value="typedSummaryData.transactions_count"
@@ -71,7 +71,7 @@
               :model-value="typedMemoData?.recurring ?? false"
               size="small"
               data-testid="memo-recurring-toggle"
-              @change="(val: boolean) => toggleMemoField('recurring', val)"
+              @change="(val: boolean | string | number) => toggleMemoField('recurring', Boolean(val))"
             />
           </div>
         </div>
@@ -87,7 +87,7 @@
               :model-value="typedMemoData?.necessary ?? false"
               size="small"
               data-testid="memo-necessary-toggle"
-              @change="(val: boolean) => toggleMemoField('necessary', val)"
+              @change="(val: boolean | string | number) => toggleMemoField('necessary', Boolean(val))"
             />
           </div>
         </div>

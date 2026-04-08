@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useIsIntervalGreaterThanOldestDate } from '@api/hooks/transactions/useIsIntervalGreaterThanOldestDate.ts'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
@@ -43,29 +43,28 @@ const props = defineProps({
 })
 
 const intervalValue = defineModel<string>('intervalValue', {
-  default: '1 months',
+  default: '1 month',
 })
 
 const presets = [
-  { label: '1M', value: '1 months' },
+  { label: '1M', value: '1 month' },
   { label: '3M', value: '3 months' },
   { label: '6M', value: '6 months' },
-  { label: '1Y', value: '1 years' },
+  { label: '1Y', value: '1 year' },
 ]
 
-const activePreset = ref('1 months')
-
-const computedIntervalValue = computed(() => activePreset.value)
+const activePreset = computed(
+  () => presets.find((p) => p.value === intervalValue.value)?.value ?? intervalValue.value,
+)
 
 const { data, error, isError, isLoading, isFetching } =
-  useIsIntervalGreaterThanOldestDate(computedIntervalValue)
+  useIsIntervalGreaterThanOldestDate(intervalValue)
 
 const isOutOfRange = computed(() => {
   return data?.value?.map((item: { is_out_of_range: boolean }) => item.is_out_of_range)[0]
 })
 
 function selectPreset(preset: (typeof presets)[number]) {
-  activePreset.value = preset.value
   intervalValue.value = preset.value
 }
 </script>

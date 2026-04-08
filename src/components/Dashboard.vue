@@ -15,8 +15,7 @@
     <el-card class="bv-welcome-card" shadow="never">
       <h3 class="bv-welcome-title">Welcome to Budget Manager</h3>
       <p class="bv-welcome-desc">
-        Use the sidebar to navigate between your transactions, memos, budget categories, and debt
-        tools.
+        Use the sidebar to navigate between your transactions, memos, budgets, and debt tools.
       </p>
     </el-card>
   </div>

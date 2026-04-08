@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import MemoSelect from '@components/transactions/selects/MemoSelect.vue'
 import MonthSelect from '@components/transactions/selects/MonthSelect.vue'
 import WeekSelect from '@components/transactions/selects/WeekSelect.vue'
@@ -34,6 +35,7 @@ const props = defineProps({
   },
 })
 
+const router = useRouter()
 const store = useTransactionsStore()
 
 const hasActiveFilters = computed(
@@ -51,6 +53,7 @@ function clearAllFilters() {
   store.setSelectedMonth('')
   store.setSelectedYear('')
   store.setSelectedMemo('')
+  router.replace({ path: '/budget-visualizer/transactions', query: {} })
 }
 </script>
 
