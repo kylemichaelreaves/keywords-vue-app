@@ -214,24 +214,9 @@ const loadMorePagesIfNeeded = async () => {
   }
 }
 
-let searchFetchTimer: ReturnType<typeof setTimeout> | null = null
-let searchFetchAborted = false
-
-watch(searchQuery, (query) => {
+watch(searchQuery, () => {
   if (currentPage.value !== 1) {
     currentPage.value = 1
-  }
-
-  searchFetchAborted = true
-  if (searchFetchTimer) clearTimeout(searchFetchTimer)
-
-  if (query.trim()) {
-    searchFetchTimer = setTimeout(async () => {
-      searchFetchAborted = false
-      while (hasNextPage.value && !searchFetchAborted) {
-        await fetchNextPage()
-      }
-    }, 300)
   }
 })
 
