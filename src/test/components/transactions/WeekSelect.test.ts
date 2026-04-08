@@ -7,7 +7,14 @@ import { VueQueryPlugin } from '@tanstack/vue-query'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { ref } from 'vue'
 
-// Mock the useWeeks hook
+vi.mock('@router', async (importOriginal) => {
+  const { createRouter, createMemoryHistory } = await import('vue-router')
+  return {
+    ...(await importOriginal<typeof import('@router')>()),
+    router: createRouter({ history: createMemoryHistory('/'), routes: [] }),
+  }
+})
+
 vi.mock('@api/hooks/timeUnits/weeks/useWeeks', () => ({
   useWeeks: () => ({
     data: ref([{ week_year: '42/2022' }, { week_year: '43/2022' }]),

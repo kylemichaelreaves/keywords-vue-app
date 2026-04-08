@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test'
 import { HomePage } from './pages/HomePage'
 import { BudgetVisualizerPage } from './pages/BudgetVisualizerPage'
 
-test('Check localStorage', async ({ page }) => {
+test('auth token is present in localStorage after setup', async ({ page }) => {
   await page.goto('/')
   const token = await page.evaluate(() => localStorage.getItem('token'))
-  console.log('Token in test:', token)
+  expect(token).toBeTruthy()
 })
 
 test('has title', async ({ page }) => {
