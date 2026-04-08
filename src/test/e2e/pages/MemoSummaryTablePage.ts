@@ -18,7 +18,7 @@ export class MemoSummaryTablePage {
   constructor(page: Page) {
     this.page = page
 
-    this.errorAlert = page.getByRole('alert').getByTestId('memo-summary-table-error')
+    this.errorAlert = page.getByRole('alert').getByTestId('memo-summary-error')
     this.memoSummaryHeader = page.getByTestId('memo-summary-header')
     this.memoSummaryCard = page.getByTestId('memo-summary-card')
     this.memoSummaryTable = page.getByTestId('memo-summary-table')
