@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -42,7 +42,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -55,12 +55,27 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
+      # Browser install (cache miss only). This is pinned to Node 22 via
+      # setup-node above: under Node 24 (the current `lts/*`) Playwright 1.59.x
+      # hangs indefinitely on "extracting archive" after the browser download
+      # completes. NEEDRESTART_MODE / DEBIAN_FRONTEND keep the apt portion
+      # non-interactive; the timeout is a backstop against a future hang.
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 10
+        env:
+          NEEDRESTART_MODE: a
+          DEBIAN_FRONTEND: noninteractive
         run: npx playwright install --with-deps chromium
 
+      # Cache hit: browsers already present, so only the (fast, apt-only)
+      # system dependencies are installed.
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 8
+        env:
+          NEEDRESTART_MODE: a
+          DEBIAN_FRONTEND: noninteractive
         run: npx playwright install-deps chromium
 
       - name: Build application
