@@ -8,8 +8,12 @@ export const createLineChart = (
   el: unknown,
   summaries: (SummaryTypeBase | DailyInterval)[],
   onDateSelected: (date: string) => void,
-) => {
+): (() => void) => {
   const svgElement = el as SVGSVGElement
+
+  // Tippy poppers attach to document.body and survive SVG clearing; collect
+  // them so the caller can destroy them before redraw/unmount.
+  const tippyInstances: { destroy: () => void }[] = []
 
   // if there's already an SVG element, destroy it utterly
   if (svgElement) {
@@ -121,7 +125,7 @@ export const createLineChart = (
       onDateSelected(dateString)
     })
     .each(function (d) {
-      useTippy(this, {
+      const { destroy } = useTippy(this, {
         content: `${d3.utcFormat('%Y-%m-%d')(d.date)}<br>$${d?.total_debit?.toFixed(2)}`,
         allowHTML: true,
         theme: 'translucent',
@@ -133,5 +137,11 @@ export const createLineChart = (
           instance.popper.setAttribute('data-testid', 'line-chart-tooltip')
         },
       })
+      tippyInstances.push({ destroy })
     })
+
+  return () => {
+    tippyInstances.forEach((t) => t.destroy())
+    tippyInstances.length = 0
+  }
 }
