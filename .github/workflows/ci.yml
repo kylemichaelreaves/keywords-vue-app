@@ -55,19 +55,24 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      # `--with-deps` / `install-deps` shell out to `sudo apt-get`, which on the
-      # ubuntu-latest (24.04) image can hang indefinitely on an interactive
-      # needrestart prompt. NEEDRESTART_MODE=a + DEBIAN_FRONTEND=noninteractive
-      # keep apt non-interactive; the step timeout fails fast instead of burning
-      # the 60-minute job timeout if it ever hangs again.
+      # Cold cache-miss install = apt system deps + ~170 MiB+ of browser
+      # binaries from cdn.playwright.dev, which can take >8 min on a slow
+      # runner. The install must complete at least once so actions/cache can
+      # seed ~/.cache/ms-playwright; after that every run is a fast cache hit
+      # that skips this step entirely. A 20-min timeout gives the cold install
+      # room to finish while still failing well before the 60-min job cap if it
+      # ever genuinely hangs. NEEDRESTART_MODE / DEBIAN_FRONTEND keep the apt
+      # portion non-interactive.
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 8
+        timeout-minutes: 20
         env:
           NEEDRESTART_MODE: a
           DEBIAN_FRONTEND: noninteractive
         run: npx playwright install --with-deps chromium
 
+      # Cache hit: browsers already present, so only the (fast, apt-only)
+      # system dependencies are installed.
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         timeout-minutes: 8
