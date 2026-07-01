@@ -132,11 +132,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type PropType, watch } from 'vue'
+import { computed, type PropType } from 'vue'
 import { useBudgetCategorySummary } from '@api/hooks/budgetCategories/useBudgetCategorySummary.ts'
 import StatisticComponent from '@components/shared/StatisticComponent.vue'
 import BudgetCategoryPieChart from '@components/transactions/charts/BudgetCategoryPieChart.vue'
-import { useTransactionsStore } from '@stores/transactions.ts'
 import type { BudgetCategorySummary, Timeframe } from '@types'
 import AlertComponent from '@components/shared/AlertComponent.vue'
 
@@ -155,9 +154,8 @@ const props = defineProps({
   },
 })
 
-const store = useTransactionsStore()
-
-// Create reactive computed properties that will trigger query updates
+// The query key is built from these reactive refs, so the summary refetches
+// automatically when the timeframe or date changes.
 const reactiveTimeFrame = computed(() => props.timeFrame)
 const reactiveDate = computed(() => props.date)
 
@@ -168,54 +166,7 @@ const handleRefetch = () => {
   refetch()
 }
 
-// Watch for changes in store values and force refetch
-watch(
-  () => store.getSelectedMonth,
-  (newMonth, oldMonth) => {
-    if (props.timeFrame === 'month' && newMonth !== oldMonth) {
-      refetch()
-    }
-  },
-  { immediate: false },
-)
-
-watch(
-  () => store.getSelectedWeek,
-  (newWeek, oldWeek) => {
-    if (props.timeFrame === 'week' && newWeek !== oldWeek) {
-      refetch()
-    }
-  },
-  { immediate: false },
-)
-
-watch(
-  () => store.getSelectedDay,
-  (newDay, oldDay) => {
-    if (props.timeFrame === 'day' && newDay !== oldDay) {
-      refetch()
-    }
-  },
-  { immediate: false },
-)
-// Also watch for changes to the props themselves
-watch(
-  () => [props.date, props.timeFrame],
-  ([newDate, newTimeFrame], [oldDate, oldTimeFrame]) => {
-    if (newDate !== oldDate || newTimeFrame !== oldTimeFrame) {
-      refetch()
-    }
-  },
-  { immediate: false },
-)
-
-const categorySummaries = computed((): BudgetCategorySummary[] => {
-  if (!data?.value) {
-    return []
-  }
-
-  return data.value.map((item: BudgetCategorySummary) => item)
-})
+const categorySummaries = computed((): BudgetCategorySummary[] => data.value ?? [])
 
 const hierarchicalSummaries = computed((): BudgetCategorySummary[] => {
   if (!categorySummaries.value.length) {
