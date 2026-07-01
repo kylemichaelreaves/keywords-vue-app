@@ -71,12 +71,6 @@ const initBaseApiUrl = async (): Promise<string> => {
   return baseApiUrl
 }
 
-export {
-  API_GATEWAY_URL,
-  GATEWAY_DEV_PROXY,
-  LAMBDA_DEV_PROXY,
-  getBaseApiUrl,
-  initBaseApiUrl,
-}
+export { API_GATEWAY_URL, GATEWAY_DEV_PROXY, LAMBDA_DEV_PROXY, getBaseApiUrl, initBaseApiUrl }
 
 export { ROUTE_ALIASES } from '../constants.node'
