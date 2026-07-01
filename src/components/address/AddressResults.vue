@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import AddressResultFieldsTable from './AddressResultFieldsTable.vue'
 import CoordinatesTable from './CoordinatesTable.vue'
 
@@ -56,19 +56,7 @@ const props = defineProps<{
   message: AddressResponse[]
 }>()
 
-const data = ref(props.message)
-computed(() => {
-  if (props.message && props.message.length > 0) {
-    const addresses = props.message.map((item: AddressResponse) => item.address)
-    return addresses.map((address) => {
-      return Object.entries(address).map(([key, value]) => {
-        return { key, value }
-      })
-    })
-  } else {
-    return [[]]
-  }
-})
+const data = computed(() => props.message)
 const columns = [
   { prop: 'display_name', label: 'Display Name' },
   { prop: 'coordinates', label: 'Coordinates' },

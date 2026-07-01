@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { ElStatistic } from 'element-plus'
 import useSumAmountDebitByDate from '@api/hooks/transactions/useSumAmountDebitByDate.ts'
 import { useTransactionsStore } from '@stores/transactions.ts'
@@ -26,22 +26,14 @@ import AlertComponent from '@components/shared/AlertComponent.vue'
 const store = useTransactionsStore()
 const selectedWeek = computed(() => store.getSelectedWeek)
 
-const { data, isLoading, isFetching, isRefetching, isError, error, refetch } =
-  useSumAmountDebitByDate('week', selectedWeek.value)
+const { data, isLoading, isFetching, isRefetching, isError, error } = useSumAmountDebitByDate(
+  'week',
+  selectedWeek,
+)
 
 const weekTotalAmountDebit = computed(() => {
   return data?.value?.[0]?.total_amount_debit ?? 0
 })
-
-watch(
-  () => selectedWeek,
-  (newValue) => {
-    if (newValue) {
-      refetch()
-    }
-  },
-  { immediate: true },
-)
 </script>
 
 <style scoped></style>
