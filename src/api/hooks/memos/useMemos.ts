@@ -28,10 +28,10 @@ export function useMemos(params: UseMemosParams = {}) {
 
   return useInfiniteQuery<Array<Memo>>({
     initialPageParam: 0,
-    queryKey: [
+    queryKey: computed(() => [
       'memos',
       { limit: limit.value, date: date.value, timeFrame: timeFrame.value, count: count.value },
-    ],
+    ]),
     queryFn: async ({ pageParam = 0 }) => {
       const queryParams: MemoQueryParams = {
         limit: limit.value,
