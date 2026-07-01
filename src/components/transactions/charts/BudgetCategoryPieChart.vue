@@ -89,7 +89,7 @@
 <script setup lang="ts">
 import { devConsole } from '@utils/devConsole'
 
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { ElSkeleton, ElSkeletonItem, ElSpace, ElText, ElSwitch } from 'element-plus'
 import * as d3 from 'd3'
 import type { BudgetCategorySummary } from '@types'
@@ -210,6 +210,7 @@ const drawChart = async () => {
 
   const svg = d3.select(svgRef.value)
   svg.selectAll('*').remove() // Clear previous chart
+  d3.select('body').selectAll('.pie-chart-tooltip').remove() // Remove any stale tooltip
 
   const { width, height, margin } = chartDimensions.value
   const chartWidth = width - margin.left - margin.right
@@ -413,57 +414,18 @@ const drawChart = async () => {
   }
 }
 
-// Watch for data changes and redraw
-watch(
-  () => props.data,
-  async (newData, oldData) => {
-    devConsole('log', 'PieChart: Data prop changed', {
-      newDataLength: newData?.length || 0,
-      oldDataLength: oldData?.length || 0,
-      hasNewData: !!newData?.length,
-      isLoading: props.isLoading,
-    })
+const redraw = async () => {
+  if (props.isLoading || !props.data?.length) return
+  await nextTick()
+  drawChart()
+}
 
-    if (!props.isLoading && newData && newData.length > 0) {
-      await nextTick()
-      drawChart()
-    }
-  },
-  { immediate: true, deep: true },
-)
+watch([() => props.data, () => props.isLoading], redraw, { deep: true })
 
-// Also watch for loading state changes
-watch(
-  () => props.isLoading,
-  async (isLoading) => {
-    devConsole('log', 'PieChart: Loading state changed', { isLoading })
+onMounted(redraw)
 
-    if (!isLoading && props.data && props.data.length > 0) {
-      await nextTick()
-      drawChart()
-    }
-  },
-  { immediate: true },
-)
-
-// Watch for legend visibility changes
-watch(
-  () => localShowLegend.value,
-  () => {
-    // No need to redraw chart, just toggle legend visibility
-  },
-)
-
-onMounted(async () => {
-  devConsole('log', 'PieChart: Component mounted', {
-    hasData: !!props.data?.length,
-    isLoading: props.isLoading,
-  })
-
-  if (!props.isLoading && props.data && props.data.length > 0) {
-    await nextTick()
-    drawChart()
-  }
+onUnmounted(() => {
+  d3.select('body').selectAll('.pie-chart-tooltip').remove()
 })
 </script>
 

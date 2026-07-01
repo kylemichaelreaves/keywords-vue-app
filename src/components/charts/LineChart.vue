@@ -33,10 +33,13 @@ const width = ref(0)
 const height = ref(150)
 
 let resizeObserver: ResizeObserver | null = null
+let destroyChartTooltips: (() => void) | null = null
 
 const clearChart = () => {
+  // Destroy tippy instances before dropping their SVG nodes to avoid leaking poppers.
+  destroyChartTooltips?.()
+  destroyChartTooltips = null
   if (svg.value) {
-    // Clear all child elements
     svg.value.innerHTML = ''
   }
 }
@@ -49,7 +52,7 @@ const createChart = async () => {
   try {
     clearChart()
     await nextTick()
-    createLineChart(svg.value, props.summaries, props.handleOnClickSelection)
+    destroyChartTooltips = createLineChart(svg.value, props.summaries, props.handleOnClickSelection)
   } catch (error) {
     devConsole('error', 'Error creating line chart:', error)
   }
