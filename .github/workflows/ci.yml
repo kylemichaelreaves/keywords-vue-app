@@ -55,12 +55,25 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
+      # `--with-deps` / `install-deps` shell out to `sudo apt-get`, which on the
+      # ubuntu-latest (24.04) image can hang indefinitely on an interactive
+      # needrestart prompt. NEEDRESTART_MODE=a + DEBIAN_FRONTEND=noninteractive
+      # keep apt non-interactive; the step timeout fails fast instead of burning
+      # the 60-minute job timeout if it ever hangs again.
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 8
+        env:
+          NEEDRESTART_MODE: a
+          DEBIAN_FRONTEND: noninteractive
         run: npx playwright install --with-deps chromium
 
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 8
+        env:
+          NEEDRESTART_MODE: a
+          DEBIAN_FRONTEND: noninteractive
         run: npx playwright install-deps chromium
 
       - name: Build application
