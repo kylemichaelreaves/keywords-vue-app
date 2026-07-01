@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -42,7 +42,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -55,40 +55,28 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      # System libraries live on the runner, not in the browser cache, so apt
-      # deps are installed on every run (fast, ~15s). NEEDRESTART_MODE /
-      # DEBIAN_FRONTEND keep apt non-interactive.
+      # Browser install (cache miss only). This is pinned to Node 22 via
+      # setup-node above: under Node 24 (the current `lts/*`) Playwright 1.59.x
+      # hangs indefinitely on "extracting archive" after the browser download
+      # completes. NEEDRESTART_MODE / DEBIAN_FRONTEND keep the apt portion
+      # non-interactive; the timeout is a backstop against a future hang.
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 10
+        env:
+          NEEDRESTART_MODE: a
+          DEBIAN_FRONTEND: noninteractive
+        run: npx playwright install --with-deps chromium
+
+      # Cache hit: browsers already present, so only the (fast, apt-only)
+      # system dependencies are installed.
       - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
         timeout-minutes: 8
         env:
           NEEDRESTART_MODE: a
           DEBIAN_FRONTEND: noninteractive
         run: npx playwright install-deps chromium
-
-      # Browser binaries (cache miss only). The actual download is seconds, but
-      # Playwright's downloader has no per-artifact timeout: if a connection to
-      # cdn.playwright.dev stalls (observed: the download finishes then the next
-      # artifact hangs indefinitely), the step would sit until the job timeout.
-      # Wrap each attempt in `timeout` and retry so a stalled connection is
-      # killed within minutes and re-established. DEBUG=pw:install surfaces which
-      # artifact is being fetched if it ever stalls again.
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 15
-        env:
-          DEBUG: pw:install
-        run: |
-          for attempt in 1 2 3; do
-            echo "::group::playwright browser install (attempt $attempt)"
-            if timeout -k 30 240 npx playwright install chromium; then
-              echo "::endgroup::"
-              exit 0
-            fi
-            echo "::endgroup::"
-            echo "attempt $attempt stalled or failed; retrying..." >&2
-          done
-          echo "playwright browser install failed after 3 attempts" >&2
-          exit 1
 
       - name: Build application
         run: npm run build:ci
