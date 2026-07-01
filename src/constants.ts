@@ -1,6 +1,5 @@
 import { devConsole } from '@utils/devConsole'
 
-const LAMBDA_DEV_URL: string = 'http://127.0.0.1:3000'
 const LAMBDA_DEV_PROXY = '/api/v1'
 const GATEWAY_DEV_PROXY = '/api/gateway'
 const API_GATEWAY_URL = import.meta.env.VITE_APIGATEWAY_URL ?? ''
@@ -72,13 +71,6 @@ const initBaseApiUrl = async (): Promise<string> => {
   return baseApiUrl
 }
 
-export {
-  API_GATEWAY_URL,
-  GATEWAY_DEV_PROXY,
-  LAMBDA_DEV_PROXY,
-  LAMBDA_DEV_URL,
-  getBaseApiUrl,
-  initBaseApiUrl,
-}
+export { API_GATEWAY_URL, GATEWAY_DEV_PROXY, LAMBDA_DEV_PROXY, getBaseApiUrl, initBaseApiUrl }
 
 export { ROUTE_ALIASES } from '../constants.node'
