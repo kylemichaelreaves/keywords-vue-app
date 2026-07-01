@@ -132,7 +132,7 @@ const {
   isLoading: memoLoading,
   isFetching: memoFetching,
   refetch: refetchMemo,
-} = useMemo(memoId.value)
+} = useMemo(memoId)
 
 // Fetch memo summary data
 const {
@@ -141,7 +141,7 @@ const {
   isLoading: summaryLoading,
   isError,
   error,
-} = useMemoSummary(memoId.value)
+} = useMemoSummary(memoId)
 
 const { mutate } = mutateMemo()
 

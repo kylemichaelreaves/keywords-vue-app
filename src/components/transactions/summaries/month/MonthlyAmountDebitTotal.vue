@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import { ElStatistic } from 'element-plus'
 import useSumAmountDebitByDate from '@api/hooks/transactions/useSumAmountDebitByDate.ts'
 import { useTransactionsStore } from '@stores/transactions.ts'
@@ -28,26 +28,10 @@ import AlertComponent from '@components/shared/AlertComponent.vue'
 const store = useTransactionsStore()
 const selectedMonth = computed(() => store.getSelectedMonth)
 
-const { data, isLoading, isFetching, isRefetching, isError, error, refetch } =
-  useSumAmountDebitByDate('month', selectedMonth.value)
-
-const dataItems = computed(() => data.value)
-
-const statisticValue = computed(() => {
-  if (!dataItems.value) {
-    return 0
-  } else {
-    return dataItems.value?.[0]?.total_amount_debit
-  }
-})
-
-watch(
-  () => selectedMonth,
-  (newValue) => {
-    if (newValue) {
-      refetch()
-    }
-  },
-  { immediate: true },
+const { data, isLoading, isFetching, isRefetching, isError, error } = useSumAmountDebitByDate(
+  'month',
+  selectedMonth,
 )
+
+const statisticValue = computed(() => data.value?.[0]?.total_amount_debit ?? 0)
 </script>

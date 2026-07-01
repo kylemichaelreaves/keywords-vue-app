@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { type PropType, reactive, ref, watch, computed } from 'vue'
+import { type PropType, reactive, ref, toRaw, watch, computed } from 'vue'
 import type {
   Transaction,
   TransactionFormFields,
@@ -61,7 +61,8 @@ const emit = defineEmits<{
 }>()
 
 const formRef = ref<InstanceType<typeof ElForm> | null>(null)
-const transaction = reactive<Transaction>(props.transaction as Transaction)
+// Clone so edits don't mutate the prop (which may be a cached vue-query object).
+const transaction = reactive<Transaction>(structuredClone(toRaw(props.transaction)) as Transaction)
 
 // Budget category state - single source of truth
 const budgetCategoryState = ref<BudgetCategoryState>(
