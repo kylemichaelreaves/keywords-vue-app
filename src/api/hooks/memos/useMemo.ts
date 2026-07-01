@@ -5,8 +5,6 @@ import { computed, type MaybeRefOrGetter, toValue } from 'vue'
 
 export default function useMemo(memoId: MaybeRefOrGetter<number>) {
   const memoIdValue = computed(() => toValue(memoId))
-  const memoIdIsNeitherUndefinedNorNull =
-    memoIdValue.value !== undefined && memoIdValue.value !== null
 
   return useQuery({
     queryKey: computed(() => ['memo', memoIdValue.value]),
@@ -14,7 +12,7 @@ export default function useMemo(memoId: MaybeRefOrGetter<number>) {
       return await fetchMemo(memoIdValue.value)
     },
     refetchOnWindowFocus: false,
-    enabled: memoIdIsNeitherUndefinedNorNull,
+    enabled: computed(() => memoIdValue.value !== undefined && memoIdValue.value !== null),
     retry: 1,
     retryDelay: 50,
     staleTime: 0,
